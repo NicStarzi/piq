@@ -1,0 +1,64 @@
+package edu.udo.piq.tools;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import edu.udo.piq.PComponent;
+import edu.udo.piq.PDesign;
+import edu.udo.piq.PDesignFactory;
+import edu.udo.piq.PDesignSheet;
+
+public class DefaultPDesignSheet implements PDesignSheet {
+	
+	protected final Map<Class<? extends PComponent>, PDesignFactory> factoryMap = new HashMap<>();
+	
+	/**
+	 * If a {@link PDesignFactory} is registered at this {@link PDesignSheet} and 
+	 * the factory covers the {@link PComponent} subclass of component then the 
+	 * call will be delegated to the factory.<br>
+	 * If no such factory was registered an instance of {@link DefaultPDesign} 
+	 * will be returned.
+	 * 
+	 * @see #registerDesignFactory(Class, PDesignFactory)
+	 * @see #unregisterDesignFactory(Class)
+	 * @see PDesign
+	 * @see PDesignFactory
+	 * @see DefaultPDesign
+	 */
+	public PDesign getDesignFor(PComponent component) throws NullPointerException {
+		Class<?> compClass = component.getClass();
+		PDesignFactory factory = factoryMap.get(component.getClass());
+		while (factory == null && compClass != Object.class) {
+			compClass = compClass.getSuperclass();
+			factory = factoryMap.get(component.getClass());
+		}
+		if (factory != null) {
+			return factory.getDesignFor(component);
+		}
+		return PDesign.PASS_THROUGH_DESIGN;
+	}
+
+	/**
+	 * Registers the factory for all {@link PComponent}s of class compClass as is 
+	 * defined by the {@link PDesignSheet} interfaces 
+	 * {@link PDesignSheet#registerDesignFactory(Class, PDesignFactory)} method.<br>
+	 */
+	public void registerDesignFactory(Class<? extends PComponent> compClass, PDesignFactory factory) throws NullPointerException {
+		if (compClass == null || factory == null) {
+			throw new NullPointerException("compClass="+compClass+", factory="+factory);
+		}
+		factoryMap.put(compClass, factory);
+	}
+	
+	/**
+	 * Unregisters any registered factory for all {@link PComponent}s of class compClass 
+	 * as is defined by the {@link PDesignSheet} interfaces 
+	 * {@link PDesignSheet#unregisterDesignFactory(Class)} method.<br>
+	 */
+	public void unregisterDesignFactory(Class<? extends PComponent> compClass) throws NullPointerException, IllegalArgumentException {
+		if (compClass == null) {
+			throw new NullPointerException("compClass="+compClass);
+		}
+		factoryMap.remove(compClass);
+	}
+}

@@ -84,7 +84,7 @@ public interface PMouse {
 	 * If a component takes ownership of the mouse other components 
 	 * <i>should</i> respect that and not use the mouse at the same time.<br>
 	 * 
-	 * @return
+	 * @return the current owner of the mouse
 	 * @see #setOwner(PComponent)
 	 */
 	public PComponent getOwner();

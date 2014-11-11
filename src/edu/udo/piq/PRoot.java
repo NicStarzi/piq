@@ -75,6 +75,18 @@ public interface PRoot extends PComponent {
 	public void reRender(PComponent component);
 	
 	/**
+	 * Creates a new instance of {@link PDialog} and returns it.<br>
+	 * The implementation is platform dependent.<br>
+	 * The returned dialog will use the same {@link PDesignSheet} 
+	 * as this root.<br>
+	 * 
+	 * @return a newly created dialog
+	 * @see PDialog
+	 * @see PDesignSheet
+	 */
+	public PDialog createDialog();
+	
+	/**
 	 * Returns an instance of {@link PFontResource} that represents the 
 	 * desires font defined by the name, size and style.<br>
 	 * The implementation is platform dependent.<br>
@@ -115,6 +127,20 @@ public interface PRoot extends PComponent {
 	 * mouse.<br>
 	 * 
 	 * @return an implementation of {@link PMouse} or null if a mouse is not supported
+	 * @see PMouse
+	 * @see PKeyboard
 	 */
 	public PMouse getMouse();
+	
+	/**
+	 * Returns an implementation of {@link PKeyboard}.<br>
+	 * The implementation is platform dependent.<br>
+	 * This method might return null if the GUI does not support a 
+	 * keyboard.<br>
+	 * 
+	 * @return an implementation of {@link PKeyboard} or null if a keyboard is not supported
+	 * @see PKeyboard
+	 * @see PMouse
+	 */
+	public PKeyboard getKeyboard();
 }

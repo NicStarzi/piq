@@ -8,7 +8,7 @@ import edu.udo.piq.PDesign;
 import edu.udo.piq.PDesignFactory;
 import edu.udo.piq.PDesignSheet;
 
-public class DefaultPDesignSheet implements PDesignSheet {
+public class AbstractPDesignSheet implements PDesignSheet {
 	
 	protected final Map<Class<? extends PComponent>, PDesignFactory> factoryMap = new HashMap<>();
 	
@@ -35,9 +35,26 @@ public class DefaultPDesignSheet implements PDesignSheet {
 		if (factory != null) {
 			return factory.getDesignFor(component);
 		}
+		return getDesignInternally(component);
+	}
+	
+	/**
+	 * This method is used by the {@link #getDesignFor(PComponent)} 
+	 * implementation to get the {@link PDesign} that should be used 
+	 * to render the given {@link PComponent}.<br>
+	 * This method will only be called if there is no registered 
+	 * {@link PDesignFactory} that will service the component.<br>
+	 * The default implementation of this method always returns 
+	 * the {@link PDesign#PASS_THROUGH_DESIGN}.<br>
+	 * The argument will always be a valid, non-null PComponent.<br>
+	 * 
+	 * @param component a component that needs a design.
+	 * @return the correct PDesign for the given PComponent
+	 */
+	protected PDesign getDesignInternally(PComponent component) {
 		return PDesign.PASS_THROUGH_DESIGN;
 	}
-
+	
 	/**
 	 * Registers the factory for all {@link PComponent}s of class compClass as is 
 	 * defined by the {@link PDesignSheet} interfaces 

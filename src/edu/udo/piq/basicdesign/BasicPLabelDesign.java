@@ -14,9 +14,9 @@ import edu.udo.piq.components.PLabel;
 public class BasicPLabelDesign implements PDesign {
 	
 	protected PColor textColor = PColor.BLACK;
-	protected String fontName;
-	protected Style fontStyle;
-	protected int fontSize;
+	protected String fontName = "Sylfaen";
+	protected Style fontStyle = Style.ITALIC;
+	protected int fontSize = 14;
 	
 	public void setFontName(String value) {
 		if (value == null) {

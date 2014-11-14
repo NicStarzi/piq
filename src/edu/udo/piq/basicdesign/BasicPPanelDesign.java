@@ -10,7 +10,7 @@ import edu.udo.piq.util.PCompUtil;
 
 public class BasicPPanelDesign implements PDesign {
 	
-	protected PColor backgroundColor;
+	protected PColor backgroundColor = PColor.GREY75;
 	
 	public void setBackgroundColor(PColor color) {
 		backgroundColor = color;

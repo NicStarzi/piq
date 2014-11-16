@@ -64,7 +64,8 @@ public class PScrollBarHorizontal extends AbstractPComponent {
 				mouse.setOwner(null);
 			}
 		} else {
-			if (mouse.isTriggered(MouseButton.LEFT) && PCompUtil.isMouseOver(this)) {
+			if (mouse.isTriggered(MouseButton.LEFT) 
+					&& PCompUtil.isMouseContained(this, PCompUtil.getClippedBoundsOf(this))) {
 				pressed = true;
 				mouse.setOwner(this);
 			}

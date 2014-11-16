@@ -122,19 +122,6 @@ public abstract class AbstractPLayout implements PLayout {
 		}
 		return PCompUtil.getPreferredSizeOf(child);
 	}
-//	protected int getPreferredWidthOf(PComponent child) {
-//		if (child == null) {
-//			return 0;
-//		}
-//		return PCompUtil.getPreferredWidthOf(child);
-//	}
-//	
-//	protected int getPreferredHeightOf(PComponent child) {
-//		if (child == null) {
-//			return 0;
-//		}
-//		return PCompUtil.getPreferredHeightOf(child);
-//	}
 	
 	protected void setChildBounds(PComponent child, int x, int y, int width, int height) {
 		PCompInfo info = compMap.get(child);

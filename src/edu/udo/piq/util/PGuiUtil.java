@@ -12,7 +12,17 @@ public class PGuiUtil {
 		return comp.toString();
 	}
 	
-	public static String guiTreeToString(PComponent root) {
+	/**
+	 * Returns the entire GUI hierarchy starting from root as String.<br>
+	 * Every component starts at its own line.<br>
+	 * Each level of the tree is properly indented with a number of tab 
+	 * ('\t') characters corresponding to the depth of the level.<br>
+	 * 
+	 * @param root the point from where the method starts constructing the String
+	 * @return a String representation of root and all its descendants
+	 * @throws NullPointerException if root is null
+	 */
+	public static String guiTreeToString(PComponent root) throws NullPointerException {
 		StringBuilder sb = new StringBuilder();
 		
 		class PrintInfo {

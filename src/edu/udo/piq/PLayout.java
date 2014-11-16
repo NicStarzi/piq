@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import edu.udo.piq.util.PCompUtil;
+
 /**
  * A layout defines how components are added to a container in a GUI.<br>
  * The layout manages all children of its owner and places them according 
@@ -179,37 +181,24 @@ public interface PLayout {
 	 */
 	public void layOut();
 	
-//	/**
-//	 * Returns the preferred width for this layout based on the children 
-//	 * and their constraints.<br>
-//	 * This method should be used by the owner of this layout to determine 
-//	 * its own preferred layout.<br>
-//	 * 
-//	 * @return the preferred width for this layout
-//	 * @see #getPreferredHeight()
-//	 * @see #addChild(PComponent, Object)
-//	 * @see #removeChild(PComponent)
-//	 * @see #removeChild(Object)
-//	 * @see #clearChildren()
-//	 * @see #getChildren()
-//	 */
-//	public int getPreferredWidth();
-//	
-//	/**
-//	 * Returns the preferred height for this layout based on the children 
-//	 * and their constraints.<br>
-//	 * This method should be used by the owner of this layout to determine 
-//	 * its own preferred layout.<br>
-//	 * 
-//	 * @return the preferred height for this layout
-//	 * @see #getPreferredWidth()
-//	 * @see #addChild(PComponent, Object)
-//	 * @see #removeChild(PComponent)
-//	 * @see #removeChild(Object)
-//	 * @see #clearChildren()
-//	 * @see #getChildren()
-//	 */
-//	public int getPreferredHeight();
+	/**
+	 * Returns the preferred {@link PSize} for this layout based on the children 
+	 * and their constraints.<br>
+	 * This size can be used to determine the preferred size of the layouts 
+	 * owner.<br>
+	 * This method never returns null.<br>
+	 * <br>
+	 * The use of the {@link PSize#NULL_SIZE} is encouraged when returning a 
+	 * size of (0, 0).<br>
+	 * 
+	 * @return the preferred size of this layout
+	 * @see PSize
+	 * @see PSize#NULL_SIZE
+	 * @see #getChildBounds(PComponent)
+	 * @see PComponent#getDefaultPreferredSize()
+	 * @see PDesign#getPreferredSize(PComponent)
+	 * @see PCompUtil#getPreferredSizeOf(PComponent)
+	 */
 	public PSize getPreferredSize();
 	
 	/**

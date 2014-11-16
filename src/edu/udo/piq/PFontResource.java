@@ -1,5 +1,7 @@
 package edu.udo.piq;
 
+import edu.udo.piq.util.PCompUtil;
+
 /**
  * This interface defines abstract platform independent font resources.<br>
  * A font resource offers methods to query its font-name, style and point 
@@ -26,7 +28,8 @@ public interface PFontResource {
 	public String getName();
 	
 	/**
-	 * Returns the point size of the font.
+	 * Returns the point size of the font.<br>
+	 * The point size is always positive.<br>
 	 * 
 	 * @return point size of the font
 	 */
@@ -47,8 +50,10 @@ public interface PFontResource {
 	 * @throws NullPointerException if string is null
 	 * @see PSize
 	 * @see PSize#NULL_SIZE
+	 * @see PComponent#getDefaultPreferredSize()
 	 * @see PDesign#getPreferredSize(PComponent)
 	 * @see PLayout#getPreferredSize()
+	 * @see PCompUtil#getPreferredSizeOf(PComponent)
 	 */
 	public PSize getSize(String text);
 	

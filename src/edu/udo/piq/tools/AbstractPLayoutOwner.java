@@ -14,12 +14,12 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 		public void childRemoved(PLayout layout, PComponent child, Object constraint) {
 			child.removeObs(childObs);
 			needReLayout = true;
-			firePreferredSizeChangedEvent();
+			checkForPreferredSizeChange();
 		}
 		public void childAdded(PLayout layout, PComponent child, Object constraint) {
 			child.addObs(childObs);
 			needReLayout = true;
-			firePreferredSizeChangedEvent();
+			checkForPreferredSizeChange();
 		}
 		public void childLaidOut(PLayout layout, PComponent child, Object constraint) {
 		}
@@ -34,11 +34,19 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 		}
 		public void preferredSizeChanged(PComponent component) {
 			needReLayout = true;
-			firePreferredSizeChangedEvent();
+			checkForPreferredSizeChange();
 		}
 	};
 	protected PLayout layout;
 	
+	/**
+	 * Saves the given {@link PLayout} as the layout for this component.<br>
+	 * If this component had a layout before it is cleared.<br>
+	 * This method registers an observer at the given layout to react to
+	 * changes with a re-render.<br>
+	 * 
+	 * @param layout
+	 */
 	protected void setLayout(PLayout layout) {
 		if (this.layout != null) {
 			this.layout.removeObs(layoutObs);
@@ -54,10 +62,22 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 		return layout;
 	}
 	
+	/**
+	 * Returns a {@link Collection} containing all children of this 
+	 * containers {@link PLayout} as returned by {@link PLayout#getChildren()}.<br>
+	 * 
+	 * @return the children of this container
+	 */
 	protected Collection<PComponent> getChildren() {
 		return PCompUtil.getChildrenOf(this);
 	}
 	
+	/**
+	 * Returns true if the {@link PLayout} of this container has at least 
+	 * one child.<br>
+	 * 
+	 * @return true if this container has any children
+	 */
 	protected boolean hasChildren() {
 		return getChildren().isEmpty();
 	}

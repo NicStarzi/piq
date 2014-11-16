@@ -141,6 +141,12 @@ public class AbstractPComponent implements PComponent {
 	public void defaultRender(PRenderer renderer) {
 	}
 	
+	/**
+	 * If this component has a layout the preferred size of the layout 
+	 * is returned. Otherwise a size of (1, 1) is returned.<br>
+	 * The returned size is immutable and not synchronized with this 
+	 * component.<br>
+	 */
 	public PSize getDefaultPreferredSize() {
 		int w = 1;
 		int h = 1;
@@ -149,29 +155,6 @@ public class AbstractPComponent implements PComponent {
 		}
 		return new ImmutablePSize(w, h);
 	}
-//	/**
-//	 * If this component has a layout the preferred width of the layout 
-//	 * is returned.<br>
-//	 * Otherwise 1 is returned.<br>
-//	 */
-//	public int getDefaultPreferredWidth() {
-//		if (getLayout() != null) {
-//			return getLayout().getPreferredWidth();
-//		}
-//		return 1;
-//	}
-//	
-//	/**
-//	 * If this component has a layout the preferred height of the layout 
-//	 * is returned.<br>
-//	 * Otherwise 1 is returned.<br>
-//	 */
-//	public int getDefaultPreferredHeight() {
-//		if (getLayout() != null) {
-//			return getLayout().getPreferredHeight();
-//		}
-//		return 1;
-//	}
 	
 	/**
 	 * Refreshes the layout as needed.<br>
@@ -182,13 +165,7 @@ public class AbstractPComponent implements PComponent {
 			getLayout().layOut();
 			needReLayout = false;
 			
-			PSize newPrefSize = PCompUtil.getPreferredSizeOf(this);
-			
-			if (lastPrefW != newPrefSize.getWidth() || lastPrefH != newPrefSize.getHeight()) {
-				lastPrefW = newPrefSize.getWidth();
-				lastPrefH = newPrefSize.getHeight();
-				firePreferredSizeChangedEvent();
-			}
+			checkForPreferredSizeChange();
 		}
 		onUpdate();
 	}
@@ -237,6 +214,18 @@ public class AbstractPComponent implements PComponent {
 		PRoot root = getRoot();
 		if (root != null) {
 			root.reRender(this);
+		}
+	}
+	
+	protected void checkForPreferredSizeChange() {
+		PSize currentPrefSize = PCompUtil.getPreferredSizeOf(this);
+		
+		if (lastPrefW != currentPrefSize.getWidth() 
+				|| lastPrefH != currentPrefSize.getHeight()) {
+			
+			lastPrefW = currentPrefSize.getWidth();
+			lastPrefH = currentPrefSize.getHeight();
+			firePreferredSizeChangedEvent();
 		}
 	}
 	

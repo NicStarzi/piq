@@ -11,6 +11,7 @@ import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PDialog;
 import edu.udo.piq.PFontResource.Style;
+import edu.udo.piq.basicdesign.BasicPLabelDesign;
 import edu.udo.piq.components.PBarChart;
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PButtonObs;
@@ -36,7 +37,6 @@ import edu.udo.piq.layouts.PCentricLayout;
 import edu.udo.piq.layouts.PListLayout;
 import edu.udo.piq.layouts.PMatrixLayout;
 import edu.udo.piq.layouts.PListLayout.Orientation;
-import edu.udo.piq.tools.PLabelDesign;
 
 public class SwingPTest {
 	public static void main(String[] args) {
@@ -59,7 +59,7 @@ public class SwingPTest {
 	private PPanel west;
 	private PPanel south;
 //	private PPanel center;
-	private PLabelDesign testDesign;
+	private BasicPLabelDesign testDesign;
 	private int colorID = 0;
 	private int colorTimer = 0;
 	
@@ -182,8 +182,10 @@ public class SwingPTest {
 		PLabel lblCancel = new PLabel();
 		lblCancel.setModel(new DefaultPLabelModel("Cancel"));
 		
-		PLabelDesign lblCancelDesign = new PLabelDesign();
-		lblCancelDesign.setFont(root.fetchFontResource("Sylfaen", 24, Style.ITALIC));
+		BasicPLabelDesign lblCancelDesign = new BasicPLabelDesign();
+		lblCancelDesign.setFontName("Sylfaen");
+		lblCancelDesign.setFontSize(24);
+		lblCancelDesign.setFontStyle(Style.ITALIC);
 		lblCancelDesign.setTextColor(PColor.RED);
 		lblCancel.setDesign(lblCancelDesign);
 		testDesign = lblCancelDesign;

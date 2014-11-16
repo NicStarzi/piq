@@ -12,11 +12,12 @@ public class BufferedPImageResource implements PImageResource {
 	private final PSize size;
 	
 	public BufferedPImageResource(BufferedImage img) {
-		if (img == null) {
-			throw new NullPointerException("img="+img);
-		}
 		bImg = img;
-		size = new ImmutablePSize(bImg.getWidth(), bImg.getHeight());
+		if (bImg == null) {
+			size = PSize.NULL_SIZE;
+		} else {
+			size = new ImmutablePSize(bImg.getWidth(), bImg.getHeight());
+		}
 	}
 	
 	public BufferedImage getBufferedImage() {

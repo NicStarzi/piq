@@ -10,6 +10,9 @@ import edu.udo.piq.PDesignSheet;
 
 public class AbstractPDesignSheet implements PDesignSheet {
 	
+	/**
+	 * Contains all registered {@link PDesignFactory}s.<br>
+	 */
 	protected final Map<Class<? extends PComponent>, PDesignFactory> factoryMap = new HashMap<>();
 	
 	/**

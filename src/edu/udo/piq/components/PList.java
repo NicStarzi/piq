@@ -118,7 +118,8 @@ public class PList extends AbstractPComponent {
 		}
 		
 		PFontResource font = getDefaultFont();
-		if (mouse.isTriggered(MouseButton.LEFT) && PCompUtil.isMouseOver(this)) {
+		if (mouse.isTriggered(MouseButton.LEFT) 
+				&& PCompUtil.isMouseContained(this, PCompUtil.getClippedBoundsOf(this))) {
 			int my = mouse.getY();
 			
 			int index = -1;

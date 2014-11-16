@@ -61,6 +61,9 @@ public class SwingPRenderer implements PRenderer {
 	
 	public void drawImage(PImageResource imgRes, float x, float y, float fx, float fy) {
 		BufferedImage bufImg = ((BufferedPImageResource) imgRes).getBufferedImage();
+		if (bufImg == null) {
+			return;
+		}
 		graphics.drawImage(bufImg, 
 				(int) x, (int) y, 
 				(int) (fx - x), (int) (fy - y), 
@@ -69,6 +72,9 @@ public class SwingPRenderer implements PRenderer {
 	
 	public void drawImage(PImageResource imgRes, int u, int v, int fu, int fv, float x, float y, float fx, float fy) {
 		BufferedImage bufImg = ((BufferedPImageResource) imgRes).getBufferedImage();
+		if (bufImg == null) {
+			return;
+		}
 		graphics.drawImage(bufImg, 
 				(int) x, (int) y, 
 				(int) (fx - x), (int) (fy - y), 

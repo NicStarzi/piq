@@ -39,7 +39,7 @@ import edu.udo.piq.PSize;
 import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.tools.AbstractPBounds;
-import edu.udo.piq.tools.DefaultPDesignSheet;
+import edu.udo.piq.tools.AbstractPDesignSheet;
 import edu.udo.piq.util.PCompUtil;
 
 public class SwingPRoot implements PRoot {
@@ -63,7 +63,7 @@ public class SwingPRoot implements PRoot {
 		}
 	};
 	private boolean needReLayout;
-	private PDesignSheet designSheet = new DefaultPDesignSheet();
+	private PDesignSheet designSheet = new AbstractPDesignSheet();
 	
 	public SwingPRoot() {
 		panel = new JPanel() {
@@ -276,10 +276,8 @@ public class SwingPRoot implements PRoot {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			if (bufImg != null) {
-				imgRes = new BufferedPImageResource(bufImg);
-				imgMap.put(imgPath, imgRes);
-			}
+			imgRes = new BufferedPImageResource(bufImg);
+			imgMap.put(imgPath, imgRes);
 		}
 		return imgRes;
 	}

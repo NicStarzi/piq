@@ -91,17 +91,28 @@ public interface PMouse {
 	
 	/**
 	 * An enumeration of different mouse buttons which can be used by the GUI.<br>
-	 * The available buttons are LEFT, RIGHT, MIDDLE and OTHER where OTHER is 
-	 * any additional button the mouse might have.<br>
+	 * The available buttons are LEFT, RIGHT and MIDDLE. The left mouse button 
+	 * is the primary button used by most all components. The right mouse button 
+	 * is the secondary mouse button used mostly by pop-ups and context menus.<br>
 	 * A mouse does not need to actually use all or any of these buttons.<br>
 	 * If a mouse does not support one of these buttons no exception will be 
-	 * thrown, instead the method will simply return false silently.<br>
+	 * thrown, instead the method using them will simply return false.<br>
 	 */
 	public static enum MouseButton {
+		/**
+		 * The primary mouse button.<br>
+		 * Most functionality is using this button.<br>
+		 */
 		LEFT,
+		/**
+		 * The secondary mouse button.<br>
+		 * This button is mostly used for pop-ups and context menus.<br>
+		 */
 		RIGHT,
+		/**
+		 * Standard components do not use this button.<br>
+		 */
 		MIDDLE,
-		OTHER,
 		;
 	}
 	

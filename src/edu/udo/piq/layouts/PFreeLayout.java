@@ -4,12 +4,21 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractPLayout;
-import edu.udo.piq.tools.ImmutablePSize;
+import edu.udo.piq.tools.MutablePSize;
 
 public class PFreeLayout extends AbstractPLayout {
 	
+	/**
+	 * To save memory the preferred size of the layout 
+	 * is an instance of MutablePSize which is updated 
+	 * and returned by the {@link #getPreferredSize()} 
+	 * method.<br>
+	 */
+	protected final MutablePSize prefSize;
+	
 	public PFreeLayout(PComponent owner) {
 		super(owner);
+		prefSize = new MutablePSize();
 	}
 	
 	protected boolean canAdd(PComponent cmp, Object constraint) {
@@ -52,42 +61,30 @@ public class PFreeLayout extends AbstractPLayout {
 		int maxFy = 0;
 		for (PComponent cmp : getChildren()) {
 			FreeConstraint constraint = (FreeConstraint) getChildConstraint(cmp);
-			// TODO: When width or height are negative the preferred size of the component should be added
-			int fx = constraint.getFinalX();
+			int fx;
+			if (constraint.getWidth() < 0) {
+				fx = constraint.getX() + getPreferredSizeOf(cmp).getWidth();
+			} else {
+				fx = constraint.getFinalX();
+			}
 			if (maxFx < fx) {
 				maxFx = fx;
 			}
-			int fy = constraint.getFinalY();
+			
+			int fy;
+			if (constraint.getHeight() < 0) {
+				fy = constraint.getY() + getPreferredSizeOf(cmp).getHeight();
+			} else {
+				fy = constraint.getFinalY();
+			}
 			if (maxFy < fy) {
 				maxFy = fy;
 			}
 		}
-		return new ImmutablePSize(maxFx, maxFy);
+		prefSize.setWidth(maxFx);
+		prefSize.setHeight(maxFy);
+		return prefSize;
 	}
-	
-//	public int getPreferredWidth() {
-//		int maxFx = 0;
-//		for (PComponent cmp : getChildren()) {
-//			FreeConstraint constraint = (FreeConstraint) getChildConstraint(cmp);
-//			int fx = constraint.getFinalX();
-//			if (maxFx < fx) {
-//				maxFx = fx;
-//			}
-//		}
-//		return maxFx;
-//	}
-//	
-//	public int getPreferredHeight() {
-//		int maxFy = 0;
-//		for (PComponent cmp : getChildren()) {
-//			FreeConstraint constraint = (FreeConstraint) getChildConstraint(cmp);
-//			int fy = constraint.getFinalY();
-//			if (maxFy < fy) {
-//				maxFy = fy;
-//			}
-//		}
-//		return maxFy;
-//	}
 	
 	public static class FreeConstraint {
 		

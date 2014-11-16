@@ -7,71 +7,66 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PLayout;
-import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractPLayout;
+import edu.udo.piq.tools.AbstractPLayoutObs;
 import edu.udo.piq.tools.ImmutablePInsets;
-import edu.udo.piq.tools.ImmutablePSize;
+import edu.udo.piq.tools.MutablePSize;
 
 public class PListLayout extends AbstractPLayout {
 	
-	public static final Orientation DEFAULT_ORIENTATION = Orientation.TOP_TO_BOTTOM;
-	public static final PInsets DEFAULT_INSETS = new ImmutablePInsets(4, 4);
-	public static final int DEFAULT_GAP = 8;
+	public static final ListAlignment DEFAULT_ALIGNMENT = ListAlignment.FROM_TOP;
+	public static final int DEFAULT_GAP = 2;
 	
-	protected final List<PComponent> components;
-	protected PInsets insets;
-	protected Orientation ori;
-	protected int prefW;
-	protected int prefH;
-	protected int gap;
+	/**
+	 * Manages all components as a list.
+	 */
+	protected final List<PComponent> compList;
+	/**
+	 * To save memory the preferred size of the layout 
+	 * is an instance of MutablePSize which is updated 
+	 * and returned by the {@link #getPreferredSize()} 
+	 * method.<br>
+	 */
+	protected final MutablePSize prefSize;
+	protected ListAlignment align = ListAlignment.FROM_TOP;
+	protected PInsets insets = new ImmutablePInsets(4);
+	protected int gap = 2;
 	
-	public PListLayout(PComponent owner, Orientation orientation, int gap) {
-		super(owner);
-		insets = DEFAULT_INSETS;
-		components = new ArrayList<>();
-		ori = orientation;
-		this.gap = gap;
-		
-		addObs(new PLayoutObs() {
-			public void childAdded(PLayout layout, PComponent child, Object constraint) {
-				components.add(child);
-			}
-			public void childRemoved(PLayout layout, PComponent child, Object constraint) {
-				components.remove(child);
-			}
-			public void layoutInvalidated(PLayout layout) {
-			}
-			public void childLaidOut(PLayout layout, PComponent child, Object constraint) {
-			}
-		});
+	public PListLayout(PComponent owner) {
+		this(owner, DEFAULT_ALIGNMENT, DEFAULT_GAP);
 	}
 	
-	public PListLayout(PComponent owner, Orientation orientation) {
-		this(owner, orientation, DEFAULT_GAP);
+	public PListLayout(PComponent owner, ListAlignment alignment) {
+		this(owner, alignment, DEFAULT_GAP);
 	}
 	
 	public PListLayout(PComponent owner, int gap) {
-		this(owner, DEFAULT_ORIENTATION, gap);
+		this(owner, DEFAULT_ALIGNMENT, gap);
 	}
 	
-	public PListLayout(PComponent owner) {
-		this(owner, DEFAULT_ORIENTATION, DEFAULT_GAP);
-	}
-	
-	public void setOrientation(Orientation orientation) {
-		if (orientation == null) {
-			throw new IllegalArgumentException("orientation="+orientation);
-		}
-		ori = orientation;
-		fireInvalidateEvent();
-	}
-	
-	public Orientation getOrientation() {
-		return ori;
+	public PListLayout(PComponent owner, ListAlignment alignment, int gap) {
+		super(owner);
+		compList = new ArrayList<>();
+		prefSize = new MutablePSize();
+		
+		addObs(new AbstractPLayoutObs() {
+			public void childAdded(PLayout layout, PComponent child, Object constraint) {
+				compList.add(child);
+			}
+			public void childRemoved(PLayout layout, PComponent child, Object constraint) {
+				compList.remove(child);
+			}
+		});
+		
+		setAlignment(alignment);
+		setGap(gap);
 	}
 	
 	public void setGap(int value) {
+		if (value < 0) {
+			throw new IllegalArgumentException("value="+gap);
+		}
 		gap = value;
 		fireInvalidateEvent();
 	}
@@ -80,11 +75,23 @@ public class PListLayout extends AbstractPLayout {
 		return gap;
 	}
 	
-	public void setInsets(PInsets value) {
-		if (value == null) {
-			throw new IllegalArgumentException("insets="+value);
+	public void setAlignment(ListAlignment alignment) {
+		if (alignment == null) {
+			throw new NullPointerException();
 		}
-		insets = value;
+		align = alignment;
+		fireInvalidateEvent();
+	}
+	
+	public ListAlignment getAlignment() {
+		return align;
+	}
+	
+	public void setInsets(PInsets insets) {
+		if (insets == null) {
+			throw new NullPointerException();
+		}
+		this.insets = new ImmutablePInsets(insets);
 		fireInvalidateEvent();
 	}
 	
@@ -93,117 +100,120 @@ public class PListLayout extends AbstractPLayout {
 	}
 	
 	protected boolean canAdd(PComponent cmp, Object constraint) {
-		return !containsChild(cmp) && constraint == null;
+		return constraint == null && !compList.contains(cmp);
 	}
 	
 	public void layOut() {
-		Orientation ori = getOrientation();
-		PBounds ob = getOwnerBounds();
 		PInsets insets = getInsets();
-		int x = ori.getInitialX(ob, insets);
-		int y = ori.getInitialY(ob, insets);
-		prefW = 0;
-		prefH = 0;
+		PBounds ob = getOwnerBounds();
+		int gap = getGap();
+		int minX = ob.getX() + insets.getFromLeft();
+		int minY = ob.getY() + insets.getFromTop();
+		int alignedX = minX;
+		int alignedY = minY;
 		
-		for (PComponent cmp : components) {
-			PSize prefSize = getPreferredSizeOf(cmp);
-			int cmpPrefW = prefSize.getWidth();
-			int cmpPrefH = prefSize.getHeight();
-//			int cmpPrefW = getPreferredWidthOf(cmp);
-//			int cmpPrefH = getPreferredHeightOf(cmp);
+		int prefW = 0;
+		int prefH = 0;
+		PSize[] compPrefSizes = new PSize[compList.size()];
+		for (int i = 0; i < compList.size(); i++) {
+			PComponent comp = compList.get(i);
+			PSize compPrefSize = getPreferredSizeOf(comp);
+			compPrefSizes[i] = compPrefSize;
+			prefW += compPrefSize.getWidth() + gap;
+			prefH += compPrefSize.getHeight() + gap;
+		}
+		if (compPrefSizes.length > 0) {
+			prefW -= gap;
+			prefH -= gap;
+		}
+		
+		ListAlignment align = getAlignment();
+		boolean isHorizontal = align.isHorizontal();
+		switch (align) {
+		case CENTERED_HORIZONTAL:
+			alignedX = ob.getWidth() / 2 - prefW / 2;
+			break;
+		case CENTERED_VERTICAL:
+			alignedY = ob.getHeight() / 2 - prefH / 2;
+			break;
+		case FROM_BOTTOM:
+			alignedY = (ob.getFinalY() - insets.getFromBottom()) - prefH;
+			break;
+		case FROM_RIGHT:
+			alignedX = (ob.getFinalX() - insets.getFromRight()) - prefW;
+			break;
+		default:
+		}
+		int x = Math.max(alignedX, minX);
+		int y = Math.max(alignedY, minY);
+		int w = ob.getWidth() - insets.getHorizontal();
+		int h = ob.getHeight() - insets.getVertical();
+		
+		for (int i = 0; i < compList.size(); i++) {
+			PComponent comp = compList.get(i);
+			PSize compPrefSize = compPrefSizes[i];
 			
-			int advance;
-			switch (getOrientation()) {
-			case TOP_TO_BOTTOM:
-				setChildBounds(cmp, x, y, cmpPrefW, cmpPrefH);
-				advance = cmpPrefH + getGap();
-				y += advance;
-				prefH += advance;
-				
-				if (prefW < cmpPrefW) {
-					prefW = cmpPrefW;
-				}
-				break;
-			case BOTTOM_TO_TOP:
-				setChildBounds(cmp, x, y - cmpPrefH, cmpPrefW, cmpPrefH);
-				advance = cmpPrefH + getGap();
-				y -= advance;
-				prefH += advance;
-				
-				if (prefW < cmpPrefW) {
-					prefW = cmpPrefW;
-				}
-				break;
-			case LEFT_TO_RIGHT:
-				setChildBounds(cmp, x, y, cmpPrefW, cmpPrefH);
-				advance = cmpPrefW + getGap();
-				x += advance;
-				prefW += advance;
-				
-				if (prefH < cmpPrefH) {
-					prefH = cmpPrefH;
-				}
-				break;
-			case RIGHT_TO_LEFT:
-				setChildBounds(cmp, x - cmpPrefW, y, cmpPrefW, cmpPrefH);
-				advance = cmpPrefW + getGap();
-				x -= advance;
-				prefW += advance;
-				
-				if (prefH < cmpPrefH) {
-					prefH = cmpPrefH;
-				}
-				break;
+			if (isHorizontal) {
+				int compPrefW = compPrefSize.getWidth();
+				setChildBounds(comp, x, y, compPrefW, h);
+				x += compPrefW + gap;
+			} else {
+				int compPrefH = compPrefSize.getHeight();
+				setChildBounds(comp, x, y, w, compPrefH);
+				y += compPrefH + gap;
 			}
 		}
-		prefW += insets.getHorizontal();
-		prefH += insets.getVertical();
 	}
 	
 	public PSize getPreferredSize() {
-		return new ImmutablePSize(prefW, prefH);
+		int prefW = getInsets().getHorizontal();
+		int prefH = getInsets().getVertical();
+		boolean isHorizontal = getAlignment().isHorizontal();
+		for (int i = 0; i < compList.size(); i++) {
+			PComponent comp = compList.get(i);
+			PSize compPrefSize = getPreferredSizeOf(comp);
+			int compPrefW = compPrefSize.getWidth();
+			int compPrefH = compPrefSize.getHeight();
+			
+			if (isHorizontal) {
+				prefW += compPrefW + gap;
+				if (prefH < compPrefH) {
+					prefH = compPrefH;
+				}					
+			} else {
+				prefH += compPrefH + gap;
+				if (prefW < compPrefW) {
+					prefW = compPrefW;
+				}					
+			}
+		}
+		if (!compList.isEmpty()) {
+			if (isHorizontal) {
+				prefW -= gap;
+			} else {
+				prefH -= gap;
+			}
+		}
+		prefSize.setWidth(prefW);
+		prefSize.setHeight(prefH);
+		return prefSize;
 	}
 	
-//	public int getPreferredWidth() {
-//		return prefW;
-//	}
-//	
-//	public int getPreferredHeight() {
-//		return prefH;
-//	}
-	
-	public static enum Orientation {
-		LEFT_TO_RIGHT,
-		RIGHT_TO_LEFT,
-		TOP_TO_BOTTOM,
-		BOTTOM_TO_TOP,
+	public static enum ListAlignment {
+		FROM_LEFT,
+		FROM_TOP,
+		FROM_RIGHT,
+		FROM_BOTTOM,
+		CENTERED_HORIZONTAL,
+		CENTERED_VERTICAL,
 		;
 		
-		public int getInitialX(PBounds bounds, PInsets insets) {
-			switch (this) {
-			case TOP_TO_BOTTOM:
-				return bounds.getX() + insets.getFromLeft();
-			case BOTTOM_TO_TOP:
-				return bounds.getX() + insets.getFromLeft();
-			case LEFT_TO_RIGHT:
-				return bounds.getX() + insets.getFromLeft();
-			case RIGHT_TO_LEFT:
-				return bounds.getFinalX() - insets.getFromRight();
-			}
-			return 0;
+		public boolean isHorizontal() {
+			return this == FROM_LEFT || this == FROM_RIGHT || this == CENTERED_HORIZONTAL;
 		}
-		public int getInitialY(PBounds bounds, PInsets insets) {
-			switch (this) {
-			case TOP_TO_BOTTOM:
-				return bounds.getY() + insets.getFromTop();
-			case BOTTOM_TO_TOP:
-				return bounds.getFinalY() - insets.getFromBottom();
-			case LEFT_TO_RIGHT:
-				return bounds.getY() + insets.getFromTop();
-			case RIGHT_TO_LEFT:
-				return bounds.getY() + insets.getFromTop();
-			}
-			return 0;
+		
+		public boolean isVertical() {
+			return !isHorizontal();
 		}
 	}
 	

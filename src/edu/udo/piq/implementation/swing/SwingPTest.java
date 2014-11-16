@@ -36,7 +36,8 @@ import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PCentricLayout;
 import edu.udo.piq.layouts.PListLayout;
 import edu.udo.piq.layouts.PMatrixLayout;
-import edu.udo.piq.layouts.PListLayout.Orientation;
+import edu.udo.piq.layouts.PListLayout.ListAlignment;
+import edu.udo.piq.layouts.PWrapLayout;
 
 public class SwingPTest {
 	public static void main(String[] args) {
@@ -54,14 +55,14 @@ public class SwingPTest {
 	
 	private final JFrame frame;
 	private final SwingPRoot root;
-	private PPanel north;
-	private PPanel east;
-	private PPanel west;
-	private PPanel south;
+//	private PPanel north;
+//	private PPanel east;
+//	private PPanel west;
+//	private PPanel south;
 //	private PPanel center;
-	private BasicPLabelDesign testDesign;
-	private int colorID = 0;
-	private int colorTimer = 0;
+//	private BasicPLabelDesign testDesign;
+//	private int colorID = 0;
+//	private int colorTimer = 0;
 	
 	public SwingPTest() {
 		frame = new JFrame();
@@ -72,158 +73,178 @@ public class SwingPTest {
 		root = new SwingPRoot();
 		frame.setContentPane(root.getPanel());
 		
-		final PColor[] colors = new PColor[] {PColor.RED, PColor.BLUE, PColor.GREEN, PColor.MAGENTA, PColor.YELLOW};
+//		final PColor[] colors = new PColor[] {PColor.RED, PColor.BLUE, PColor.GREEN, PColor.MAGENTA, PColor.YELLOW};
 		Timer updateTimer = new Timer(10, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				root.update();
-				colorTimer++;
-				if (colorTimer % 100 == 0) {
-					colorTimer = 0;
-					testDesign.setTextColor(colors[(++colorID) % colors.length]);
-					root.reRender(root);
-				}
+//				colorTimer++;
+//				if (colorTimer % 100 == 0) {
+//					colorTimer = 0;
+//					testDesign.setTextColor(colors[(++colorID) % colors.length]);
+//					root.reRender(root);
+//				}
 			}
 		});
 		updateTimer.setCoalesce(true);
 		updateTimer.setRepeats(true);
 		updateTimer.start();
 		
-		north = new PPanel();
-		north.setID("north");
-		north.setLayout(new PCentricLayout(north));
-		root.getLayout().addChild(north, PBorderLayout.Constraint.TOP);
-		
-		final DefaultPLabelModel sldLblModel = new DefaultPLabelModel("50");
-		
-		PSlider sld1 = new PSlider();
-		sld1.setModel(new DefaultPSliderModel());
-		sld1.getModel().setMinValue(0);
-		sld1.getModel().setMaxValue(100);
-		sld1.getModel().setValue(50);
-		sld1.getModel().addObs(new PSliderModelObs() {
-			public void valueChanged(PSliderModel model) {
-				sldLblModel.setText(Integer.toString(model.getValue()));
-			}
-			public void boundsChanged(PSliderModel model) {
-			}
-		});
-		
-		PLabel lbl1 = new PLabel();
-		lbl1.setModel(sldLblModel);
-		north.addChild(new PTuple(sld1, lbl1), null);
-		
-		east = new PPanel();
-		east.setID("east");
-		east.setLayout(new PCentricLayout(east));
-		root.getLayout().addChild(east, PBorderLayout.Constraint.RIGHT);
-		
-		PPicture pic = new PPicture();
-		pic.getModel().setImagePath("Tex.png");
-		east.addChild(pic, null);
-		
-		PList list = new PList();
-		DefaultPListModel listModel = new DefaultPListModel();
-		list.setModel(listModel);
-		listModel.addElement("Dies");
-		listModel.addElement("ist");
-		listModel.addElement("Test");
-		listModel.addElement("ein", 2);
-		for (int i = 0; i < 15; i++) {
-			listModel.addElement("Item ("+i+")");
-		}
-		listModel.addElement("A really really really long item to try out the scroll feature");
-//		east.addChild(list, PBorderLayout.Constraint.CENTER);
-		
-		west = new PPanel();
-		west.setID("west");
-		west.setLayout(new PMatrixLayout(west, 2, 2));
-		root.getLayout().addChild(west, PBorderLayout.Constraint.LEFT);
-		
-		for (int x = 0; x < 2; x++) {
-			for (int y = 0; y < 2; y++) {
-				final DefaultPLabelModel lblModel = new DefaultPLabelModel();
-				PLabel lbl = new PLabel();
-				lbl.setModel(lblModel);
-				
-				PCheckBox chkBx = new PCheckBox();
-				chkBx.getModel().addObs(new PCheckBoxModelObs() {
-					public void onClick(PCheckBoxModel model) {
-					}
-					public void onChange(PCheckBoxModel model) {
-						String text = model.isChecked() ? "Checked" : "Unchecked";
-						lblModel.setText(text);
-					}
-				});
-				lblModel.setText(chkBx.isChecked() ? "Checked" : "Unchecked");
-				
-				PComponent cell = new PLineBorder(new PTuple(chkBx, lbl));
-				cell.setID("("+x+", "+y+")");
-				west.addChild(cell, new PMatrixLayout.GridConstraint(x, y));
-			}
-		}
-		
-		south = new PPanel();
-		south.setID("south");
-		south.setLayout(new PListLayout(south, Orientation.LEFT_TO_RIGHT));
-		root.getLayout().addChild(south, PBorderLayout.Constraint.BOTTOM);
-		
-		PLabel lblConfirm = new PLabel();
-		lblConfirm.setModel(new DefaultPLabelModel("Confirm"));
-		
-		PButton btnConfirm = new PButton();
-		btnConfirm.addObs(new PButtonObs() {
-			public void onClick(PButton button) {
-				System.out.println("Confirm!");
-				new MyLittleDialog(root.createDialog());
-			}
-		});
-		btnConfirm.setContent(lblConfirm);
-		
-		PLabel lblCancel = new PLabel();
-		lblCancel.setModel(new DefaultPLabelModel("Cancel"));
-		
-		BasicPLabelDesign lblCancelDesign = new BasicPLabelDesign();
-		lblCancelDesign.setFontName("Sylfaen");
-		lblCancelDesign.setFontSize(24);
-		lblCancelDesign.setFontStyle(Style.ITALIC);
-		lblCancelDesign.setTextColor(PColor.RED);
-		lblCancel.setDesign(lblCancelDesign);
-		testDesign = lblCancelDesign;
-		
-		PButton btnCancel = new PButton();
-		btnCancel.addObs(new PButtonObs() {
-			public void onClick(PButton button) {
-				System.out.println("Cancel!");
-			}
-		});
-		btnCancel.setContent(lblCancel);
-		
-		south.addChild(btnConfirm, null);
-		south.addChild(btnCancel, null);
-		
-		PScrollPanel center = new PScrollPanel();
-		center.setID("center");
-//		center = new PPanel("center");
-//		center.setLayout(new PBorderLayout(center));
+		PPanel center = new PPanel();
+		center.setLayout(new PWrapLayout(center, ListAlignment.CENTERED_VERTICAL, 16));
 		root.getLayout().addChild(center, PBorderLayout.Constraint.CENTER);
 		
-		DefaultPBarChartModel chartModel = new DefaultPBarChartModel(5);
-		chartModel.setBarValue(0, 64);
-		chartModel.setBarValue(1, 127);
-		chartModel.setBarValue(2, 19);
-		chartModel.setBarValue(3, 275);
-		chartModel.setBarValue(4, 97);
+		String[] items = new String[] {
+			"A",
+			"B",
+			"C",
+			"D",
+			"E",
+			"F",
+			"G",
+			"H",
+		};
+		for (int i = 0; i < items.length; i++) {
+			PLabel lbl = new PLabel();
+			lbl.getModel().setText(items[i]);
+			center.addChild(lbl, null);
+		}
 		
-		PBarChart barChart = new PBarChart();
-		barChart.setModel(chartModel);
-		
-		PPanel centerPnl = new PPanel();
-		centerPnl.setLayout(new PCentricLayout(centerPnl));
-		centerPnl.addChild(barChart, null);
-		
-		center.setView(list);
-//		center.setContent(centerPnl);
-//		center.addChild(barChart, PBorderLayout.Constraint.CENTER);
+//		north = new PPanel();
+//		north.setID("north");
+//		north.setLayout(new PCentricLayout(north));
+//		root.getLayout().addChild(north, PBorderLayout.Constraint.TOP);
+//		
+//		final DefaultPLabelModel sldLblModel = new DefaultPLabelModel("50");
+//		
+//		PSlider sld1 = new PSlider();
+//		sld1.setModel(new DefaultPSliderModel());
+//		sld1.getModel().setMinValue(0);
+//		sld1.getModel().setMaxValue(100);
+//		sld1.getModel().setValue(50);
+//		sld1.getModel().addObs(new PSliderModelObs() {
+//			public void valueChanged(PSliderModel model) {
+//				sldLblModel.setText(Integer.toString(model.getValue()));
+//			}
+//			public void boundsChanged(PSliderModel model) {
+//			}
+//		});
+//		
+//		PLabel lbl1 = new PLabel();
+//		lbl1.setModel(sldLblModel);
+//		north.addChild(new PTuple(sld1, lbl1), null);
+//		
+//		east = new PPanel();
+//		east.setID("east");
+//		east.setLayout(new PCentricLayout(east));
+//		root.getLayout().addChild(east, PBorderLayout.Constraint.RIGHT);
+//		
+//		PPicture pic = new PPicture();
+//		pic.getModel().setImagePath("Tex.png");
+//		east.addChild(pic, null);
+//		
+//		PList list = new PList();
+//		DefaultPListModel listModel = new DefaultPListModel();
+//		list.setModel(listModel);
+//		listModel.addElement("Dies");
+//		listModel.addElement("ist");
+//		listModel.addElement("Test");
+//		listModel.addElement("ein", 2);
+//		for (int i = 0; i < 15; i++) {
+//			listModel.addElement("Item ("+i+")");
+//		}
+//		listModel.addElement("A really really really long item to try out the scroll feature");
+////		east.addChild(list, PBorderLayout.Constraint.CENTER);
+//		
+//		west = new PPanel();
+//		west.setID("west");
+//		west.setLayout(new PMatrixLayout(west, 2, 2));
+//		root.getLayout().addChild(west, PBorderLayout.Constraint.LEFT);
+//		
+//		for (int x = 0; x < 2; x++) {
+//			for (int y = 0; y < 2; y++) {
+//				final DefaultPLabelModel lblModel = new DefaultPLabelModel();
+//				PLabel lbl = new PLabel();
+//				lbl.setModel(lblModel);
+//				
+//				PCheckBox chkBx = new PCheckBox();
+//				chkBx.getModel().addObs(new PCheckBoxModelObs() {
+//					public void onClick(PCheckBoxModel model) {
+//					}
+//					public void onChange(PCheckBoxModel model) {
+//						String text = model.isChecked() ? "Checked" : "Unchecked";
+//						lblModel.setText(text);
+//					}
+//				});
+//				lblModel.setText(chkBx.isChecked() ? "Checked" : "Unchecked");
+//				
+//				PComponent cell = new PLineBorder(new PTuple(chkBx, lbl));
+//				cell.setID("("+x+", "+y+")");
+//				west.addChild(cell, new PMatrixLayout.GridConstraint(x, y));
+//			}
+//		}
+//		
+//		south = new PPanel();
+//		south.setID("south");
+//		south.setLayout(new PListLayout(south, Orientation.LEFT_TO_RIGHT));
+//		root.getLayout().addChild(south, PBorderLayout.Constraint.BOTTOM);
+//		
+//		PLabel lblConfirm = new PLabel();
+//		lblConfirm.setModel(new DefaultPLabelModel("Confirm"));
+//		
+//		PButton btnConfirm = new PButton();
+//		btnConfirm.addObs(new PButtonObs() {
+//			public void onClick(PButton button) {
+//				System.out.println("Confirm!");
+//				new MyLittleDialog(root.createDialog());
+//			}
+//		});
+//		btnConfirm.setContent(lblConfirm);
+//		
+//		PLabel lblCancel = new PLabel();
+//		lblCancel.setModel(new DefaultPLabelModel("Cancel"));
+//		
+//		BasicPLabelDesign lblCancelDesign = new BasicPLabelDesign();
+//		lblCancelDesign.setFontName("Sylfaen");
+//		lblCancelDesign.setFontSize(24);
+//		lblCancelDesign.setFontStyle(Style.ITALIC);
+//		lblCancelDesign.setTextColor(PColor.RED);
+//		lblCancel.setDesign(lblCancelDesign);
+//		testDesign = lblCancelDesign;
+//		
+//		PButton btnCancel = new PButton();
+//		btnCancel.addObs(new PButtonObs() {
+//			public void onClick(PButton button) {
+//				System.out.println("Cancel!");
+//			}
+//		});
+//		btnCancel.setContent(lblCancel);
+//		
+//		south.addChild(btnConfirm, null);
+//		south.addChild(btnCancel, null);
+//		
+//		PScrollPanel center = new PScrollPanel();
+//		center.setID("center");
+////		center = new PPanel("center");
+////		center.setLayout(new PBorderLayout(center));
+//		root.getLayout().addChild(center, PBorderLayout.Constraint.CENTER);
+//		
+//		DefaultPBarChartModel chartModel = new DefaultPBarChartModel(5);
+//		chartModel.setBarValue(0, 64);
+//		chartModel.setBarValue(1, 127);
+//		chartModel.setBarValue(2, 19);
+//		chartModel.setBarValue(3, 275);
+//		chartModel.setBarValue(4, 97);
+//		
+//		PBarChart barChart = new PBarChart();
+//		barChart.setModel(chartModel);
+//		
+//		PPanel centerPnl = new PPanel();
+//		centerPnl.setLayout(new PCentricLayout(centerPnl));
+//		centerPnl.addChild(barChart, null);
+//		
+//		center.setView(list);
+////		center.setContent(centerPnl);
+////		center.addChild(barChart, PBorderLayout.Constraint.CENTER);
 	}
 	
 	public static class MyLittleDialog {
@@ -241,7 +262,7 @@ public class SwingPTest {
 			pnlBody.addChild(lblBodyContent, PBorderLayout.Constraint.CENTER);
 			
 			PPanel pnlButtons = new PPanel();
-			pnlButtons.setLayout(new PListLayout(pnlButtons, Orientation.RIGHT_TO_LEFT));
+			pnlButtons.setLayout(new PListLayout(pnlButtons, ListAlignment.CENTERED_HORIZONTAL));
 			layout.addChild(pnlButtons, PBorderLayout.Constraint.BOTTOM);
 			
 			PLabel lblOkayBtn = new PLabel();

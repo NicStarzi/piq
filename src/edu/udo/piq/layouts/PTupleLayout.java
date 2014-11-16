@@ -3,13 +3,20 @@ package edu.udo.piq.layouts;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PLayout;
-import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractPLayout;
-import edu.udo.piq.tools.ImmutablePSize;
+import edu.udo.piq.tools.AbstractPLayoutObs;
+import edu.udo.piq.tools.MutablePSize;
 
 public class PTupleLayout extends AbstractPLayout {
 	
+	/**
+	 * To save memory the preferred size of the layout 
+	 * is an instance of MutablePSize which is updated 
+	 * and returned by the {@link #getPreferredSize()} 
+	 * method.<br>
+	 */
+	protected final MutablePSize prefSize;
 	protected Orientation orientation = Orientation.LEFT_TO_RIGHT;
 	protected PComponent first;
 	protected PComponent second;
@@ -17,7 +24,9 @@ public class PTupleLayout extends AbstractPLayout {
 	
 	public PTupleLayout(PComponent owner) {
 		super(owner);
-		addObs(new PLayoutObs() {
+		prefSize = new MutablePSize();
+		
+		addObs(new AbstractPLayoutObs() {
 			public void childAdded(PLayout layout, PComponent child, Object constraint) {
 				if (constraint == Constraint.FIRST) {
 					first = child;
@@ -31,10 +40,6 @@ public class PTupleLayout extends AbstractPLayout {
 				} else {
 					second = null;
 				}
-			}
-			public void childLaidOut(PLayout layout, PComponent child, Object constraint) {
-			}
-			public void layoutInvalidated(PLayout layout) {
 			}
 		});
 	}
@@ -80,8 +85,6 @@ public class PTupleLayout extends AbstractPLayout {
 		PSize prefSize = getPreferredSize();
 		int prefW = prefSize.getWidth();
 		int prefH = prefSize.getHeight();
-//		int prefW = getPreferredWidth();
-//		int prefH = getPreferredHeight();
 		
 		PBounds ob = getOwnerBounds();
 		int x = ob.getX() + ob.getWidth() / 2 - prefW / 2;
@@ -93,10 +96,6 @@ public class PTupleLayout extends AbstractPLayout {
 		int prefHfirst = prefSizeFirst.getHeight();
 		int prefWsecond = prefSizeSecond.getWidth();
 		int prefHsecond = prefSizeSecond.getHeight();
-//		int prefWfirst = getPreferredWidthOf(first);
-//		int prefHfirst = getPreferredHeightOf(first);
-//		int prefWsecond = getPreferredWidthOf(second);
-//		int prefHsecond = getPreferredHeightOf(second);
 		
 		if (getOrientation() == Orientation.LEFT_TO_RIGHT) {
 			if (first != null) {
@@ -147,40 +146,10 @@ public class PTupleLayout extends AbstractPLayout {
 				prefH += gap;
 			}
 		}
-		return new ImmutablePSize(prefW, prefH);
+		prefSize.setWidth(prefW);
+		prefSize.setHeight(prefH);
+		return prefSize;
 	}
-	
-//	public int getPreferredWidth() {
-//		if (getOrientation() == Orientation.LEFT_TO_RIGHT) {
-//			int prefW = 0;
-//			prefW += getPreferredWidthOf(first);
-//			prefW += getPreferredWidthOf(second);
-//			if (first != null && second != null) {
-//				prefW += gap;
-//			}
-//			return prefW;
-//		} else {
-//			return Math.max(
-//					getPreferredWidthOf(first), 
-//					getPreferredWidthOf(second));
-//		}
-//	}
-//	
-//	public int getPreferredHeight() {
-//		if (getOrientation() == Orientation.TOP_TO_BOTTOM) {
-//			int prefH = 0;
-//			prefH += getPreferredHeightOf(first);
-//			prefH += getPreferredHeightOf(second);
-//			if (first != null && second != null) {
-//				prefH += gap;
-//			}
-//			return prefH;
-//		} else {
-//			return Math.max(
-//					getPreferredHeightOf(first), 
-//					getPreferredHeightOf(second));
-//		}
-//	}
 	
 	public static enum Constraint {
 		FIRST,

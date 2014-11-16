@@ -4,24 +4,29 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PLayout;
-import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractPLayout;
+import edu.udo.piq.tools.AbstractPLayoutObs;
 import edu.udo.piq.tools.ImmutablePInsets;
-import edu.udo.piq.tools.ImmutablePSize;
+import edu.udo.piq.tools.MutablePSize;
 
 public class PCentricLayout extends AbstractPLayout {
 	
-	private PInsets insets = new ImmutablePInsets(4);
-	private PComponent content;
+	/**
+	 * To save memory the preferred size of the layout 
+	 * is an instance of MutablePSize which is updated 
+	 * and returned by the {@link #getPreferredSize()} 
+	 * method.<br>
+	 */
+	protected final MutablePSize prefSize;
+	protected PInsets insets = new ImmutablePInsets(4);
+	protected PComponent content;
 	
 	public PCentricLayout(PComponent component) {
 		super(component);
-		addObs(new PLayoutObs() {
-			public void layoutInvalidated(PLayout layout) {
-			}
-			public void childLaidOut(PLayout layout, PComponent child, Object constraint) {
-			}
+		prefSize = new MutablePSize();
+		
+		addObs(new AbstractPLayoutObs() {
 			public void childAdded(PLayout layout, PComponent child, Object constraint) {
 				content = child;
 			}
@@ -68,8 +73,6 @@ public class PCentricLayout extends AbstractPLayout {
 			PSize prefSize = getPreferredSizeOf(content);
 			int prefW = prefSize.getWidth();
 			int prefH = prefSize.getHeight();
-//			int prefW = getPreferredWidthOf(content);
-//			int prefH = getPreferredHeightOf(content);
 			
 			int compX;
 			int compY;
@@ -102,23 +105,9 @@ public class PCentricLayout extends AbstractPLayout {
 			prefW += contentSize.getWidth();
 			prefH += contentSize.getHeight();
 		}
-		return new ImmutablePSize(prefW, prefH);
+		prefSize.setWidth(prefW);
+		prefSize.setHeight(prefH);
+		return prefSize;
 	}
-	
-//	public int getPreferredWidth() {
-//		int prefW = getInsets().getHorizontal();
-//		if (content != null) {
-//			prefW += getPreferredWidthOf(content);
-//		}
-//		return prefW;
-//	}
-//	
-//	public int getPreferredHeight() {
-//		int prefH = getInsets().getVertical();
-//		if (content != null) {
-//			prefH += getPreferredHeightOf(content);
-//		}
-//		return prefH;
-//	}
 	
 }

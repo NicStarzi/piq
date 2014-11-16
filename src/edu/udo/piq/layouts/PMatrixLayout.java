@@ -4,17 +4,24 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PLayout;
-import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractPLayout;
+import edu.udo.piq.tools.AbstractPLayoutObs;
 import edu.udo.piq.tools.ImmutablePInsets;
-import edu.udo.piq.tools.ImmutablePSize;
+import edu.udo.piq.tools.MutablePSize;
 
 public class PMatrixLayout extends AbstractPLayout {
 	
 	protected final int gridW;
 	protected final int gridH;
 	protected final PComponent[] grid;
+	/**
+	 * To save memory the preferred size of the layout 
+	 * is an instance of MutablePSize which is updated 
+	 * and returned by the {@link #getPreferredSize()} 
+	 * method.<br>
+	 */
+	protected final MutablePSize prefSize;
 	protected PInsets insets = new ImmutablePInsets(4, 4);
 	protected int gapH = 4;
 	protected int gapV = 4;
@@ -24,8 +31,9 @@ public class PMatrixLayout extends AbstractPLayout {
 		gridW = width;
 		gridH = height;
 		grid = new PComponent[gridW * gridH];
+		prefSize = new MutablePSize();
 		
-		addObs(new PLayoutObs() {
+		addObs(new AbstractPLayoutObs() {
 			public void childAdded(PLayout layout, PComponent child, Object constraint) {
 				GridConstraint cell = (GridConstraint) constraint;
 				grid[gridID(cell.getX(), cell.getY())] = child;
@@ -33,10 +41,6 @@ public class PMatrixLayout extends AbstractPLayout {
 			public void childRemoved(PLayout layout, PComponent child, Object constraint) {
 				GridConstraint cell = (GridConstraint) constraint;
 				grid[gridID(cell.getX(), cell.getY())] = null;
-			}
-			public void childLaidOut(PLayout layout, PComponent child, Object constraint) {
-			}
-			public void layoutInvalidated(PLayout layout) {
 			}
 		});
 	}
@@ -146,34 +150,10 @@ public class PMatrixLayout extends AbstractPLayout {
 		}
 		int prefW = (maxW + gapH) * getGridWidth() - gapH + paddingH;
 		int prefH = (maxH + gapV) * getGridHeight() - gapV + paddingV;
-		return new ImmutablePSize(prefW, prefH);
+		prefSize.setWidth(prefW);
+		prefSize.setHeight(prefH);
+		return prefSize;
 	}
-	
-//	public int getPreferredWidth() {
-//		int maxValue = 0;
-//		int gap = gapH;
-//		int padding = getInsets().getHorizontal();
-//		for (PComponent child : getChildren()) {
-//			int w = PCompUtil.getPreferredWidthOf(child);
-//			if (w > maxValue) {
-//				maxValue = w;
-//			}
-//		}
-//		return (maxValue + gap) * getGridWidth() - gap + padding;
-//	}
-//	
-//	public int getPreferredHeight() {
-//		int maxValue = 0;
-//		int gap = gapV;
-//		int padding = getInsets().getVertical();
-//		for (PComponent child : getChildren()) {
-//			int w = PCompUtil.getPreferredHeightOf(child);
-//			if (w > maxValue) {
-//				maxValue = w;
-//			}
-//		}
-//		return (maxValue + gap) * getGridHeight() - gap + padding;
-//	}
 	
 	public static class GridConstraint {
 		

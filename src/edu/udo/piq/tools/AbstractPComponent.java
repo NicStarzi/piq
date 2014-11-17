@@ -124,7 +124,11 @@ public class AbstractPComponent implements PComponent {
 		if (customDesign != null) {
 			return customDesign;
 		}
-		return getRoot().getDesignSheet().getDesignFor(this);
+		PRoot root = getRoot();
+		if (root == null) {
+			return null;
+		}
+		return root.getDesignSheet().getDesignFor(this);
 	}
 	
 	/**

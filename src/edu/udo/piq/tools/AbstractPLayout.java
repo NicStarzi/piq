@@ -124,6 +124,9 @@ public abstract class AbstractPLayout implements PLayout {
 	}
 	
 	protected void setChildBounds(PComponent child, int x, int y, int width, int height) {
+		if (child == null) {
+			return;
+		}
 		PCompInfo info = compMap.get(child);
 		MutablePBounds bnds = info.bounds;
 		bnds.setX(x);

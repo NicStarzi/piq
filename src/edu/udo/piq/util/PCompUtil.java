@@ -47,7 +47,11 @@ public class PCompUtil {
 	 * @throws NullPointerException if component is null
 	 */
 	public static PSize getPreferredSizeOf(PComponent component) throws NullPointerException {
-		return component.getDesign().getPreferredSize(component);
+		PDesign design = component.getDesign();
+		if (design == null) {
+			return component.getDefaultPreferredSize();
+		}
+		return design.getPreferredSize(component);
 	}
 	
 	/**

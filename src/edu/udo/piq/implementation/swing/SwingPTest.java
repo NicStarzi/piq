@@ -27,6 +27,7 @@ import edu.udo.piq.components.PScrollPanel;
 import edu.udo.piq.components.PSlider;
 import edu.udo.piq.components.PSliderModel;
 import edu.udo.piq.components.PSliderModelObs;
+import edu.udo.piq.components.PSplitPanel;
 import edu.udo.piq.components.PTuple;
 import edu.udo.piq.components.defaults.DefaultPBarChartModel;
 import edu.udo.piq.components.defaults.DefaultPLabelModel;
@@ -37,6 +38,7 @@ import edu.udo.piq.layouts.PCentricLayout;
 import edu.udo.piq.layouts.PListLayout;
 import edu.udo.piq.layouts.PMatrixLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
+import edu.udo.piq.layouts.PSplitLayout.Orientation;
 import edu.udo.piq.layouts.PWrapLayout;
 
 public class SwingPTest {
@@ -88,6 +90,18 @@ public class SwingPTest {
 		updateTimer.setCoalesce(true);
 		updateTimer.setRepeats(true);
 		updateTimer.start();
+		
+		PSplitPanel splitPanel = new PSplitPanel();
+		splitPanel.getLayout().setOrientation(Orientation.HORIZONTAL);
+		root.getLayout().addChild(splitPanel, PBorderLayout.Constraint.TOP);
+		
+		PPicture left = new PPicture();
+		left.getModel().setImagePath("Tex.png");
+		splitPanel.setFirstComponent(left);
+		
+		PPicture right = new PPicture();
+		right.getModel().setImagePath("Tex2.png");
+		splitPanel.setSecondComponent(right);
 		
 		PPanel center = new PPanel();
 		center.setLayout(new PWrapLayout(center, ListAlignment.CENTERED_VERTICAL, 16));

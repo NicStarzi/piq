@@ -24,7 +24,7 @@ public class PSplitLayout extends AbstractPLayout {
 	protected double splitPos = DEFAULT_SPLIT_POSITON;
 	protected PComponent first;
 	protected PComponent second;
-	protected PComponent slider;
+	protected PComponent divider;
 	
 	public PSplitLayout(PComponent component) {
 		super(component);
@@ -35,7 +35,7 @@ public class PSplitLayout extends AbstractPLayout {
 				} else if (constraint == Constraint.SECOND) {
 					second = child;
 				} else {
-					slider = child;
+					divider = child;
 				}
 			}
 			public void childRemoved(PLayout layout, PComponent child, Object constraint) {
@@ -44,7 +44,7 @@ public class PSplitLayout extends AbstractPLayout {
 				} else if (child == second) {
 					second = null;
 				} else {
-					slider = null;
+					divider = null;
 				}
 			}
 		});
@@ -85,8 +85,8 @@ public class PSplitLayout extends AbstractPLayout {
 			return first;
 		} else if (constr == Constraint.SECOND) {
 			return second;
-		} else if (constr == Constraint.SLIDER) {
-			return slider;
+		} else if (constr == Constraint.DIVIDER) {
+			return divider;
 		} else {
 			throw new IllegalArgumentException("constr="+constr);
 		}
@@ -105,37 +105,37 @@ public class PSplitLayout extends AbstractPLayout {
 		int h = ob.getHeight();
 		
 		if (getOrientation() == Orientation.HORIZONTAL) {
-			int sliderW = getPreferredSizeOf(slider).getWidth();
-			int compW = w - sliderW;
+			int dividerW = getPreferredSizeOf(divider).getWidth();
+			int compW = w - dividerW;
 			int firstW = (int) Math.round(compW * splitPos);
 			int secondW = compW - firstW;
 			
 			setChildBounds(first, x, y, firstW, h);
-			setChildBounds(second, x + firstW + sliderW, y, secondW, h);
-			setChildBounds(slider, x + firstW, y, sliderW, h);
+			setChildBounds(second, x + firstW + dividerW, y, secondW, h);
+			setChildBounds(divider, x + firstW, y, dividerW, h);
 		} else {
-			int sliderH = getPreferredSizeOf(slider).getHeight();
-			int compH = h - sliderH;
+			int dividerH = getPreferredSizeOf(divider).getHeight();
+			int compH = h - dividerH;
 			int firstH = (int) Math.round(compH * splitPos);
 			int secondH = compH - firstH;
 			
 			setChildBounds(first, x, y, w, firstH);
-			setChildBounds(second, x, y + firstH + sliderH, w, secondH);
-			setChildBounds(slider, x, y + firstH, w, sliderH);
+			setChildBounds(second, x, y + firstH + dividerH, w, secondH);
+			setChildBounds(divider, x, y + firstH, w, dividerH);
 		}
 	}
 	
 	public PSize getPreferredSize() {
 		PSize firstSize = getPreferredSizeOf(first);
 		PSize secondSize = getPreferredSizeOf(second);
-		PSize sliderSize = getPreferredSizeOf(slider);
+		PSize dividerSize = getPreferredSizeOf(divider);
 		int prefW;
 		int prefH;
 		if (getOrientation() == Orientation.HORIZONTAL) {
-			prefW = firstSize.getWidth() + secondSize.getWidth() + sliderSize.getWidth();
+			prefW = firstSize.getWidth() + secondSize.getWidth() + dividerSize.getWidth();
 			prefH = Math.max(firstSize.getHeight(), secondSize.getHeight());
 		} else {
-			prefH = firstSize.getHeight() + secondSize.getHeight() + sliderSize.getHeight();
+			prefH = firstSize.getHeight() + secondSize.getHeight() + dividerSize.getHeight();
 			prefW = Math.max(firstSize.getWidth(), secondSize.getWidth());
 		}
 		prefSize.setWidth(prefW);
@@ -152,7 +152,7 @@ public class PSplitLayout extends AbstractPLayout {
 	public static enum Constraint {
 		FIRST,
 		SECOND,
-		SLIDER,
+		DIVIDER,
 		;
 	}
 	

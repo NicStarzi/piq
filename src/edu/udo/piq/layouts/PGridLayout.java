@@ -50,7 +50,7 @@ public class PGridLayout extends AbstractPLayout {
 	}
 	
 	public PSize getPreferredSize() {
-		return null;
+		return PSize.NULL_SIZE;
 	}
 	
 	public static class GridConstraint {

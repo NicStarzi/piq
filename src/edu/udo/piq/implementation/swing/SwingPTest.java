@@ -91,21 +91,26 @@ public class SwingPTest {
 		updateTimer.setRepeats(true);
 		updateTimer.start();
 		
-		PSplitPanel splitPanel = new PSplitPanel();
-		splitPanel.getLayout().setOrientation(Orientation.HORIZONTAL);
-		root.getLayout().addChild(splitPanel, PBorderLayout.Constraint.TOP);
+		PSplitPanel splitV = new PSplitPanel();
+		splitV.getLayout().setOrientation(Orientation.VERTICAL);
+		root.getLayout().addChild(splitV, PBorderLayout.Constraint.CENTER);
+		
+		PSplitPanel splitH = new PSplitPanel();
+		splitH.getLayout().setOrientation(Orientation.HORIZONTAL);
+		splitV.setFirstComponent(splitH);
 		
 		PPicture left = new PPicture();
 		left.getModel().setImagePath("Tex.png");
-		splitPanel.setFirstComponent(left);
+		splitH.setFirstComponent(left);
 		
 		PPicture right = new PPicture();
 		right.getModel().setImagePath("Tex2.png");
-		splitPanel.setSecondComponent(right);
+		splitH.setSecondComponent(right);
 		
-		PPanel center = new PPanel();
-		center.setLayout(new PWrapLayout(center, ListAlignment.CENTERED_VERTICAL, 16));
-		root.getLayout().addChild(center, PBorderLayout.Constraint.CENTER);
+		PPanel textPanel = new PPanel();
+		textPanel.setLayout(new PWrapLayout(textPanel, ListAlignment.CENTERED_VERTICAL, 16));
+		splitV.setSecondComponent(textPanel);
+//		root.getLayout().addChild(center, PBorderLayout.Constraint.CENTER);
 		
 		String[] items = new String[] {
 			"A",
@@ -120,7 +125,7 @@ public class SwingPTest {
 		for (int i = 0; i < items.length; i++) {
 			PLabel lbl = new PLabel();
 			lbl.getModel().setText(items[i]);
-			center.addChild(lbl, null);
+			textPanel.addChild(lbl, null);
 		}
 		
 //		north = new PPanel();

@@ -16,7 +16,7 @@ import edu.udo.piq.util.PCompUtil;
 
 public class PSplitPanel extends AbstractPLayoutOwner {
 	
-	protected final PPanel slider;
+	protected final PDivider divider;
 	private final List<PSplitPanelObs> obsList = new CopyOnWriteArrayList<>();
 	private final PSplitPanelModelObs modelObs = new PSplitPanelModelObs() {
 		public void positionChanged(PSplitPanelModel model) {
@@ -30,8 +30,8 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 	public PSplitPanel() {
 		setModel(new DefaultPSplitPanelModel());
 		setLayout(new PSplitLayout(this));
-		slider = new PPanel();
-		getLayout().addChild(slider, Constraint.SLIDER);
+		divider = new PDivider();
+		getLayout().addChild(divider, Constraint.DIVIDER);
 	}
 	
 	protected void onUpdate() {
@@ -39,7 +39,7 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 		if (mouse == null) {
 			if (pressed) {
 				pressed = false;
-				fireSliderReleasedEvent();
+				fireDividerReleasedEvent();
 			}
 			return;
 		}
@@ -47,7 +47,7 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 		if (mouseOwner != null && mouseOwner != this) {
 			if (pressed) {
 				pressed = false;
-				fireSliderReleasedEvent();
+				fireDividerReleasedEvent();
 			}
 			return;
 		}
@@ -65,19 +65,19 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 				}
 				double newPos = mousePos / maxPos;;
 				getModel().setSplitPosition(newPos);
-				fireSliderMovedEvent();
+				fireDividerMovedEvent();
 			} else {
 				pressed = false;
 				mouse.setOwner(null);
-				fireSliderReleasedEvent();
+				fireDividerReleasedEvent();
 			}
 		} else {
 			if (mouse.isTriggered(MouseButton.LEFT) 
-					&& PCompUtil.isMouseContained(slider, PCompUtil.getClippedBoundsOf(slider))) {
+					&& PCompUtil.isMouseContained(divider, PCompUtil.getClippedBoundsOf(divider))) {
 				
 				pressed = true;
 				mouse.setOwner(this);
-				fireSliderTouchedEvent();
+				fireDividerTouchedEvent();
 			}
 		}
 	}
@@ -141,21 +141,21 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 		obsList.remove(obs);
 	}
 	
-	protected void fireSliderTouchedEvent() {
+	protected void fireDividerTouchedEvent() {
 		for (PSplitPanelObs obs : obsList) {
-			obs.sliderTouched(this);
+			obs.dividerTouched(this);
 		}
 	}
 	
-	protected void fireSliderReleasedEvent() {
+	protected void fireDividerReleasedEvent() {
 		for (PSplitPanelObs obs : obsList) {
-			obs.sliderReleased(this);
+			obs.dividerReleased(this);
 		}
 	}
 	
-	protected void fireSliderMovedEvent() {
+	protected void fireDividerMovedEvent() {
 		for (PSplitPanelObs obs : obsList) {
-			obs.sliderMoved(this);
+			obs.dividerMoved(this);
 		}
 	}
 	

@@ -4,6 +4,7 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PFontResource;
 import edu.udo.piq.PRenderer;
+import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
 import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.components.defaults.DefaultPLabelModel;
@@ -73,6 +74,9 @@ public class PLabel extends AbstractPComponent {
 			return PSize.NULL_SIZE;
 		}
 		PFontResource font = getDefaultFont();
+		if (font == null) {
+			return PSize.NULL_SIZE;
+		}
 		return font.getSize(text);
 	}
 	
@@ -81,7 +85,11 @@ public class PLabel extends AbstractPComponent {
 	}
 	
 	protected PFontResource getDefaultFont() {
-		return getRoot().fetchFontResource(DEFAULT_FONT_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_STYLE);
+		PRoot root = getRoot();
+		if (root == null) {
+			return null;
+		}
+		return root.fetchFontResource(DEFAULT_FONT_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_STYLE);
 	}
 	
 }

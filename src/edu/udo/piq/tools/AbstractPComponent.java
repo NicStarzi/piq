@@ -7,6 +7,7 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PComponentObs;
 import edu.udo.piq.PDesign;
+import edu.udo.piq.PDesignSheet;
 import edu.udo.piq.PLayout;
 import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PRenderer;
@@ -34,18 +35,12 @@ public class AbstractPComponent implements PComponent {
 	 * Notices when this component has been laid out to set the 
 	 * flag needReLayout to true.
 	 */
-	protected final PLayoutObs parentLayoutObs = new PLayoutObs() {
-		public void childRemoved(PLayout layout, PComponent child, Object constraint) {
-		}
-		public void childAdded(PLayout layout, PComponent child, Object constraint) {
-		}
+	protected final PLayoutObs parentLayoutObs = new AbstractPLayoutObs() {
 		public void childLaidOut(PLayout layout, PComponent child, Object constraint) {
 			if (child == AbstractPComponent.this) {
 				needReLayout = true;
 				fireReRenderEvent();
 			}
-		}
-		public void layoutInvalidated(PLayout layout) {
 		}
 	};
 	/**
@@ -117,8 +112,11 @@ public class AbstractPComponent implements PComponent {
 	}
 	
 	/**
-	 * Uses the utility method {@link PCompUtil#getDesignOf(PComponent)} to 
-	 * obtain the design for this component.<br>
+	 * If this component has a custom {@link PDesign} that design is returned.<br>
+	 * If this component has a {@link PRoot} as returned by the {@link #getRoot()} 
+	 * method then the design is retrieved from the {@link PDesignSheet} that 
+	 * belongs to the root.<br>
+	 * If this component has neither a custom design nor a root null is returned.<br>
 	 */
 	public PDesign getDesign() {
 		if (customDesign != null) {
@@ -132,7 +130,8 @@ public class AbstractPComponent implements PComponent {
 	}
 	
 	/**
-	 * Returns null.
+	 * Returns null.<br>
+	 * Subclasses should overwrite this method to return a {@link PLayout}.<br>
 	 */
 	public PLayout getLayout() {
 		return null;
@@ -140,7 +139,7 @@ public class AbstractPComponent implements PComponent {
 	
 	/**
 	 * Does nothing.<br>
-	 * This method should be overwritten by all subclasses of this class.
+	 * This method should be overwritten by all subclasses of this class.<br>
 	 */
 	public void defaultRender(PRenderer renderer) {
 	}

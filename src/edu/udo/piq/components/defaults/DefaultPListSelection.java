@@ -13,7 +13,7 @@ public class DefaultPListSelection extends AbstractPListSelection implements PLi
 	
 	private final Set<Integer> selection = new HashSet<>();
 	
-	public void addSelection(int index) {
+	public void addSelection(Integer index) {
 		Integer trueIndex = Integer.valueOf(index);
 		if (!selection.contains(trueIndex)) {
 			selection.add(trueIndex);
@@ -21,7 +21,7 @@ public class DefaultPListSelection extends AbstractPListSelection implements PLi
 		}
 	}
 	
-	public void removeSelection(int index) {
+	public void removeSelection(Integer index) {
 		Integer trueIndex = Integer.valueOf(index);
 		if (selection.contains(trueIndex)) {
 			selection.remove(trueIndex);
@@ -43,7 +43,7 @@ public class DefaultPListSelection extends AbstractPListSelection implements PLi
 		return Collections.unmodifiableSet(selection);
 	}
 	
-	public boolean isSelected(int index) {
+	public boolean isSelected(Integer index) {
 		return selection.contains(Integer.valueOf(index));
 	}
 	

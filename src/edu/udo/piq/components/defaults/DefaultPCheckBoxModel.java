@@ -34,15 +34,9 @@ public class DefaultPCheckBoxModel implements PCheckBoxModel {
 		obsList.remove(obs);
 	}
 	
-	public void fireChangeEvent() {
+	protected void fireChangeEvent() {
 		for (PCheckBoxModelObs obs : obsList) {
 			obs.onChange(this);
-		}
-	}
-	
-	public void fireClickEvent() {
-		for (PCheckBoxModelObs obs : obsList) {
-			obs.onClick(this);
 		}
 	}
 	

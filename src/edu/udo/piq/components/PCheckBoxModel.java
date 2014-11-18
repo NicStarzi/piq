@@ -10,8 +10,4 @@ public interface PCheckBoxModel {
 	
 	public void removeObs(PCheckBoxModelObs obs);
 	
-	public void fireClickEvent();
-	
-	public void fireChangeEvent();
-	
 }

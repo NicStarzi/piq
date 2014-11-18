@@ -1,5 +1,8 @@
 package edu.udo.piq.components;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
@@ -16,12 +19,11 @@ public class PCheckBox extends AbstractPComponent {
 	
 	private static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(12, 12);
 	
+	private final List<PCheckBoxObs> obsList = new CopyOnWriteArrayList<>();
 	protected final PCheckBoxModelObs modelObs = new PCheckBoxModelObs() {
 		public void onChange(PCheckBoxModel model) {
 			firePreferredSizeChangedEvent();
 			fireReRenderEvent();
-		}
-		public void onClick(PCheckBoxModel model) {
 		}
 	};
 	protected PCheckBoxModel model = new DefaultPCheckBoxModel();
@@ -38,7 +40,7 @@ public class PCheckBox extends AbstractPComponent {
 		if (mouse.isTriggered(MouseButton.LEFT) 
 				&& PCompUtil.isMouseContained(this, PCompUtil.getClippedBoundsOf(this))) {
 			model.setChecked(!model.isChecked());
-			model.fireClickEvent();
+//			model.fireClickEvent();
 		}
 	}
 	
@@ -86,6 +88,20 @@ public class PCheckBox extends AbstractPComponent {
 	
 	public PSize getDefaultPreferredSize() {
 		return DEFAULT_PREFERRED_SIZE;
+	}
+	
+	public void addObs(PCheckBoxObs obs) {
+		obsList.add(obs);
+	}
+	
+	public void removeObs(PCheckBoxObs obs) {
+		obsList.remove(obs);
+	}
+	
+	protected void fireClickEvent() {
+		for (PCheckBoxObs obs : obsList) {
+			obs.clicked(this);
+		}
 	}
 	
 }

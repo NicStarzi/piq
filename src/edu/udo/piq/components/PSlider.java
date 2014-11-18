@@ -18,7 +18,7 @@ public class PSlider extends AbstractPComponent {
 	private static final int DEFAULT_SLIDER_WIDTH = 12;
 	
 	protected final PSliderModelObs modelObs = new PSliderModelObs() {
-		public void boundsChanged(PSliderModel model) {
+		public void rangeChanged(PSliderModel model) {
 			fireReRenderEvent();
 		}
 		public void valueChanged(PSliderModel model) {

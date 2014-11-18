@@ -122,7 +122,7 @@ public class DefaultPSliderModel implements PSliderModel {
 	
 	protected void fireBoundsChangedEvent() {
 		for (PSliderModelObs obs : obsList) {
-			obs.boundsChanged(this);
+			obs.rangeChanged(this);
 		}
 	}
 	

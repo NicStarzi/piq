@@ -28,7 +28,9 @@ public interface PDesignSheet {
 	
 	/**
 	 * Returns the {@link PDesign} associated with the given {@link PComponent}.<br>
-	 * If there is no such design the {@link DefaultPDesign} will be returned.<br>
+	 * If there is a {@link PDesignFactory} registered and the design factory 
+	 * covers the class of component then the returned design is retrieved from 
+	 * the factories {@link PDesignFactory#getDesignFor(PComponent)} method.<br>
 	 * This method never returns null.<br>
 	 * 
 	 * @param component the component for which the design is queried
@@ -46,9 +48,13 @@ public interface PDesignSheet {
 	 * Registers the given {@link PDesignFactory} with the given {@link PComponent} 
 	 * class.<br>
 	 * All future calls to {@link #getDesignFor(PComponent)} with a {@link PComponent} 
-	 * that is a subclass of compClass or compClass will return a {@link PDesign} 
-	 * produced by the given factory.<br>
+	 * that is of class compClass will return a {@link PDesign} produced by the given 
+	 * factory.<br>
 	 * A call to this method will override the previous factory used for compClass.<br>
+	 * <br>
+	 * A factory should only be used for components that are exactly of the registered 
+	 * class and not of any subclass. This is important to allow users to more easily 
+	 * define their own custom components that are based on standard components.<br>
 	 * 
 	 * @param compClass the class of components for which the factory will be used
 	 * @param factory the factory to be used for compClass

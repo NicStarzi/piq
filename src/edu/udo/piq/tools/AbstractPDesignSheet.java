@@ -17,10 +17,10 @@ public class AbstractPDesignSheet implements PDesignSheet {
 	
 	/**
 	 * If a {@link PDesignFactory} is registered at this {@link PDesignSheet} and 
-	 * the factory covers the {@link PComponent} subclass of component then the 
-	 * call will be delegated to the factory.<br>
-	 * If no such factory was registered an instance of {@link DefaultPDesign} 
-	 * will be returned.
+	 * the factory covers the class of the component then this call will be delegated 
+	 * to the factory.<br>
+	 * If no such factory was registered an instance of {@link PDesign} 
+	 * will be returned.<br>
 	 * 
 	 * @see #registerDesignFactory(Class, PDesignFactory)
 	 * @see #unregisterDesignFactory(Class)
@@ -29,12 +29,7 @@ public class AbstractPDesignSheet implements PDesignSheet {
 	 * @see DefaultPDesign
 	 */
 	public PDesign getDesignFor(PComponent component) throws NullPointerException {
-		Class<?> compClass = component.getClass();
 		PDesignFactory factory = factoryMap.get(component.getClass());
-		while (factory == null && compClass != Object.class) {
-			compClass = compClass.getSuperclass();
-			factory = factoryMap.get(component.getClass());
-		}
 		if (factory != null) {
 			return factory.getDesignFor(component);
 		}

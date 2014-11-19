@@ -146,17 +146,15 @@ public class AbstractPComponent implements PComponent {
 	
 	/**
 	 * If this component has a layout the preferred size of the layout 
-	 * is returned. Otherwise a size of (1, 1) is returned.<br>
+	 * is returned. Otherwise a size of (0, 0) is returned.<br>
 	 * The returned size is immutable and not synchronized with this 
 	 * component.<br>
 	 */
 	public PSize getDefaultPreferredSize() {
-		int w = 1;
-		int h = 1;
 		if (getLayout() != null) {
 			return getLayout().getPreferredSize();
 		}
-		return new ImmutablePSize(w, h);
+		return PSize.NULL_SIZE;
 	}
 	
 	/**

@@ -104,8 +104,7 @@ public class PList extends AbstractPLayoutOwner {
 	}
 	
 	protected void onUpdate() {
-		PListSelection selection = getSelection();
-		if (getModel() == null || selection == null) {
+		if (getModel() == null || getSelection() == null) {
 			return;
 		}
 		PMouse mouse = PCompUtil.getMouseOf(this);
@@ -126,19 +125,49 @@ public class PList extends AbstractPLayoutOwner {
 				Integer index = Integer.valueOf(getLayout().getChildIndex(selected));
 				
 				if (keyboard.isPressed(Key.CTRL)) {
-					if (selection.isSelected(index)) {
-						selection.removeSelection(index);
-					} else {
-						selection.addSelection(index);
-					}
+					toggleSelection(index);
 				} else if (keyboard.isPressed(Key.SHIFT)) {
-					selection.addSelection(index);
+					rangeSelection(index);
 				} else {
-					selection.clearSelection();
-					selection.addSelection(index);
+					setSelection(index);
 				}
 			}
 		}
+	}
+	
+	private void rangeSelection(Integer index) {
+		PListSelection selection = getSelection();
+		for (int i = index.intValue(); i >= 0; i--) {
+			if (selection.isSelected(Integer.valueOf(i))) {
+				for (; i <= index.intValue(); i++) {
+					selection.addSelection(Integer.valueOf(i));
+				}
+				return;
+			}
+		}
+		int elemCount = getModel().getElementCount();
+		for (int i = index.intValue(); i < elemCount; i++) {
+			if (selection.isSelected(Integer.valueOf(i))) {
+				for (; i >= index.intValue(); i--) {
+					selection.addSelection(Integer.valueOf(i));
+				}
+				return;
+			}
+		}
+		selection.addSelection(index);
+	}
+	
+	private void toggleSelection(Integer index) {
+		if (selection.isSelected(index)) {
+			selection.removeSelection(index);
+		} else {
+			selection.addSelection(index);
+		}
+	}
+	
+	private void setSelection(Integer index) {
+		selection.clearSelection();
+		selection.addSelection(index);
 	}
 	
 	private void elementAdded(Object element, int index) {

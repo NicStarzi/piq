@@ -38,7 +38,7 @@ public class PCheckBox extends AbstractPComponent {
 			return;
 		}
 		if (mouse.isTriggered(MouseButton.LEFT) 
-				&& PCompUtil.isMouseContained(this, PCompUtil.getClippedBoundsOf(this))) {
+				&& PCompUtil.isWithinClippedBounds(this, mouse.getX(), mouse.getY())) {
 			model.setChecked(!model.isChecked());
 //			model.fireClickEvent();
 		}

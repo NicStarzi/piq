@@ -225,25 +225,15 @@ public class PCompUtil {
 	}
 	
 	/**
-	 * Returns true if the GUI hierarchy of component has a mouse, bounds 
-	 * are not null and the mouse position is contained within the bounds.<br>
-	 * If bounds is null false is returned.<br>
-	 * If no mouse exists for the GUI hierarchy of component false is 
-	 * returned as well.<br>
-	 * 
-	 * @param component from which the mouse is obtained
-	 * @param bounds for which the mouse position is tested
-	 * @return true if the position of the mouse is within bounds, false otherwise
+	 * Returns true if the point defined 
+	 * @param component
+	 * @param x
+	 * @param y
+	 * @return
 	 */
-	public static boolean isMouseContained(PComponent component, PBounds bounds) {
-		PMouse mouse = getMouseOf(component);
-		if (mouse == null) {
-			return false;
-		}
-		if (bounds == null) {
-			return false;
-		}
-		return bounds.contains(mouse.getX(), mouse.getY());
+	public static boolean isWithinClippedBounds(PComponent component, int x, int y) {
+		PBounds bounds = getClippedBoundsOf(component);
+		return bounds != null && bounds.contains(x, y);
 	}
 	
 }

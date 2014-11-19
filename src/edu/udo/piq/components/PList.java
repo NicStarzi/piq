@@ -1,62 +1,67 @@
 package edu.udo.piq.components;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PFontResource;
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PRenderer;
-import edu.udo.piq.PSize;
-import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PMouse.MouseButton;
+import edu.udo.piq.components.defaults.DefaultPListCellFactory;
+import edu.udo.piq.components.defaults.DefaultPListModel;
 import edu.udo.piq.components.defaults.DefaultPListSelection;
-import edu.udo.piq.tools.AbstractPComponent;
-import edu.udo.piq.tools.ImmutablePSize;
+import edu.udo.piq.layouts.PListLayout;
+import edu.udo.piq.layouts.PListLayout.ListAlignment;
+import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.util.PCompUtil;
 
-public class PList extends AbstractPComponent {
-	
-	protected static final String DEFAULT_FONT_NAME = "Arial";
-	protected static final int DEFAULT_FONT_SIZE = 14;
-	protected static final Style DEFAULT_FONT_STYLE = Style.PLAIN;
-	protected static final PColor DEFAULT_TEXT_COLOR = PColor.BLACK;
-	protected static final PColor DEFAULT_TEXT_SELECTED_COLOR = PColor.WHITE;
-	protected static final PColor DEFAULT_SELECTION_HIGHLIGHT_COLOR = PColor.BLUE;
+public class PList extends AbstractPLayoutOwner {
 	
 	private final PListModelObs modelObs = new PListModelObs() {
+		public void elementAdded(PListModel model, Object element, int index) {
+			PList.this.elementAdded(element, index);
+		}
 		public void elementRemoved(PListModel model, Object element, int index) {
-			firePreferredSizeChangedEvent();
-			fireReRenderEvent();
+			PList.this.elementRemoved(element, index);
 		}
 		public void elementChanged(PListModel model, Object element, int index) {
-			firePreferredSizeChangedEvent();
-			fireReRenderEvent();
-		}
-		public void elementAdded(PListModel model, Object element, int index) {
-			firePreferredSizeChangedEvent();
-			fireReRenderEvent();
+			PList.this.elementChanged(element, index);
 		}
 	};
-	private PListModel model;
 	private final PListSelectionObs selectionObs = new PListSelectionObs() {
 		public void selectionRemoved(PListSelection selection, int index) {
-			fireReRenderEvent();
+			PList.this.selectionChanged(index, false);
 		}
 		public void selectionAdded(PListSelection selection, int index) {
-			fireReRenderEvent();
+			PList.this.selectionChanged(index, true);
 		}
 	};
+	private final Map<Object, PListCellComponent> elementToCellMap = new HashMap<>();
 	private PListSelection selection;
+	private PListModel model;
+	private PListCellFactory cellFac;
 	
 	public PList() {
+		setLayout(new PListLayout(this, ListAlignment.FROM_TOP));
+		setModel(new DefaultPListModel());
 		setSelection(new DefaultPListSelection());
+		setCellFactory(new DefaultPListCellFactory());
+	}
+	
+	public PListLayout getLayout() {
+		return (PListLayout) super.getLayout();
+	}
+	
+	public void setCellFactory(PListCellFactory factory) {
+		cellFac = factory;
+	}
+	
+	public PListCellFactory getCellFactory() {
+		return cellFac;
 	}
 	
 	public void setSelection(PListSelection selection) {
@@ -81,25 +86,21 @@ public class PList extends AbstractPComponent {
 		if (getModel() != null) {
 			getModel().addObs(modelObs);
 		}
-		firePreferredSizeChangedEvent();
-		fireReRenderEvent();
 	}
 	
 	public PListModel getModel() {
 		return model;
 	}
 	
-	public List<Object> getSelectedElements() {
-		if (getSelection() == null || getModel() == null) {
-			return Collections.emptyList();
-		}
-		Set<Integer> selectedIndices = getSelection().getSelection();
-		List<Object> selectedElements = new ArrayList<>();
-		PListModel model = getModel();
-		for (Integer index : selectedIndices) {
-			selectedElements.add(model.getElement(index));
-		}
-		return Collections.unmodifiableList(selectedElements);
+	public void defaultRender(PRenderer renderer) {
+		PBounds bounds = getBounds();
+		int x = bounds.getX();
+		int y = bounds.getY();
+		int fx = bounds.getFinalX();
+		int fy = bounds.getFinalY();
+		
+		renderer.setColor(PColor.WHITE);
+		renderer.drawQuad(x + 0, y + 0, fx - 0, fy - 0);
 	}
 	
 	protected void onUpdate() {
@@ -117,30 +118,20 @@ public class PList extends AbstractPComponent {
 			return;
 		}
 		
-		PFontResource font = getDefaultFont();
 		if (mouse.isTriggered(MouseButton.LEFT) 
-				&& PCompUtil.isMouseContained(this, PCompUtil.getClippedBoundsOf(this))) {
-			int my = mouse.getY();
+				&& PCompUtil.isWithinClippedBounds(this, mouse.getX(), mouse.getY())) {
 			
-			int index = -1;
-			int y = getBounds().getY();
-			for (int i = 0; i < getModel().getElementCount(); i++) {
-				String text = getTextForElement(i);
-				PSize size = font.getSize(text);
-				if (my < y + size.getHeight()) {
-					index = i;
-					break;
-				}
-				y += size.getHeight();
-			}
-			if (index != -1) {
-				if (keyboard != null && keyboard.isPressed(Key.CTRL)) {
+			PComponent selected = getLayout().getChildAt(mouse.getX(), mouse.getY());
+			if (selected != null) {
+				Integer index = Integer.valueOf(getLayout().getChildIndex(selected));
+				
+				if (keyboard.isPressed(Key.CTRL)) {
 					if (selection.isSelected(index)) {
 						selection.removeSelection(index);
 					} else {
 						selection.addSelection(index);
 					}
-				} else if (keyboard != null && keyboard.isPressed(Key.SHIFT)) {
+				} else if (keyboard.isPressed(Key.SHIFT)) {
 					selection.addSelection(index);
 				} else {
 					selection.clearSelection();
@@ -150,66 +141,31 @@ public class PList extends AbstractPComponent {
 		}
 	}
 	
-	public void defaultRender(PRenderer renderer) {
-		PBounds bounds = getBounds();
-		int x = bounds.getX();
-		int y = bounds.getY();
-		int fx = bounds.getFinalX();
-		int fy = bounds.getFinalY();
-		
-		renderer.setColor(PColor.WHITE);
-		renderer.drawQuad(x + 0, y + 0, fx - 0, fy - 0);
-		
-		PListModel model = getModel();
-		PListSelection selection = getSelection();
-		PFontResource font = getDefaultFont();
-		for (int i = 0; i < model.getElementCount(); i++) {
-			String text = getTextForElement(i);
-			PSize size = font.getSize(text);
-			if (selection != null && selection.isSelected(i)) {
-				renderer.setColor(DEFAULT_SELECTION_HIGHLIGHT_COLOR);
-				renderer.drawQuad(x + 1, y, fx - 1, y + size.getHeight());
-				renderer.setColor(DEFAULT_TEXT_SELECTED_COLOR);
-			} else {
-				renderer.setColor(getDefaultTextColor());
-			}
-			renderer.drawString(font, text, x + 1, y);
-			y += size.getHeight();
+	private void elementAdded(Object element, int index) {
+		PListCellComponent cellComp = getCellFactory().getCellComponentFor(getModel(), index);
+		elementToCellMap.put(element, cellComp);
+		getLayout().addChild(cellComp, null);
+	}
+	
+	private void elementRemoved(Object element, int index) {
+		PComponent cellComp = elementToCellMap.get(element);
+		getLayout().removeChild(cellComp);
+	}
+	
+	private void elementChanged(Object element, int index) {
+		Object elem = getModel().getElement(index);
+		PListCellComponent comp = elementToCellMap.get(elem);
+		if (comp != null) {
+			comp.elementChanged(getModel(), index);
 		}
 	}
 	
-	public PSize getDefaultPreferredSize() {
-		int maxW = 0;
-		int prefH = 0;
-		PFontResource font = getDefaultFont();
-		for (int i = 0; i < model.getElementCount(); i++) {
-			String text = getTextForElement(i);
-			PSize size = font.getSize(text);
-			if (maxW < size.getWidth()) {
-				maxW = size.getWidth();
-			}
-			prefH += size.getHeight();
+	private void selectionChanged(int index, boolean value) {
+		Object elem = getModel().getElement(index);
+		PListCellComponent comp = elementToCellMap.get(elem);
+		if (comp != null && comp.isSelected() != value) {
+			comp.setSelected(value);
 		}
-		if (maxW < 50) {
-			maxW = 50;
-		}
-		return new ImmutablePSize(maxW, prefH);
-	}
-	
-	protected String getTextForElement(int index) {
-		Object element = getModel().getElement(index);
-		if (element == null) {
-			return "";
-		}
-		return element.toString();
-	}
-	
-	protected PColor getDefaultTextColor() {
-		return DEFAULT_TEXT_COLOR;
-	}
-	
-	protected PFontResource getDefaultFont() {
-		return getRoot().fetchFontResource(DEFAULT_FONT_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_STYLE);
 	}
 	
 }

@@ -107,11 +107,16 @@ public class SwingPTest {
 		right.getModel().setImagePath("Tex2.png");
 		splitH.setSecondComponent(right);
 		
-		PPanel textPanel = new PPanel();
-		textPanel.setLayout(new PWrapLayout(textPanel, ListAlignment.CENTERED_VERTICAL, 16));
-		splitV.setSecondComponent(textPanel);
-//		root.getLayout().addChild(center, PBorderLayout.Constraint.CENTER);
+		DefaultPListModel listModel = new DefaultPListModel();
 		
+		PList list = new PList();
+		list.setModel(listModel);
+		splitV.setSecondComponent(list);
+		
+//		PPanel textPanel = new PPanel();
+//		textPanel.setLayout(new PWrapLayout(textPanel, ListAlignment.CENTERED_VERTICAL, 16));
+//		splitV.setSecondComponent(textPanel);
+//		
 		String[] items = new String[] {
 			"A",
 			"B",
@@ -123,9 +128,10 @@ public class SwingPTest {
 			"H",
 		};
 		for (int i = 0; i < items.length; i++) {
-			PLabel lbl = new PLabel();
-			lbl.getModel().setText(items[i]);
-			textPanel.addChild(lbl, null);
+			listModel.addElement(items[i]);
+//			PLabel lbl = new PLabel();
+//			lbl.getModel().setText(items[i]);
+//			textPanel.addChild(lbl, null);
 		}
 		
 //		north = new PPanel();

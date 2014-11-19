@@ -50,7 +50,7 @@ public class PSlider extends AbstractPComponent {
 			}
 		} else {
 			if (mouse.isTriggered(MouseButton.LEFT) 
-					&& PCompUtil.isMouseContained(this, PCompUtil.getClippedBoundsOf(this))) {
+					&& PCompUtil.isWithinClippedBounds(this, mouse.getX(), mouse.getY())) {
 				model.setPressed(true);
 				mouse.setOwner(this);
 			}

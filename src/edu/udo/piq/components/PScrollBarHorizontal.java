@@ -46,7 +46,7 @@ public class PScrollBarHorizontal extends AbstractPComponent {
 		return model;
 	}
 	
-	public void onUpdate() {
+	protected void onUpdate() {
 		PMouse mouse = PCompUtil.getMouseOf(this);
 		if (mouse == null) {
 			pressed = false;
@@ -65,7 +65,7 @@ public class PScrollBarHorizontal extends AbstractPComponent {
 			}
 		} else {
 			if (mouse.isTriggered(MouseButton.LEFT) 
-					&& PCompUtil.isMouseContained(this, PCompUtil.getClippedBoundsOf(this))) {
+					&& PCompUtil.isWithinClippedBounds(this, mouse.getX(), mouse.getY())) {
 				pressed = true;
 				mouse.setOwner(this);
 			}

@@ -99,6 +99,14 @@ public class PListLayout extends AbstractPLayout {
 		return insets;
 	}
 	
+	public PComponent getChild(int index) {
+		return compList.get(index);
+	}
+	
+	public int getChildIndex(PComponent child) {
+		return compList.indexOf(child);
+	}
+	
 	protected boolean canAdd(PComponent cmp, Object constraint) {
 		return constraint == null && !compList.contains(cmp);
 	}
@@ -142,6 +150,8 @@ public class PListLayout extends AbstractPLayout {
 		case FROM_RIGHT:
 			alignedX = (ob.getFinalX() - insets.getFromRight()) - prefW;
 			break;
+		case FROM_LEFT:
+		case FROM_TOP:
 		default:
 		}
 		int x = Math.max(alignedX, minX);

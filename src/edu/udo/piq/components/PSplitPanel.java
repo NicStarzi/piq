@@ -73,7 +73,7 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 			}
 		} else {
 			if (mouse.isTriggered(MouseButton.LEFT) 
-					&& PCompUtil.isMouseContained(divider, PCompUtil.getClippedBoundsOf(divider))) {
+					&& PCompUtil.isWithinClippedBounds(divider, mouse.getX(), mouse.getY())) {
 				
 				pressed = true;
 				mouse.setOwner(this);

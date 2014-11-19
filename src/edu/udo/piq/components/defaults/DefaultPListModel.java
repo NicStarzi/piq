@@ -28,7 +28,7 @@ public class DefaultPListModel extends AbstractPListModel {
 			throw new IllegalArgumentException(element+" is not contained");
 		}
 		elements.remove(index);
-		fireRemovedEvent(element, index);
+		fireRemovedEvent(element, Integer.valueOf(index));
 	}
 	
 	public Object getElement(int index) {
@@ -40,6 +40,6 @@ public class DefaultPListModel extends AbstractPListModel {
 		if (index == -1) {
 			throw new IllegalArgumentException(element+" is not contained");
 		}
-		fireChangedEvent(element, index);
+		fireChangedEvent(element, Integer.valueOf(index));
 	}
 }

@@ -87,6 +87,15 @@ public abstract class AbstractPLayout implements PLayout {
 		return getChildForConstraint(constraint) != null;
 	}
 	
+	public PComponent getChildAt(int x, int y) {
+		for (PCompInfo info : compMap.values()) {
+			if (info.bounds.contains(x, y)) {
+				return info.comp;
+			}
+		}
+		return null;
+	}
+	
 	public PBounds getChildBounds(PComponent child) throws NullPointerException, IllegalArgumentException {
 		PCompInfo info = compMap.get(child);
 		if (info != null) {

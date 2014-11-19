@@ -60,13 +60,13 @@ public class PButton extends AbstractPLayoutOwner {
 			if (!mouse.isPressed(MouseButton.LEFT)) {
 				model.setPressed(false);
 				mouse.setOwner(null);
-				if (PCompUtil.isMouseContained(this, PCompUtil.getClippedBoundsOf(this))) {
+				if (PCompUtil.isWithinClippedBounds(this, mouse.getX(), mouse.getY())) {
 					fireClickEvent();
 				}
 			}
 		} else {
 			if (mouse.isTriggered(MouseButton.LEFT) 
-					&& PCompUtil.isMouseContained(this, PCompUtil.getClippedBoundsOf(this))) {
+					&& PCompUtil.isWithinClippedBounds(this, mouse.getX(), mouse.getY())) {
 				model.setPressed(true);
 				mouse.setOwner(this);
 			}

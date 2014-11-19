@@ -18,19 +18,19 @@ public abstract class AbstractPListModel implements PListModel {
 		obsList.remove(obs);
 	}
 	
-	protected void fireAddedEvent(Object element, int index) {
+	protected void fireAddedEvent(Object element, Integer index) {
 		for (PListModelObs obs : obsList) {
 			obs.elementAdded(this, element, index);
 		}
 	}
 	
-	protected void fireRemovedEvent(Object element, int index) {
+	protected void fireRemovedEvent(Object element, Integer index) {
 		for (PListModelObs obs : obsList) {
 			obs.elementRemoved(this, element, index);
 		}
 	}
 	
-	protected void fireChangedEvent(Object element, int index) {
+	protected void fireChangedEvent(Object element, Integer index) {
 		for (PListModelObs obs : obsList) {
 			obs.elementChanged(this, element, index);
 		}

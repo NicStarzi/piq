@@ -62,6 +62,8 @@ public class PWrapLayout extends PListLayout {
 		case FROM_RIGHT:
 			alignedX = (ob.getFinalX() - insets.getFromRight()) - prefW;
 			break;
+		case FROM_LEFT:
+		case FROM_TOP:
 		default:
 		}
 		int maxX = ob.getFinalX() - insets.getHorizontal();

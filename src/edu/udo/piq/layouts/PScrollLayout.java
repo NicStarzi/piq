@@ -23,8 +23,6 @@ public class PScrollLayout extends AbstractPLayout {
 	private PComponent view;
 	private PScrollBarHorizontal scrollH;
 	private PScrollBarHorizontal scrollV;
-//	private int scrollOffsetX;
-//	private int scrollOffsetY;
 	
 	public PScrollLayout(PComponent component) {
 		super(component);
@@ -122,8 +120,10 @@ public class PScrollLayout extends AbstractPLayout {
 		if (view != null) {
 			int viewX = x - getScrollOffsetX();
 			int viewY = y - getScrollOffsetY();
-			int viewW = fx - viewX;
-			int viewH = fy - (20 + viewY);
+			int viewFx = fx - 0;
+			int viewFy = fy - 20;
+			int viewW = viewFx - viewX;
+			int viewH = viewFy - viewY;
 			setChildBounds(view, viewX, viewY, viewW, viewH);
 		}
 	}

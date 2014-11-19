@@ -85,8 +85,12 @@ public class DefaultPScrollBarModel implements PScrollBarModel {
 		return viewSize.getHeight();
 	}
 	
+	private int getMaxScroll() {
+		return getContentSize() - getViewportSize();
+	}
+	
 	private void checkScroll() {
-		int maxScroll = getContentSize() - getViewportSize();
+		int maxScroll = getMaxScroll();
 		if (scroll > maxScroll) {
 			setScroll(scroll);
 		}
@@ -97,15 +101,18 @@ public class DefaultPScrollBarModel implements PScrollBarModel {
 			scroll = 0;
 			return;
 		}
-		int maxScroll = getContentSize() - getViewportSize();
+		int maxScroll = getMaxScroll();
 		if (value > maxScroll) {
 			value = maxScroll;
 		}
 		if (value < 0) {
 			value = 0;
 		}
-		scroll = value;
-		fireScrollChangeEvent();
+		System.out.println("setScroll="+value);
+		if (scroll != value) {
+			scroll = value;
+			fireScrollChangeEvent();
+		}
 	}
 	
 	public int getScroll() {

@@ -83,6 +83,8 @@ public class PScrollPanel extends AbstractPLayoutOwner {
 		
 		renderer.setColor(PColor.BLACK);
 		renderer.drawQuad(x, y, fx, fy);
+		renderer.setColor(PColor.GREY75);
+		renderer.drawQuad(x + 1, y + 1, fx - 1, fy - 1);
 	}
 	
 	public PSize getDefaultPreferredSize() {

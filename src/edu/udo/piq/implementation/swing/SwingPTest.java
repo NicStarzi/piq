@@ -14,6 +14,7 @@ import edu.udo.piq.components.PLabel;
 import edu.udo.piq.components.PList;
 import edu.udo.piq.components.PPanel;
 import edu.udo.piq.components.PPicture;
+import edu.udo.piq.components.PScrollPanel;
 import edu.udo.piq.components.PSplitPanel;
 import edu.udo.piq.components.defaults.DefaultPListModel;
 import edu.udo.piq.layouts.PBorderLayout;
@@ -58,7 +59,7 @@ public class SwingPTest {
 		
 		PSplitPanel splitV = new PSplitPanel();
 		splitV.getLayout().setOrientation(Orientation.VERTICAL);
-		root.getLayout().addChild(splitV, PBorderLayout.Constraint.CENTER);
+		root.getLayout().addChild(splitV, PBorderLayout.Constraint.TOP);
 		
 		PSplitPanel splitH = new PSplitPanel();
 		splitH.getLayout().setOrientation(Orientation.HORIZONTAL);
@@ -91,6 +92,18 @@ public class SwingPTest {
 		for (int i = 0; i < items.length; i++) {
 			listModel.addElement(items[i]);
 		}
+		
+		PScrollPanel scrollPanel = new PScrollPanel();
+		root.getLayout().addChild(scrollPanel, PBorderLayout.Constraint.CENTER);
+		
+		PPanel lblPnl = new PPanel();
+		lblPnl.setLayout(new PBorderLayout(lblPnl));
+		
+		PLabel longLbl = new PLabel();
+		longLbl.getModel().setText("This is a really fucking long text. I wonder what it is good for...");
+		lblPnl.getLayout().addChild(longLbl, PBorderLayout.Constraint.CENTER);
+		
+		scrollPanel.setView(lblPnl);
 	}
 	
 	public static class MyLittleDialog {

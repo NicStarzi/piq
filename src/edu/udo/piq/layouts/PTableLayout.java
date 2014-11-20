@@ -15,6 +15,7 @@ public class PTableLayout extends AbstractPLayout {
 	
 	protected static final int DEFAULT_COLUMN_SIZE = 150;
 	protected static final int DEFAULT_ROW_SIZE = 20;
+	protected static final int DEFAULT_GAP = 1;
 	
 	/**
 	 * To save memory the preferred size of the layout 
@@ -28,6 +29,7 @@ public class PTableLayout extends AbstractPLayout {
 	private int[] rowSizes;
 	private int defaultColSize;
 	private int defaultRowSize;
+	private int gap = DEFAULT_GAP;
 	
 	public PTableLayout(PComponent component) {
 		this(component, DEFAULT_COLUMN_SIZE, DEFAULT_ROW_SIZE);
@@ -84,6 +86,18 @@ public class PTableLayout extends AbstractPLayout {
 		int row = cell.getRowIndex();
 		int id = col + row * getColumnCount();
 		content[id] = comp;
+	}
+	
+	public void setGap(int value) {
+		if (value < 0) {
+			throw new IllegalArgumentException("value="+value);
+		}
+		gap = value;
+		fireInvalidateEvent();
+	}
+	
+	public int getGap() {
+		return gap;
 	}
 	
 	public int getColumnCount() {
@@ -150,8 +164,8 @@ public class PTableLayout extends AbstractPLayout {
 		PBounds ob = getOwnerBounds();
 		int x = ob.getX();
 		int y = ob.getY();
-		int fx = ob.getFinalX();
-		int fy = ob.getFinalY();
+//		int fx = ob.getFinalX();
+//		int fy = ob.getFinalY();
 		
 		int colCount = getColumnCount();
 		int rowCount = getRowCount();
@@ -159,16 +173,16 @@ public class PTableLayout extends AbstractPLayout {
 		int cellX = x;
 		int cellY = y;
 		for (int col = 0; col < colCount; col++) {
-			int cellW = getColumnSize(col);
-			if (col == colCount - 1) {
-				cellW = fx - cellX;
-			}
+			int cellW = getColumnSize(col) + gap;
+//			if (col == colCount - 1) {
+//				cellW = fx - cellX;
+//			}
 			
 			for (int row = 0; row < rowCount; row++) {
-				int cellH = getRowSize(row);
-				if (row == rowCount - 1) {
-					cellH = fy - cellY;
-				}
+				int cellH = getRowSize(row) + gap;
+//				if (row == rowCount - 1) {
+//					cellH = fy - cellY;
+//				}
 				
 				PComponent child = content[col + row * colCount];
 				
@@ -186,11 +200,17 @@ public class PTableLayout extends AbstractPLayout {
 	public PSize getPreferredSize() {
 		int prefW = 0;
 		for (int col = 0; col < colSizes.length; col++) {
-			prefW += colSizes[col];
+			prefW += colSizes[col] + gap;
+		}
+		if (colSizes.length > 0) {
+			prefW -= gap;
 		}
 		int prefH = 0;
 		for (int row = 0; row < rowSizes.length; row++) {
-			prefH += rowSizes[row];
+			prefH += rowSizes[row] + gap;
+		}
+		if (rowSizes.length > 0) {
+			prefH -= gap;
 		}
 		prefSize.setWidth(prefW);
 		prefSize.setHeight(prefH);

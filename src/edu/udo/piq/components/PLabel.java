@@ -23,9 +23,13 @@ public class PLabel extends AbstractPComponent {
 			fireReRenderEvent();
 		}
 	};
-	private PLabelModel model = new DefaultPLabelModel();
+	private PLabelModel model;
 	
 	public PLabel() {
+		this(new DefaultPLabelModel());
+	}
+	
+	public PLabel(PLabelModel model) {
 		setModel(model);
 	}
 	

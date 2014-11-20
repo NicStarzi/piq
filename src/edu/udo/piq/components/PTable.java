@@ -6,7 +6,8 @@ import java.util.Map;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PLayout;
+import edu.udo.piq.PKeyboard;
+import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PMouse.MouseButton;
@@ -15,7 +16,6 @@ import edu.udo.piq.components.defaults.DefaultPTableModel;
 import edu.udo.piq.components.defaults.DefaultPTableSelection;
 import edu.udo.piq.layouts.PTableLayout;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
-import edu.udo.piq.tools.UnmodifiablePLayoutView;
 import edu.udo.piq.util.PCompUtil;
 import edu.udo.piq.util.PRenderUtil;
 
@@ -40,24 +40,18 @@ public class PTable extends AbstractPLayoutOwner {
 		}
 	};
 	private final Map<PTableCell, PTableCellComponent> cellToCompMap = new HashMap<>();
-	private PLayout unmodifiableLayoutView;
 	private PTableSelection selection;
 	private PTableModel model;
 	private PTableCellFactory cellFac;
 	
 	public PTable() {
 		setLayout(new PTableLayout(this));
-		unmodifiableLayoutView = new UnmodifiablePLayoutView(getTableLayout());
 		setModel(new DefaultPTableModel(new Object[0][0]));
 		setSelection(new DefaultPTableSelection());
 		setCellFactory(new DefaultPTableCellFactory());
 	}
 	
-	public PLayout getLayout() {
-		return unmodifiableLayoutView;
-	}
-	
-	protected PTableLayout getTableLayout() {
+	public PTableLayout getLayout() {
 		return (PTableLayout) super.getLayout();
 	}
 	
@@ -110,20 +104,23 @@ public class PTable extends AbstractPLayoutOwner {
 		renderer.setColor(PColor.BLACK);
 		PRenderUtil.strokeQuad(renderer, x, y, fx, fy, 1);
 		
+		PTableLayout layout = getLayout();
+		int gap = layout.getGap();
 		int colCount = getModel().getColumnCount();
-		PTableLayout layout = getTableLayout();
 		int lineX = 0;
 		for (int col = 0; col < colCount; col++) {
 			lineX += layout.getColumnSize(col);
 			renderer.setColor(PColor.BLACK);
-			renderer.drawQuad(x + lineX, y, x + lineX + 1, fy);
+			renderer.drawQuad(x + lineX, y, x + lineX + gap, fy);
+			lineX += gap;
 		}
 		int rowCount = getModel().getRowCount();
 		int lineY = 0;
 		for (int row = 0; row < rowCount; row++) {
 			lineY += layout.getRowSize(row);
 			renderer.setColor(PColor.BLACK);
-			renderer.drawQuad(x, y + lineY, fx, y + lineY + 1);
+			renderer.drawQuad(x, y + lineY, fx, y + lineY + gap);
+			lineY += gap;
 		}
 	}
 	
@@ -132,7 +129,7 @@ public class PTable extends AbstractPLayoutOwner {
 			return;
 		}
 		PMouse mouse = PCompUtil.getMouseOf(this);
-//		PKeyboard keyboard = PCompUtil.getKeyboardOf(this);
+		PKeyboard keyboard = PCompUtil.getKeyboardOf(this);
 		if (mouse == null) {
 			return;
 		}
@@ -144,27 +141,43 @@ public class PTable extends AbstractPLayoutOwner {
 		if (mouse.isTriggered(MouseButton.LEFT) 
 				&& PCompUtil.isWithinClippedBounds(this, mouse.getX(), mouse.getY())) {
 			
-//			PComponent selected = getListLayout().getChildAt(mouse.getX(), mouse.getY());
-//			if (selected != null) {
-//				Integer index = Integer.valueOf(getListLayout().getChildIndex(selected));
-//				
-//				if (keyboard.isPressed(Key.CTRL)) {
-//					toggleSelection(index);
-//				} else if (keyboard.isPressed(Key.SHIFT)) {
-//					rangeSelection(index);
-//				} else {
-//					setSelection(index);
-//				}
-//			}
+			PComponent selected = getLayout().getChildAt(mouse.getX(), mouse.getY());
+			if (selected != null) {
+				PTableCell cell = (PTableCell) getLayout().getChildConstraint(selected);
+				
+				if (keyboard.isPressed(Key.CTRL)) {
+					toggleSelection(cell);
+				} else if (keyboard.isPressed(Key.SHIFT)) {
+					rangeSelection(cell);
+				} else {
+					setSelection(cell);
+				}
+			}
 		}
+	}
+	
+	private void toggleSelection(PTableCell cell) {
+		if (selection.isSelected(cell)) {
+			selection.removeSelection(cell);
+		} else {
+			selection.addSelection(cell);
+		}
+	}
+	
+	private void rangeSelection(PTableCell cell) {
+		
+	}
+	
+	private void setSelection(PTableCell cell) {
+		selection.clearSelection();
+		selection.addSelection(cell);
 	}
 	
 	private void modelChanged() {
 		int colCount = getModel().getColumnCount();
 		int rowCount = getModel().getRowCount();
-		getTableLayout().clearChildren();
-		getTableLayout().resize(colCount, rowCount);
-		unmodifiableLayoutView = new UnmodifiablePLayoutView(getTableLayout());
+		getLayout().clearChildren();
+		getLayout().resize(colCount, rowCount);
 		cellToCompMap.clear();
 		
 		for (int col = 0; col < getModel().getColumnCount(); col++) {
@@ -178,7 +191,7 @@ public class PTable extends AbstractPLayoutOwner {
 		PTableCell cell = new PTableCell(col, row);
 		PTableCellComponent cellComp = getCellFactory().getCellComponentFor(getModel(), cell);
 		cellToCompMap.put(cell, cellComp);
-		getTableLayout().addChild(cellComp, cell);
+		getLayout().addChild(cellComp, cell);
 	}
 	
 	private void cellChanged(PTableCell cell) {
@@ -189,10 +202,7 @@ public class PTable extends AbstractPLayoutOwner {
 	}
 	
 	private void selectionChanged(PTableCell cell, boolean value) {
-		int col = cell.getColumnIndex();
-		int row = cell.getRowIndex();
-		Object elem = getModel().getCell(col, row);
-		PTableCellComponent comp = cellToCompMap.get(elem);
+		PTableCellComponent comp = cellToCompMap.get(cell);
 		if (comp != null) {
 			comp.setSelected(value);
 		}

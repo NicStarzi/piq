@@ -156,20 +156,20 @@ public class PListLayout extends AbstractPLayout {
 		}
 		int x = Math.max(alignedX, minX);
 		int y = Math.max(alignedY, minY);
-		int w = ob.getWidth() - insets.getHorizontal();
-		int h = ob.getHeight() - insets.getVertical();
+//		int w = ob.getWidth() - insets.getHorizontal();
+//		int h = ob.getHeight() - insets.getVertical();
 		
 		for (int i = 0; i < compList.size(); i++) {
 			PComponent comp = compList.get(i);
 			PSize compPrefSize = compPrefSizes[i];
+			int compPrefW = compPrefSize.getWidth();
+			int compPrefH = compPrefSize.getHeight();
 			
 			if (isHorizontal) {
-				int compPrefW = compPrefSize.getWidth();
-				setChildBounds(comp, x, y, compPrefW, h);
+				setChildBounds(comp, x, y, compPrefW, compPrefH);
 				x += compPrefW + gap;
 			} else {
-				int compPrefH = compPrefSize.getHeight();
-				setChildBounds(comp, x, y, w, compPrefH);
+				setChildBounds(comp, x, y, compPrefW, compPrefH);
 				y += compPrefH + gap;
 			}
 		}

@@ -6,6 +6,9 @@ public class PTableCell {
 	protected final int rowIndex;
 	
 	public PTableCell(int columnIndex, int rowIndex) {
+		if (columnIndex < 0 || rowIndex < 0) {
+			throw new IllegalArgumentException("columnIndex="+columnIndex+", rowIndex="+rowIndex);
+		}
 		this.columnIndex = columnIndex;
 		this.rowIndex = rowIndex;
 	}
@@ -39,7 +42,8 @@ public class PTableCell {
 	
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("PTableCell [column=");
+		builder.append(getClass().getSimpleName());
+		builder.append(" [column=");
 		builder.append(getColumnIndex());
 		builder.append(", row=");
 		builder.append(getRowIndex());

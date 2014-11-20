@@ -15,6 +15,8 @@ import edu.udo.piq.tools.ImmutablePBounds;
 
 public class PCompUtil {
 	
+	private PCompUtil() {}
+	
 	/**
 	 * If component has a parent then the {@link PBounds} of component will be 
 	 * retrieved from its parents {@link PLayout}.<br>

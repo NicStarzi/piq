@@ -25,13 +25,13 @@ public class PList extends AbstractPLayoutOwner {
 	
 	private final PListModelObs modelObs = new PListModelObs() {
 		public void elementAdded(PListModel model, Object element, int index) {
-			PList.this.elementAdded(element, index);
+			PList.this.elementAdded(index);
 		}
 		public void elementRemoved(PListModel model, Object element, int index) {
-			PList.this.elementRemoved(element, index);
+			PList.this.elementRemoved(index);
 		}
 		public void elementChanged(PListModel model, Object element, int index) {
-			PList.this.elementChanged(element, index);
+			PList.this.elementChanged(index);
 		}
 	};
 	private final PListSelectionObs selectionObs = new PListSelectionObs() {
@@ -42,7 +42,7 @@ public class PList extends AbstractPLayoutOwner {
 			PList.this.selectionChanged(index, true);
 		}
 	};
-	private final Map<Object, PListCellComponent> elementToCellMap = new HashMap<>();
+	private final Map<Object, PListCellComponent> elementToCompMap = new HashMap<>();
 	private final PLayout unmodifiableLayoutView;
 	private PListSelection selection;
 	private PListModel model;
@@ -94,6 +94,7 @@ public class PList extends AbstractPLayoutOwner {
 		if (getModel() != null) {
 			getModel().addObs(modelObs);
 		}
+		modelChanged();
 	}
 	
 	public PListModel getModel() {
@@ -178,20 +179,31 @@ public class PList extends AbstractPLayoutOwner {
 		selection.addSelection(index);
 	}
 	
-	private void elementAdded(Object element, int index) {
+	private void modelChanged() {
+		getListLayout().clearChildren();
+		elementToCompMap.clear();
+		
+		for (int i = 0; i < getModel().getElementCount(); i++) {
+			elementAdded(i);
+		}
+	}
+	
+	private void elementAdded(int index) {
+		Object element = getModel().getElement(Integer.valueOf(index));
 		PListCellComponent cellComp = getCellFactory().getCellComponentFor(getModel(), index);
-		elementToCellMap.put(element, cellComp);
+		elementToCompMap.put(element, cellComp);
 		getListLayout().addChild(cellComp, null);
 	}
 	
-	private void elementRemoved(Object element, int index) {
-		PComponent cellComp = elementToCellMap.get(element);
+	private void elementRemoved(int index) {
+		Object element = getModel().getElement(Integer.valueOf(index));
+		PComponent cellComp = elementToCompMap.get(element);
 		getListLayout().removeChild(cellComp);
 	}
 	
-	private void elementChanged(Object element, int index) {
+	private void elementChanged(int index) {
 		Object elem = getModel().getElement(index);
-		PListCellComponent comp = elementToCellMap.get(elem);
+		PListCellComponent comp = elementToCompMap.get(elem);
 		if (comp != null) {
 			comp.elementChanged(getModel(), index);
 		}
@@ -199,7 +211,7 @@ public class PList extends AbstractPLayoutOwner {
 	
 	private void selectionChanged(int index, boolean value) {
 		Object elem = getModel().getElement(index);
-		PListCellComponent comp = elementToCellMap.get(elem);
+		PListCellComponent comp = elementToCompMap.get(elem);
 		if (comp != null && comp.isSelected() != value) {
 			comp.setSelected(value);
 		}

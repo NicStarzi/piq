@@ -35,11 +35,11 @@ public class PMatrixLayout extends AbstractPLayout {
 		
 		addObs(new AbstractPLayoutObs() {
 			public void childAdded(PLayout layout, PComponent child, Object constraint) {
-				GridConstraint cell = (GridConstraint) constraint;
+				MatrixConstraint cell = (MatrixConstraint) constraint;
 				grid[gridID(cell.getX(), cell.getY())] = child;
 			}
 			public void childRemoved(PLayout layout, PComponent child, Object constraint) {
-				GridConstraint cell = (GridConstraint) constraint;
+				MatrixConstraint cell = (MatrixConstraint) constraint;
 				grid[gridID(cell.getX(), cell.getY())] = null;
 			}
 		});
@@ -72,12 +72,12 @@ public class PMatrixLayout extends AbstractPLayout {
 	}
 	
 	protected boolean canAdd(PComponent cmp, Object constraint) {
-		return constraint != null && constraint instanceof GridConstraint 
-				&& isValidCell((GridConstraint) constraint)
-				&& getComponentAt((GridConstraint) constraint) == null;
+		return constraint != null && constraint instanceof MatrixConstraint 
+				&& isValidCell((MatrixConstraint) constraint)
+				&& getComponentAt((MatrixConstraint) constraint) == null;
 	}
 	
-	public PComponent getComponentAt(GridConstraint cell) {
+	public PComponent getComponentAt(MatrixConstraint cell) {
 		return getComponentAt(cell.getX(), cell.getY());
 	}
 	
@@ -85,11 +85,15 @@ public class PMatrixLayout extends AbstractPLayout {
 		return grid[gridID(x, y)];
 	}
 	
+	public PBounds getChildBoundsAt(int x, int y) {
+		return getChildBounds(getComponentAt(x, y));
+	}
+	
 	private int gridID(int x, int y) {
 		return x + y * gridW;
 	}
 	
-	public boolean isValidCell(GridConstraint cell) {
+	public boolean isValidCell(MatrixConstraint cell) {
 		return isValidCell(cell.getX(), cell.getY());
 	}
 	
@@ -155,11 +159,11 @@ public class PMatrixLayout extends AbstractPLayout {
 		return prefSize;
 	}
 	
-	public static class GridConstraint {
+	public static class MatrixConstraint {
 		
 		protected final int x, y;
 		
-		public GridConstraint(int x, int y) {
+		public MatrixConstraint(int x, int y) {
 			this.x = x;
 			this.y = y;
 		}
@@ -183,10 +187,10 @@ public class PMatrixLayout extends AbstractPLayout {
 		public boolean equals(Object obj) {
 			if (this == obj) {
 				return true;
-			} else if (obj == null || !(obj instanceof GridConstraint)) {
+			} else if (obj == null || !(obj instanceof MatrixConstraint)) {
 				return false;
 			}
-			GridConstraint other = (GridConstraint) obj;
+			MatrixConstraint other = (MatrixConstraint) obj;
 			return x == other.x && y == other.y;
 		}
 		

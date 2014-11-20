@@ -16,7 +16,9 @@ import edu.udo.piq.components.PPanel;
 import edu.udo.piq.components.PPicture;
 import edu.udo.piq.components.PScrollPanel;
 import edu.udo.piq.components.PSplitPanel;
+import edu.udo.piq.components.PTable;
 import edu.udo.piq.components.defaults.DefaultPListModel;
+import edu.udo.piq.components.defaults.DefaultPTableModel;
 import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PListLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
@@ -59,7 +61,7 @@ public class SwingPTest {
 		
 		PSplitPanel splitV = new PSplitPanel();
 		splitV.getLayout().setOrientation(Orientation.VERTICAL);
-		root.getLayout().addChild(splitV, PBorderLayout.Constraint.TOP);
+		root.getLayout().addChild(splitV, PBorderLayout.Constraint.CENTER);
 		
 		PSplitPanel splitH = new PSplitPanel();
 		splitH.getLayout().setOrientation(Orientation.HORIZONTAL);
@@ -73,37 +75,50 @@ public class SwingPTest {
 		right.getModel().setImagePath("Tex2.png");
 		splitH.setSecondComponent(right);
 		
-		DefaultPListModel listModel = new DefaultPListModel();
+//		DefaultPListModel listModel = new DefaultPListModel();
+//		
+//		PList list = new PList();
+//		list.setModel(listModel);
+//		splitV.setSecondComponent(list);
+//		
+//		String[] items = new String[] {
+//			"A",
+//			"B",
+//			"C",
+//			"D",
+//			"E",
+//			"F",
+//			"G",
+//			"H",
+//		};
+//		for (int i = 0; i < items.length; i++) {
+//			listModel.addElement(items[i]);
+//		}
 		
-		PList list = new PList();
-		list.setModel(listModel);
-		splitV.setSecondComponent(list);
+		DefaultPTableModel tableModel = new DefaultPTableModel(new Object[][] {
+				{"John", "Smith", "001"},
+				{"Marry", "Sue", "003"},
+				{"Jane", "Doe", "005"},
+				{"Joe", "Schmo", "007"},
+		});
 		
-		String[] items = new String[] {
-			"A",
-			"B",
-			"C",
-			"D",
-			"E",
-			"F",
-			"G",
-			"H",
-		};
-		for (int i = 0; i < items.length; i++) {
-			listModel.addElement(items[i]);
-		}
+		PTable table = new PTable();
+		table.setModel(tableModel);
+		splitV.setSecondComponent(table);
 		
-		PScrollPanel scrollPanel = new PScrollPanel();
-		root.getLayout().addChild(scrollPanel, PBorderLayout.Constraint.CENTER);
+		tableModel.setCell("blablabla", 2, 2);
 		
-		PPanel lblPnl = new PPanel();
-		lblPnl.setLayout(new PBorderLayout(lblPnl));
-		
-		PLabel longLbl = new PLabel();
-		longLbl.getModel().setText("This is a really fucking long text. I wonder what it is good for...");
-		lblPnl.getLayout().addChild(longLbl, PBorderLayout.Constraint.CENTER);
-		
-		scrollPanel.setView(lblPnl);
+//		PScrollPanel scrollPanel = new PScrollPanel();
+//		root.getLayout().addChild(scrollPanel, PBorderLayout.Constraint.CENTER);
+//		
+//		PPanel lblPnl = new PPanel();
+//		lblPnl.setLayout(new PBorderLayout(lblPnl));
+//		
+//		PLabel longLbl = new PLabel();
+//		longLbl.getModel().setText("This is a really fucking long text. I wonder what it is good for...");
+//		lblPnl.getLayout().addChild(longLbl, PBorderLayout.Constraint.CENTER);
+//		
+//		scrollPanel.setView(lblPnl);
 	}
 	
 	public static class MyLittleDialog {

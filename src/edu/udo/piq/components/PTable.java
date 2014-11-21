@@ -23,7 +23,6 @@ public class PTable extends AbstractPLayoutOwner {
 	
 	private final PTableModelObs modelObs = new PTableModelObs() {
 		public void rowRemoved(PTableModel model, int rowIndex) {
-//			PTable.this.elementRemoved(element, cell);
 		}
 		public void rowAdded(PTableModel model, int rowIndex) {
 		}
@@ -66,10 +65,12 @@ public class PTable extends AbstractPLayoutOwner {
 	public void setSelection(PTableSelection selection) {
 		if (getSelection() != null) {
 			getSelection().removeObs(selectionObs);
+			getSelection().setModel(null);
 		}
 		this.selection = selection;
 		if (getSelection() != null) {
 			getSelection().addObs(selectionObs);
+			getSelection().setModel(getModel());
 		}
 	}
 	
@@ -79,10 +80,16 @@ public class PTable extends AbstractPLayoutOwner {
 	
 	public void setModel(PTableModel model) {
 		if (getModel() != null) {
+			if (getSelection() != null) {
+				getSelection().setModel(null);
+			}
 			getModel().removeObs(modelObs);
 		}
 		this.model = model;
 		if (getModel() != null) {
+			if (getSelection() != null) {
+				getSelection().setModel(getModel());
+			}
 			getModel().addObs(modelObs);
 		}
 		modelChanged();

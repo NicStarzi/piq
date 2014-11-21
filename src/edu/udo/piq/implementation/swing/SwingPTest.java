@@ -15,6 +15,7 @@ import edu.udo.piq.components.PPanel;
 import edu.udo.piq.components.PPicture;
 import edu.udo.piq.components.PSplitPanel;
 import edu.udo.piq.components.PTable;
+import edu.udo.piq.components.PTableSelection.SelectionMode;
 import edu.udo.piq.components.defaults.DefaultPLabelModel;
 import edu.udo.piq.components.defaults.DefaultPTableModel;
 import edu.udo.piq.layouts.PBorderLayout;
@@ -103,6 +104,7 @@ public class SwingPTest {
 		
 		PTable table = new PTable();
 		table.setModel(tableModel);
+		table.getSelection().setSelectionMode(SelectionMode.SINGLE_CELL);
 		splitV.setSecondComponent(table);
 		
 		PPanel btnPnl = new PPanel();

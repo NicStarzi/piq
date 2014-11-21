@@ -8,11 +8,16 @@ public interface PTableSelection extends PSelection<PTableCell> {
 	
 	public SelectionMode getSelectionMode();
 	
+	public void setModel(PTableModel model);
+	
+	public PTableModel getModel();
+	
 	public void addObs(PTableSelectionObs obs);
 	
 	public void removeObs(PTableSelectionObs obs);
 	
 	public static enum SelectionMode {
+		NO_SELECTION,
 		SINGLE_CELL,
 		MULTIPLE_CELL,
 		SINGLE_ROW,

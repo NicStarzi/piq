@@ -173,13 +173,13 @@ public class PTableLayout extends AbstractPLayout {
 		int cellX = x;
 		int cellY = y;
 		for (int col = 0; col < colCount; col++) {
-			int cellW = getColumnSize(col) + gap;
+			int cellW = getColumnSize(col);
 //			if (col == colCount - 1) {
 //				cellW = fx - cellX;
 //			}
 			
 			for (int row = 0; row < rowCount; row++) {
-				int cellH = getRowSize(row) + gap;
+				int cellH = getRowSize(row);
 //				if (row == rowCount - 1) {
 //					cellH = fy - cellY;
 //				}
@@ -190,9 +190,9 @@ public class PTableLayout extends AbstractPLayout {
 					setChildBounds(child, cellX, cellY, cellW, cellH);
 				}
 				
-				cellY += cellH;
+				cellY += cellH + gap;
 			}
-			cellX += cellW;
+			cellX += cellW + gap;
 			cellY = y;
 		}
 	}

@@ -15,6 +15,7 @@ import edu.udo.piq.layouts.PCentricLayout;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PRenderUtil;
 
 public class PButton extends AbstractPLayoutOwner {
 	
@@ -105,14 +106,16 @@ public class PButton extends AbstractPLayoutOwner {
 		
 		if (isPressed()) {
 			renderer.setColor(PColor.GREY25);
-			renderer.drawQuad(x + 0, y + 0, fx - 0, fy - 0);
+			PRenderUtil.strokeQuad(renderer, x, y, fx, fy);
 			renderer.setColor(PColor.GREY75);
 			renderer.drawQuad(x + 1, y + 1, fx - 1, fy - 1);
 		} else {
 			renderer.setColor(PColor.BLACK);
-			renderer.drawQuad(x + 0, y + 0, fx - 0, fy - 0);
+			PRenderUtil.strokeBottom(renderer, x, y, fx, fy);
+			PRenderUtil.strokeRight(renderer, x, y, fx, fy);
 			renderer.setColor(PColor.WHITE);
-			renderer.drawQuad(x + 0, y + 0, fx - 1, fy - 1);
+			PRenderUtil.strokeTop(renderer, x, y, fx, fy);
+			PRenderUtil.strokeLeft(renderer, x, y, fx, fy);
 			renderer.setColor(PColor.GREY75);
 			renderer.drawQuad(x + 1, y + 1, fx - 1, fy - 1);
 		}

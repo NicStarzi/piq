@@ -28,13 +28,41 @@ public class PRenderUtil {
 	}
 	
 	public static void strokeQuad(PRenderer renderer, int x, int y, int fx, int fy, int lineWidth) {
-		// top
+		strokeTop(renderer, x, y, fx, fy, lineWidth);
+		strokeBottom(renderer, x, y, fx, fy, lineWidth);
+		strokeLeft(renderer, x, y, fx, fy, lineWidth);
+		strokeRight(renderer, x, y, fx, fy, lineWidth);
+	}
+	
+	public static void strokeTop(PRenderer renderer, int x, int y, int fx, int fy) {
+		strokeTop(renderer, x, y, fx, fy, 1);
+	}
+	
+	public static void strokeTop(PRenderer renderer, int x, int y, int fx, int fy, int lineWidth) {
 		renderer.drawQuad(x, y, fx, y + lineWidth);
-		// bottom
+	}
+	
+	public static void strokeBottom(PRenderer renderer, int x, int y, int fx, int fy) {
+		strokeBottom(renderer, x, y, fx, fy, 1);
+	}
+	
+	public static void strokeBottom(PRenderer renderer, int x, int y, int fx, int fy, int lineWidth) {
 		renderer.drawQuad(x, fy - lineWidth, fx, fy);
-		// left
+	}
+	
+	public static void strokeLeft(PRenderer renderer, int x, int y, int fx, int fy) {
+		strokeLeft(renderer, x, y, fx, fy, 1);
+	}
+	
+	public static void strokeLeft(PRenderer renderer, int x, int y, int fx, int fy, int lineWidth) {
 		renderer.drawQuad(x, y, x + lineWidth, fy);
-		// right
+	}
+	
+	public static void strokeRight(PRenderer renderer, int x, int y, int fx, int fy) {
+		strokeRight(renderer, x, y, fx, fy, 1);
+	}
+	
+	public static void strokeRight(PRenderer renderer, int x, int y, int fx, int fy, int lineWidth) {
 		renderer.drawQuad(fx - lineWidth, y, fx, fy);
 	}
 	

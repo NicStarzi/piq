@@ -13,12 +13,14 @@ import edu.udo.piq.components.PButtonObs;
 import edu.udo.piq.components.PLabel;
 import edu.udo.piq.components.PPanel;
 import edu.udo.piq.components.PPicture;
+import edu.udo.piq.components.PProgressBar;
 import edu.udo.piq.components.PSplitPanel;
 import edu.udo.piq.components.PTable;
 import edu.udo.piq.components.PTableSelection.SelectionMode;
 import edu.udo.piq.components.defaults.DefaultPLabelModel;
 import edu.udo.piq.components.defaults.DefaultPTableModel;
 import edu.udo.piq.layouts.PBorderLayout;
+import edu.udo.piq.layouts.PCentricLayout;
 import edu.udo.piq.layouts.PListLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
 import edu.udo.piq.layouts.PSplitLayout.Orientation;
@@ -59,21 +61,21 @@ public class SwingPTest {
 		updateTimer.setRepeats(true);
 		updateTimer.start();
 		
-		PSplitPanel splitV = new PSplitPanel();
-		splitV.getLayout().setOrientation(Orientation.VERTICAL);
-		root.getLayout().addChild(splitV, PBorderLayout.Constraint.CENTER);
-		
-		PSplitPanel splitH = new PSplitPanel();
-		splitH.getLayout().setOrientation(Orientation.HORIZONTAL);
-		splitV.setFirstComponent(splitH);
-		
-		PPicture left = new PPicture();
-		left.getModel().setImagePath("Tex.png");
-		splitH.setFirstComponent(left);
-		
-		PPicture right = new PPicture();
-		right.getModel().setImagePath("Tex2.png");
-		splitH.setSecondComponent(right);
+//		PSplitPanel splitV = new PSplitPanel();
+//		splitV.getLayout().setOrientation(Orientation.VERTICAL);
+//		root.getLayout().addChild(splitV, PBorderLayout.Constraint.CENTER);
+//		
+//		PSplitPanel splitH = new PSplitPanel();
+//		splitH.getLayout().setOrientation(Orientation.HORIZONTAL);
+//		splitV.setFirstComponent(splitH);
+//		
+//		PPicture left = new PPicture();
+//		left.getModel().setImagePath("Tex.png");
+//		splitH.setFirstComponent(left);
+//		
+//		PPicture right = new PPicture();
+//		right.getModel().setImagePath("Tex2.png");
+//		splitH.setSecondComponent(right);
 		
 //		DefaultPListModel listModel = new DefaultPListModel();
 //		
@@ -95,17 +97,25 @@ public class SwingPTest {
 //			listModel.addElement(items[i]);
 //		}
 		
-		final DefaultPTableModel tableModel = new DefaultPTableModel(new Object[][] {
-				{"John", "Smith", "001"},
-				{"Marry", "Sue", "003"},
-				{"Jane", "Doe", "005"},
-				{"Joe", "Schmo", "007"},
-		});
+//		final DefaultPTableModel tableModel = new DefaultPTableModel(new Object[][] {
+//				{"John", "Smith", "001"},
+//				{"Marry", "Sue", "003"},
+//				{"Jane", "Doe", "005"},
+//				{"Joe", "Schmo", "007"},
+//		});
+//		
+//		PTable table = new PTable();
+//		table.setModel(tableModel);
+//		table.getSelection().setSelectionMode(SelectionMode.SINGLE_CELL);
+//		splitV.setSecondComponent(table);
 		
-		PTable table = new PTable();
-		table.setModel(tableModel);
-		table.getSelection().setSelectionMode(SelectionMode.SINGLE_CELL);
-		splitV.setSecondComponent(table);
+		PPanel barPnl = new PPanel();
+		barPnl.setLayout(new PCentricLayout(barPnl));
+		root.getLayout().addChild(barPnl, PBorderLayout.Constraint.CENTER);
+		
+		final PProgressBar bar = new PProgressBar();
+		bar.getModel().setMaximum(20);
+		barPnl.addChild(bar, null);
 		
 		PPanel btnPnl = new PPanel();
 		btnPnl.setLayout(new PListLayout(btnPnl));
@@ -115,13 +125,14 @@ public class SwingPTest {
 		change.setContent(new PLabel(new DefaultPLabelModel("Change")));
 		change.addObs(new PButtonObs() {
 			public void onClick(PButton button) {
-				try {
-					String content = tableModel.getCell(2, 2).toString();
-					int asInt = Integer.parseInt(content);
-					tableModel.setCell(Integer.valueOf(asInt + 1), 2, 2);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				bar.getModel().setValue(bar.getModel().getValue() + 1);
+//				try {
+//					String content = tableModel.getCell(2, 2).toString();
+//					int asInt = Integer.parseInt(content);
+//					tableModel.setCell(Integer.valueOf(asInt + 1), 2, 2);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
 			}
 		});
 		btnPnl.addChild(change, null);

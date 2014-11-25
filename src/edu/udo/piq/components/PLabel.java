@@ -7,7 +7,7 @@ import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
 import edu.udo.piq.PFontResource.Style;
-import edu.udo.piq.components.defaults.DefaultPLabelModel;
+import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.tools.AbstractPComponent;
 
 public class PLabel extends AbstractPComponent {
@@ -17,23 +17,23 @@ public class PLabel extends AbstractPComponent {
 	protected static final Style DEFAULT_FONT_STYLE = Style.PLAIN;
 	protected static final PColor DEFAULT_TEXT_COLOR = PColor.BLACK;
 	
-	private final PLabelModelObs modelObs = new PLabelModelObs() {
-		public void textChanged(PLabelModel model) {
+	private final PTextModelObs modelObs = new PTextModelObs() {
+		public void textChanged(PTextModel model) {
 			firePreferredSizeChangedEvent();
 			fireReRenderEvent();
 		}
 	};
-	private PLabelModel model;
+	private PTextModel model;
 	
 	public PLabel() {
-		this(new DefaultPLabelModel());
+		this(new DefaultPTextModel());
 	}
 	
-	public PLabel(PLabelModel model) {
+	public PLabel(PTextModel model) {
 		setModel(model);
 	}
 	
-	public void setModel(PLabelModel model) {
+	public void setModel(PTextModel model) {
 		if (getModel() != null) {
 			getModel().removeObs(modelObs);
 		}
@@ -45,7 +45,7 @@ public class PLabel extends AbstractPComponent {
 		fireReRenderEvent();
 	}
 	
-	public PLabelModel getModel() {
+	public PTextModel getModel() {
 		return model;
 	}
 	

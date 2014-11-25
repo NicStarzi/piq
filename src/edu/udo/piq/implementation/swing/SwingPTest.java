@@ -17,7 +17,8 @@ import edu.udo.piq.components.PProgressBar;
 import edu.udo.piq.components.PSplitPanel;
 import edu.udo.piq.components.PTable;
 import edu.udo.piq.components.PTableSelection.SelectionMode;
-import edu.udo.piq.components.defaults.DefaultPLabelModel;
+import edu.udo.piq.components.PTextArea;
+import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.components.defaults.DefaultPTableModel;
 import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PCentricLayout;
@@ -61,21 +62,21 @@ public class SwingPTest {
 		updateTimer.setRepeats(true);
 		updateTimer.start();
 		
-//		PSplitPanel splitV = new PSplitPanel();
-//		splitV.getLayout().setOrientation(Orientation.VERTICAL);
-//		root.getLayout().addChild(splitV, PBorderLayout.Constraint.CENTER);
-//		
-//		PSplitPanel splitH = new PSplitPanel();
-//		splitH.getLayout().setOrientation(Orientation.HORIZONTAL);
-//		splitV.setFirstComponent(splitH);
-//		
-//		PPicture left = new PPicture();
-//		left.getModel().setImagePath("Tex.png");
-//		splitH.setFirstComponent(left);
-//		
-//		PPicture right = new PPicture();
-//		right.getModel().setImagePath("Tex2.png");
-//		splitH.setSecondComponent(right);
+		PSplitPanel splitV = new PSplitPanel();
+		splitV.getLayout().setOrientation(Orientation.VERTICAL);
+		root.getLayout().addChild(splitV, PBorderLayout.Constraint.CENTER);
+		
+		PSplitPanel splitH = new PSplitPanel();
+		splitH.getLayout().setOrientation(Orientation.HORIZONTAL);
+		splitV.setFirstComponent(splitH);
+		
+		PPicture left = new PPicture();
+		left.getModel().setImagePath("Tex.png");
+		splitH.setFirstComponent(left);
+		
+		PPicture right = new PPicture();
+		right.getModel().setImagePath("Tex2.png");
+		splitH.setSecondComponent(right);
 		
 //		DefaultPListModel listModel = new DefaultPListModel();
 //		
@@ -109,23 +110,28 @@ public class SwingPTest {
 //		table.getSelection().setSelectionMode(SelectionMode.SINGLE_CELL);
 //		splitV.setSecondComponent(table);
 		
-		PPanel barPnl = new PPanel();
-		barPnl.setLayout(new PCentricLayout(barPnl));
-		root.getLayout().addChild(barPnl, PBorderLayout.Constraint.CENTER);
+		PTextArea txtAr = new PTextArea(new DefaultPTextModel(
+			"This is \n a simple test \nto see whether the PTextArea class \nworks as intended."
+		));
+		splitV.setSecondComponent(txtAr);
 		
-		final PProgressBar bar = new PProgressBar();
-		bar.getModel().setMaximum(20);
-		barPnl.addChild(bar, null);
+//		PPanel barPnl = new PPanel();
+//		barPnl.setLayout(new PCentricLayout(barPnl));
+//		root.getLayout().addChild(barPnl, PBorderLayout.Constraint.CENTER);
+//		
+//		final PProgressBar bar = new PProgressBar();
+//		bar.getModel().setMaximum(20);
+//		barPnl.addChild(bar, null);
 		
 		PPanel btnPnl = new PPanel();
 		btnPnl.setLayout(new PListLayout(btnPnl));
 		root.getLayout().addChild(btnPnl, PBorderLayout.Constraint.BOTTOM);
 		
 		PButton change = new PButton();
-		change.setContent(new PLabel(new DefaultPLabelModel("Change")));
+		change.setContent(new PLabel(new DefaultPTextModel("Change")));
 		change.addObs(new PButtonObs() {
 			public void onClick(PButton button) {
-				bar.getModel().setValue(bar.getModel().getValue() + 1);
+//				bar.getModel().setValue(bar.getModel().getValue() + 1);
 //				try {
 //					String content = tableModel.getCell(2, 2).toString();
 //					int asInt = Integer.parseInt(content);

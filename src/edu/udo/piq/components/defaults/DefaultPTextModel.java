@@ -1,17 +1,17 @@
 package edu.udo.piq.components.defaults;
 
-import edu.udo.piq.components.PLabelModel;
-import edu.udo.piq.tools.AbstractPLabelModel;
+import edu.udo.piq.components.PTextModel;
+import edu.udo.piq.tools.AbstractPTextModel;
 
-public class DefaultPLabelModel extends AbstractPLabelModel implements PLabelModel {
+public class DefaultPTextModel extends AbstractPTextModel implements PTextModel {
 	
 	private Object content;
 	
-	public DefaultPLabelModel() {
+	public DefaultPTextModel() {
 		this(null);
 	}
 	
-	public DefaultPLabelModel(Object content) {
+	public DefaultPTextModel(Object content) {
 		setText(content);
 	}
 	

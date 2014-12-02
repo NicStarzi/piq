@@ -72,6 +72,10 @@ public class PLabel extends AbstractPComponent {
 		renderer.drawString(font, text, bounds.getX(), bounds.getY());
 	}
 	
+	public boolean isDefaultOpaque() {
+		return false;
+	}
+	
 	public PSize getDefaultPreferredSize() {
 		String text = getText();
 		if (text == null || text.isEmpty()) {

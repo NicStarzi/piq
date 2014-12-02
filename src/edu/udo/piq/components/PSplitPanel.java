@@ -34,6 +34,10 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 		getLayout().addChild(divider, Constraint.DIVIDER);
 	}
 	
+	public boolean isDefaultOpaque() {
+		return false;
+	}
+	
 	protected void onUpdate() {
 		PMouse mouse = PCompUtil.getMouseOf(this);
 		if (mouse == null) {

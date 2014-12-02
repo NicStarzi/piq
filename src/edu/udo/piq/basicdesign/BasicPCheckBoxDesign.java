@@ -91,4 +91,8 @@ public class BasicPCheckBoxDesign implements PDesign {
 		}
 	}
 	
+	public boolean isOpaque(PComponent component) {
+		return true;
+	}
+	
 }

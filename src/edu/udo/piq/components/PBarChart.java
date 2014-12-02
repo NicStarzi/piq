@@ -59,6 +59,10 @@ public class PBarChart extends AbstractPComponent {
 		}
 	}
 	
+	public boolean isDefaultOpaque() {
+		return false;
+	}
+	
 	public PSize getDefaultPreferredSize() {
 		return new ImmutablePSize(getModel().getBarCount() * 20, Math.max(getMaxBarHeight(), 200));
 	}

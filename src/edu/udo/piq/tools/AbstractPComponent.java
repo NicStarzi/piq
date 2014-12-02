@@ -145,6 +145,17 @@ public class AbstractPComponent implements PComponent {
 	}
 	
 	/**
+	 * The default implementation of this method always returns true.<br>
+	 * All components that are partially translucent or have transparent 
+	 * parts should override this method to return false.<br>
+	 * 
+	 * @return true
+	 */
+	public boolean isDefaultOpaque() {
+		return true;
+	}
+	
+	/**
 	 * If this component has a layout the preferred size of the layout 
 	 * is returned. Otherwise a size of (0, 0) is returned.<br>
 	 * The returned size is immutable and not synchronized with this 

@@ -60,4 +60,8 @@ public class BasicPButtonDesign implements PDesign {
 		}
 	}
 	
+	public boolean isOpaque(PComponent component) {
+		return true;
+	}
+	
 }

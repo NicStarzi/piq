@@ -82,4 +82,8 @@ public class BasicPLabelDesign implements PDesign {
 		renderer.drawString(getFont(component), text, bounds.getX(), bounds.getY());
 	}
 	
+	public boolean isOpaque(PComponent component) {
+		return false;
+	}
+	
 }

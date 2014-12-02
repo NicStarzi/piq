@@ -324,6 +324,10 @@ public class SwingPRoot implements PRoot {
 		throw new UnsupportedOperationException();
 	}
 	
+	public boolean isDefaultOpaque() {
+		return true;
+	}
+	
 	public PSize getDefaultPreferredSize() {
 		return getBounds();
 	}

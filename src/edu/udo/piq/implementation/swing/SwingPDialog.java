@@ -264,6 +264,10 @@ public class SwingPDialog implements PDialog {
 		throw new UnsupportedOperationException();
 	}
 	
+	public boolean isDefaultOpaque() {
+		return true;
+	}
+	
 	public void setID(String value) {
 	}
 	

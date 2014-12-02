@@ -40,6 +40,12 @@ public interface PRoot extends PComponent {
 	public void defaultRender(PRenderer renderer) throws UnsupportedOperationException;
 	
 	/**
+	 * Always returns true for {@link PRoot} instances.<br>
+	 * @return true
+	 */
+	public boolean isDefaultOpaque();
+	
+	/**
 	 * Returns the {@link PBounds} of this {@link PRoot}.<br>
 	 * Since a root does not have a parent its bounds are not defined 
 	 * by a layout, instead the bounds of a root should be set directly 

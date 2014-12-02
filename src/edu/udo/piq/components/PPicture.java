@@ -50,6 +50,10 @@ public class PPicture extends AbstractPComponent {
 		renderer.drawImage(imgRes, x, y, fx, fy);
 	}
 	
+	public boolean isDefaultOpaque() {
+		return false;
+	}
+	
 	public PSize getDefaultPreferredSize() {
 		PImageResource imgRes = getImageResource();
 		if (imgRes == null) {

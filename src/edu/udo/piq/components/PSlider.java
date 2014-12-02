@@ -101,6 +101,10 @@ public class PSlider extends AbstractPComponent {
 		renderer.drawQuad(sliderX, y, sliderFx, fy);
 	}
 	
+	public boolean isDefaultOpaque() {
+		return false;
+	}
+	
 	public PSize getDefaultPreferredSize() {
 		return DEFAULT_PREFERRED_SIZE;
 	}

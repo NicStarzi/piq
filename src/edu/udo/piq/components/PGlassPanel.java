@@ -7,4 +7,8 @@ public class PGlassPanel extends PPanel {
 	public void defaultRender(PRenderer renderer) {
 	}
 	
+	public boolean isDefaultOpaque() {
+		return false;
+	}
+	
 }

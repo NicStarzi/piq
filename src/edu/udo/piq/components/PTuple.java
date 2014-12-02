@@ -41,4 +41,8 @@ public class PTuple extends AbstractPLayoutOwner {
 		return getLayout().getAt(Constraint.SECOND);
 	}
 	
+	public boolean isDefaultOpaque() {
+		return false;
+	}
+	
 }

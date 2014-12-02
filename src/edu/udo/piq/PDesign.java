@@ -57,6 +57,18 @@ public interface PDesign {
 			
 			return component.getDefaultPreferredSize();
 		}
+		
+		/**
+		 * Delegates to the {@link PComponent#isDefaultOpaque()} method of 
+		 * the given component.<br>
+		 * This design works for any component and never throws an 
+		 * {@link IllegalArgumentException}.<br>
+		 * 
+		 * @see PComponent#isDefaultOpaque()
+		 */
+		public boolean isOpaque(PComponent component) {
+			return component.isDefaultOpaque();
+		}
 	};
 	
 	/**
@@ -87,12 +99,28 @@ public interface PDesign {
 	 * @param renderer
 	 * @param component
 	 * @throws NullPointerException if component is null
-	 * @throws IllegalArgumentException
+	 * @throws IllegalArgumentException if this design is not intended to be used with the given component
 	 * @see PComponent
 	 * @see PLayout
 	 * @see PLayout#getChildBounds(PComponent)
 	 * @see PCompUtil#getBoundsOf(PComponent)
 	 */
 	public void render(PRenderer renderer, PComponent component) throws NullPointerException, IllegalArgumentException;
+	
+	/**
+	 * Returns true if the given component fills all pixels within its 
+	 * {@link PBounds} when the {@link #render(PRenderer, PComponent)} 
+	 * method is invoked.<br>
+	 * For a component which is translucent or has transparent parts 
+	 * this method should always return false.<br>
+	 * 
+	 * @return true if the given component is completely opaque when rendered with this design
+	 * @throws NullPointerException if component is null
+	 * @throws IllegalArgumentException if this design is not intended to be used with the given component
+	 * @see #render(PRenderer, PComponent)
+	 * @see PRenderer
+	 * @see PComponent#isDefaultOpaque()
+	 */
+	public boolean isOpaque(PComponent component);
 	
 }

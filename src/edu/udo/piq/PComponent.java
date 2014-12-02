@@ -126,12 +126,30 @@ public interface PComponent {
 	 * {@link PRoot} of this component does not associate a 
 	 * {@link PDesign} with this component.<br>
 	 * 
-	 * @param renderer - the renderer to be used for rendering
+	 * @param renderer the renderer to be used for rendering
 	 * @see PRenderer
 	 * @see PDesignSheet
 	 * @see PDesign
 	 */
 	public void defaultRender(PRenderer renderer);
+	
+	/**
+	 * Returns true if this component fills all pixels within its 
+	 * {@link PBounds} when the {@link #defaultRender(PRenderer)} 
+	 * method is invoked.<br>
+	 * This method is important for the {@link PRenderer} to 
+	 * determine whether the parent of this component needs to be 
+	 * re-rendered when this component is re-rendered.<br>
+	 * For a component which is translucent or has transparent parts 
+	 * this method should always return false.<br>
+	 * 
+	 * @return true if the component is completely opaque
+	 * @see #defaultRender(PRenderer)
+	 * @see PRenderer
+	 * @see PDesignSheet
+	 * @see PDesign
+	 */
+	public boolean isDefaultOpaque();
 	
 	/**
 	 * This method returns the default preferred size for this component 

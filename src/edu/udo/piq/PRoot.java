@@ -149,4 +149,24 @@ public interface PRoot extends PComponent {
 	 * @see PMouse
 	 */
 	public PKeyboard getKeyboard();
+	
+	/**
+	 * Returns the {@link PComponent} that currently has the focus within 
+	 * the GUI.<br>
+	 * This can be null if no component has focus right now.<br>
+	 * 
+	 * @return the component with focus or null
+	 * @see #setFocusOwner(PComponent)
+	 */
+	public PComponent getFocusOwner();
+	
+	/**
+	 * Sets the focused {@link PComponent} of this GUI to the given component.<br>
+	 * If component is null then no component will have focus anymore.<br>
+	 * 
+	 * @param component the new focused component or null
+	 * @throws IllegalStateException if a component already has the focus and the parameter is not null
+	 * @see #getFocusOwner()
+	 */
+	public void setFocusOwner(PComponent component) throws IllegalStateException;
 }

@@ -1,125 +1,68 @@
 package edu.udo.piq.components.defaults;
 
-import java.util.AbstractSet;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.Set;
-
-import edu.udo.piq.components.PTextModel;
 import edu.udo.piq.components.PTextSelection;
 import edu.udo.piq.tools.AbstractPTextSelection;
 
 public class DefaultPTextSelection extends AbstractPTextSelection implements PTextSelection {
 	
-	private int from;
-	private int to;
-	
-	public void addSelection(Integer index) {
-		int value = index.intValue();
-		
-		PTextModel model = getModel();
-		String text = model.getText().toString();
-		int maxIndex = text.length();
-		
-		if (value < 0) {
-			value = 0;
-		} else if (value > maxIndex) {
-			value = maxIndex;
-		}
-		
-		if (!isSelected(Integer.valueOf(value))) {
-			if (value < from) {
-				for (int i = value; i < from; i++) {
-					fireSelectionAddedEvent(i);
-				}
-				from = value;
-			} else if (value > to) {
-				for (int i = value; i > to; i--) {
-					fireSelectionAddedEvent(i);
-				}
-				to = value;
-			} else {
-				throw new IllegalStateException("from="+from+", to="+to+", value="+value);
-			}
-		}
-	}
-	
-	public void removeSelection(Integer index) {
-		if (isSelected(index)) {
-			int newTo = index.intValue() - 1;
-			for (int i = newTo; i < to; i++) {
-				fireSelectionRemovedEvent(i);
-			}
-			to = newTo;
-		}
-	}
+	private int from = -1;
+	private int to = -1;
 	
 	public void clearSelection() {
 		int oldFrom = from;
 		int oldTo = to;
-		from = Integer.MAX_VALUE;
-		to = Integer.MIN_VALUE;
+		from = -1;
+		to = -1;
 		for (int i = oldFrom; i < oldTo; i++) {
 			fireSelectionRemovedEvent(i);
 		}
 	}
 	
-	public Set<Integer> getSelection() {
-		return new RangeSet(from, to);
+	public boolean isSelected(int index) {
+		return index >= from && index <= to;
 	}
 	
-	public boolean isSelected(Integer index) {
-		int value = index.intValue();
-		return value >= from && value <= to;
-	}
-	
-	public static class RangeSet extends AbstractSet<Integer> implements Set<Integer> {
-		
-		protected final int from;
-		protected final int to;
-		
-		public RangeSet(int from, int to) {
-			this.from = from;
-			this.to = to;
+	public void setSelection(int index1, int index2) {
+		int oldFrom = from;
+		int oldTo = to;
+		if (index1 <= index2) {
+			from = index1;
+			to = index2;
+		} else {
+			from = index2;
+			to = index1;
 		}
-		
-		public int size() {
-			return to - from;
+		if (from == -1) {
+			to = -1;
 		}
-		
-		public Iterator<Integer> iterator() {
-			return new RangeIterator(this);
-		}
-		
-	}
-	
-	public static class RangeIterator implements Iterator<Integer> {
-		
-		protected final RangeSet set;
-		protected int pos;
-		
-		public RangeIterator(RangeSet set) {
-			this.set = set;
-			pos = set.from;
-		}
-		
-		public boolean hasNext() {
-			return pos < set.to;
-		}
-		
-		public Integer next() {
-			if (!hasNext()) {
-				throw new NoSuchElementException();
+		boolean intersect = !((to < oldFrom) || (oldTo < from));
+		if (intersect) {
+			int minFrom = Math.min(oldFrom, from);
+			int maxTo = Math.max(oldTo, to);
+			for (int i = minFrom; i < maxTo; i++) {
+				if (i < from || i >= to) {
+					fireSelectionRemovedEvent(i);
+				} else if (i < oldFrom || i >= oldTo) {
+					fireSelectionAddedEvent(i);
+				}
 			}
-			Integer value = Integer.valueOf(pos);
-			pos += 1;
-			return value;
+		} else {
+			for (int i = oldFrom; i < oldTo; i++) {
+				fireSelectionRemovedEvent(i);
+			}
+			for (int i = from; i < to; i++) {
+				fireSelectionAddedEvent(i);
+			}
 		}
-		
-		public void remove() {
-			throw new UnsupportedOperationException();
-		}
-		
+		fireSelectionChangedEvent();
+	}
+	
+	public int getFrom() {
+		return from;
+	}
+	
+	public int getTo() {
+		return to;
 	}
 	
 }

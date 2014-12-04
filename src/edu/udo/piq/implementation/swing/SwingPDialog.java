@@ -64,6 +64,7 @@ public class SwingPDialog implements PDialog {
 		public void childLaidOut(PLayout layout, PComponent child, Object constraint) {
 		}
 	};
+	private PComponent focusOwner;
 	private PLayout layout;
 	private boolean needReLayout;
 	private boolean disposed;
@@ -311,5 +312,16 @@ public class SwingPDialog implements PDialog {
 	
 	public PKeyboard getKeyboard() {
 		return root.getKeyboard();
+	}
+	
+	public PComponent getFocusOwner() {
+		return focusOwner;
+	}
+	
+	public void setFocusOwner(PComponent component) throws IllegalStateException {
+		if (focusOwner != null && component != null) {
+			throw new IllegalStateException("focusOwner="+focusOwner);
+		}
+		focusOwner = component;
 	}
 }

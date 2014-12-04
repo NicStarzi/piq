@@ -41,4 +41,10 @@ public abstract class AbstractPTextSelection implements PTextSelection {
 		}
 	}
 	
+	protected void fireSelectionChangedEvent() {
+		for (PTextSelectionObs obs : obsList) {
+			obs.selectionChanged(this);
+		}
+	}
+	
 }

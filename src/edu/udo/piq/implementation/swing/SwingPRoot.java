@@ -64,6 +64,7 @@ public class SwingPRoot implements PRoot {
 	};
 	private boolean needReLayout;
 	private PDesignSheet designSheet = new AbstractPDesignSheet();
+	private PComponent focusOwner;
 	
 	public SwingPRoot() {
 		panel = new JPanel() {
@@ -288,6 +289,17 @@ public class SwingPRoot implements PRoot {
 	
 	public PKeyboard getKeyboard() {
 		return keyboard;
+	}
+	
+	public PComponent getFocusOwner() {
+		return focusOwner;
+	}
+	
+	public void setFocusOwner(PComponent component) throws IllegalStateException {
+		if (focusOwner != null && component != null) {
+			throw new IllegalStateException("focusOwner="+focusOwner);
+		}
+		focusOwner = component;
 	}
 	
 	/*

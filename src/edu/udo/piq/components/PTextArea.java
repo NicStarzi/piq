@@ -7,13 +7,16 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PDesign;
+import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PFontResource;
 import edu.udo.piq.PMouse;
+import edu.udo.piq.PTimerCallback;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
 import edu.udo.piq.PFontResource.Style;
+import edu.udo.piq.PTimer;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.components.defaults.DefaultPTextSelection;
 import edu.udo.piq.tools.AbstractPComponent;
@@ -27,8 +30,25 @@ public class PTextArea extends AbstractPComponent {
 	protected static final int DEFAULT_FONT_SIZE = 14;
 	protected static final Style DEFAULT_FONT_STYLE = Style.PLAIN;
 	protected static final PColor DEFAULT_TEXT_COLOR = PColor.BLACK;
-	protected static final int DEFAULT_FOCUS_RENDER_TOGGLE_TIME = 25;
+	protected static final int DEFAULT_FOCUS_RENDER_TOGGLE_TIMER_DELAY = 4;
 	
+	private final PTimer focusToggleTimer = new PTimer(this, new PTimerCallback() {
+		public void action() {
+			PTextSelection selection = getSelection();
+			int selectionFrom = selection.getFrom();
+			int selectionTo = selection.getTo();
+			if (PCompUtil.hasFocus(PTextArea.this) 
+					&& selectionFrom != -1 && selectionFrom == selectionTo) 
+			{
+				focusRenderToggleTimer += 1;
+				if (focusRenderToggleTimer >= DEFAULT_FOCUS_RENDER_TOGGLE_TIMER_DELAY) {
+					focusRenderToggleTimer = 0;
+					focusRenderToggle = !focusRenderToggle;
+					fireReRenderEvent();
+				}
+			}
+		}
+	});
 	private final PTextModelObs modelObs = new PTextModelObs() {
 		public void textChanged(PTextModel model) {
 			posTable.setTextLines(null);
@@ -42,6 +62,8 @@ public class PTextArea extends AbstractPComponent {
 		public void selectionAdded(PTextSelection selection, int index) {
 		}
 		public void selectionChanged(PTextSelection selection) {
+			focusRenderToggle = true;
+			focusRenderToggleTimer = 0;
 			fireReRenderEvent();
 		}
 	};
@@ -59,6 +81,21 @@ public class PTextArea extends AbstractPComponent {
 	public PTextArea(PTextModel model) {
 		setModel(model);
 		setSelection(new DefaultPTextSelection());
+		
+		addObs(new PFocusObs() {
+			public void focusLost(PComponent oldOwner) {
+				System.out.println("focusLost");
+				focusToggleTimer.stop();
+			}
+			public void focusGained(PComponent oldOwner, PComponent newOwner) {
+				System.out.println("focusGained");
+				focusRenderToggle = true;
+				focusRenderToggleTimer = 0;
+				focusToggleTimer.setRepeating(true);
+				focusToggleTimer.setDelay(DEFAULT_FOCUS_RENDER_TOGGLE_TIMER_DELAY);
+				focusToggleTimer.start();
+			}
+		});
 	}
 	
 	public void setSelection(PTextSelection selection) {
@@ -118,17 +155,6 @@ public class PTextArea extends AbstractPComponent {
 			pressedIndex = -1;
 			return;
 		}
-		int selectionFrom = selection.getFrom();
-		int selectionTo = selection.getTo();
-		boolean hasFocus = PCompUtil.hasFocus(this);
-		if (hasFocus && selectionFrom != -1 && selectionFrom == selectionTo) {
-			focusRenderToggleTimer += 1;
-			if (focusRenderToggleTimer >= DEFAULT_FOCUS_RENDER_TOGGLE_TIME) {
-				focusRenderToggleTimer = 0;
-				focusRenderToggle = !focusRenderToggle;
-				fireReRenderEvent();
-			}
-		}
 		PMouse mouse = PCompUtil.getMouseOf(this);
 		if (mouse == null) {
 			pressedIndex = -1;
@@ -160,6 +186,7 @@ public class PTextArea extends AbstractPComponent {
 			pressedIndex = -1;
 		}
 		
+		boolean hasFocus = PCompUtil.hasFocus(this);
 		if (isClicked && !hasFocus && PCompUtil.canTakeFocus(this)) {
 			PCompUtil.takeFocus(this);
 			fireReRenderEvent();
@@ -214,7 +241,7 @@ public class PTextArea extends AbstractPComponent {
 			if (from == to && PCompUtil.hasFocus(this)) {
 				if (focusRenderToggle) {
 					PBounds letterBounds = getBoundsForText(from);
-					int letterX = letterBounds.getX() + x;
+					int letterX = letterBounds.getX() + x - 1;
 					int letterY = letterBounds.getY() + y;
 					int letterFx = letterX + 2;
 					int letterFy = letterBounds.getFinalY() + y;

@@ -13,19 +13,13 @@ import edu.udo.piq.components.PButtonObs;
 import edu.udo.piq.components.PLabel;
 import edu.udo.piq.components.PPanel;
 import edu.udo.piq.components.PPicture;
-import edu.udo.piq.components.PProgressBar;
 import edu.udo.piq.components.PSplitPanel;
-import edu.udo.piq.components.PTable;
-import edu.udo.piq.components.PTableSelection.SelectionMode;
 import edu.udo.piq.components.PTextArea;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
-import edu.udo.piq.components.defaults.DefaultPTableModel;
 import edu.udo.piq.layouts.PBorderLayout;
-import edu.udo.piq.layouts.PCentricLayout;
 import edu.udo.piq.layouts.PListLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
 import edu.udo.piq.layouts.PSplitLayout.Orientation;
-import edu.udo.piq.layouts.PWrapLayout;
 
 public class SwingPTest {
 	public static void main(String[] args) {
@@ -42,7 +36,7 @@ public class SwingPTest {
 	}
 	
 	private final JFrame frame;
-	private final SwingPRoot root;
+	private final JCompPRoot root;
 	
 	public SwingPTest() {
 		frame = new JFrame();
@@ -50,7 +44,7 @@ public class SwingPTest {
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		root = new SwingPRoot();
+		root = new JCompPRoot();
 		frame.setContentPane(root.getPanel());
 		
 		Timer updateTimer = new Timer(10, new ActionListener() {

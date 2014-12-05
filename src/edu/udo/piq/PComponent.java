@@ -181,8 +181,9 @@ public interface PComponent {
 	 * A component can have any number of observers and observers may be added 
 	 * more then once to a component.<br>
 	 * 
-	 * @param obs
+	 * @param obs the obs to be registered
 	 * @throws NullPointerException if obs is null
+	 * @see #removeObs(PComponentObs)
 	 */
 	public void addObs(PComponentObs obs) throws NullPointerException;
 	
@@ -190,10 +191,34 @@ public interface PComponent {
 	 * Removes one occurrence of the observer from this component.<br>
 	 * If the observer was not added to this component previously nothing will happen.<br>
 	 * 
-	 * @param obs the observer
+	 * @param obs the obs to be unregistered
 	 * @throws NullPointerException if obs is null
+	 * @see #addObs(PComponentObs)
 	 */
 	public void removeObs(PComponentObs obs) throws NullPointerException;
+	
+	/**
+	 * Adds an observer to this {@link PComponent}.<br>
+	 * A component can have any number of observers and observers may be added 
+	 * more then once to a component.<br>
+	 * 
+	 * @param obs the obs to be registered
+	 * @throws NullPointerException if obs is null
+	 * @see #removeObs(PFocusObs)
+	 * @see PRoot#addObs(PFocusObs)
+	 */
+	public void addObs(PFocusObs obs) throws NullPointerException;
+	
+	/**
+	 * Removes one occurrence of the observer from this component.<br>
+	 * If the observer was not added to this component previously nothing will happen.<br>
+	 * 
+	 * @param obs the obs to be unregistered
+	 * @throws NullPointerException if obs is null
+	 * @see #addObs(PFocusObs)
+	 * @see PRoot#addObs(PFocusObs)
+	 */
+	public void removeObs(PFocusObs obs) throws NullPointerException;
 	
 	/**
 	 * Sets the id of this {@link PComponent}.<br>

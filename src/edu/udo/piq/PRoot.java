@@ -37,6 +37,18 @@ public interface PRoot extends PComponent {
 	 * Throws an {@link UnsupportedOperationException}.<br>
 	 * @throws UnsupportedOperationException
 	 */
+	public void setDesign(PDesign design) throws UnsupportedOperationException;
+	
+	/**
+	 * Throws an {@link UnsupportedOperationException}.<br>
+	 * @throws UnsupportedOperationException
+	 */
+	public PDesign getDesign() throws UnsupportedOperationException;
+	
+	/**
+	 * Throws an {@link UnsupportedOperationException}.<br>
+	 * @throws UnsupportedOperationException
+	 */
 	public void defaultRender(PRenderer renderer) throws UnsupportedOperationException;
 	
 	/**
@@ -94,7 +106,7 @@ public interface PRoot extends PComponent {
 	
 	/**
 	 * Returns an instance of {@link PFontResource} that represents the 
-	 * desires font defined by the name, size and style.<br>
+	 * desired font defined by the name, size and style.<br>
 	 * The implementation is platform dependent.<br>
 	 * <br>
 	 * The root is free to cache font resources and return the same 
@@ -107,8 +119,10 @@ public interface PRoot extends PComponent {
 	 * @param style the style of the font, either PLAIN, BOLD, ITALIC or BOLD_ITALIC
 	 * @return an instance of {@link PFontResource}
 	 * @throws NullPointerException if fontName is null or style is null
+	 * @throws IllegalArgumentException if an arguments value is not supported
 	 */
-	public PFontResource fetchFontResource(String fontName, int pointSize, Style style) throws NullPointerException;
+	public PFontResource fetchFontResource(String fontName, int pointSize, Style style) 
+			throws NullPointerException, IllegalArgumentException;
 	
 	/**
 	 * Returns an instance of {@link PImageResource} that was loaded from 
@@ -122,7 +136,7 @@ public interface PRoot extends PComponent {
 	 * 
 	 * @param imgPath the path from which the image source is loaded
 	 * @return an instance of {@link PImageResource}
-	 * @throws NullPointerException if imgStream is null
+	 * @throws NullPointerException if imgPath is null
 	 */
 	public PImageResource fetchImageResource(String imgPath) throws NullPointerException;
 	
@@ -169,4 +183,56 @@ public interface PRoot extends PComponent {
 	 * @see #getFocusOwner()
 	 */
 	public void setFocusOwner(PComponent component) throws IllegalStateException;
+	
+	/**
+	 * Registers the given {@link PTimer} at this root.<br>
+	 * A registered Timer will be ticked once every millisecond.<br>
+	 * A timer can not be registered more then once.<br>
+	 * 
+	 * @param timer the timer that is to be registered
+	 * @throws NullPointerException if timer is null
+	 * @throws IllegalArgumentException if timer was already registered
+	 * @see PTimer
+	 * @see #unregisterTimer(PTimer)
+	 */
+	public void registerTimer(PTimer timer) throws NullPointerException;
+	
+	/**
+	 * Unregisters the given {@link PTimer} from this root.<br>
+	 * The unregistered timer will no longer be ticked.<br>
+	 * If the timer has not been registered before an 
+	 * {@link IllegalArgumentException} will be thrown.<br>
+	 * 
+	 * @param timer the timer that is to be unregistered
+	 * @throws NullPointerException if timer is null
+	 * @throws IllegalArgumentException if timer was not registered
+	 * @see PTimer
+	 * @see #registerTimer(PTimer)
+	 */
+	public void unregisterTimer(PTimer timer) throws NullPointerException;
+	
+	/**
+	 * Registers a {@link PFocusObs} at this {@link PRoot}.<br>
+	 * Whenever a {@link PComponent} takes or loses focus all registered focus 
+	 * observers will be notified.<br>
+	 * 
+	 * @param obs the observer to be registered
+	 * @throws NullPointerException if obs is null
+	 * @see #removeObs(PComponentObs)
+	 * @see #getFocusOwner()
+	 * @see #setFocusOwner(PComponent)
+	 */
+	public void addObs(PFocusObs obs) throws NullPointerException;
+	
+	/**
+	 * Unregisters a {@link PFocusObs} at this {@link PRoot}.<br>
+	 * If the observer was not registered before this method does nothing.<br>
+	 * 
+	 * @param obs the observer to be registered
+	 * @throws NullPointerException if obs is null
+	 * @see #addObs(PComponentObs)
+	 * @see #getFocusOwner()
+	 * @see #setFocusOwner(PComponent)
+	 */
+	public void removeObs(PFocusObs obs) throws NullPointerException;
 }

@@ -8,6 +8,7 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PComponentObs;
 import edu.udo.piq.PDesign;
 import edu.udo.piq.PDesignSheet;
+import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PLayout;
 import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PRenderer;
@@ -27,9 +28,35 @@ public class AbstractPComponent implements PComponent {
 	 */
 	private PDesign customDesign;
 	/**
-	 * Holds all observers of this component.
+	 * Holds all {@link PComponentObs}ervers of this component.
 	 */
-	protected final List<PComponentObs> obsList = new CopyOnWriteArrayList<>();
+	protected final List<PComponentObs> compObsList = new CopyOnWriteArrayList<>();
+	/**
+	 * Holds all {@link PFocusObs}ervers of this component.
+	 */
+	protected final List<PFocusObs> focusObsList = new CopyOnWriteArrayList<>();
+	/**
+	 * Is registered at the {@link PRoot} of this component.<br>
+	 * This observer is used to propagate focus events to {@link PFocusObs} 
+	 * that are registered at this component.<br>
+	 */
+	protected final PFocusObs rootFocusObs = new PFocusObs() {
+		public void focusLost(PComponent oldOwner) {
+			if (oldOwner == AbstractPComponent.this) {
+				fireFocusLostEvent();
+			}
+		}
+		public void focusGained(PComponent oldOwner, PComponent newOwner) {
+			if (newOwner == AbstractPComponent.this) {
+				fireFocusGainedEvent(oldOwner);
+			}
+		}
+	};
+	protected final PComponentObs parentObs = new AbstractPComponentObs() {
+		public void rootChanged(PComponent component, PRoot currentRoot) {
+			setCachedRoot(currentRoot);
+		}
+	};
 	/**
 	 * Is registered at the layout of this components parent.<br>
 	 * Notices when this component has been laid out to set the 
@@ -50,6 +77,12 @@ public class AbstractPComponent implements PComponent {
 	 */
 	protected boolean needReLayout = true;
 	/**
+	 * The current root of this components GUI.<br>
+	 * This value is updated in the {@link #parentObs} of this component when a 
+	 * change of the parents root is noticed.<br>
+	 */
+	private PRoot cachedRoot;
+	/**
 	 * These fields are used to store the previous preferred size of this component.<br>
 	 * After the layout has been laid out these values are checked against the 
 	 * new preferred size of this component. If the size has changed the 
@@ -69,6 +102,9 @@ public class AbstractPComponent implements PComponent {
 	 * obtain the root for this component.<br>
 	 */
 	public PRoot getRoot() {
+		if (cachedRoot != null) {
+			return cachedRoot;
+		}
 		return PCompUtil.getRootOf(this);
 	}
 	
@@ -92,6 +128,22 @@ public class AbstractPComponent implements PComponent {
 		} else if (oldParent != null) {
 			fireRemovedEvent();
 		}
+		if (this.parent instanceof PRoot) {
+			setCachedRoot((PRoot) this.parent);
+		} else {
+			setCachedRoot(parent.getRoot());
+		}
+	}
+	
+	private void setCachedRoot(PRoot root) {
+		if (cachedRoot != null) {
+			cachedRoot.removeObs(rootFocusObs);
+		}
+		cachedRoot = root;
+		if (cachedRoot != null) {
+			cachedRoot.addObs(rootFocusObs);
+		}
+		fireRootChangedEvent();
 	}
 	
 	public PComponent getParent() {
@@ -194,30 +246,50 @@ public class AbstractPComponent implements PComponent {
 		if (obs == null) {
 			throw new NullPointerException("obs="+obs);
 		}
-		obsList.add(obs);
+		compObsList.add(obs);
 	}
 	
 	public void removeObs(PComponentObs obs) throws NullPointerException {
 		if (obs == null) {
 			throw new NullPointerException("obs="+obs);
 		}
-		obsList.remove(obs);
+		compObsList.remove(obs);
+	}
+	
+	public void addObs(PFocusObs obs) throws NullPointerException {
+		if (obs == null) {
+			throw new NullPointerException("obs="+obs);
+		}
+		focusObsList.add(obs);
+	}
+	
+	public void removeObs(PFocusObs obs) throws NullPointerException {
+		if (obs == null) {
+			throw new NullPointerException("obs="+obs);
+		}
+		focusObsList.remove(obs);
+	}
+	
+	protected void fireRootChangedEvent() {
+		for (PComponentObs obs : compObsList) {
+			obs.rootChanged(this, cachedRoot);
+		}
 	}
 	
 	protected void fireAddedEvent() {
-		for (PComponentObs obs : obsList) {
+		for (PComponentObs obs : compObsList) {
 			obs.wasAdded(this);
 		}
 	}
 	
 	protected void fireRemovedEvent() {
-		for (PComponentObs obs : obsList) {
+		for (PComponentObs obs : compObsList) {
 			obs.wasRemoved(this);
 		}
 	}
 	
 	protected void firePreferredSizeChangedEvent() {
-		for (PComponentObs obs : obsList) {
+		for (PComponentObs obs : compObsList) {
 			obs.preferredSizeChanged(this);
 		}
 	}
@@ -226,6 +298,18 @@ public class AbstractPComponent implements PComponent {
 		PRoot root = getRoot();
 		if (root != null) {
 			root.reRender(this);
+		}
+	}
+	
+	protected void fireFocusGainedEvent(PComponent oldFocusOwner) {
+		for (PFocusObs obs : focusObsList) {
+			obs.focusGained(oldFocusOwner, this);
+		}
+	}
+	
+	protected void fireFocusLostEvent() {
+		for (PFocusObs obs : focusObsList) {
+			obs.focusLost(this);
 		}
 	}
 	

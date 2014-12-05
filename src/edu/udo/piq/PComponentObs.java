@@ -11,6 +11,15 @@ package edu.udo.piq;
 public interface PComponentObs {
 	
 	/**
+	 * This event is fired when a {@link PComponent} has changed its {@link PRoot}.<br>
+	 * If the currentRoot is null the component is no longer a part of a GUI.<br>
+	 * 
+	 * @param component the component that fired the event
+	 * @param currentRoot a PRoot or null
+	 */
+	public void rootChanged(PComponent component, PRoot currentRoot);
+	
+	/**
 	 * This event is fired when a {@link PComponent} has changed its preferred size.<br>
 	 * 
 	 * @param component the component that changed its preferred size

@@ -27,11 +27,7 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 			needReLayout = true;
 		}
 	};
-	protected final PComponentObs childObs = new PComponentObs() {
-		public void wasRemoved(PComponent component) {
-		}
-		public void wasAdded(PComponent component) {
-		}
+	protected final PComponentObs childObs = new AbstractPComponentObs() {
 		public void preferredSizeChanged(PComponent component) {
 			needReLayout = true;
 			checkForPreferredSizeChange();

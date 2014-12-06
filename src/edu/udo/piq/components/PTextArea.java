@@ -84,11 +84,10 @@ public class PTextArea extends AbstractPComponent {
 		
 		addObs(new PFocusObs() {
 			public void focusLost(PComponent oldOwner) {
-				System.out.println("focusLost");
 				focusToggleTimer.stop();
+				getSelection().clearSelection();
 			}
 			public void focusGained(PComponent oldOwner, PComponent newOwner) {
-				System.out.println("focusGained");
 				focusRenderToggle = true;
 				focusRenderToggleTimer = 0;
 				focusToggleTimer.setRepeating(true);
@@ -187,7 +186,7 @@ public class PTextArea extends AbstractPComponent {
 		}
 		
 		boolean hasFocus = PCompUtil.hasFocus(this);
-		if (isClicked && !hasFocus && PCompUtil.canTakeFocus(this)) {
+		if (isClicked && !hasFocus) {
 			PCompUtil.takeFocus(this);
 			fireReRenderEvent();
 		}

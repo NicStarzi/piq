@@ -113,11 +113,8 @@ public abstract class AbstractPRoot implements PRoot {
 		return focusOwner;
 	}
 	
-	public void setFocusOwner(PComponent component) throws IllegalStateException {
+	public void setFocusOwner(PComponent component) {
 		PComponent oldOwner = getFocusOwner();
-		if (oldOwner != null && component != null) {
-			throw new IllegalStateException("focusOwner="+focusOwner);
-		}
 		if (oldOwner != null) {
 			fireFocusLostEvent(oldOwner);
 		}

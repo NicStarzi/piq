@@ -248,7 +248,6 @@ public class PCompUtil {
 	 * @throws NullPointerException if component is null
 	 * @see PRoot#getFocusOwner()
 	 * @see PRoot#setFocusOwner(PComponent)
-	 * @see #canTakeFocus(PComponent)
 	 * @see #takeFocus(PComponent)
 	 * @see #releaseFocus(PComponent)
 	 */
@@ -261,72 +260,42 @@ public class PCompUtil {
 	}
 	
 	/**
-	 * Returns true if the given {@link PComponent} can take focus within its GUI.<br>
-	 * If this method returns true an immediate call to {@link #takeFocus(PComponent)} 
-	 * will not fail.<br>
-	 * 
-	 * @param component the component that wants to take focus
-	 * @return true if the component could take focus now
-	 * @throws NullPointerException if component is null
-	 * @see #hasFocus(PComponent)
-	 * @see #takeFocus(PComponent)
-	 * @see #releaseFocus(PComponent)
-	 */
-	public static boolean canTakeFocus(PComponent component) {
-		PRoot root = getRootOf(component);
-		if (root == null) {
-			return false;
-		}
-		return root.getFocusOwner() == null;
-	}
-	
-	/**
-	 * Sets the focus for the GUI that component is a part of to the given 
-	 * component.<br>
+	 * Makes component gain the focus in the GUI that it is a part of.<br>
 	 * If component is not part of a GUI an {@link IllegalStateException} 
 	 * is thrown.<br>
-	 * If an other component is already owning the focus an 
-	 * {@link IllegalStateException} is thrown as well.<br>
 	 * 
 	 * @param component the component to take focus
 	 * @throws NullPointerException if component is null
-	 * @throws IllegalStateException if component is not part of a GUI or another component owns the focus already
+	 * @throws IllegalStateException if component is not part of a GUI
 	 * @see PRoot#getFocusOwner()
 	 * @see PRoot#setFocusOwner(PComponent)
 	 * @see #hasFocus(PComponent)
-	 * @see #canTakeFocus(PComponent)
 	 * @see #releaseFocus(PComponent)
 	 */
 	public static void takeFocus(PComponent component) {
 		PRoot root = getRootOf(component);
 		if (root == null) {
-			throw new IllegalStateException(component+" is not part of a GUI.");
+			throw new IllegalStateException(component+".getRoot() == null");
 		}
 		root.setFocusOwner(component);
 	}
 	
 	/**
 	 * Sets the focused component of the GUI that component is a part of to null.<br>
-	 * If component is not part of a GUI an {@link IllegalStateException} is thrown, 
-	 * the same exception is thrown if component is not the current focus owner of 
-	 * its GUI.<br>
+	 * If component is not part of a GUI an {@link IllegalStateException} is thrown.<br>
 	 * 
 	 * @param component a part of the GUI that has its focus owner reset
 	 * @throws NullPointerException if component is null
-	 * @throws IllegalStateException if component is not part of a GUI or is not the current focus owner
+	 * @throws IllegalStateException if component is not part of a GUI
 	 * @see PRoot#getFocusOwner()
 	 * @see PRoot#setFocusOwner(PComponent)
 	 * @see #hasFocus(PComponent)
-	 * @see #canTakeFocus(PComponent)
 	 * @see #takeFocus(PComponent)
 	 */
 	public static void releaseFocus(PComponent component) {
 		PRoot root = getRootOf(component);
 		if (root == null) {
-			throw new IllegalStateException(component+" is not part of a GUI.");
-		}
-		if (root.getFocusOwner() != component) {
-			throw new IllegalStateException(component+" does not have focus.");
+			throw new IllegalStateException(component+".getRoot() == null");
 		}
 		root.setFocusOwner(null);
 	}

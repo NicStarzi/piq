@@ -6,9 +6,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
+import edu.udo.piq.PInsets;
+import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
+import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.components.defaults.DefaultPButtonModel;
 import edu.udo.piq.layouts.PCentricLayout;
@@ -46,6 +49,11 @@ public class PButton extends AbstractPLayoutOwner {
 	}
 	
 	protected void onUpdate() {
+		mouseUpdate();
+		keyboardUpdate();
+	}
+	
+	private void mouseUpdate() {
 		PMouse mouse = PCompUtil.getMouseOf(this);
 		if (mouse == null) {
 			model.setPressed(false);
@@ -62,6 +70,7 @@ public class PButton extends AbstractPLayoutOwner {
 				model.setPressed(false);
 				mouse.setOwner(null);
 				if (PCompUtil.isWithinClippedBounds(this, mouse.getX(), mouse.getY())) {
+					PCompUtil.takeFocus(this);
 					fireClickEvent();
 				}
 			}
@@ -71,6 +80,24 @@ public class PButton extends AbstractPLayoutOwner {
 				model.setPressed(true);
 				mouse.setOwner(this);
 			}
+		}
+	}
+	
+	private void keyboardUpdate() {
+		if (!PCompUtil.hasFocus(this)) {
+			return;
+		}
+		PKeyboard keyboard = PCompUtil.getKeyboardOf(this);
+		if (keyboard == null || (keyboard.getOwner() != null && keyboard.getOwner() != this)) {
+			return;
+		}
+		if (keyboard.isPressed(Key.ENTER)) {
+			model.setPressed(true);
+			keyboard.setOwner(this);
+			fireClickEvent();
+		} else if (keyboard.getOwner() == this) {
+			model.setPressed(false);
+			keyboard.setOwner(null);
 		}
 	}
 	
@@ -118,6 +145,15 @@ public class PButton extends AbstractPLayoutOwner {
 			PRenderUtil.strokeLeft(renderer, x, y, fx, fy);
 			renderer.setColor(PColor.GREY75);
 			renderer.drawQuad(x + 1, y + 1, fx - 1, fy - 1);
+		}
+		if (PCompUtil.hasFocus(this)) {
+			PInsets insets = getLayout().getInsets();
+			int innerX = x + insets.getFromLeft();
+			int innerY = y + insets.getFromTop();
+			int innerFx = fx - insets.getFromRight();
+			int innerFy = fy - insets.getFromBottom();
+			renderer.setColor(PColor.GREY50);
+			PRenderUtil.strokeQuad(renderer, innerX, innerY, innerFx, innerFy);
 		}
 	}
 	

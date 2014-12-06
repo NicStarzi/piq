@@ -179,10 +179,9 @@ public interface PRoot extends PComponent {
 	 * If component is null then no component will have focus anymore.<br>
 	 * 
 	 * @param component the new focused component or null
-	 * @throws IllegalStateException if a component already has the focus and the parameter is not null
 	 * @see #getFocusOwner()
 	 */
-	public void setFocusOwner(PComponent component) throws IllegalStateException;
+	public void setFocusOwner(PComponent component);
 	
 	/**
 	 * Registers the given {@link PTimer} at this root.<br>

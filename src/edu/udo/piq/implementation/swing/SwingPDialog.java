@@ -74,8 +74,8 @@ public class SwingPDialog extends AbstractPDialog implements PDialog {
 	}
 	
 	public void update() {
-		updateTimers();
-		updateLayout();
+		tickAllTimers();
+		updateRootLayout();
 		updateComponents();
 	}
 	

@@ -3,6 +3,8 @@ package edu.udo.piq.components;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JPasswordField;
+
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
@@ -20,6 +22,7 @@ import edu.udo.piq.PTimer;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.components.defaults.DefaultPTextSelection;
 import edu.udo.piq.tools.AbstractPComponent;
+import edu.udo.piq.tools.AbstractPTextSelectionObs;
 import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.tools.PTextPositionTable;
 import edu.udo.piq.util.PCompUtil;
@@ -56,11 +59,7 @@ public class PTextArea extends AbstractPComponent {
 			fireReRenderEvent();
 		}
 	};
-	private final PTextSelectionObs selectionObs = new PTextSelectionObs() {
-		public void selectionRemoved(PTextSelection selection, int index) {
-		}
-		public void selectionAdded(PTextSelection selection, int index) {
-		}
+	private final PTextSelectionObs selectionObs = new AbstractPTextSelectionObs() {
 		public void selectionChanged(PTextSelection selection) {
 			focusRenderToggle = true;
 			focusRenderToggleTimer = 0;
@@ -171,7 +170,7 @@ public class PTextArea extends AbstractPComponent {
 			}
 		} else if (mouse.isPressed(MouseButton.LEFT)) {
 			if (pressedIndex != -1) {
-				selection.setSelection(pressedIndex, getTextIndexAt(mx, my)); // + 1
+				selection.setSelection(pressedIndex, getTextIndexAt(mx, my));
 				isClicked = true;
 			}
 		} else {
@@ -304,6 +303,8 @@ public class PTextArea extends AbstractPComponent {
 		if (text.isEmpty()) {
 			return -1;
 		}
+		JPasswordField pf = null;
+		
 		PDesign design = getDesign();
 		if (design instanceof PTextAreaDesign) {
 			return ((PTextAreaDesign) design).getTextIndexAt(this, x, y);

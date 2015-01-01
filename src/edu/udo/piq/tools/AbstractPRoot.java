@@ -55,7 +55,6 @@ public abstract class AbstractPRoot implements PRoot {
 	private PComponent focusOwner;
 	private String id;
 	private boolean needReLayout = true;
-	private long timerTimeStamp;
 	
 	public AbstractPRoot() {
 		setLayout(new PBorderLayout(this));
@@ -66,26 +65,21 @@ public abstract class AbstractPRoot implements PRoot {
 	 */
 	
 	public void update() {
-		updateTimers();
-		updateLayout();
+		tickAllTimers();
+		updateRootLayout();
 		updateComponents();
 	}
 	
-	protected void updateLayout() {
+	protected void updateRootLayout() {
 		if (needReLayout) {
 			getLayout().layOut();
 			needReLayout = false;
 		}
 	}
 	
-	protected void updateTimers() {
-		long currentTime = System.nanoTime();
-		long passedMillis = (currentTime - timerTimeStamp) / (1_000_000);
-		if (passedMillis > 0) {
-			for (PTimer timer : timerSet) {
-				timer.tick();
-			}
-			timerTimeStamp = currentTime;
+	protected void tickAllTimers() {
+		for (PTimer timer : timerSet) {
+			timer.tick();
 		}
 	}
 	

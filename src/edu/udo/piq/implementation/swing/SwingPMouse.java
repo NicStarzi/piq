@@ -107,6 +107,9 @@ public class SwingPMouse implements PMouse {
 		dy = my - y;
 		x = mx;
 		y = my;
+		if (dx != 0 || dy != 0) {
+			fireMoveEvent();
+		}
 	}
 	
 	public int getX() {
@@ -145,7 +148,7 @@ public class SwingPMouse implements PMouse {
 		obsList.remove(obs);
 	}
 	
-	protected void fireMouseEvent() {
+	protected void fireMoveEvent() {
 		for (PMouseObs obs : obsList) {
 			obs.mouseMoved(this);
 		}

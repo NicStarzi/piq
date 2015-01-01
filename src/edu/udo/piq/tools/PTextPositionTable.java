@@ -41,6 +41,12 @@ public class PTextPositionTable {
 		if (posTable == null) {
 			return -1;
 		}
+		if (y < posTable[0].getY()) {
+			return 0;
+		}
+		if (y > posTable[posTable.length - 1].getFinalY()) {
+			return posTable.length - 1;
+		}
 		for (int i = 0; i < posTable.length; i++) {
 			if (posTable[i].contains(x, y)) {
 				return i;

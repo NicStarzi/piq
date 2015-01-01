@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
@@ -20,6 +22,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
@@ -38,6 +41,14 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 	
 	private final JPanel panel = new JPanel() {
 		private static final long serialVersionUID = 1L;
+		public void addNotify() {
+			super.addNotify();
+			timerUpdate.start();
+		}
+		public void removeNotify() {
+			super.removeNotify();
+			timerUpdate.stop();
+		}
 		public void paintComponent(Graphics g) {
 			g.setColor(Color.BLACK);
 			g.fillRect(0, 0, getWidth(), getHeight());
@@ -51,6 +62,13 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 	private final SwingPMouse mouse = new SwingPMouse(panel);
 	private final SwingPKeyboard keyboard = new SwingPKeyboard(panel);
 	private final JPanelPBounds bounds = new JPanelPBounds(panel);
+	private final Timer timerUpdate = new Timer(1, new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			timersNeedUpdate = true;
+		}
+	});
+	
+	private volatile boolean timersNeedUpdate = false;
 	
 	public JCompPRoot() {
 		super();
@@ -66,6 +84,9 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 		});
 		super.mouse = mouse;
 		super.keyboard = keyboard;
+		
+		timerUpdate.setRepeats(true);
+		timerUpdate.setCoalesce(true);
 	}
 	
 	public JPanel getPanel() {
@@ -84,8 +105,11 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 				return;
 			}
 		}
-		updateTimers();
-		updateLayout();
+		if (timersNeedUpdate) {
+			tickAllTimers();
+			timersNeedUpdate = false;
+		}
+		updateRootLayout();
 		updateComponents();
 		
 		mouse.update();

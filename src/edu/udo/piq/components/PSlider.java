@@ -26,10 +26,7 @@ public class PSlider extends AbstractPComponent {
 	private final PMouseObs mouseObs = new AbstractPMouseObs() {
 		public void mouseMoved(PMouse mouse) {
 			if (mouse.isPressed(MouseButton.LEFT) && getModel().isPressed()) {
-				int mx = mouse.getX();
-				PBounds bnds = getBounds();
-				double valuePercent = (mx - bnds.getX()) / (double) bnds.getWidth();
-				getModel().setValuePercent(valuePercent);
+				updatePosition(mouse);
 			}
 		}
 		public void buttonTriggered(PMouse mouse, MouseButton btn) {
@@ -38,12 +35,19 @@ public class PSlider extends AbstractPComponent {
 				
 				getModel().setPressed(true);
 				PCompUtil.takeFocus(PSlider.this);
+				updatePosition(mouse);
 			}
 		}
 		public void buttonReleased(PMouse mouse, MouseButton btn) {
 			if (btn == MouseButton.LEFT && getModel().isPressed()) {
 				getModel().setPressed(false);
 			}
+		}
+		public void updatePosition(PMouse mouse) {
+			int mx = mouse.getX();
+			PBounds bnds = getBounds();
+			double valuePercent = (mx - bnds.getX()) / (double) bnds.getWidth();
+			getModel().setValuePercent(valuePercent);
 		}
 	};
 	private final PKeyboardObs keyObs = new AbstractPKeyboardObs() {
@@ -82,31 +86,6 @@ public class PSlider extends AbstractPComponent {
 	
 	public PSlider() {
 		setModel(model);
-	}
-	
-	protected void onUpdate() {
-		PMouse mouse = PCompUtil.getMouseOf(this);
-		if (mouse == null) {
-			model.setPressed(false);
-			return;
-		}
-		
-		if (model.isPressed()) {
-			if (!mouse.isPressed(MouseButton.LEFT)) {
-				model.setPressed(false);
-			}
-		} else {
-			if (mouse.isTriggered(MouseButton.LEFT) 
-					&& PCompUtil.isWithinClippedBounds(this, mouse.getX(), mouse.getY())) {
-				model.setPressed(true);
-			}
-		}
-		if (model.isPressed() && mouse.isPressed(MouseButton.LEFT)) {
-			int mx = mouse.getX();
-			PBounds bnds = getBounds();
-			double valuePercent = (mx - bnds.getX()) / (double) bnds.getWidth();
-			model.setValuePercent(valuePercent);
-		}
 	}
 	
 	public void setModel(PSliderModel model) {

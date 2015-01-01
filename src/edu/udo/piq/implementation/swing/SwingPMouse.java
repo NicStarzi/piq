@@ -4,16 +4,18 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 
-import edu.udo.piq.PComponent;
 import edu.udo.piq.PMouse;
+import edu.udo.piq.PMouseObs;
 
 public class SwingPMouse implements PMouse {
 	
-	private PComponent owner;
+	private final List<PMouseObs> obsList = new CopyOnWriteArrayList<>();
 	private boolean[] btnPressed;
 	private boolean[] btnReleased;
 	private boolean[] btnTriggered;
@@ -42,7 +44,6 @@ public class SwingPMouse implements PMouse {
 				setPosition(e.getX(), e.getY());
 			}
 			public void mouseClicked(MouseEvent e) {
-//				onClick(getButtonID(e));
 			}
 		});
 		base.addMouseMotionListener(new MouseMotionListener() {
@@ -66,25 +67,27 @@ public class SwingPMouse implements PMouse {
 		if (btn == null) {
 			return;
 		}
-		btnPressed[btn.ordinal()] = true;
-		btnTriggered[btn.ordinal()] = true;
-		btnReleased[btn.ordinal()] = false;
+		int index = btn.ordinal();
+		if (!btnPressed[index]) {
+			btnPressed[index] = true;
+			btnTriggered[index] = true;
+			btnReleased[index] = false;
+			fireTriggerEvent(btn);
+		}
+		firePressEvent(btn);
 	}
 	
 	private void onRelease(MouseButton btn) {
 		if (btn == null) {
 			return;
 		}
-		btnReleased[btn.ordinal()] = true;
-		btnPressed[btn.ordinal()] = false;
+		int index = btn.ordinal();
+		if (!btnReleased[index]) {
+			btnReleased[index] = true;
+			btnPressed[index] = false;
+			fireReleaseEvent(btn);
+		}
 	}
-	
-//	private void onClick(MouseButton btn) {
-//		if (btn == null) {
-//			return;
-//		}
-//		btnTriggered[btn.ordinal()] = true;
-//	}
 	
 	private MouseButton getButtonID(MouseEvent e) {
 		if (SwingUtilities.isLeftMouseButton(e)) {
@@ -134,12 +137,36 @@ public class SwingPMouse implements PMouse {
 		return btnTriggered[btn.ordinal()];
 	}
 	
-	public void setOwner(PComponent component) {
-		owner = component;
+	public void addObs(PMouseObs obs) {
+		obsList.add(obs);
 	}
 	
-	public PComponent getOwner() {
-		return owner;
+	public void removeObs(PMouseObs obs) {
+		obsList.remove(obs);
+	}
+	
+	protected void fireMouseEvent() {
+		for (PMouseObs obs : obsList) {
+			obs.mouseMoved(this);
+		}
+	}
+	
+	protected void fireTriggerEvent(MouseButton btn) {
+		for (PMouseObs obs : obsList) {
+			obs.buttonTriggered(this, btn);
+		}
+	}
+	
+	protected void fireReleaseEvent(MouseButton btn) {
+		for (PMouseObs obs : obsList) {
+			obs.buttonReleased(this, btn);
+		}
+	}
+	
+	protected void firePressEvent(MouseButton btn) {
+		for (PMouseObs obs : obsList) {
+			obs.buttonPressed(this, btn);
+		}
 	}
 	
 }

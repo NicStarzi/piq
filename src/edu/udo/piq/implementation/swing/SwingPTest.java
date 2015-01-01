@@ -10,9 +10,11 @@ import javax.swing.Timer;
 import edu.udo.piq.PDialog;
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PButtonObs;
+import edu.udo.piq.components.PCheckBox;
 import edu.udo.piq.components.PLabel;
 import edu.udo.piq.components.PPanel;
 import edu.udo.piq.components.PPicture;
+import edu.udo.piq.components.PSlider;
 import edu.udo.piq.components.PSplitPanel;
 import edu.udo.piq.components.PTextArea;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
@@ -118,7 +120,7 @@ public class SwingPTest {
 //		barPnl.addChild(bar, null);
 		
 		PPanel btnPnl = new PPanel();
-		btnPnl.setLayout(new PListLayout(btnPnl));
+		btnPnl.setLayout(new PListLayout(btnPnl, ListAlignment.FROM_LEFT));
 		root.getLayout().addChild(btnPnl, PBorderLayout.Constraint.BOTTOM);
 		
 		PButton change = new PButton();
@@ -136,6 +138,12 @@ public class SwingPTest {
 			}
 		});
 		btnPnl.addChild(change, null);
+		
+		PCheckBox chkBx = new PCheckBox();
+		btnPnl.addChild(chkBx, null);
+		
+		PSlider sld = new PSlider();
+		btnPnl.addChild(sld, null);
 		
 //		PScrollPanel scrollPanel = new PScrollPanel();
 //		root.getLayout().addChild(scrollPanel, PBorderLayout.Constraint.CENTER);

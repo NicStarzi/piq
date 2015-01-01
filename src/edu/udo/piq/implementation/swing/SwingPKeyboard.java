@@ -2,17 +2,19 @@ package edu.udo.piq.implementation.swing;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.JComponent;
 
-import edu.udo.piq.PComponent;
 import edu.udo.piq.PKeyboard;
+import edu.udo.piq.PKeyboardObs;
 
 public class SwingPKeyboard implements PKeyboard {
 	
+	private final List<PKeyboardObs> obsList = new CopyOnWriteArrayList<>();
 	private final boolean[] nowPressed = new boolean[Key.values().length];
 	private final boolean[] prevPressed = new boolean[Key.values().length];
-	private PComponent owner;
 	
 	public SwingPKeyboard(JComponent base) {
 		base.addKeyListener(new KeyListener() {
@@ -31,12 +33,17 @@ public class SwingPKeyboard implements PKeyboard {
 		int keyCode = e.getKeyCode();
 		Key key = keyCodeToKey(keyCode);
 		if (key != null) {
-			int id = key.ordinal();
-			prevPressed[id] = nowPressed[id];
-			nowPressed[id] = newPressedValue;
-//			System.out.println("key="+key+", isPressed="+isPressed(key));
-//			System.out.println("key="+key+", isTriggered="+isTriggered(key));
-//			System.out.println("key="+key+", isReleased="+isReleased(key));
+			int index = key.ordinal();
+			prevPressed[index] = nowPressed[index];
+			nowPressed[index] = newPressedValue;
+			if (isTriggered(key)) {
+				fireTriggerEvent(key);
+			} else if (isReleased(key)) {
+				fireReleaseEvent(key);
+			}
+			if (newPressedValue) {
+				firePressEvent(key);
+			}
 		}
 	}
 	
@@ -56,12 +63,30 @@ public class SwingPKeyboard implements PKeyboard {
 		return !nowPressed[key.ordinal()] && prevPressed[key.ordinal()];
 	}
 	
-	public void setOwner(PComponent component) {
-		owner = component;
+	public void addObs(PKeyboardObs obs) {
+		obsList.add(obs);
 	}
 	
-	public PComponent getOwner() {
-		return owner;
+	public void removeObs(PKeyboardObs obs) {
+		obsList.remove(obs);
+	}
+	
+	protected void firePressEvent(Key key) {
+		for (PKeyboardObs obs : obsList) {
+			obs.keyPressed(this, key);
+		}
+	}
+	
+	protected void fireTriggerEvent(Key key) {
+		for (PKeyboardObs obs : obsList) {
+			obs.keyTriggered(this, key);
+		}
+	}
+	
+	protected void fireReleaseEvent(Key key) {
+		for (PKeyboardObs obs : obsList) {
+			obs.keyReleased(this, key);
+		}
 	}
 	
 	public static Key keyCodeToKey(int keyCode) {
@@ -138,6 +163,14 @@ public class SwingPKeyboard implements PKeyboard {
 			return Key.Y;
 		case KeyEvent.VK_Z:
 			return Key.Z;
+		case KeyEvent.VK_UP:
+			return Key.UP;
+		case KeyEvent.VK_DOWN:
+			return Key.DOWN;
+		case KeyEvent.VK_LEFT:
+			return Key.LEFT;
+		case KeyEvent.VK_RIGHT:
+			return Key.RIGHT;
 		case KeyEvent.VK_CONTROL:
 			return Key.CTRL;
 		case KeyEvent.VK_ALT:
@@ -171,5 +204,6 @@ public class SwingPKeyboard implements PKeyboard {
 		}
 		return null;
 	}
+
 	
 }

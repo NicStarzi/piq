@@ -171,6 +171,22 @@ public interface PComponent {
 	public PSize getDefaultPreferredSize();
 	
 	/**
+	 * Returns true if this {@link PComponent} may become the focus owner of a GUI.<br>
+	 * If this method returns false this method will be ignored when the user is 
+	 * tabbing through components with the focus traversal keys.<br>
+	 * A component that is not focusable may still get the focus programmatically 
+	 * through the use of the {@link PRoot#setFocusOwner(PComponent)} or 
+	 * {@link PCompUtil#takeFocus(PComponent)} method.<br>
+	 * 
+	 * @return true if this component should be included in focus traversal
+	 * @see PRoot#setFocusOwner(PComponent)
+	 * @see PRoot#getFocusOwner()
+	 * @see PCompUtil#takeFocus(PComponent)
+	 * @see PCompUtil#hasFocus(PComponent)
+	 */
+	public boolean isFocusable();
+	
+	/**
 	 * Called by the {@link PRoot} of this GUI-tree to update 
 	 * the behavior of this component.<br>
 	 */

@@ -5,6 +5,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import edu.udo.piq.components.PSliderModel;
 import edu.udo.piq.components.PSliderModelObs;
+import edu.udo.piq.components.util.PModelHistory;
 
 public class DefaultPSliderModel implements PSliderModel {
 	
@@ -104,6 +105,10 @@ public class DefaultPSliderModel implements PSliderModel {
 	
 	public boolean isPressed() {
 		return pressed;
+	}
+	
+	public PModelHistory getHistory() {
+		return null;
 	}
 	
 	public void addObs(PSliderModelObs obs) {

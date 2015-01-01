@@ -9,8 +9,12 @@ import edu.udo.piq.PComponentObs;
 import edu.udo.piq.PDesign;
 import edu.udo.piq.PDesignSheet;
 import edu.udo.piq.PFocusObs;
+import edu.udo.piq.PKeyboard;
+import edu.udo.piq.PKeyboardObs;
 import edu.udo.piq.PLayout;
 import edu.udo.piq.PLayoutObs;
+import edu.udo.piq.PMouse;
+import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
@@ -96,6 +100,11 @@ public class AbstractPComponent implements PComponent {
 	 * classes simple name.
 	 */
 	private String id = null;
+	/**
+	 * Cached for removing observers
+	 */
+	private PKeyboard currentKeyboard;
+	private PMouse currentMouse;
 	
 	/**
 	 * Uses the utility method {@link PCompUtil#getRootOf(PComponent)} to 
@@ -144,6 +153,24 @@ public class AbstractPComponent implements PComponent {
 			cachedRoot.addObs(rootFocusObs);
 		}
 		fireRootChangedEvent();
+		if (getKeyboardObs() != null) {
+			if (currentKeyboard != null) {
+				currentKeyboard.removeObs(getKeyboardObs());
+			}
+			currentKeyboard = cachedRoot.getKeyboard();
+			if (currentKeyboard != null) {
+				currentKeyboard.addObs(getKeyboardObs());
+			}
+		}
+		if (getMouseObs() != null) {
+			if (currentMouse != null) {
+				currentMouse.removeObs(getMouseObs());
+			}
+			currentMouse = cachedRoot.getMouse();
+			if (currentMouse != null) {
+				currentMouse.addObs(getMouseObs());
+			}
+		}
 	}
 	
 	public PComponent getParent() {
@@ -242,6 +269,16 @@ public class AbstractPComponent implements PComponent {
 	protected void onUpdate() {
 	}
 	
+	/**
+	 * The default implementation always returns false. Components that make use of 
+	 * {@link PKeyboard} input should overwrite this method to return true.<br>
+	 * 
+	 * @return always false
+	 */
+	public boolean isFocusable() {
+		return false;
+	}
+	
 	public void addObs(PComponentObs obs) throws NullPointerException {
 		if (obs == null) {
 			throw new NullPointerException("obs="+obs);
@@ -323,6 +360,14 @@ public class AbstractPComponent implements PComponent {
 			lastPrefH = currentPrefSize.getHeight();
 			firePreferredSizeChangedEvent();
 		}
+	}
+	
+	protected PKeyboardObs getKeyboardObs() {
+		return null;
+	}
+	
+	protected PMouseObs getMouseObs() {
+		return null;
 	}
 	
 	public void setID(String value) {

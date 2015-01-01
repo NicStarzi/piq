@@ -250,6 +250,10 @@ public abstract class AbstractPRoot implements PRoot {
 		return true;
 	}
 	
+	public boolean isFocusable() {
+		return false;
+	}
+	
 	public void setID(String value) {
 		id = value;
 	}

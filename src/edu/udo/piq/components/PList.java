@@ -9,6 +9,7 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PLayout;
 import edu.udo.piq.PMouse;
+import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PMouse.MouseButton;
@@ -18,11 +19,34 @@ import edu.udo.piq.components.defaults.DefaultPListSelection;
 import edu.udo.piq.layouts.PListLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
+import edu.udo.piq.tools.AbstractPMouseObs;
 import edu.udo.piq.tools.UnmodifiablePLayoutView;
 import edu.udo.piq.util.PCompUtil;
 
 public class PList extends AbstractPLayoutOwner {
 	
+	private final PMouseObs mouseObs = new AbstractPMouseObs() {
+		public void buttonTriggered(PMouse mouse, MouseButton btn) {
+			if (getModel() == null || getSelection() == null) {
+				return;
+			}
+			PKeyboard keyboard = PCompUtil.getKeyboardOf(PList.this);
+			if (PCompUtil.isWithinClippedBounds(PList.this, mouse.getX(), mouse.getY())) {
+				PComponent selected = getListLayout().getChildAt(mouse.getX(), mouse.getY());
+				if (selected != null) {
+					Integer index = Integer.valueOf(getListLayout().getChildIndex(selected));
+					
+					if (keyboard != null && keyboard.isPressed(Key.CTRL)) {
+						toggleSelection(index);
+					} else if (keyboard != null && keyboard.isPressed(Key.SHIFT)) {
+						rangeSelection(index);
+					} else {
+						setSelection(index);
+					}
+				}
+			}
+		}
+	};
 	private final PListModelObs modelObs = new PListModelObs() {
 		public void elementAdded(PListModel model, Object element, int index) {
 			PList.this.elementAdded(index);
@@ -112,36 +136,12 @@ public class PList extends AbstractPLayoutOwner {
 		renderer.drawQuad(x + 0, y + 0, fx - 0, fy - 0);
 	}
 	
-	protected void onUpdate() {
-		if (getModel() == null || getSelection() == null) {
-			return;
-		}
-		PMouse mouse = PCompUtil.getMouseOf(this);
-		PKeyboard keyboard = PCompUtil.getKeyboardOf(this);
-		if (mouse == null) {
-			return;
-		}
-		PComponent mouseOwner = mouse.getOwner();
-		if (mouseOwner != null && mouseOwner != this) {
-			return;
-		}
-		
-		if (mouse.isTriggered(MouseButton.LEFT) 
-				&& PCompUtil.isWithinClippedBounds(this, mouse.getX(), mouse.getY())) {
-			
-			PComponent selected = getListLayout().getChildAt(mouse.getX(), mouse.getY());
-			if (selected != null) {
-				Integer index = Integer.valueOf(getListLayout().getChildIndex(selected));
-				
-				if (keyboard.isPressed(Key.CTRL)) {
-					toggleSelection(index);
-				} else if (keyboard.isPressed(Key.SHIFT)) {
-					rangeSelection(index);
-				} else {
-					setSelection(index);
-				}
-			}
-		}
+	public boolean isFocusable() {
+		return true;
+	}
+	
+	protected PMouseObs getMouseObs() {
+		return mouseObs;
 	}
 	
 	private void rangeSelection(Integer index) {

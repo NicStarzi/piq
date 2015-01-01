@@ -159,18 +159,12 @@ public class PTextArea extends AbstractPComponent {
 			pressedIndex = -1;
 			return;
 		}
-		PComponent mouseOwner = mouse.getOwner();
-		if (mouseOwner != null && mouseOwner != this) {
-			pressedIndex = -1;
-			return;
-		}
 		
 		boolean isClicked = false;
 		int mx = mouse.getX();
 		int my = mouse.getY();
 		if (mouse.isTriggered(MouseButton.LEFT)) {
 			if (PCompUtil.isWithinClippedBounds(this, mx, my)) {
-				mouse.setOwner(this);
 				pressedIndex = getTextIndexAt(mx, my);
 				selection.setSelection(pressedIndex, pressedIndex);
 				isClicked = true;
@@ -181,7 +175,6 @@ public class PTextArea extends AbstractPComponent {
 				isClicked = true;
 			}
 		} else {
-			mouse.setOwner(null);
 			pressedIndex = -1;
 		}
 		

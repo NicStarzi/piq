@@ -49,10 +49,6 @@ public class PProgressBar extends AbstractPComponent {
 		return model;
 	}
 	
-	protected void onUpdate() {
-		// Do nothing
-	}
-	
 	public void defaultRender(PRenderer renderer) {
 		PBounds bounds = getBounds();
 		int x = bounds.getX();

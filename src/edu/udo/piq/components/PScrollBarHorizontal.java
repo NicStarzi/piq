@@ -2,7 +2,6 @@ package edu.udo.piq.components;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
-import edu.udo.piq.PComponent;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
@@ -52,22 +51,15 @@ public class PScrollBarHorizontal extends AbstractPComponent {
 			pressed = false;
 			return;
 		}
-		PComponent mouseOwner = mouse.getOwner();
-		if (mouseOwner != null && mouseOwner != this) {
-			pressed = false;
-			return;
-		}
 		
 		if (pressed) {
 			if (!mouse.isPressed(MouseButton.LEFT)) {
 				pressed = false;
-				mouse.setOwner(null);
 			}
 		} else {
 			if (mouse.isTriggered(MouseButton.LEFT) 
 					&& PCompUtil.isWithinClippedBounds(this, mouse.getX(), mouse.getY())) {
 				pressed = true;
-				mouse.setOwner(this);
 			}
 		}
 		if (pressed && mouse.isPressed(MouseButton.LEFT)) {

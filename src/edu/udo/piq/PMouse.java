@@ -64,30 +64,9 @@ public interface PMouse {
 	 */
 	public boolean isTriggered(MouseButton btn) throws NullPointerException;
 	
-	/**
-	 * Sets the owning {@link PComponent} of the {@link PMouse}.<br>
-	 * A mouse can only have one owner at a time. If the owner is set 
-	 * any previous owner will be forgotten.<br>
-	 * The owner of the mouse can be set to null in which case the 
-	 * mouse will not be owned by any component.<br>
-	 * If a component registers itself as the mouse owner it should 
-	 * reset the owner to null after it is done using the mouse.<br>
-	 * 
-	 * @param component the new owner of this mouse
-	 * @see #getOwner()
-	 */
-	public void setOwner(PComponent component);
+	public void addObs(PMouseObs obs);
 	
-	/**
-	 * Returns the current owner of the mouse or null if the mouse 
-	 * is not being owned by a component at the moment.<br>
-	 * If a component takes ownership of the mouse other components 
-	 * <i>should</i> respect that and not use the mouse at the same time.<br>
-	 * 
-	 * @return the current owner of the mouse
-	 * @see #setOwner(PComponent)
-	 */
-	public PComponent getOwner();
+	public void removeObs(PMouseObs obs);
 	
 	/**
 	 * An enumeration of different mouse buttons which can be used by the GUI.<br>

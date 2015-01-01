@@ -140,10 +140,6 @@ public class PTable extends AbstractPLayoutOwner {
 		if (mouse == null) {
 			return;
 		}
-		PComponent mouseOwner = mouse.getOwner();
-		if (mouseOwner != null && mouseOwner != this) {
-			return;
-		}
 		
 		if (mouse.isTriggered(MouseButton.LEFT) 
 				&& PCompUtil.isWithinClippedBounds(this, mouse.getX(), mouse.getY())) {

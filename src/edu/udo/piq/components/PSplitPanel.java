@@ -6,18 +6,52 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PMouse;
+import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.components.defaults.DefaultPSplitPanelModel;
 import edu.udo.piq.layouts.PSplitLayout;
 import edu.udo.piq.layouts.PSplitLayout.Constraint;
 import edu.udo.piq.layouts.PSplitLayout.Orientation;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
+import edu.udo.piq.tools.AbstractPMouseObs;
 import edu.udo.piq.util.PCompUtil;
 
 public class PSplitPanel extends AbstractPLayoutOwner {
 	
 	protected final PDivider divider;
 	private final List<PSplitPanelObs> obsList = new CopyOnWriteArrayList<>();
+	private final PMouseObs mouseObs = new AbstractPMouseObs() {
+		public void mouseMoved(PMouse mouse) {
+			if (pressed) {
+				if (mouse.isPressed(MouseButton.LEFT)) {
+					PBounds bounds = getBounds();
+					int mousePos;
+					double maxPos;
+					if (getOrientation() == Orientation.HORIZONTAL) {
+						mousePos = mouse.getX() - bounds.getX();
+						maxPos = bounds.getWidth();
+					} else {
+						mousePos = mouse.getY() - bounds.getY();
+						maxPos = bounds.getHeight();
+					}
+					double newPos = mousePos / maxPos;;
+					getModel().setSplitPosition(newPos);
+					fireDividerMovedEvent();
+				} else {
+					pressed = false;
+					fireDividerReleasedEvent();
+				}
+			}
+		}
+		public void buttonTriggered(PMouse mouse, MouseButton btn) {
+			if (btn == MouseButton.LEFT 
+					&& PCompUtil.isWithinClippedBounds(divider, mouse.getX(), mouse.getY())) {
+				
+				pressed = true;
+				fireDividerTouchedEvent();
+			}
+		}
+	};
 	private final PSplitPanelModelObs modelObs = new PSplitPanelModelObs() {
 		public void positionChanged(PSplitPanelModel model) {
 			getLayout().setSplitPosition(model.getSplitPosition());
@@ -38,52 +72,12 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 		return false;
 	}
 	
-	protected void onUpdate() {
-		PMouse mouse = PCompUtil.getMouseOf(this);
-		if (mouse == null) {
-			if (pressed) {
-				pressed = false;
-				fireDividerReleasedEvent();
-			}
-			return;
-		}
-		PComponent mouseOwner = mouse.getOwner();
-		if (mouseOwner != null && mouseOwner != this) {
-			if (pressed) {
-				pressed = false;
-				fireDividerReleasedEvent();
-			}
-			return;
-		}
-		if (pressed) {
-			if (mouse.isPressed(MouseButton.LEFT)) {
-				PBounds bounds = getBounds();
-				int mousePos;
-				double maxPos;
-				if (getOrientation() == Orientation.HORIZONTAL) {
-					mousePos = mouse.getX() - bounds.getX();
-					maxPos = bounds.getWidth();
-				} else {
-					mousePos = mouse.getY() - bounds.getY();
-					maxPos = bounds.getHeight();
-				}
-				double newPos = mousePos / maxPos;;
-				getModel().setSplitPosition(newPos);
-				fireDividerMovedEvent();
-			} else {
-				pressed = false;
-				mouse.setOwner(null);
-				fireDividerReleasedEvent();
-			}
-		} else {
-			if (mouse.isTriggered(MouseButton.LEFT) 
-					&& PCompUtil.isWithinClippedBounds(divider, mouse.getX(), mouse.getY())) {
-				
-				pressed = true;
-				mouse.setOwner(this);
-				fireDividerTouchedEvent();
-			}
-		}
+	public boolean isFocusable() {
+		return true;
+	}
+	
+	protected PMouseObs getMouseObs() {
+		return mouseObs;
 	}
 	
 	public PSplitLayout getLayout() {

@@ -8,14 +8,18 @@ import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PKeyboard;
+import edu.udo.piq.PKeyboardObs;
 import edu.udo.piq.PMouse;
+import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
 import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.components.defaults.DefaultPButtonModel;
 import edu.udo.piq.layouts.PCentricLayout;
+import edu.udo.piq.tools.AbstractPKeyboardObs;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
+import edu.udo.piq.tools.AbstractPMouseObs;
 import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.util.PCompUtil;
 import edu.udo.piq.util.PRenderUtil;
@@ -23,6 +27,41 @@ import edu.udo.piq.util.PRenderUtil;
 public class PButton extends AbstractPLayoutOwner {
 	
 	protected final List<PButtonObs> obsList = new CopyOnWriteArrayList<>();
+	private final PKeyboardObs keyObs = new AbstractPKeyboardObs() {
+		public void keyTriggered(PKeyboard keyboard, Key key) {
+			if (!PCompUtil.hasFocus(PButton.this)) {
+				return;
+			}
+			if (key == Key.ENTER) {
+				model.setPressed(true);
+			}
+		}
+		public void keyReleased(PKeyboard keyboard, Key key) {
+			if (!PCompUtil.hasFocus(PButton.this)) {
+				return;
+			}
+			if (key == Key.ENTER) {
+				model.setPressed(false);
+				fireClickEvent();
+			}
+		}
+	};
+	private final PMouseObs mouseObs = new AbstractPMouseObs() {
+		public void buttonTriggered(PMouse mouse, MouseButton btn) {
+			if (btn == MouseButton.LEFT && PCompUtil.isWithinClippedBounds(PButton.this, mouse.getX(), mouse.getY())) {
+				model.setPressed(true);
+			}
+		}
+		public void buttonReleased(PMouse mouse, MouseButton btn) {
+			if (btn == MouseButton.LEFT) {
+				model.setPressed(false);
+				if (PCompUtil.isWithinClippedBounds(PButton.this, mouse.getX(), mouse.getY())) {
+					PCompUtil.takeFocus(PButton.this);
+					fireClickEvent();
+				}
+			}
+		}
+	};
 	protected final PButtonModelObs modelObs = new PButtonModelObs() {
 		public void onChange(PButtonModel model) {
 			fireReRenderEvent();
@@ -46,59 +85,6 @@ public class PButton extends AbstractPLayoutOwner {
 	
 	public PCentricLayout getLayout() {
 		return (PCentricLayout) super.getLayout();
-	}
-	
-	protected void onUpdate() {
-		mouseUpdate();
-		keyboardUpdate();
-	}
-	
-	private void mouseUpdate() {
-		PMouse mouse = PCompUtil.getMouseOf(this);
-		if (mouse == null) {
-			model.setPressed(false);
-			return;
-		}
-		PComponent mouseOwner = mouse.getOwner();
-		if (mouseOwner != null && mouseOwner != this) {
-			model.setPressed(false);
-			return;
-		}
-		
-		if (model.isPressed()) {
-			if (!mouse.isPressed(MouseButton.LEFT)) {
-				model.setPressed(false);
-				mouse.setOwner(null);
-				if (PCompUtil.isWithinClippedBounds(this, mouse.getX(), mouse.getY())) {
-					PCompUtil.takeFocus(this);
-					fireClickEvent();
-				}
-			}
-		} else {
-			if (mouse.isTriggered(MouseButton.LEFT) 
-					&& PCompUtil.isWithinClippedBounds(this, mouse.getX(), mouse.getY())) {
-				model.setPressed(true);
-				mouse.setOwner(this);
-			}
-		}
-	}
-	
-	private void keyboardUpdate() {
-		if (!PCompUtil.hasFocus(this)) {
-			return;
-		}
-		PKeyboard keyboard = PCompUtil.getKeyboardOf(this);
-		if (keyboard == null || (keyboard.getOwner() != null && keyboard.getOwner() != this)) {
-			return;
-		}
-		if (keyboard.isPressed(Key.ENTER)) {
-			model.setPressed(true);
-			keyboard.setOwner(this);
-			fireClickEvent();
-		} else if (keyboard.getOwner() == this) {
-			model.setPressed(false);
-			keyboard.setOwner(null);
-		}
 	}
 	
 	public void setModel(PButtonModel model) {
@@ -162,6 +148,18 @@ public class PButton extends AbstractPLayoutOwner {
 		int w = layoutSize.getWidth() + 8;
 		int h = layoutSize.getHeight() + 8;
 		return new ImmutablePSize(w, h);
+	}
+	
+	public boolean isFocusable() {
+		return true;
+	}
+	
+	protected PKeyboardObs getKeyboardObs() {
+		return keyObs;
+	}
+	
+	protected PMouseObs getMouseObs() {
+		return mouseObs;
 	}
 	
 	public void addObs(PButtonObs obs) {

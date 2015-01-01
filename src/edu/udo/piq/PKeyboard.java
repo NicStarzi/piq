@@ -32,31 +32,9 @@ public interface PKeyboard {
 	 */
 	public boolean isTriggered(Key key);
 	
-	/**
-	 * Sets the owning {@link PComponent} of the {@link PKeyboard}.<br>
-	 * A keyboard can only have one owner at a time. If the owner is 
-	 * any previous owner will be forgotten.<br>
-	 * The owner of the keyboard can be set to null in which case 
-	 * the keyboard will not be owned by any component.<br>
-	 * If a component registers itself as the keyboard owner it should 
-	 * reset the owner to null after it is done using the keyboard.<br>
-	 * 
-	 * @param component the new owner of this keyboard
-	 * @see #getOwner()
-	 */
-	public void setOwner(PComponent component);
+	public void addObs(PKeyboardObs obs);
 	
-	/**
-	 * Returns the current owner of the keyboard or null if the keyboard 
-	 * is not being owned by a component at the moment.<br>
-	 * If a component takes ownership of the keyboard other components 
-	 * <i>should</i> respect that and not use the keyboard at the same 
-	 * time.<br>
-	 * 
-	 * @return the current owner of the keyboard
-	 * @see #setOwner(PComponent)
-	 */
-	public PComponent getOwner();
+	public void removeObs(PKeyboardObs obs);
 	
 	/**
 	 * An enumeration of all Keyboard keys that are supported by 
@@ -72,6 +50,8 @@ public interface PKeyboard {
 		
 		NUM_0, NUM_1, NUM_2, NUM_3, NUM_4, 
 		NUM_5, NUM_6, NUM_7, NUM_8, NUM_9,
+		
+		UP, DOWN, LEFT, RIGHT,
 		
 		SHIFT, TAB, CTRL, SPACE, ENTER, BACKSPACE, 
 		DEL, HOME, PAGE_UP, PAGE_DOWN, ALT_GR, 

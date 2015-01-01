@@ -2,21 +2,74 @@ package edu.udo.piq.components;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
-import edu.udo.piq.PComponent;
+import edu.udo.piq.PKeyboard;
+import edu.udo.piq.PKeyboardObs;
 import edu.udo.piq.PMouse;
+import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
+import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.components.defaults.DefaultPSliderModel;
 import edu.udo.piq.tools.AbstractPComponent;
+import edu.udo.piq.tools.AbstractPKeyboardObs;
+import edu.udo.piq.tools.AbstractPMouseObs;
 import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PRenderUtil;
 
 public class PSlider extends AbstractPComponent {
 	
 	private static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(100, 20);
 	private static final int DEFAULT_SLIDER_WIDTH = 12;
 	
+	private final PMouseObs mouseObs = new AbstractPMouseObs() {
+		public void mouseMoved(PMouse mouse) {
+			if (mouse.isPressed(MouseButton.LEFT) && getModel().isPressed()) {
+				int mx = mouse.getX();
+				PBounds bnds = getBounds();
+				double valuePercent = (mx - bnds.getX()) / (double) bnds.getWidth();
+				getModel().setValuePercent(valuePercent);
+			}
+		}
+		public void buttonTriggered(PMouse mouse, MouseButton btn) {
+			if (btn == MouseButton.LEFT && !getModel().isPressed()
+					&& PCompUtil.isWithinClippedBounds(PSlider.this, mouse.getX(), mouse.getY())) {
+				
+				getModel().setPressed(true);
+				PCompUtil.takeFocus(PSlider.this);
+			}
+		}
+		public void buttonReleased(PMouse mouse, MouseButton btn) {
+			if (btn == MouseButton.LEFT && getModel().isPressed()) {
+				getModel().setPressed(false);
+			}
+		}
+	};
+	private final PKeyboardObs keyObs = new AbstractPKeyboardObs() {
+		public void keyPressed(PKeyboard keyboard, Key key) {
+			if (!PCompUtil.hasFocus(PSlider.this)) {
+				return;
+			}
+			if (key == Key.UP || key == Key.RIGHT) {
+				getModel().setValue(getModel().getValue() + 1);
+			} else if (key == Key.DOWN || key == Key.LEFT) {
+				getModel().setValue(getModel().getValue() - 1);
+			}
+			if (keyboard.isPressed(Key.CTRL)) {
+				if (key == Key.Z) {
+					if (getModel().getHistory() != null && getModel().getHistory().canUndo()) {
+						getModel().getHistory().undo();
+					}
+				}
+				if (key == Key.Y) {
+					if (getModel().getHistory() != null && getModel().getHistory().canRedo()) {
+						getModel().getHistory().redo();
+					}
+				}
+			}
+		}
+	};
 	protected final PSliderModelObs modelObs = new PSliderModelObs() {
 		public void rangeChanged(PSliderModel model) {
 			fireReRenderEvent();
@@ -37,22 +90,15 @@ public class PSlider extends AbstractPComponent {
 			model.setPressed(false);
 			return;
 		}
-		PComponent mouseOwner = mouse.getOwner();
-		if (mouseOwner != null && mouseOwner != this) {
-			model.setPressed(false);
-			return;
-		}
 		
 		if (model.isPressed()) {
 			if (!mouse.isPressed(MouseButton.LEFT)) {
 				model.setPressed(false);
-				mouse.setOwner(null);
 			}
 		} else {
 			if (mouse.isTriggered(MouseButton.LEFT) 
 					&& PCompUtil.isWithinClippedBounds(this, mouse.getX(), mouse.getY())) {
 				model.setPressed(true);
-				mouse.setOwner(this);
 			}
 		}
 		if (model.isPressed() && mouse.isPressed(MouseButton.LEFT)) {
@@ -99,10 +145,27 @@ public class PSlider extends AbstractPComponent {
 		
 		renderer.setColor(PColor.GREY50);
 		renderer.drawQuad(sliderX, y, sliderFx, fy);
+		
+		if (PCompUtil.hasFocus(this)) {
+			renderer.setColor(PColor.GREY50);
+			PRenderUtil.strokeQuad(renderer, x, y, fx, fy, 1);
+		}
 	}
 	
 	public boolean isDefaultOpaque() {
 		return false;
+	}
+	
+	public boolean isFocusable() {
+		return true;
+	}
+	
+	protected PKeyboardObs getKeyboardObs() {
+		return keyObs;
+	}
+	
+	protected PMouseObs getMouseObs() {
+		return mouseObs;
 	}
 	
 	public PSize getDefaultPreferredSize() {

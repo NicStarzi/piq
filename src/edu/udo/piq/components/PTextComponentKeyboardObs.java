@@ -13,10 +13,6 @@ public abstract class PTextComponentKeyboardObs implements PKeyboardObs {
 	public abstract boolean skipInput(PKeyboard keyboard, Key key);
 	
 	public final void keyPressed(PKeyboard keyboard, Key key) {
-//		keyTriggered(keyboard, key);
-	}
-	
-	public final void keyTriggered(PKeyboard keyboard, Key key) {
 		if (skipInput(keyboard, key)) {
 			return;
 		}
@@ -27,6 +23,9 @@ public abstract class PTextComponentKeyboardObs implements PKeyboardObs {
 		} else {
 			controlInput(keyboard, key);
 		}
+	}
+	
+	public final void keyTriggered(PKeyboard keyboard, Key key) {
 	}
 	
 	public final void keyReleased(PKeyboard keyboard, Key key) {

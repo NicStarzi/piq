@@ -58,6 +58,22 @@ public interface PBounds extends PSize {
 	public int getFinalY();
 	
 	/**
+	 * The x coordinate of the center of the rectangle 
+	 * defined by this PBounds instance.<br>
+	 * 
+	 * @return x + width / 2
+	 */
+	public int getCenterX();
+	
+	/**
+	 * The y coordinate of the center of the rectangle 
+	 * defined by this PBounds instance.<br>
+	 * 
+	 * @return y + height / 2
+	 */
+	public int getCenterY();
+	
+	/**
 	 * Returns true if the point defined by x and y is 
 	 * within these bounds. Otherwise false is returned.<br>
 	 * 

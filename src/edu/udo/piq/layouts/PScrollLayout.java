@@ -3,12 +3,12 @@ package edu.udo.piq.layouts;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PLayout;
-import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.PScrollBarHorizontal;
 import edu.udo.piq.components.PScrollBarModel;
 import edu.udo.piq.components.PScrollBarModelObs;
 import edu.udo.piq.tools.AbstractPLayout;
+import edu.udo.piq.tools.AbstractPLayoutObs;
 
 public class PScrollLayout extends AbstractPLayout {
 	
@@ -26,11 +26,7 @@ public class PScrollLayout extends AbstractPLayout {
 	
 	public PScrollLayout(PComponent component) {
 		super(component);
-		addObs(new PLayoutObs() {
-			public void layoutInvalidated(PLayout layout) {
-			}
-			public void childLaidOut(PLayout layout, PComponent child, Object constraint) {
-			}
+		addObs(new AbstractPLayoutObs() {
 			public void childAdded(PLayout layout, PComponent child, Object constraint) {
 				Constraint constr = (Constraint) constraint;
 				setComp(constr, child);

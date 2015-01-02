@@ -12,6 +12,14 @@ public abstract class AbstractPBounds implements PBounds {
 		return getY() + getHeight();
 	}
 	
+	public int getCenterX() {
+		return getX() + getWidth() / 2;
+	}
+	
+	public int getCenterY() {
+		return getY() + getHeight() / 2;
+	}
+	
 	public boolean contains(int x, int y) {
 		return x >= getX() && x <= getFinalX() && y >= getY() && y <= getFinalY();
 	}

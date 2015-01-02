@@ -23,14 +23,15 @@ import edu.udo.piq.components.defaults.DefaultPTextSelection;
 import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.AbstractPMouseObs;
 import edu.udo.piq.tools.AbstractPTextSelectionObs;
-import edu.udo.piq.tools.ImmutablePBounds;
 import edu.udo.piq.tools.ImmutablePSize;
-import edu.udo.piq.tools.PTextPositionTable;
+import edu.udo.piq.tools.PTextIndex;
+import edu.udo.piq.tools.PTextIndexTable;
 import edu.udo.piq.util.PCompUtil;
 
 public class PTextArea extends AbstractPComponent {
 	
-	protected static final String DEFAULT_FONT_NAME = "Arial";
+	public static final int INDEX_NO_SELECTION = PTextSelection.INDEX_NO_SELECTION;
+	protected static final String DEFAULT_FONT_NAME = "Arial";//"Monospaced";
 	protected static final int DEFAULT_FONT_SIZE = 14;
 	protected static final Style DEFAULT_FONT_STYLE = Style.PLAIN;
 	protected static final PColor DEFAULT_TEXT_COLOR = PColor.BLACK;
@@ -45,7 +46,7 @@ public class PTextArea extends AbstractPComponent {
 			int selectionFrom = selection.getFrom();
 			int selectionTo = selection.getTo();
 			if (PCompUtil.hasFocus(PTextArea.this) 
-					&& selectionFrom != -1 && selectionFrom == selectionTo) 
+					&& selectionFrom != INDEX_NO_SELECTION && selectionFrom == selectionTo) 
 			{
 				focusRenderToggleTimer += 1;
 				if (focusRenderToggleTimer >= DEFAULT_FOCUS_RENDER_TOGGLE_TIMER_DELAY) {
@@ -73,50 +74,96 @@ public class PTextArea extends AbstractPComponent {
 			PTextSelection selection = getSelection();
 			int from = selection.getFrom();
 			int to = selection.getTo();
-			int newFrom = from;
-			int newTo = to;
+			int first = selection.getFirst();
+			int second = selection.getSecond();
+			int newFirst = first;
+			int newSecond = second;
 			
 			String oldText = getText();
 			String newText = oldText;
+			
+			boolean shift = keyboard.isPressed(Key.SHIFT);
 			
 			switch (key) {
 			case BACKSPACE:
 				if (from != to) {
 					newText = oldText.substring(0, from) + oldText.substring(to);
-					newFrom = from;
-					newTo = from;
+					newFirst = from;
+					newSecond = from;
 				} else if (from > 0) {
 					newText = oldText.substring(0, from - 1) + oldText.substring(to);
-					newFrom = from - 1;
-					newTo = newFrom;
+					newFirst = from - 1;
+					newSecond = newFirst;
 				}
 				break;
 			case DEL:
 				if (from != to) {
 					newText = oldText.substring(0, from) + oldText.substring(to);
-					newFrom = from;
-					newTo = from;
+					newFirst = from;
+					newSecond = from;
 				} else if (from < oldText.length()) {
 					newText = oldText.substring(0, from) + oldText.substring(to + 1);
-					newFrom = from;
-					newTo = from;
+					newFirst = from;
+					newSecond = from;
+				}
+				break;
+			case UP:
+				int rowFirstUp = posTable.getRowOf(newFirst) - 1;
+				int colFirstUp = posTable.getColumnOf(newFirst);
+				newFirst = posTable.getIndex(rowFirstUp, colFirstUp);
+				if (!shift) {
+					newSecond = newFirst;
 				}
 				break;
 			case DOWN:
-				break;
-			case END:
+				int rowFirstDwn = posTable.getRowOf(newFirst) + 1;
+				int colFirstDwn = posTable.getColumnOf(newFirst);
+				newFirst = posTable.getIndex(rowFirstDwn, colFirstDwn);
+				if (!shift) {
+					newSecond = newFirst;
+				}
 				break;
 			case HOME:
+				newFirst = 0;
+				if (!shift) {
+					newSecond = newFirst;
+				}
+				break;
+			case END:
+				newFirst = newText.length();
+				if (!shift) {
+					newSecond = newFirst;
+				}
 				break;
 			case LEFT:
+				if (!shift && from != to) {
+					newFirst = from;
+					newSecond = from;
+				} else {
+					if (newFirst > 0) {
+						newFirst = newFirst - 1;
+					}
+					if (!shift) {
+						newSecond = newFirst;
+					}
+				}
+				break;
+			case RIGHT:
+				if (!shift && from != to) {
+					newFirst = to;
+					newSecond = to;
+				} else {
+					if (newFirst < newText.length()) {
+						newFirst = newFirst + 1;
+					}
+					if (!shift) {
+						newSecond = newFirst;
+					}
+				}
 				break;
 			case PAGE_DOWN:
 				break;
 			case PAGE_UP:
-				break;
-			case RIGHT:
-				break;
-			case UP:
 				break;
 			default:
 				break;
@@ -125,8 +172,8 @@ public class PTextArea extends AbstractPComponent {
 			if (oldText != newText) {
 				getModel().setText(newText);
 			}
-			if (newFrom != from || newTo != to) {
-				selection.setSelection(newFrom, newTo);
+			if (newFirst != first || newSecond != second) {
+				selection.setSelection(newFirst, newSecond);
 			}
 		}
 		public boolean skipInput(PKeyboard keyboard, Key key) {
@@ -137,10 +184,10 @@ public class PTextArea extends AbstractPComponent {
 	};
 	private final PMouseObs mouseObs = new AbstractPMouseObs() {
 		public void mouseMoved(PMouse mouse) {
-			if (mouse.isPressed(MouseButton.LEFT) && pressedIndex != -1) {
+			if (mouse.isPressed(MouseButton.LEFT) && pressedIndex != INDEX_NO_SELECTION) {
 				int mx = mouse.getX();
 				int my = mouse.getY();
-				selection.setSelection(pressedIndex, getTextIndexAt(mx, my));
+				selection.setSelection(getTextIndexAt(mx, my), pressedIndex);
 				if (!PCompUtil.hasFocus(PTextArea.this)) {
 					PCompUtil.takeFocus(PTextArea.this);
 				}
@@ -162,8 +209,8 @@ public class PTextArea extends AbstractPComponent {
 			}
 		}
 		public void buttonReleased(PMouse mouse, MouseButton btn) {
-			if (btn == MouseButton.LEFT && pressedIndex != -1) {
-				pressedIndex = -1;
+			if (btn == MouseButton.LEFT && pressedIndex != INDEX_NO_SELECTION) {
+				pressedIndex = INDEX_NO_SELECTION;
 				fireReRenderEvent();
 			}
 		}
@@ -184,8 +231,8 @@ public class PTextArea extends AbstractPComponent {
 	};
 	private PTextModel model;
 	private PTextSelection selection;
-	private PTextPositionTable posTable = new PTextPositionTable();
-	private int pressedIndex;
+	private PTextIndexTable posTable = new PTextIndexTable();
+	private int pressedIndex = INDEX_NO_SELECTION;
 	private int focusRenderToggleTimer;
 	private boolean focusRenderToggle;
 	
@@ -264,10 +311,6 @@ public class PTextArea extends AbstractPComponent {
 	}
 	
 	public void defaultRender(PRenderer renderer) {
-		String text = getText();
-		if (text == null || text.isEmpty()) {
-			return;
-		}
 		PFontResource font = getDefaultFont();
 		PBounds bounds = getBounds();
 		int x = bounds.getX();
@@ -277,6 +320,11 @@ public class PTextArea extends AbstractPComponent {
 		
 		renderer.setColor(getDefaultBackgroundColor());
 		renderer.drawQuad(x, y, fx, fy);
+		
+		String text = getText();
+		if (text == null || text.isEmpty()) {
+			return;
+		}
 		
 		renderer.setColor(getDefaultTextColor());
 		StringBuilder sb = new StringBuilder();
@@ -304,7 +352,7 @@ public class PTextArea extends AbstractPComponent {
 		int from = selection.getFrom();
 		int to = selection.getTo();
 		
-		if (from != -1) {
+		if (from != INDEX_NO_SELECTION) {
 			if (from == to && PCompUtil.hasFocus(this)) {
 				if (focusRenderToggle) {
 					PBounds letterBounds = getBoundsForLetter(from);
@@ -382,14 +430,29 @@ public class PTextArea extends AbstractPComponent {
 		return mouseObs;
 	}
 	
-	protected int getTextIndexAt(int x, int y) {
-		String text = getText();
-		if (text.isEmpty()) {
-			return -1;
-		}
+	protected int getTextIndex(int row, int column) {
 		PFontResource font = getDefaultFont();
 		if (font == null) {
-			return -1;
+			return INDEX_NO_SELECTION;
+		}
+		String text = getText();
+		if (text.isEmpty()) {
+			return 0;
+		}
+		if (posTable.isInvalid()) {
+			buildTextPositionTable();
+		}
+		return posTable.getIndex(row, column);
+	}
+	
+	protected int getTextIndexAt(int x, int y) {
+		PFontResource font = getDefaultFont();
+		if (font == null) {
+			return INDEX_NO_SELECTION;
+		}
+		String text = getText();
+		if (text.isEmpty()) {
+			return 0;
 		}
 		if (posTable.isInvalid()) {
 			buildTextPositionTable();
@@ -426,21 +489,27 @@ public class PTextArea extends AbstractPComponent {
 		int y = 0;
 		int lineH = 0;
 		
+		int rowID = 0;
+		int colID = 0;
+		
 		for (int i = 0; i < text.length(); i++) {
 			char letter = text.charAt(i);
 			PSize letterSize = font.getSize(Character.toString(letter));
 			int w = letterSize.getWidth();
 			int h = letterSize.getHeight();
 			
-			posTable.setBounds(i, new ImmutablePBounds(x, y, w, h));
+			posTable.setBounds(i, new PTextIndex(x, y, w, h, rowID, colID));
 			
 			x += w;
 			if (lineH < h) {
 				lineH = h;
 			}
+			colID += 1;
 			if (letter == '\n') {
 				y += lineH;
 				x = 0;
+				colID = 0;
+				rowID += 1;
 			}
 		}
 	}

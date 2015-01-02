@@ -111,34 +111,62 @@ public class PWrapLayout extends PListLayout {
 	
 	public PSize getPreferredSize() {
 		PInsets insets = getInsets();
-		int prefW = insets.getHorizontal();
-		int prefH = insets.getVertical();
-		boolean isVertical = getAlignment().isVertical();
+		PBounds bnds = getOwnerBounds();
+		int w = bnds.getWidth() - insets.getHorizontal();
+		int h = bnds.getHeight() - insets.getVertical();
+		
+		int prefW = 0;
+		int prefH = 0;
+		
+		int curPrefW = 0;
+		int curPrefH = 0;
+		
+		boolean isHorizontal = getAlignment().isHorizontal();
 		for (int i = 0; i < compList.size(); i++) {
 			PComponent comp = compList.get(i);
 			PSize compPrefSize = getPreferredSizeOf(comp);
 			int compPrefW = compPrefSize.getWidth();
 			int compPrefH = compPrefSize.getHeight();
 			
-			if (isVertical) {
-				prefW += compPrefW + gap;
-				if (prefH < compPrefH) {
-					prefH = compPrefH;
+			if (isHorizontal) {
+				if (curPrefW + compPrefW > w) {
+					if (prefW < curPrefW) {
+						prefW = curPrefW;
+					}
+					prefH += curPrefH + gap;
+					curPrefW = 0;
+					curPrefH = 0;
+				}
+				curPrefW += compPrefW + gap;
+				if (curPrefH < compPrefH) {
+					curPrefH = compPrefH;
 				}
 			} else {
-				prefH += compPrefH + gap;
-				if (prefW < compPrefW) {
-					prefW = compPrefW;
+				if (curPrefH + compPrefH > h) {
+					if (prefH < curPrefH) {
+						prefH = curPrefH;
+					}
+					prefW += curPrefW + gap;
+					curPrefW = 0;
+					curPrefH = 0;
+				}
+				curPrefH += compPrefH + gap;
+				if (curPrefW < compPrefW) {
+					curPrefW = compPrefW;
 				}
 			}
 		}
+		prefW += curPrefW;
+		prefH += curPrefH;
 		if (!compList.isEmpty()) {
-			if (isVertical) {
+			if (isHorizontal) {
 				prefW -= gap;
 			} else {
 				prefH -= gap;
 			}
 		}
+		prefW += insets.getHorizontal();
+		prefH += insets.getVertical();
 		prefSize.setWidth(prefW);
 		prefSize.setHeight(prefH);
 		return prefSize;

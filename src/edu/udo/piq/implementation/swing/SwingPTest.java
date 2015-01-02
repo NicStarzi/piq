@@ -11,17 +11,25 @@ import edu.udo.piq.PDialog;
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PButtonObs;
 import edu.udo.piq.components.PCheckBox;
+import edu.udo.piq.components.PCheckBoxObs;
 import edu.udo.piq.components.PLabel;
+import edu.udo.piq.components.PList;
 import edu.udo.piq.components.PPanel;
 import edu.udo.piq.components.PPicture;
+import edu.udo.piq.components.PProgressBar;
 import edu.udo.piq.components.PSlider;
+import edu.udo.piq.components.PSliderModel;
+import edu.udo.piq.components.PSliderModelObs;
 import edu.udo.piq.components.PSplitPanel;
 import edu.udo.piq.components.PTextArea;
+import edu.udo.piq.components.defaults.DefaultPListModel;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PListLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
 import edu.udo.piq.layouts.PSplitLayout.Orientation;
+import edu.udo.piq.layouts.PWrapLayout;
+import edu.udo.piq.tools.AbstractPTextModel;
 
 public class SwingPTest {
 	public static void main(String[] args) {
@@ -70,29 +78,29 @@ public class SwingPTest {
 		left.getModel().setImagePath("Tex.png");
 		splitH.setFirstComponent(left);
 		
-		PPicture right = new PPicture();
-		right.getModel().setImagePath("Tex2.png");
-		splitH.setSecondComponent(right);
+//		PPicture right = new PPicture();
+//		right.getModel().setImagePath("Tex2.png");
+//		splitH.setSecondComponent(right);
 		
-//		DefaultPListModel listModel = new DefaultPListModel();
-//		
-//		PList list = new PList();
-//		list.setModel(listModel);
-//		splitV.setSecondComponent(list);
-//		
-//		String[] items = new String[] {
-//			"A",
-//			"B",
-//			"C",
-//			"D",
-//			"E",
-//			"F",
-//			"G",
-//			"H",
-//		};
-//		for (int i = 0; i < items.length; i++) {
-//			listModel.addElement(items[i]);
-//		}
+		DefaultPListModel listModel = new DefaultPListModel();
+		
+		PList list = new PList();
+		list.setModel(listModel);
+		
+		String[] items = new String[] {
+			"A",
+			"B",
+			"C",
+			"D",
+			"E",
+			"F",
+			"G",
+			"H",
+		};
+		for (int i = 0; i < items.length; i++) {
+			listModel.addElement(items[i]);
+		}
+		splitH.setSecondComponent(list);
 		
 //		final DefaultPTableModel tableModel = new DefaultPTableModel(new Object[][] {
 //				{"John", "Smith", "001"},
@@ -120,30 +128,82 @@ public class SwingPTest {
 //		barPnl.addChild(bar, null);
 		
 		PPanel btnPnl = new PPanel();
-		btnPnl.setLayout(new PListLayout(btnPnl, ListAlignment.FROM_LEFT));
+		btnPnl.setLayout(new PWrapLayout(btnPnl, ListAlignment.FROM_LEFT));
+//		btnPnl.setLayout(new PListLayout(btnPnl, ListAlignment.FROM_LEFT));
 		root.getLayout().addChild(btnPnl, PBorderLayout.Constraint.BOTTOM);
 		
-		PButton change = new PButton();
-		change.setContent(new PLabel(new DefaultPTextModel("Change")));
-		change.addObs(new PButtonObs() {
-			public void onClick(PButton button) {
-//				bar.getModel().setValue(bar.getModel().getValue() + 1);
-//				try {
-//					String content = tableModel.getCell(2, 2).toString();
-//					int asInt = Integer.parseInt(content);
-//					tableModel.setCell(Integer.valueOf(asInt + 1), 2, 2);
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//				}
-			}
-		});
-		btnPnl.addChild(change, null);
+		final PButton btnChange = new PButton();
+		btnChange.setContent(new PSlider());
+//		btnChange.setContent(new PLabel(new DefaultPTextModel("Change")));
+		btnPnl.addChild(btnChange, null);
 		
-		PCheckBox chkBx = new PCheckBox();
+		final PProgressBar prgBar = new PProgressBar();
+		prgBar.getModel().setMaximum(17);
+		btnPnl.addChild(prgBar, null);
+		
+		final PCheckBox chkBx = new PCheckBox();
 		btnPnl.addChild(chkBx, null);
 		
-		PSlider sld = new PSlider();
+		final PLabel lblChkBx = new PLabel();
+		btnPnl.addChild(lblChkBx, null);
+		
+		final PSlider sld = new PSlider();
+		sld.getModel().setMinValue(13);
+		sld.getModel().setMaxValue(77);
 		btnPnl.addChild(sld, null);
+		
+		final PLabel lblSld = new PLabel();
+		btnPnl.addChild(lblSld, null);
+		
+		btnChange.addObs(new PButtonObs() {
+			boolean increment = true;
+			public void onClick(PButton button) {
+				int val = prgBar.getModel().getValue();
+				val = increment ? val + 1 : val - 1;
+				prgBar.getModel().setValue(val);
+				if (prgBar.getModel().getValue() == prgBar.getModel().getMaxValue() || prgBar.getModel().getValue() == 0) {
+					increment = !increment;
+				}
+			}
+		});
+		chkBx.addObs(new PCheckBoxObs() {
+			public void clicked(PCheckBox checkBox) {
+				lblChkBx.getModel().setText(null);
+				lblSld.getModel().setText(null);
+			}
+		});
+		sld.getModel().addObs(new PSliderModelObs() {
+			public void valueChanged(PSliderModel model) {
+				lblSld.getModel().setText(null);
+			}
+			public void rangeChanged(PSliderModel model) {
+				lblSld.getModel().setText(null);
+			}
+		});
+		lblChkBx.setModel(new AbstractPTextModel() {
+			public void setText(Object text) {
+				fireTextChangeEvent();
+			}
+			public Object getText() {
+				if (chkBx.isChecked()) {
+					return "Relative";
+				}
+				return "Absolute";
+			}
+		});
+		lblSld.setModel(new AbstractPTextModel() {
+			public void setText(Object text) {
+				fireTextChangeEvent();
+			}
+			public Object getText() {
+				if (chkBx.isChecked()) {
+					double percent = sld.getModel().getValuePercent();
+					double val = ((int) (10000 * percent)) / 100.0;
+					return val+"%";
+				}
+				return sld.getModel().getValue();
+			}
+		});
 		
 //		PScrollPanel scrollPanel = new PScrollPanel();
 //		root.getLayout().addChild(scrollPanel, PBorderLayout.Constraint.CENTER);

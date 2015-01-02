@@ -176,8 +176,8 @@ public class PListLayout extends AbstractPLayout {
 	}
 	
 	public PSize getPreferredSize() {
-		int prefW = getInsets().getHorizontal();
-		int prefH = getInsets().getVertical();
+		int prefW = 0;
+		int prefH = 0;
 		boolean isHorizontal = getAlignment().isHorizontal();
 		for (int i = 0; i < compList.size(); i++) {
 			PComponent comp = compList.get(i);
@@ -189,12 +189,12 @@ public class PListLayout extends AbstractPLayout {
 				prefW += compPrefW + gap;
 				if (prefH < compPrefH) {
 					prefH = compPrefH;
-				}					
+				}
 			} else {
 				prefH += compPrefH + gap;
 				if (prefW < compPrefW) {
 					prefW = compPrefW;
-				}					
+				}
 			}
 		}
 		if (!compList.isEmpty()) {
@@ -204,6 +204,8 @@ public class PListLayout extends AbstractPLayout {
 				prefH -= gap;
 			}
 		}
+		prefH += getInsets().getVertical();
+		prefW += getInsets().getHorizontal();
 		prefSize.setWidth(prefW);
 		prefSize.setHeight(prefH);
 		return prefSize;

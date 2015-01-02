@@ -131,6 +131,8 @@ public class PTable extends AbstractPLayoutOwner {
 		}
 	}
 	
+	private void doNothing() {}
+	
 	protected void onUpdate() {
 		if (getModel() == null || getSelection() == null) {
 			return;

@@ -127,10 +127,12 @@ public class AbstractPComponent implements PComponent {
 		PComponent oldParent = this.parent;
 		if (oldParent != null) {
 			oldParent.getLayout().removeObs(parentLayoutObs);
+			oldParent.removeObs(parentObs);
 		}
 		this.parent = parent;
 		if (this.parent != null) {
 			this.parent.getLayout().addObs(parentLayoutObs);
+			this.parent.addObs(parentObs);
 		}
 		if (oldParent == null && this.parent != null) {
 			fireAddedEvent();
@@ -145,6 +147,9 @@ public class AbstractPComponent implements PComponent {
 	}
 	
 	private void setCachedRoot(PRoot root) {
+		if (cachedRoot == root) {
+			return;
+		}
 		if (cachedRoot != null) {
 			cachedRoot.removeObs(rootFocusObs);
 		}
@@ -157,7 +162,7 @@ public class AbstractPComponent implements PComponent {
 			if (currentKeyboard != null) {
 				currentKeyboard.removeObs(getKeyboardObs());
 			}
-			currentKeyboard = cachedRoot.getKeyboard();
+			currentKeyboard = cachedRoot == null ? null : cachedRoot.getKeyboard();
 			if (currentKeyboard != null) {
 				currentKeyboard.addObs(getKeyboardObs());
 			}
@@ -166,7 +171,7 @@ public class AbstractPComponent implements PComponent {
 			if (currentMouse != null) {
 				currentMouse.removeObs(getMouseObs());
 			}
-			currentMouse = cachedRoot.getMouse();
+			currentMouse = cachedRoot == null ? null : cachedRoot.getMouse();
 			if (currentMouse != null) {
 				currentMouse.addObs(getMouseObs());
 			}

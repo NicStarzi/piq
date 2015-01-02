@@ -1,12 +1,15 @@
 package edu.udo.piq.components;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PKeyboard;
+import edu.udo.piq.PKeyboardObs;
 import edu.udo.piq.PLayout;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouseObs;
@@ -18,6 +21,7 @@ import edu.udo.piq.components.defaults.DefaultPListModel;
 import edu.udo.piq.components.defaults.DefaultPListSelection;
 import edu.udo.piq.layouts.PListLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
+import edu.udo.piq.tools.AbstractPKeyboardObs;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.tools.AbstractPMouseObs;
 import edu.udo.piq.tools.UnmodifiablePLayoutView;
@@ -25,6 +29,33 @@ import edu.udo.piq.util.PCompUtil;
 
 public class PList extends AbstractPLayoutOwner {
 	
+	private final PKeyboardObs keyObs = new AbstractPKeyboardObs() {
+		public void keyPressed(PKeyboard keyboard, Key key) {
+			if (!PCompUtil.hasFocus(PList.this) || getSelection() == null) {
+				return;
+			}
+			PListSelection selection = getSelection();
+			Set<Integer> allSelected = selection.getSelection();
+			if (allSelected.isEmpty()) {
+				return;
+			}
+			if (key == Key.UP || key == Key.LEFT) {
+				int index = Collections.min(allSelected) - 1;
+				if (keyboard != null && keyboard.isPressed(Key.SHIFT)) {
+					rangeSelection(index);
+				} else {
+					setSelection(index);
+				}
+			} else if (key == Key.DOWN || key == Key.RIGHT) {
+				int index = Collections.max(allSelected) + 1;
+				if (keyboard != null && keyboard.isPressed(Key.SHIFT)) {
+					rangeSelection(index);
+				} else {
+					setSelection(index);
+				}
+			}
+		}
+	};
 	private final PMouseObs mouseObs = new AbstractPMouseObs() {
 		public void buttonTriggered(PMouse mouse, MouseButton btn) {
 			if (getModel() == null || getSelection() == null) {
@@ -42,6 +73,9 @@ public class PList extends AbstractPLayoutOwner {
 						rangeSelection(index);
 					} else {
 						setSelection(index);
+					}
+					if (!PCompUtil.hasFocus(PList.this)) {
+						PCompUtil.takeFocus(PList.this);
 					}
 				}
 			}
@@ -138,6 +172,10 @@ public class PList extends AbstractPLayoutOwner {
 	
 	public boolean isFocusable() {
 		return true;
+	}
+	
+	protected PKeyboardObs getKeyboardObs() {
+		return keyObs;
 	}
 	
 	protected PMouseObs getMouseObs() {

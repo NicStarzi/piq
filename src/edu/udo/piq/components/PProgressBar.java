@@ -18,6 +18,11 @@ public class PProgressBar extends AbstractPComponent {
 	protected static final String DEFAULT_FONT_NAME = "Arial";
 	protected static final int DEFAULT_FONT_SIZE = 14;
 	protected static final Style DEFAULT_FONT_STYLE = Style.PLAIN;
+	protected static final PColor DEFAULT_TEXT_COLOR = PColor.BLACK;
+	protected static final PColor DEFAULT_TEXT_HIGHLIGHT_COLOR = PColor.WHITE;
+	protected static final PColor DEFAULT_BACKGROUND_COLOR = PColor.WHITE;
+	protected static final PColor DEFAULT_BORDER_COLOR = PColor.BLACK;
+	protected static final PColor DEFAULT_PROGRESS_COLOR = PColor.BLUE;
 	
 	private final PProgressBarModelObs modelObs = new PProgressBarModelObs() {
 		public void valueChanged(PProgressBarModel model) {
@@ -58,7 +63,7 @@ public class PProgressBar extends AbstractPComponent {
 		int fx = bounds.getFinalX();
 		int fy = bounds.getFinalY();
 		
-		renderer.setColor(PColor.BLACK);
+		renderer.setColor(getDefaultBorderColor());
 		PRenderUtil.strokeQuad(renderer, x, y, fx, fy);
 		
 		double value = getModel().getValue();
@@ -67,11 +72,11 @@ public class PProgressBar extends AbstractPComponent {
 		int barFx = x + 1 + (int) ((fx - x - 2) * valuePercent);
 		
 		if (value > 0) {
-			renderer.setColor(PColor.BLUE);
+			renderer.setColor(getDefaultProgressColor());
 			renderer.drawQuad(x + 1, y + 1, barFx, fy - 1);
 		}
 		if (value < maxValue) {
-			renderer.setColor(PColor.WHITE);
+			renderer.setColor(getDefaultBackgroundColor());
 			renderer.drawQuad(barFx + 1, y + 1, fx - 1, fy - 1);
 		}
 		
@@ -88,24 +93,44 @@ public class PProgressBar extends AbstractPComponent {
 		int textFx = textX + textW;
 		
 		if (textFx < barFx) {
-			renderer.setColor(PColor.WHITE);
+			renderer.setColor(getDefaultTextHighlightColor());
 			renderer.drawString(font, text, textX, textY);
 		} else if (textX > barFx) {
-			renderer.setColor(PColor.BLACK);
+			renderer.setColor(getDefaultTextColor());
 			renderer.drawString(font, text, textX, textY);
 		} else {
 			renderer.setClipBounds(x, y, barFx, fy);
-			renderer.setColor(PColor.WHITE);
+			renderer.setColor(getDefaultTextHighlightColor());
 			renderer.drawString(font, text, textX, textY);
 			
 			renderer.setClipBounds(barFx, y, fx, fy);
-			renderer.setColor(PColor.BLACK);
+			renderer.setColor(getDefaultTextColor());
 			renderer.drawString(font, text, textX, textY);
 		}
 	}
 	
 	public PSize getDefaultPreferredSize() {
 		return DEFAULT_PREFERRED_SIZE;
+	}
+	
+	protected PColor getDefaultTextColor() {
+		return DEFAULT_TEXT_COLOR;
+	}
+	
+	protected PColor getDefaultTextHighlightColor() {
+		return DEFAULT_TEXT_HIGHLIGHT_COLOR;
+	}
+	
+	protected PColor getDefaultBackgroundColor() {
+		return DEFAULT_BACKGROUND_COLOR;
+	}
+	
+	protected PColor getDefaultBorderColor() {
+		return DEFAULT_BORDER_COLOR;
+	}
+	
+	protected PColor getDefaultProgressColor() {
+		return DEFAULT_PROGRESS_COLOR;
 	}
 	
 	protected PFontResource getDefaultFont() {

@@ -5,6 +5,7 @@ import edu.udo.piq.tools.AbstractPTextSelection;
 
 public class DefaultPTextSelection extends AbstractPTextSelection implements PTextSelection {
 	
+	private boolean firstIsFrom = true;
 	private int from = -1;
 	private int to = -1;
 	
@@ -22,15 +23,17 @@ public class DefaultPTextSelection extends AbstractPTextSelection implements PTe
 		return index >= from && index <= to;
 	}
 	
-	public void setSelection(int index1, int index2) {
+	public void setSelection(int first, int second) {
 		int oldFrom = from;
 		int oldTo = to;
-		if (index1 <= index2) {
-			from = index1;
-			to = index2;
+		if (first <= second) {
+			firstIsFrom = true;
+			from = first;
+			to = second;
 		} else {
-			from = index2;
-			to = index1;
+			firstIsFrom = false;
+			from = second;
+			to = first;
 		}
 		if (from == -1) {
 			to = -1;
@@ -63,6 +66,20 @@ public class DefaultPTextSelection extends AbstractPTextSelection implements PTe
 	
 	public int getTo() {
 		return to;
+	}
+	
+	public int getFirst() {
+		if (firstIsFrom) {
+			return getFrom();
+		}
+		return getTo();
+	}
+	
+	public int getSecond() {
+		if (firstIsFrom) {
+			return getTo();
+		}
+		return getFrom();
 	}
 	
 }

@@ -32,6 +32,36 @@ public interface PKeyboard {
 	 */
 	public boolean isTriggered(Key key);
 	
+	/**
+	 * Returns true if the shift key is currently being pressed or the capslock key is toggled. 
+	 * @return
+	 */
+	public boolean isCapsToggled();
+	
+	/**
+	 * Returns true if the alt key is currently being pressed. 
+	 * @return
+	 */
+	public boolean isAltToggled();
+	
+	/**
+	 * Returns true if the alt graph key is currently being pressed. 
+	 * @return
+	 */
+	public boolean isAltGraphToggled();
+	
+	/**
+	 * Returns true if the ctrl key is currently being pressed. 
+	 * @return
+	 */
+	public boolean isCtrlToggled();
+	
+	/**
+	 * Returns true if the meta key is currently being pressed. 
+	 * @return
+	 */
+	public boolean isMetaToggled();
+	
 	public void addObs(PKeyboardObs obs);
 	
 	public void removeObs(PKeyboardObs obs);

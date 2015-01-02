@@ -5,8 +5,6 @@ import edu.udo.piq.PDesign;
 
 public interface PTextAreaDesign extends PDesign {
 	
-	public int getTextIndexAt(PTextArea txtArea, int x, int y);
-	
-	public PBounds getBoundsForText(PTextArea txtArea, int index);
+	public PBounds getBoundsForLetter(PTextArea txtArea, int index);
 	
 }

@@ -15,6 +15,12 @@ public class SwingPKeyboard implements PKeyboard {
 	private final List<PKeyboardObs> obsList = new CopyOnWriteArrayList<>();
 	private final boolean[] nowPressed = new boolean[Key.values().length];
 	private final boolean[] prevPressed = new boolean[Key.values().length];
+	private boolean shiftDown;
+	private boolean capsLockDown;
+	private boolean altDown;
+	private boolean altGraphDown;
+	private boolean ctrlDown;
+	private boolean metaDown;
 	
 	public SwingPKeyboard(JComponent base) {
 		base.addKeyListener(new KeyListener() {
@@ -30,8 +36,17 @@ public class SwingPKeyboard implements PKeyboard {
 	}
 	
 	private void updateKey(KeyEvent e, boolean newPressedValue) {
+		shiftDown = e.isShiftDown();
+		altDown = e.isAltDown();
+		altGraphDown = e.isAltGraphDown();
+		ctrlDown = e.isControlDown();
+		metaDown = e.isMetaDown();
+		
 		int keyCode = e.getKeyCode();
 		Key key = keyCodeToKey(keyCode);
+		if (key == Key.CAPSLOCK && newPressedValue) {
+			capsLockDown = !capsLockDown;
+		}
 		if (key != null) {
 			int index = key.ordinal();
 			prevPressed[index] = nowPressed[index];
@@ -61,6 +76,26 @@ public class SwingPKeyboard implements PKeyboard {
 	
 	public boolean isReleased(Key key) {
 		return !nowPressed[key.ordinal()] && prevPressed[key.ordinal()];
+	}
+	
+	public boolean isCapsToggled() {
+		return shiftDown || capsLockDown;
+	}
+	
+	public boolean isAltToggled() {
+		return altDown;
+	}
+	
+	public boolean isAltGraphToggled() {
+		return altGraphDown;
+	}
+	
+	public boolean isCtrlToggled() {
+		return ctrlDown;
+	}
+	
+	public boolean isMetaToggled() {
+		return metaDown;
 	}
 	
 	public void addObs(PKeyboardObs obs) {
@@ -204,6 +239,5 @@ public class SwingPKeyboard implements PKeyboard {
 		}
 		return null;
 	}
-
 	
 }

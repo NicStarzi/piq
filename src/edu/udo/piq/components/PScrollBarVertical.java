@@ -17,7 +17,7 @@ import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.util.PCompUtil;
 import edu.udo.piq.util.PRenderUtil;
 
-public class PScrollBarHorizontal extends AbstractPComponent {
+public class PScrollBarVertical extends AbstractPComponent {
 	
 	private static final int MIN_SLIDER_WIDTH = PScrollPanelLayout.SCROLL_BAR_SIZE;
 	private static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(MIN_SLIDER_WIDTH, MIN_SLIDER_WIDTH);
@@ -25,15 +25,16 @@ public class PScrollBarHorizontal extends AbstractPComponent {
 	private final PMouseObs mouseObs = new AbstractPMouseObs() {
 		public void mouseMoved(PMouse mouse) {
 			if (pressed && mouse.isPressed(MouseButton.LEFT)) {
-				moveTo(mouse.getX());
+				moveTo(mouse.getY());
 			}
 		}
 		public void buttonTriggered(PMouse mouse, MouseButton btn) {
 			if (btn == MouseButton.LEFT 
-					&& PCompUtil.isWithinClippedBounds(PScrollBarHorizontal.this, mouse.getX(), mouse.getY())) 
+					&& PCompUtil.isWithinClippedBounds(PScrollBarVertical.this, mouse.getX(), mouse.getY())) 
 			{
+//				pressOffset = mouse.getY();
 				pressed = true;
-				moveTo(mouse.getX());
+				moveTo(mouse.getY());
 			}
 		}
 		public void buttonReleased(PMouse mouse, MouseButton btn) {
@@ -41,9 +42,9 @@ public class PScrollBarHorizontal extends AbstractPComponent {
 				pressed = false;
 			}
 		}
-		private void moveTo(int x) {
+		private void moveTo(int y) {
 			PBounds bnds = getBounds();
-			int scroll = x - bnds.getX();
+			int scroll = y - bnds.getY();
 			model.setScroll(scroll);
 		}
 	};
@@ -56,9 +57,10 @@ public class PScrollBarHorizontal extends AbstractPComponent {
 		}
 	};
 	private PScrollBarModel model;
+//	private int pressOffset;
 	private boolean pressed;
 	
-	public PScrollBarHorizontal() {
+	public PScrollBarVertical() {
 		super();
 		setModel(new DefaultPScrollBarModel());
 		
@@ -102,26 +104,25 @@ public class PScrollBarHorizontal extends AbstractPComponent {
 		int barY = y;
 		int barFx = fx;
 		int barFy = fy;
-		int barW = barFx - barX;
+		int barH = barFy - barY;
 		
 		renderer.setColor(PColor.GREY875);
 		renderer.drawQuad(barX, barY, barFx, barFy);
 		
 		// Draw slider
 		double viewportToContentRatio = (double) model.getViewportSize() / (double) model.getContentSize();
-		int sliderW = (int) (barW * viewportToContentRatio);
-		if (sliderW < MIN_SLIDER_WIDTH) {
-			sliderW = MIN_SLIDER_WIDTH;
+		int sliderH = (int) (barH * viewportToContentRatio);
+		if (sliderH < MIN_SLIDER_WIDTH) {
+			sliderH = MIN_SLIDER_WIDTH;
 		}
 		double scrlPercent = model.getScroll() / (double) model.getMaxScroll();
-		double size = (barW - sliderW) * scrlPercent;
+		double size = (barH - sliderH) * scrlPercent;
 		
-		int scrollX = (int) size;//(int) (barW * ((double) (barW - sliderW)) / (double) model.getScroll());
-//		int scrollX = model.getScroll();
-		int sliderX = x + scrollX;
-		int sliderY = y;
-		int sliderFx = sliderX + sliderW;
-		int sliderFy = fy;
+		int scrollY = (int) size;
+		int sliderX = x;
+		int sliderY = y + scrollY;
+		int sliderFx = fx;
+		int sliderFy = sliderY + sliderH;
 		
 		renderer.setColor(PColor.BLACK);
 		PRenderUtil.strokeBottom(renderer, sliderX, sliderY, sliderFx, sliderFy);

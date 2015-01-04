@@ -77,9 +77,9 @@ public class SwingPRenderer implements PRenderer {
 		}
 		graphics.drawImage(bufImg, 
 				(int) x, (int) y, 
-				(int) (fx - x), (int) (fy - y), 
+				(int) fx, (int) fy, 
 				u, v, 
-				fu - u, fv - v, 
+				fu, fv, 
 				null);
 	}
 	

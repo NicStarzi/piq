@@ -1,6 +1,5 @@
 package edu.udo.piq.implementation.swing;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ComponentAdapter;
@@ -17,7 +16,9 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PDesign;
 import edu.udo.piq.PDialog;
+import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PLayout;
+import edu.udo.piq.PMouse;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.tools.AbstractPDialog;
 import edu.udo.piq.util.PCompUtil;
@@ -29,12 +30,14 @@ public class SwingPDialog extends AbstractPDialog implements PDialog {
 	private final JPanel panel = new JPanel() {
 		private static final long serialVersionUID = 1L;
 		public void paintComponent(Graphics g) {
-			g.setColor(Color.BLACK);
-			g.fillRect(0, 0, getWidth(), getHeight());
+//			g.setColor(Color.BLACK);
+//			g.fillRect(0, 0, getWidth(), getHeight());
 			render((Graphics2D) g);
 		}
 	};
 	private final SwingPRenderer renderer = new SwingPRenderer();
+	private final SwingPMouse mouse = new SwingPMouse(panel);
+	private final SwingPKeyboard keyboard = new SwingPKeyboard(panel);
 	private final JPanelPBounds bounds = new JPanelPBounds(panel);
 	
 	public SwingPDialog(JCompPRoot root, JDialog jDialog) {
@@ -97,11 +100,21 @@ public class SwingPDialog extends AbstractPDialog implements PDialog {
 	}
 	
 	public void reRender(PComponent component) {
-		panel.repaint();
+		if (panel != null) {
+			panel.repaint();
+		}
 	}
 	
 	protected PRoot getSuperRoot() {
 		return root;
+	}
+	
+	public PMouse getMouse() {
+		return mouse;
+	}
+	
+	public PKeyboard getKeyboard() {
+		return keyboard;
 	}
 	
 	private void render(Graphics2D g) {

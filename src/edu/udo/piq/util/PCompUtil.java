@@ -56,6 +56,17 @@ public class PCompUtil {
 		return design.getPreferredSize(component);
 	}
 	
+	public static boolean isOpaque(PComponent component) throws NullPointerException {
+		if (component instanceof PRoot) {
+			return true;
+		}
+		PDesign design = component.getDesign();
+		if (design == null) {
+			return component.isDefaultOpaque();
+		}
+		return design.isOpaque(component);
+	}
+	
 	/**
 	 * Returns a {@link Collection} of all child components of component.<br>
 	 * If component has a {@link PLayout} then the method {@link PLayout#getChildren()} 

@@ -1,6 +1,5 @@
 package edu.udo.piq.implementation.swing;
 
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -14,9 +13,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.imageio.ImageIO;
 import javax.swing.JDialog;
@@ -50,8 +51,8 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 			timerUpdate.stop();
 		}
 		public void paintComponent(Graphics g) {
-			g.setColor(Color.BLACK);
-			g.fillRect(0, 0, getWidth(), getHeight());
+//			g.setColor(Color.BLACK);
+//			g.fillRect(0, 0, getWidth(), getHeight());
 			render((Graphics2D) g);
 		}
 	};
@@ -67,7 +68,7 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 			timersNeedUpdate = true;
 		}
 	});
-	
+	private Set<PComponent> reRenderSet = new HashSet<>();
 	private volatile boolean timersNeedUpdate = false;
 	
 	public JCompPRoot() {
@@ -118,6 +119,15 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 	
 	public void reRender(PComponent component) {
 		if (panel != null) {
+			PComponent current = component;
+			while (!PCompUtil.isOpaque(current)) {
+				current = current.getParent();
+			}
+			if (current == this) {
+				reRenderSet.addAll(getLayout().getChildren());
+			} else {
+				reRenderSet.add(current);
+			}
 			panel.repaint();
 		}
 	}
@@ -195,6 +205,9 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 	}
 	
 	private void render(Graphics2D g) {
+		Set<PComponent> toBeRendered = reRenderSet;
+		reRenderSet = new HashSet<>();
+		
 		renderer.setGraphics(g);
 		
 		class StackInfo {
@@ -214,7 +227,8 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 		}
 		
 		Deque<StackInfo> stack = new LinkedList<>();
-		for (PComponent child : getLayout().getChildren()) {
+//		for (PComponent child : getLayout().getChildren()) {
+		for (PComponent child : toBeRendered) {
 			stack.add(new StackInfo(child, 0, 0, getBounds().getWidth(), getBounds().getHeight()));
 		}
 		while (!stack.isEmpty()) {

@@ -5,9 +5,9 @@ import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouseObs;
-import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
+import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.components.defaults.DefaultPScrollBarModel;
 import edu.udo.piq.layouts.PScrollPanelLayout;
 import edu.udo.piq.tools.AbstractPComponent;
@@ -17,7 +17,7 @@ import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.util.PCompUtil;
 import edu.udo.piq.util.PRenderUtil;
 
-public class PScrollBarHorizontal extends AbstractPComponent {
+public class PScrollBar extends AbstractPComponent {
 	
 	private static final int MIN_SLIDER_WIDTH = PScrollPanelLayout.SCROLL_BAR_SIZE;
 	private static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(MIN_SLIDER_WIDTH, MIN_SLIDER_WIDTH);
@@ -30,7 +30,7 @@ public class PScrollBarHorizontal extends AbstractPComponent {
 		}
 		public void buttonTriggered(PMouse mouse, MouseButton btn) {
 			if (btn == MouseButton.LEFT 
-					&& PCompUtil.isWithinClippedBounds(PScrollBarHorizontal.this, mouse.getX(), mouse.getY())) 
+					&& PCompUtil.isWithinClippedBounds(PScrollBar.this, mouse.getX(), mouse.getY())) 
 			{
 				pressed = true;
 				moveTo(mouse.getX());
@@ -58,7 +58,7 @@ public class PScrollBarHorizontal extends AbstractPComponent {
 	private PScrollBarModel model;
 	private boolean pressed;
 	
-	public PScrollBarHorizontal() {
+	public PScrollBar() {
 		super();
 		setModel(new DefaultPScrollBarModel());
 		
@@ -98,14 +98,8 @@ public class PScrollBarHorizontal extends AbstractPComponent {
 		int fy = y + h;
 		
 		// Draw bar
-		int barX = x;
-		int barY = y;
-		int barFx = fx;
-		int barFy = fy;
-		int barW = barFx - barX;
-		
-		renderer.setColor(PColor.GREY875);
-		renderer.drawQuad(barX, barY, barFx, barFy);
+		int barW = fx - x;
+		defaultRenderBackground(renderer, x, y, fx, fy);
 		
 		// Draw slider
 		double viewportToContentRatio = (double) model.getViewportSize() / (double) model.getContentSize();
@@ -116,21 +110,41 @@ public class PScrollBarHorizontal extends AbstractPComponent {
 		double scrlPercent = model.getScroll() / (double) model.getMaxScroll();
 		double size = (barW - sliderW) * scrlPercent;
 		
-		int scrollX = (int) size;//(int) (barW * ((double) (barW - sliderW)) / (double) model.getScroll());
-//		int scrollX = model.getScroll();
+		int scrollX = (int) size;
 		int sliderX = x + scrollX;
 		int sliderY = y;
 		int sliderFx = sliderX + sliderW;
 		int sliderFy = fy;
 		
+		defaultRenderButtonOrSlider(renderer, sliderX, sliderY, sliderFx, sliderFy);
+	}
+	
+	private void defaultRenderBackground(PRenderer renderer, int x, int y, int fx, int fy) {
+		renderer.setColor(PColor.GREY875);
+		renderer.drawQuad(x, y, fx, fy);
+	}
+	
+	private void defaultRenderButtonOrSlider(PRenderer renderer, int x, int y, int fx, int fy) {
 		renderer.setColor(PColor.BLACK);
-		PRenderUtil.strokeBottom(renderer, sliderX, sliderY, sliderFx, sliderFy);
-		PRenderUtil.strokeRight(renderer, sliderX, sliderY, sliderFx, sliderFy);
+		PRenderUtil.strokeBottom(renderer, x, y, fx, fy);
+		PRenderUtil.strokeRight(renderer, x, y, fx, fy);
 		renderer.setColor(PColor.WHITE);
-		PRenderUtil.strokeTop(renderer, sliderX, sliderY, sliderFx, sliderFy);
-		PRenderUtil.strokeLeft(renderer, sliderX, sliderY, sliderFx, sliderFy);
+		PRenderUtil.strokeTop(renderer, x, y, fx, fy);
+		PRenderUtil.strokeLeft(renderer, x, y, fx, fy);
 		renderer.setColor(PColor.GREY75);
-		renderer.drawQuad(sliderX + 1, sliderY + 1, sliderFx - 1, sliderFy - 1);
+		renderer.drawQuad(x + 1, y + 1, fx - 1, fy - 1);
+	}
+	
+	private void defaultRenderTriangle(PRenderer renderer, int x, int y, int fx, int fy, int dir) {
+		int x1 = x;
+		int x2 = x;
+		int x3 = fx;
+		int y1 = y;
+		int y2 = fy;
+		int y3 = y + (fy - y) / 2;
+		
+		renderer.setColor(PColor.BLACK);
+		renderer.drawTriangle(x1, y1, x2, y2, x3, y3);
 	}
 	
 	public PSize getDefaultPreferredSize() {

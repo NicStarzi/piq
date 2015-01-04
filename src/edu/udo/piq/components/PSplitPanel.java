@@ -4,9 +4,11 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import edu.udo.piq.PBounds;
+import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouseObs;
+import edu.udo.piq.PRenderer;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.components.defaults.DefaultPSplitPanelModel;
 import edu.udo.piq.layouts.PSplitLayout;
@@ -68,8 +70,14 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 		getLayout().addChild(divider, Constraint.DIVIDER);
 	}
 	
-	public boolean isDefaultOpaque() {
-		return false;
+	public void defaultRender(PRenderer renderer) {
+		PBounds bnds = getBounds();
+		int x = bnds.getX();
+		int y = bnds.getY();
+		int fx = bnds.getFinalX();
+		int fy = bnds.getFinalY();
+		renderer.setColor(PColor.BLACK);
+		renderer.drawQuad(x, y, fx, fy);
 	}
 	
 	public boolean isFocusable() {

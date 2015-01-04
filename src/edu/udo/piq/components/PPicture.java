@@ -16,6 +16,7 @@ public class PPicture extends AbstractPComponent {
 		}
 	};
 	private PPictureModel model = new DefaultPPictureModel();
+	private boolean stretchToSize = false;
 	
 	public PPicture() {
 		setModel(model);
@@ -37,6 +38,15 @@ public class PPicture extends AbstractPComponent {
 		return model;
 	}
 	
+	public void setStretchToSize(boolean isEnabled) {
+		stretchToSize = isEnabled;
+		fireReRenderEvent();
+	}
+	
+	public boolean isStretchToSizeEnabled() {
+		return stretchToSize;
+	}
+	
 	public void defaultRender(PRenderer renderer) {
 		PImageResource imgRes = getImageResource();
 		if (imgRes == null) {
@@ -45,9 +55,16 @@ public class PPicture extends AbstractPComponent {
 		PBounds bounds = getBounds();
 		int x = bounds.getX();
 		int y = bounds.getY();
-		int fx = bounds.getFinalX();
-		int fy = bounds.getFinalY();
-		renderer.drawImage(imgRes, x, y, fx, fy);
+		if (isStretchToSizeEnabled()) {
+			int fx = bounds.getFinalX();
+			int fy = bounds.getFinalY();
+			renderer.drawImage(imgRes, x, y, fx, fy);
+		} else {
+			PSize imgSize = imgRes.getSize();
+			int imgW = imgSize.getWidth();
+			int imgH = imgSize.getHeight();
+			renderer.drawImage(imgRes, x, y, x + imgW, y + imgH);
+		}
 	}
 	
 	public boolean isDefaultOpaque() {

@@ -10,6 +10,18 @@ public abstract class AbstractPListModel implements PListModel {
 	
 	protected final List<PListModelObs> obsList = new CopyOnWriteArrayList<>();
 	
+	public void addElement(Object element) {
+		addElement(getElementCount(), element);
+	}
+	
+	public void removeElement(Object element) {
+		int index = getIndexOfElement(element);
+		if (index == -1) {
+			throw new IllegalArgumentException(element+" is not contained");
+		}
+		removeElement(index);
+	}
+	
 	public void addObs(PListModelObs obs) {
 		obsList.add(obs);
 	}
@@ -18,19 +30,19 @@ public abstract class AbstractPListModel implements PListModel {
 		obsList.remove(obs);
 	}
 	
-	protected void fireAddedEvent(Object element, Integer index) {
+	protected void fireAddedEvent(Object element, int index) {
 		for (PListModelObs obs : obsList) {
 			obs.elementAdded(this, element, index);
 		}
 	}
 	
-	protected void fireRemovedEvent(Object element, Integer index) {
+	protected void fireRemovedEvent(Object element, int index) {
 		for (PListModelObs obs : obsList) {
 			obs.elementRemoved(this, element, index);
 		}
 	}
 	
-	protected void fireChangedEvent(Object element, Integer index) {
+	protected void fireChangedEvent(Object element, int index) {
 		for (PListModelObs obs : obsList) {
 			obs.elementChanged(this, element, index);
 		}

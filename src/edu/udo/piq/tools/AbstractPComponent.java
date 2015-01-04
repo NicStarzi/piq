@@ -108,7 +108,7 @@ public class AbstractPComponent implements PComponent {
 	
 	/**
 	 * Uses the utility method {@link PCompUtil#getRootOf(PComponent)} to 
-	 * obtain the root for this component.<br>
+	 * obtain the root for this component if it is not cached.<br>
 	 */
 	public PRoot getRoot() {
 		if (cachedRoot != null) {
@@ -119,10 +119,10 @@ public class AbstractPComponent implements PComponent {
 	
 	public void setParent(PComponent parent) throws IllegalArgumentException, IllegalStateException {
 		if (parent != null && this.parent != null) {
-			throw new IllegalStateException();
+			throw new IllegalStateException(this+".getParent() != null");
 		}
 		if (PCompUtil.isDescendant(this, parent)) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException(this+" is descendant of "+parent);
 		}
 		PComponent oldParent = this.parent;
 		if (oldParent != null) {
@@ -242,8 +242,7 @@ public class AbstractPComponent implements PComponent {
 	/**
 	 * If this component has a layout the preferred size of the layout 
 	 * is returned. Otherwise a size of (0, 0) is returned.<br>
-	 * The returned size is immutable and not synchronized with this 
-	 * component.<br>
+	 * The returned size is immutable, it will not update to represent changes.<br>
 	 */
 	public PSize getDefaultPreferredSize() {
 		if (getLayout() != null) {
@@ -263,15 +262,6 @@ public class AbstractPComponent implements PComponent {
 			
 			checkForPreferredSizeChange();
 		}
-		onUpdate();
-	}
-	
-	/**
-	 * Does nothing.<br>
-	 * This method should be overwritten by all subclasses of this class.<br>
-	 * This method is called by the update() method to delegate subclass code.<br>
-	 */
-	protected void onUpdate() {
 	}
 	
 	/**

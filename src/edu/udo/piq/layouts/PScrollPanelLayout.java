@@ -5,26 +5,19 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PLayout;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.PScrollBarHorizontal;
-import edu.udo.piq.components.PScrollBarModel;
-import edu.udo.piq.components.PScrollBarModelObs;
+import edu.udo.piq.components.PScrollBarVertical;
 import edu.udo.piq.tools.AbstractPLayout;
 import edu.udo.piq.tools.AbstractPLayoutObs;
 
-public class PScrollLayout extends AbstractPLayout {
+public class PScrollPanelLayout extends AbstractPLayout {
 	
-	private final PScrollBarModelObs scrollObs = new PScrollBarModelObs() {
-		public void sizeChanged(PScrollBarModel model) {
-		}
-		public void scrollChanged(PScrollBarModel model) {
-			fireInvalidateEvent();
-		}
-	};
-	private PBounds parentBounds;
+	public static final int SCROLL_BAR_SIZE = 12;
+	
 	private PComponent view;
 	private PScrollBarHorizontal scrollH;
-	private PScrollBarHorizontal scrollV;
+	private PScrollBarVertical scrollV;
 	
-	public PScrollLayout(PComponent component) {
+	public PScrollPanelLayout(PComponent component) {
 		super(component);
 		addObs(new AbstractPLayoutObs() {
 			public void childAdded(PLayout layout, PComponent child, Object constraint) {
@@ -44,33 +37,25 @@ public class PScrollLayout extends AbstractPLayout {
 			view = comp;
 			break;
 		case HORIZONTAL_SCROLL_BAR:
-			if (scrollH != null) {
-				scrollH.getModel().removeObs(scrollObs);
-			}
 			scrollH = (PScrollBarHorizontal) comp;
-			if (scrollH != null) {
-				scrollH.getModel().addObs(scrollObs);
-			}
 			break;
 		case VERTICAL_SCROLL_BAR:
-			if (scrollV != null) {
-				scrollV.getModel().removeObs(scrollObs);
-			}
-			scrollV = (PScrollBarHorizontal) comp;
-			if (scrollV != null) {
-				scrollV.getModel().addObs(scrollObs);
-			}
+			scrollV = (PScrollBarVertical) comp;
 			break;
 		}
 	}
 	
-	public void setParentBounds(PBounds bounds) {
-		this.parentBounds = bounds;
-		fireInvalidateEvent();
-	}
+//	public void setParentBounds(PBounds bounds) {
+//		this.parentBounds = bounds;
+//		fireInvalidateEvent();
+//	}
+//	
+//	public PBounds getParentBounds() {
+//		return parentBounds;
+//	}
 	
-	public PBounds getParentBounds() {
-		return parentBounds;
+	public void scrollChanged() {
+		fireInvalidateEvent();
 	}
 	
 	public int getScrollOffsetX() {
@@ -103,21 +88,36 @@ public class PScrollLayout extends AbstractPLayout {
 	}
 	
 	public void layOut() {
-		PBounds ob = getParentBounds();
+		PBounds ob = getOwnerBounds();
 		int x = ob.getX();
 		int y = ob.getY();
 		int w = ob.getWidth();
-//		int h = ob.getHeight();
+		int h = ob.getHeight();
 		int fx = ob.getFinalX();
 		int fy = ob.getFinalY();
 		
-		setChildBounds(scrollH, x, fy - 20, w, 20);
+		int offsetX;
+		int offsetY;
+		if (view != null && scrollH != null && scrollH.getModel().getMaxScroll() > 0) {
+			setChildBounds(scrollH, x, fy - SCROLL_BAR_SIZE, w - SCROLL_BAR_SIZE, SCROLL_BAR_SIZE);
+			offsetY = SCROLL_BAR_SIZE;
+		} else {
+			setChildBounds(scrollH, x, fy, 0, 0);
+			offsetY = 0;
+		}
+		if (view != null && scrollV != null && scrollV.getModel().getMaxScroll() > 0) {
+			setChildBounds(scrollV, fx - SCROLL_BAR_SIZE, y, SCROLL_BAR_SIZE, h - SCROLL_BAR_SIZE);
+			offsetX = SCROLL_BAR_SIZE;
+		} else {
+			setChildBounds(scrollV, fx, x, 0, 0);
+			offsetX = 0;
+		}
 		
 		if (view != null) {
 			int viewX = x - getScrollOffsetX();
 			int viewY = y - getScrollOffsetY();
-			int viewFx = fx - 0;
-			int viewFy = fy - 20;
+			int viewFx = fx - offsetX;
+			int viewFy = fy - offsetY;
 			int viewW = viewFx - viewX;
 			int viewH = viewFy - viewY;
 			setChildBounds(view, viewX, viewY, viewW, viewH);

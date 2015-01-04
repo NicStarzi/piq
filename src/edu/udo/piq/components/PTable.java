@@ -133,33 +133,33 @@ public class PTable extends AbstractPLayoutOwner {
 	
 	private void doNothing() {}
 	
-	protected void onUpdate() {
-		if (getModel() == null || getSelection() == null) {
-			return;
-		}
-		PMouse mouse = PCompUtil.getMouseOf(this);
-		PKeyboard keyboard = PCompUtil.getKeyboardOf(this);
-		if (mouse == null) {
-			return;
-		}
-		
-		if (mouse.isTriggered(MouseButton.LEFT) 
-				&& PCompUtil.isWithinClippedBounds(this, mouse.getX(), mouse.getY())) {
-			
-			PComponent selected = getLayout().getChildAt(mouse.getX(), mouse.getY());
-			if (selected != null) {
-				PTableCell cell = (PTableCell) getLayout().getChildConstraint(selected);
-				
-				if (keyboard.isPressed(Key.CTRL)) {
-					toggleSelection(cell);
-				} else if (keyboard.isPressed(Key.SHIFT)) {
-					rangeSelection(cell);
-				} else {
-					setSelection(cell);
-				}
-			}
-		}
-	}
+//	protected void onUpdate() {
+//		if (getModel() == null || getSelection() == null) {
+//			return;
+//		}
+//		PMouse mouse = PCompUtil.getMouseOf(this);
+//		PKeyboard keyboard = PCompUtil.getKeyboardOf(this);
+//		if (mouse == null) {
+//			return;
+//		}
+//		
+//		if (mouse.isTriggered(MouseButton.LEFT) 
+//				&& PCompUtil.isWithinClippedBounds(this, mouse.getX(), mouse.getY())) {
+//			
+//			PComponent selected = getLayout().getChildAt(mouse.getX(), mouse.getY());
+//			if (selected != null) {
+//				PTableCell cell = (PTableCell) getLayout().getChildConstraint(selected);
+//				
+//				if (keyboard.isPressed(Key.CTRL)) {
+//					toggleSelection(cell);
+//				} else if (keyboard.isPressed(Key.SHIFT)) {
+//					rangeSelection(cell);
+//				} else {
+//					setSelection(cell);
+//				}
+//			}
+//		}
+//	}
 	
 	private void toggleSelection(PTableCell cell) {
 		if (selection.isSelected(cell)) {

@@ -159,6 +159,14 @@ public class PList extends AbstractPLayoutOwner {
 		return model;
 	}
 	
+	public int getIndexAt(int x, int y) {
+		PComponent cellComp = getListLayout().getChildAt(x, y);
+		if (cellComp == null) {
+			return -1;
+		}
+		return getListLayout().getChildIndex(cellComp);
+	}
+	
 	public void defaultRender(PRenderer renderer) {
 		PBounds bounds = getBounds();
 		int x = bounds.getX();

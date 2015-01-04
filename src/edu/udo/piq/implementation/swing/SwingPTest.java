@@ -17,12 +17,13 @@ import edu.udo.piq.components.PList;
 import edu.udo.piq.components.PPanel;
 import edu.udo.piq.components.PPicture;
 import edu.udo.piq.components.PProgressBar;
+import edu.udo.piq.components.PProgressBarModel;
+import edu.udo.piq.components.PProgressBarModelObs;
 import edu.udo.piq.components.PSlider;
 import edu.udo.piq.components.PSliderModel;
 import edu.udo.piq.components.PSliderModelObs;
 import edu.udo.piq.components.PSplitPanel;
 import edu.udo.piq.components.PTextArea;
-import edu.udo.piq.components.defaults.DefaultPListModel;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PListLayout;
@@ -74,19 +75,12 @@ public class SwingPTest {
 		splitH.getLayout().setOrientation(Orientation.HORIZONTAL);
 		splitV.setFirstComponent(splitH);
 		
-		PPicture left = new PPicture();
-		left.getModel().setImagePath("Tex.png");
-		splitH.setFirstComponent(left);
-		
-//		PPicture right = new PPicture();
-//		right.getModel().setImagePath("Tex2.png");
-//		splitH.setSecondComponent(right);
-		
-		DefaultPListModel listModel = new DefaultPListModel();
+		PPicture pic = new PPicture();
+		pic.getModel().setImagePath("Tex.png");
+		pic.setStretchToSize(true);
+		splitH.setFirstComponent(pic);
 		
 		PList list = new PList();
-		list.setModel(listModel);
-		
 		String[] items = new String[] {
 			"A",
 			"B",
@@ -98,7 +92,7 @@ public class SwingPTest {
 			"H",
 		};
 		for (int i = 0; i < items.length; i++) {
-			listModel.addElement(items[i]);
+			list.getModel().addElement(i, items[i]);
 		}
 		splitH.setSecondComponent(list);
 		
@@ -118,14 +112,6 @@ public class SwingPTest {
 			"This is \n a simple test \nto see whether the PTextArea class \nworks as intended."
 		));
 		splitV.setSecondComponent(txtAr);
-		
-//		PPanel barPnl = new PPanel();
-//		barPnl.setLayout(new PCentricLayout(barPnl));
-//		root.getLayout().addChild(barPnl, PBorderLayout.Constraint.CENTER);
-//		
-//		final PProgressBar bar = new PProgressBar();
-//		bar.getModel().setMaximum(20);
-//		barPnl.addChild(bar, null);
 		
 		PPanel btnPnl = new PPanel();
 		btnPnl.setLayout(new PWrapLayout(btnPnl, ListAlignment.FROM_LEFT));
@@ -204,29 +190,24 @@ public class SwingPTest {
 				return sld.getModel().getValue();
 			}
 		});
-		
-//		PScrollPanel scrollPanel = new PScrollPanel();
-//		root.getLayout().addChild(scrollPanel, PBorderLayout.Constraint.CENTER);
-//		
-//		PPanel lblPnl = new PPanel();
-//		lblPnl.setLayout(new PBorderLayout(lblPnl));
-//		
-//		PLabel longLbl = new PLabel();
-//		longLbl.getModel().setText("This is a really fucking long text. I wonder what it is good for...");
-//		lblPnl.getLayout().addChild(longLbl, PBorderLayout.Constraint.CENTER);
-//		
-//		scrollPanel.setView(lblPnl);
+		prgBar.getModel().addObs(new PProgressBarModelObs() {
+			public void valueChanged(PProgressBarModel model) {
+				if (model.getValue() == model.getMaxValue()) {
+					PDialog dlg = prgBar.getRoot().createDialog();
+					new MyLittleDialog(dlg);
+				}
+			}
+		});
 	}
 	
 	public static class MyLittleDialog {
 		
-		public MyLittleDialog(PDialog dlg) {
-			PBorderLayout layout = new PBorderLayout(dlg);
-			dlg.setLayout(layout);
+		public MyLittleDialog(final PDialog dlg) {
+			dlg.setLayout(new PBorderLayout(dlg));
 			
 			PPanel pnlBody = new PPanel();
 			pnlBody.setLayout(new PBorderLayout(pnlBody));
-			layout.addChild(pnlBody, PBorderLayout.Constraint.CENTER);
+			dlg.getLayout().addChild(pnlBody, PBorderLayout.Constraint.CENTER);
 			
 			PLabel lblBodyContent = new PLabel();
 			lblBodyContent.getModel().setText("This is a dialog body!");
@@ -234,7 +215,7 @@ public class SwingPTest {
 			
 			PPanel pnlButtons = new PPanel();
 			pnlButtons.setLayout(new PListLayout(pnlButtons, ListAlignment.CENTERED_HORIZONTAL));
-			layout.addChild(pnlButtons, PBorderLayout.Constraint.BOTTOM);
+			dlg.getLayout().addChild(pnlButtons, PBorderLayout.Constraint.BOTTOM);
 			
 			PLabel lblOkayBtn = new PLabel();
 			lblOkayBtn.getModel().setText("OK");
@@ -244,6 +225,7 @@ public class SwingPTest {
 			btnOkay.addObs(new PButtonObs() {
 				public void onClick(PButton button) {
 					System.out.println("OK!");
+					dlg.dispose();
 				}
 			});
 			pnlButtons.addChild(btnOkay, null);

@@ -20,8 +20,8 @@ import edu.udo.piq.util.PRenderUtil;
 
 public class PSlider extends AbstractPComponent {
 	
-	private static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(100, 20);
-	private static final int DEFAULT_SLIDER_WIDTH = 12;
+	protected static final int DEFAULT_SLIDER_WIDTH = 12;
+	protected static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(100, DEFAULT_SLIDER_WIDTH);
 	
 	private final PMouseObs mouseObs = new AbstractPMouseObs() {
 		public void mouseMoved(PMouse mouse) {
@@ -131,6 +131,10 @@ public class PSlider extends AbstractPComponent {
 		}
 	}
 	
+	public PSize getDefaultPreferredSize() {
+		return DEFAULT_PREFERRED_SIZE;
+	}
+	
 	public boolean isDefaultOpaque() {
 		return false;
 	}
@@ -145,10 +149,6 @@ public class PSlider extends AbstractPComponent {
 	
 	protected PMouseObs getMouseObs() {
 		return mouseObs;
-	}
-	
-	public PSize getDefaultPreferredSize() {
-		return DEFAULT_PREFERRED_SIZE;
 	}
 	
 }

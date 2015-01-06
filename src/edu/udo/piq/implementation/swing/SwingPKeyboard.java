@@ -62,10 +62,6 @@ public class SwingPKeyboard implements PKeyboard {
 		}
 	}
 	
-	protected void update() {
-		
-	}
-	
 	public boolean isPressed(Key key) {
 		return nowPressed[key.ordinal()];
 	}

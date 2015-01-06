@@ -102,7 +102,6 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 			} else {
 				dlg.update();
 				mouse.update();
-				keyboard.update();
 				return;
 			}
 		}
@@ -114,7 +113,6 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 		updateComponents();
 		
 		mouse.update();
-		keyboard.update();
 	}
 	
 	public void reRender(PComponent component) {

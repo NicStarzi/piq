@@ -2,6 +2,8 @@ package edu.udo.piq.util;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Deque;
+import java.util.LinkedList;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
@@ -309,6 +311,30 @@ public class PCompUtil {
 			throw new IllegalStateException(component+".getRoot() == null");
 		}
 		root.setFocusOwner(null);
+	}
+	
+	/**
+	 * Returns the first descendant of root with the given ID if there is any.<br>
+	 * If no such {@link PComponent} exists in the GUI null will be returned.<br>
+	 * If the root itself has the given ID the root will be returned.<br>
+	 * 
+	 * @param root the PComponent from where we start to search
+	 * @param id the ID for which we are searching for
+	 * @return a PComponent with the given ID or null if no such component exists
+	 * @see PComponent#setID(String)
+	 * @see PComponent#getID()
+	 */
+	public static PComponent getDescendantByID(PComponent root, String id) {
+		Deque<PComponent> stack = new LinkedList<>();
+		stack.push(root);
+		while (!stack.isEmpty()) {
+			PComponent current = stack.pop();
+			if (current.getID().equals(id)) {
+				return current;
+			}
+			stack.addAll(PCompUtil.getChildrenOf(current));
+		}
+		return null;
 	}
 	
 }

@@ -187,6 +187,19 @@ public interface PComponent {
 	public boolean isFocusable();
 	
 	/**
+	 * Returns either an instance of {@link PDnDSupport} if this component supports 
+	 * drag and drop or returns null if this component does not support drag and drop.<br>
+	 * The {@link PDnDSupport} of a component may change within the components life-
+	 * cycle but this must never happen while a drag is taking place on the support.<br>
+	 * 
+	 * @return an instance of {@link PDnDSupport} if drag and drop is supported, or null if drag and drop is not supported
+	 * @see PDnDManager
+	 * @see PDnDSupport
+	 * @see PDnDTransfer
+	 */
+	public PDnDSupport getDragAndDropSupport();
+	
+	/**
 	 * Called by the {@link PRoot} of this GUI-tree to update 
 	 * the behavior of this component.<br>
 	 */

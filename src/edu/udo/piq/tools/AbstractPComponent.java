@@ -8,6 +8,7 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PComponentObs;
 import edu.udo.piq.PDesign;
 import edu.udo.piq.PDesignSheet;
+import edu.udo.piq.PDnDSupport;
 import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PKeyboardObs;
@@ -249,6 +250,13 @@ public class AbstractPComponent implements PComponent {
 			return getLayout().getPreferredSize();
 		}
 		return PSize.NULL_SIZE;
+	}
+	
+	/**
+	 * Always returns null by default.<br>
+	 */
+	public PDnDSupport getDragAndDropSupport() {
+		return null;
 	}
 	
 	/**

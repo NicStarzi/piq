@@ -216,8 +216,12 @@ public class PCompUtil {
 	 * 
 	 * @param component for which the clipped bounds are returned
 	 * @return the clipped {@link PBounds} of component or null
+	 * @throws IllegalArgumentException if component is null
 	 */
-	public static PBounds getClippedBoundsOf(PComponent component) {
+	public static PBounds getClippedBoundsOf(PComponent component) throws IllegalArgumentException {
+		if (component == null) {
+			throw new IllegalArgumentException("component == null");
+		}
 		PComponent current = component;
 		int clipX = Integer.MIN_VALUE;
 		int clipY = Integer.MIN_VALUE;
@@ -240,13 +244,18 @@ public class PCompUtil {
 	}
 	
 	/**
-	 * Returns true if the point defined 
-	 * @param component
-	 * @param x
-	 * @param y
-	 * @return
+	 * Returns true if the point defined by the given x and y coordinates lies 
+	 * within the clipped bounds of the given component.<br>
+	 * 
+	 * @param component the component for which the test is performed
+	 * @param x coordinate on the X-axis in window space
+	 * @param y coordinate on the Y-axis in window space
+	 * @return true if (x, y) is within the clipped bounds of component
+	 * @throws IllegalArgumentException if component is null
+	 * @see #getClippedBoundsOf(PComponent)
 	 */
 	public static boolean isWithinClippedBounds(PComponent component, int x, int y) {
+		// throws IllegalArgumentException if component is null
 		PBounds bounds = getClippedBoundsOf(component);
 		return bounds != null && bounds.contains(x, y);
 	}
@@ -321,20 +330,68 @@ public class PCompUtil {
 	 * @param root the PComponent from where we start to search
 	 * @param id the ID for which we are searching for
 	 * @return a PComponent with the given ID or null if no such component exists
+	 * @throws IllegalArgumentException if either root or id are null
 	 * @see PComponent#setID(String)
 	 * @see PComponent#getID()
 	 */
-	public static PComponent getDescendantByID(PComponent root, String id) {
+	public static PComponent getDescendantByID(PComponent root, String id) throws IllegalArgumentException {
+		if (root == null) {
+			throw new IllegalArgumentException("root == null");
+		} if (id == null) {
+			throw new IllegalArgumentException("id == null");
+		}
 		Deque<PComponent> stack = new LinkedList<>();
 		stack.push(root);
 		while (!stack.isEmpty()) {
 			PComponent current = stack.pop();
-			if (current.getID().equals(id)) {
+			if (id.equals(current.getID())) {
 				return current;
 			}
 			stack.addAll(PCompUtil.getChildrenOf(current));
 		}
 		return null;
+	}
+	
+	/**
+	 * Returns the deepest {@link PComponent} within the GUI tree of root that contains 
+	 * the point at the coordinates (x, y).<br>
+	 * If (x, y) is not within the clipped bounds of root null is returned, otherwise 
+	 * the return value will be non-null.<br>
+	 * The returned value might be root either if root does not have any children or if 
+	 * no child of root contains (x, y) but root does.<br>
+	 * 
+	 * @param root the component that spans the GUI tree that will be searched
+	 * @param x coordinate on the X-axis in window space
+	 * @param y coordinate on the Y-axis in window space
+	 * @return a {@link PComponent} that contains (x, y) within its clipped bounds or null if no such component exists
+	 * @throws IllegalArgumentException if root is null
+	 * @see #getClippedBoundsOf(PComponent)
+	 * @see #isWithinClippedBounds(PComponent, int, int)
+	 * @see PLayout#getChildAt(int, int)
+	 */
+	public static PComponent getComponentAt(PComponent root, int x, int y) throws IllegalArgumentException {
+		if (root == null) {
+			throw new IllegalArgumentException("root == null");
+		}
+		if (!isWithinClippedBounds(root, x, y)) {
+			return null;
+		}
+		if (root.getLayout() == null) {
+			return root;
+		}
+		
+		PLayout current = root.getLayout();
+		while (true) {
+			PComponent child = current.getChildAt(x, y);
+			if (child == null) {
+				return current.getOwner();
+			} else if (child.getLayout() != null) {
+				current = child.getLayout();
+				continue;
+			} else {
+				return child;
+			}
+		}
 	}
 	
 }

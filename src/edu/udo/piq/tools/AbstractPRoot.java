@@ -15,6 +15,7 @@ import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.PDnDSupport;
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PLayout;
 import edu.udo.piq.PLayoutObs;
@@ -248,6 +249,13 @@ public abstract class AbstractPRoot implements PRoot {
 	
 	public boolean isFocusable() {
 		return false;
+	}
+	
+	/**
+	 * Always returns null by default.<br>
+	 */
+	public PDnDSupport getDragAndDropSupport() {
+		return null;
 	}
 	
 	public void setID(String value) {

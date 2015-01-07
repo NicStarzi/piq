@@ -10,7 +10,6 @@ import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PKeyboardObs;
-import edu.udo.piq.PLayout;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
@@ -24,7 +23,6 @@ import edu.udo.piq.layouts.PListLayout.ListAlignment;
 import edu.udo.piq.tools.AbstractPKeyboardObs;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.tools.AbstractPMouseObs;
-import edu.udo.piq.tools.UnmodifiablePLayoutView;
 import edu.udo.piq.util.PCompUtil;
 
 public class PList extends AbstractPLayoutOwner {
@@ -63,9 +61,9 @@ public class PList extends AbstractPLayoutOwner {
 			}
 			PKeyboard keyboard = PCompUtil.getKeyboardOf(PList.this);
 			if (PCompUtil.isWithinClippedBounds(PList.this, mouse.getX(), mouse.getY())) {
-				PComponent selected = getListLayout().getChildAt(mouse.getX(), mouse.getY());
+				PComponent selected = getLayout().getChildAt(mouse.getX(), mouse.getY());
 				if (selected != null) {
-					Integer index = Integer.valueOf(getListLayout().getChildIndex(selected));
+					Integer index = Integer.valueOf(getLayout().getChildIndex(selected));
 					
 					if (keyboard != null && keyboard.isPressed(Key.CTRL)) {
 						toggleSelection(index);
@@ -101,7 +99,6 @@ public class PList extends AbstractPLayoutOwner {
 		}
 	};
 	private final Map<Object, PListCellComponent> elementToCompMap = new HashMap<>();
-	private final PLayout unmodifiableLayoutView;
 	private PListSelection selection;
 	private PListModel model;
 	private PListCellFactory cellFac;
@@ -111,14 +108,9 @@ public class PList extends AbstractPLayoutOwner {
 		setModel(new DefaultPListModel());
 		setSelection(new DefaultPListSelection());
 		setCellFactory(new DefaultPListCellFactory());
-		unmodifiableLayoutView = new UnmodifiablePLayoutView(super.getLayout());
 	}
 	
-	public PLayout getLayout() {
-		return unmodifiableLayoutView;
-	}
-	
-	protected PListLayout getListLayout() {
+	public PListLayout getLayout() {
 		return (PListLayout) super.getLayout();
 	}
 	
@@ -160,11 +152,11 @@ public class PList extends AbstractPLayoutOwner {
 	}
 	
 	public int getIndexAt(int x, int y) {
-		PComponent cellComp = getListLayout().getChildAt(x, y);
+		PComponent cellComp = getLayout().getChildAt(x, y);
 		if (cellComp == null) {
 			return -1;
 		}
-		return getListLayout().getChildIndex(cellComp);
+		return getLayout().getChildIndex(cellComp);
 	}
 	
 	public void defaultRender(PRenderer renderer) {
@@ -226,7 +218,7 @@ public class PList extends AbstractPLayoutOwner {
 	}
 	
 	private void modelChanged() {
-		getListLayout().clearChildren();
+		getLayout().clearChildren();
 		elementToCompMap.clear();
 		
 		for (int i = 0; i < getModel().getElementCount(); i++) {
@@ -238,13 +230,13 @@ public class PList extends AbstractPLayoutOwner {
 		Object element = getModel().getElement(Integer.valueOf(index));
 		PListCellComponent cellComp = getCellFactory().getCellComponentFor(getModel(), index);
 		elementToCompMap.put(element, cellComp);
-		getListLayout().addChild(cellComp, null);
+		getLayout().addChild(cellComp, null);
 	}
 	
 	private void elementRemoved(int index) {
 		Object element = getModel().getElement(Integer.valueOf(index));
 		PComponent cellComp = elementToCompMap.get(element);
-		getListLayout().removeChild(cellComp);
+		getLayout().removeChild(cellComp);
 	}
 	
 	private void elementChanged(int index) {

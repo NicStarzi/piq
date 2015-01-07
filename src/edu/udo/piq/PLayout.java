@@ -159,6 +159,18 @@ public interface PLayout {
 	public Object getChildConstraint(PComponent child) throws NullPointerException, IllegalArgumentException;
 	
 	/**
+	 * Returns the child of this {@link PLayout} that contains the given coordinates.<br>
+	 * If no such child exists null is returned.<br>
+	 * If more then one such child exists the layout is allowed to decide which one should be 
+	 * returned.<br>
+	 * 
+	 * @param x coordinate on the X-axis in window space
+	 * @param y coordinate on the Y-axis in window space
+	 * @return a child of this layout that contains (x, y) or null if no such child exists
+	 */
+	public PComponent getChildAt(int x, int y);
+	
+	/**
 	 * Returns an unmodifiable collection containing all children that 
 	 * this layout currently has.<br>
 	 * No assumptions about the order of the children in the returned 

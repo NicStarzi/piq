@@ -31,7 +31,7 @@ public class PFreeLayout extends AbstractPLayout {
 		int parentY = ob.getY();
 		
 		for (PComponent cmp : getChildren()) {
-			FreeConstraint con = (FreeConstraint) getChildConstraint(cmp);
+			FreeConstraint con = getChildConstraint(cmp);
 			int x = parentX + con.x;
 			int y = parentY + con.y;
 			int w = con.w;
@@ -45,12 +45,6 @@ public class PFreeLayout extends AbstractPLayout {
 					h = prefSize.getHeight();
 				}
 			}
-//			if (w < 0) {
-//				w = getPreferredWidthOf(cmp);
-//			}
-//			if (h < 0) {
-//				h = getPreferredHeightOf(cmp);
-//			}
 			
 			setChildBounds(cmp, x, y, w, h);
 		}
@@ -60,7 +54,7 @@ public class PFreeLayout extends AbstractPLayout {
 		int maxFx = 0;
 		int maxFy = 0;
 		for (PComponent cmp : getChildren()) {
-			FreeConstraint constraint = (FreeConstraint) getChildConstraint(cmp);
+			FreeConstraint constraint = getChildConstraint(cmp);
 			int fx;
 			if (constraint.getWidth() < 0) {
 				fx = constraint.getX() + getPreferredSizeOf(cmp).getWidth();
@@ -84,6 +78,19 @@ public class PFreeLayout extends AbstractPLayout {
 		prefSize.setWidth(maxFx);
 		prefSize.setHeight(maxFy);
 		return prefSize;
+	}
+	
+	public FreeConstraint getChildConstraint(PComponent child) {
+		return (FreeConstraint) super.getChildConstraint(child);
+	}
+	
+	public void updateConstraint(PComponent child, int x, int y, int width, int height) {
+		FreeConstraint con = getChildConstraint(child);
+		con.x = x;
+		con.y = y;
+		con.w = width;
+		con.h = height;
+		fireInvalidateEvent();
 	}
 	
 	public static class FreeConstraint {

@@ -1,6 +1,7 @@
 package edu.udo.piq;
 
 import edu.udo.piq.PFontResource.Style;
+import edu.udo.piq.components.PGlassPanel;
 
 /**
  * The root of a GUI tree. Such a root is also a {@link PComponent}.<br>
@@ -163,6 +164,47 @@ public interface PRoot extends PComponent {
 	 * @see PMouse
 	 */
 	public PKeyboard getKeyboard();
+	
+	/**
+	 * Returns the overlay for this {@link PRoot} or null if no overlay is supported.<br>
+	 * The overlay is used (among other possible uses) for drop down menus, tooltips and the 
+	 * visual representation of a drag and drop.<br>
+	 * Custom components are free to use the overlay for other effects that need to be drawn 
+	 * freely on top of the rest of the GUI.<br>
+	 * If the returned overlay is not null it will never be null within the life cycle of 
+	 * this {@link PRoot}.<br>
+	 * <br>
+	 * A common default implementation for {@link PRootOverlay} is {@link PGlassPanel}.<br>
+	 * 
+	 * @return an instance of {@link PRootOverlay} or null if an overlay is not supported
+	 * @see PGlassPanel
+	 * @see PDnDManager
+	 */
+	public PRootOverlay getOverlay();
+	
+	/**
+	 * Returns the drag and drop manager for this {@link PRoot} or null if drag and drop is 
+	 * not supported.<br>
+	 * The returned value for this method does never change during the life cycle of this 
+	 * {@link PRoot}.<br>
+	 * <br>
+	 * A drag and drop manager is used to manage the dragging and dropping of a 
+	 * {@link PDnDTransfer} after it was dispatched by a {@link PDnDSupport} of a component.<br>
+	 * The drag and drop manager is also responsible for adding the visual representation of 
+	 * a drag to the {@link PRootOverlay} of this root.<br> 
+	 * <br>
+	 * It does not make sense to support a drag and drop manager without a {@link PMouse} 
+	 * since the mouse is the standard way of controlling a drag and drop action. It is, 
+	 * however, possible to subclass the {@link PDnDManager} class to create custom drag 
+	 * and drop controls.<br>
+	 * 
+	 * @return an instance of {@link PDnDManager} or null if drag and drop is not supported
+	 * @see PDnDSupport
+	 * @see PDnDTransfer
+	 * @see #getOverlay()
+	 * @see PComponent#getDragAndDropSupport()
+	 */
+	public PDnDManager getDragAndDropManager();
 	
 	/**
 	 * Returns the {@link PComponent} that currently has the focus within 

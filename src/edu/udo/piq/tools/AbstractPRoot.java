@@ -15,6 +15,7 @@ import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.PDnDManager;
 import edu.udo.piq.PDnDSupport;
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PLayout;
@@ -22,6 +23,7 @@ import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
+import edu.udo.piq.PRootOverlay;
 import edu.udo.piq.PSize;
 import edu.udo.piq.PTimer;
 
@@ -31,6 +33,8 @@ public abstract class AbstractPRoot implements PRoot {
 	protected PDesignSheet designSheet = new AbstractPDesignSheet();
 	protected PMouse mouse;
 	protected PKeyboard keyboard;
+	protected PRootOverlay overlay;
+	protected PDnDManager dndManager;
 	
 	private final PComponentObs childObs = new AbstractPComponentObs() {
 		public void preferredSizeChanged(PComponent component) {
@@ -151,6 +155,14 @@ public abstract class AbstractPRoot implements PRoot {
 	
 	public PKeyboard getKeyboard() {
 		return keyboard;
+	}
+	
+	public PRootOverlay getOverlay() {
+		return overlay;
+	}
+	
+	public PDnDManager getDragAndDropManager() {
+		return dndManager;
 	}
 	
 	/*

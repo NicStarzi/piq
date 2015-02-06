@@ -78,7 +78,7 @@ public interface PComponent {
 	 * will return null.<br>
 	 * 
 	 * @return the parent of this component or null
-	 * @see #setParent()
+	 * @see #setParent(PComponent)
 	 */
 	public PComponent getParent();
 	
@@ -115,7 +115,6 @@ public interface PComponent {
 	 * @return the design used to render this component
 	 * @see PDesign
 	 * @see PDesignSheet
-	 * @see PCompUtil#getDesignOf(PComponent)
 	 */
 	public PDesign getDesign();
 	
@@ -248,6 +247,14 @@ public interface PComponent {
 	 * @see PRoot#addObs(PFocusObs)
 	 */
 	public void removeObs(PFocusObs obs) throws NullPointerException;
+	
+	public void addObs(PMouseObs obs) throws NullPointerException;
+	
+	public void removeObs(PMouseObs obs) throws NullPointerException;
+	
+	public void addObs(PKeyboardObs obs) throws NullPointerException;
+	
+	public void removeObs(PKeyboardObs obs) throws NullPointerException;
 	
 	/**
 	 * Sets the id of this {@link PComponent}.<br>

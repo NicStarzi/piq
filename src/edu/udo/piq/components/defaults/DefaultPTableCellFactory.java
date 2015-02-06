@@ -14,7 +14,7 @@ public class DefaultPTableCellFactory implements PTableCellFactory {
 		String text = element.toString();
 		
 		DefaultPTableCellComponent label = new DefaultPTableCellComponent();
-		label.getModel().setText(text);
+		label.getModel().setValue(text);
 		
 		return label;
 	}

@@ -18,9 +18,11 @@ import edu.udo.piq.util.PCompUtil;
 import edu.udo.piq.PDnDManager;
 import edu.udo.piq.PDnDSupport;
 import edu.udo.piq.PKeyboard;
+import edu.udo.piq.PKeyboardObs;
 import edu.udo.piq.PLayout;
 import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PMouse;
+import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PRootOverlay;
@@ -217,6 +219,42 @@ public abstract class AbstractPRoot implements PRoot {
 			throw new NullPointerException("obs="+obs);
 		}
 		focusObsList.remove(obs);
+	}
+	
+	public void addObs(PMouseObs obs) {
+		if (obs == null) {
+			throw new NullPointerException("obs="+obs);
+		}
+		if (getMouse() != null) {
+			getMouse().addObs(obs);
+		}
+	}
+	
+	public void removeObs(PMouseObs obs) {
+		if (obs == null) {
+			throw new NullPointerException("obs="+obs);
+		}
+		if (getMouse() != null) {
+			getMouse().removeObs(obs);
+		}
+	}
+	
+	public void addObs(PKeyboardObs obs) {
+		if (obs == null) {
+			throw new NullPointerException("obs="+obs);
+		}
+		if (getKeyboard() != null) {
+			getKeyboard().addObs(obs);
+		}
+	}
+	
+	public void removeObs(PKeyboardObs obs) {
+		if (obs == null) {
+			throw new NullPointerException("obs="+obs);
+		}
+		if (getKeyboard() != null) {
+			getKeyboard().removeObs(obs);
+		}
 	}
 	
 	protected void fireSizeChanged() {

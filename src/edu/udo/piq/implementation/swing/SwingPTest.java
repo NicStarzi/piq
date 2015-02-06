@@ -111,6 +111,7 @@ public class SwingPTest {
 		PTextArea txtAr = new PTextArea(new DefaultPTextModel(
 			"This is \n a simple test \nto see whether the PTextArea class \nworks as intended."
 		));
+		txtAr.setEditable(false);
 		splitV.setSecondComponent(txtAr);
 		
 		PPanel btnPnl = new PPanel();
@@ -154,23 +155,26 @@ public class SwingPTest {
 		});
 		chkBx.addObs(new PCheckBoxObs() {
 			public void clicked(PCheckBox checkBox) {
-				lblChkBx.getModel().setText(null);
-				lblSld.getModel().setText(null);
+				lblChkBx.getModel().setValue(null);
+				lblSld.getModel().setValue(null);
 			}
 		});
 		sld.getModel().addObs(new PSliderModelObs() {
 			public void valueChanged(PSliderModel model) {
-				lblSld.getModel().setText(null);
+				lblSld.getModel().setValue(null);
 			}
 			public void rangeChanged(PSliderModel model) {
-				lblSld.getModel().setText(null);
+				lblSld.getModel().setValue(null);
 			}
 		});
 		lblChkBx.setModel(new AbstractPTextModel() {
-			public void setText(Object text) {
+			public void setValue(Object text) {
 				fireTextChangeEvent();
 			}
-			public Object getText() {
+			public Object getValue() {
+				return null;
+			}
+			public String getText() {
 				if (chkBx.isChecked()) {
 					return "Relative";
 				}
@@ -178,16 +182,19 @@ public class SwingPTest {
 			}
 		});
 		lblSld.setModel(new AbstractPTextModel() {
-			public void setText(Object text) {
+			public void setValue(Object text) {
 				fireTextChangeEvent();
 			}
-			public Object getText() {
+			public Object getValue() {
+				return null;
+			}
+			public String getText() {
 				if (chkBx.isChecked()) {
 					double percent = sld.getModel().getValuePercent();
 					double val = ((int) (10000 * percent)) / 100.0;
 					return val+"%";
 				}
-				return sld.getModel().getValue();
+				return Integer.toString(sld.getModel().getValue());
 			}
 		});
 		prgBar.getModel().addObs(new PProgressBarModelObs() {
@@ -210,7 +217,7 @@ public class SwingPTest {
 			dlg.getLayout().addChild(pnlBody, PBorderLayout.Constraint.CENTER);
 			
 			PLabel lblBodyContent = new PLabel();
-			lblBodyContent.getModel().setText("This is a dialog body!");
+			lblBodyContent.getModel().setValue("This is a dialog body!");
 			pnlBody.addChild(lblBodyContent, PBorderLayout.Constraint.CENTER);
 			
 			PPanel pnlButtons = new PPanel();
@@ -218,7 +225,7 @@ public class SwingPTest {
 			dlg.getLayout().addChild(pnlButtons, PBorderLayout.Constraint.BOTTOM);
 			
 			PLabel lblOkayBtn = new PLabel();
-			lblOkayBtn.getModel().setText("OK");
+			lblOkayBtn.getModel().setValue("OK");
 			
 			PButton btnOkay = new PButton();
 			btnOkay.setContent(lblOkayBtn);

@@ -26,7 +26,7 @@ public class DefaultPTableCellComponent extends PLabel implements PTableCellComp
 	
 	public void cellChanged(PTableModel model, PTableCell cell) {
 		Object obj = model.getCell(cell.getColumnIndex(), cell.getRowIndex());
-		getModel().setText(obj.toString());
+		getModel().setValue(obj.toString());
 	}
 	
 	protected PColor getDefaultTextColor() {

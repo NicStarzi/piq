@@ -2,9 +2,11 @@ package edu.udo.piq.components;
 
 public interface PTextModel {
 	
-	public void setText(Object text);
+	public void setValue(Object value);
 	
-	public Object getText();
+	public Object getValue();
+	
+	public String getText();
 	
 	public void addObs(PTextModelObs obs);
 	

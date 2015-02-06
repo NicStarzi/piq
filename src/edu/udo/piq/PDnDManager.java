@@ -52,7 +52,7 @@ public class PDnDManager {
 	 * @param root the root that the manager will use 
 	 * @throws NullPointerException if root is null
 	 * @see PRoot#getMouse()
-	 * @see PRoot#getGlassPanel()
+	 * @see PRoot#getOverlay()
 	 * @see PRoot#getDragAndDropManager()
 	 */
 	public PDnDManager(PRoot root) throws NullPointerException {

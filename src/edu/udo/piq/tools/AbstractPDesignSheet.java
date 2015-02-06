@@ -26,7 +26,7 @@ public class AbstractPDesignSheet implements PDesignSheet {
 	 * @see #unregisterDesignFactory(Class)
 	 * @see PDesign
 	 * @see PDesignFactory
-	 * @see DefaultPDesign
+	 * @see PDesign#PASS_THROUGH_DESIGN
 	 */
 	public PDesign getDesignFor(PComponent component) throws NullPointerException {
 		PDesignFactory factory = factoryMap.get(component.getClass());

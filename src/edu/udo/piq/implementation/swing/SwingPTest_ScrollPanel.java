@@ -82,7 +82,7 @@ public class SwingPTest_ScrollPanel {
 			layout.addChild(pnlBody, PBorderLayout.Constraint.CENTER);
 			
 			PLabel lblBodyContent = new PLabel();
-			lblBodyContent.getModel().setText("This is a dialog body!");
+			lblBodyContent.getModel().setValue("This is a dialog body!");
 			pnlBody.addChild(lblBodyContent, PBorderLayout.Constraint.CENTER);
 			
 			PPanel pnlButtons = new PPanel();
@@ -90,7 +90,7 @@ public class SwingPTest_ScrollPanel {
 			layout.addChild(pnlButtons, PBorderLayout.Constraint.BOTTOM);
 			
 			PLabel lblOkayBtn = new PLabel();
-			lblOkayBtn.getModel().setText("OK");
+			lblOkayBtn.getModel().setValue("OK");
 			
 			PButton btnOkay = new PButton();
 			btnOkay.setContent(lblOkayBtn);

@@ -34,31 +34,31 @@ public interface PKeyboard {
 	
 	/**
 	 * Returns true if the shift key is currently being pressed or the capslock key is toggled. 
-	 * @return
+	 * @return true if caps is toggled
 	 */
 	public boolean isCapsToggled();
 	
 	/**
 	 * Returns true if the alt key is currently being pressed. 
-	 * @return
+	 * @return true if alt is torggled
 	 */
 	public boolean isAltToggled();
 	
 	/**
 	 * Returns true if the alt graph key is currently being pressed. 
-	 * @return
+	 * @return true if alt-graph is torggled
 	 */
 	public boolean isAltGraphToggled();
 	
 	/**
 	 * Returns true if the ctrl key is currently being pressed. 
-	 * @return
+	 * @return true if ctrl is torggled
 	 */
 	public boolean isCtrlToggled();
 	
 	/**
 	 * Returns true if the meta key is currently being pressed. 
-	 * @return
+	 * @return true if meta is torggled
 	 */
 	public boolean isMetaToggled();
 	

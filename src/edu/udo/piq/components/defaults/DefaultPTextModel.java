@@ -1,10 +1,12 @@
 package edu.udo.piq.components.defaults;
 
 import edu.udo.piq.components.PTextModel;
+import edu.udo.piq.components.PDictionary;
 import edu.udo.piq.tools.AbstractPTextModel;
 
 public class DefaultPTextModel extends AbstractPTextModel implements PTextModel {
 	
+	private PDictionary dct;
 	private Object content;
 	
 	public DefaultPTextModel() {
@@ -12,16 +14,40 @@ public class DefaultPTextModel extends AbstractPTextModel implements PTextModel 
 	}
 	
 	public DefaultPTextModel(Object content) {
-		setText(content);
+		setValue(content);
 	}
 	
-	public void setText(Object text) {
-		content = text;
+	public void setDictionary(PDictionary dictionary) {
+		if (dct == dictionary
+			|| (dictionary != null && dictionary.equals(dct))) 
+		{
+			return;
+		}
+		dct = dictionary;
 		fireTextChangeEvent();
 	}
 	
-	public Object getText() {
+	public PDictionary getDictionary() {
+		return dct;
+	}
+	
+	public void setValue(Object value) {
+		content = value;
+		fireTextChangeEvent();
+	}
+	
+	public Object getValue() {
 		return content;
+	}
+	
+	public String getText() {
+		if (getDictionary() != null) {
+			return getDictionary().translate(getValue());
+		}
+		if (getValue() == null) {
+			return "null";
+		}
+		return getValue().toString();
 	}
 	
 }

@@ -11,6 +11,7 @@ import edu.udo.piq.PDesignSheet;
 import edu.udo.piq.PDnDSupport;
 import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PKeyboard;
+import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PKeyboardObs;
 import edu.udo.piq.PLayout;
 import edu.udo.piq.PLayoutObs;
@@ -19,6 +20,7 @@ import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
+import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.util.PCompUtil;
 
 public class AbstractPComponent implements PComponent {
@@ -40,6 +42,14 @@ public class AbstractPComponent implements PComponent {
 	 * Holds all {@link PFocusObs}ervers of this component.
 	 */
 	protected final List<PFocusObs> focusObsList = new CopyOnWriteArrayList<>();
+	/**
+	 * Holds all {@link PMouseObs PMouseObservers} of this component.
+	 */
+	protected final List<PMouseObs> mouseObsList = new CopyOnWriteArrayList<>();
+	/**
+	 * Holds all {@link PKeyboardObs PKeyboardObservers} of this component.
+	 */
+	protected final List<PKeyboardObs> keyboardObsList = new CopyOnWriteArrayList<>();
 	/**
 	 * Is registered at the {@link PRoot} of this component.<br>
 	 * This observer is used to propagate focus events to {@link PFocusObs} 
@@ -72,6 +82,55 @@ public class AbstractPComponent implements PComponent {
 			if (child == AbstractPComponent.this) {
 				needReLayout = true;
 				fireReRenderEvent();
+			}
+		}
+	};
+	/**
+	 * Is registered at the mouse of the current {@link PRoot} when available.<br>
+	 * This observer is used to pass down events to {@link PMouseObs PMouseObservers} 
+	 * that are registered at this {@link PComponent}.<br>
+	 */
+	protected final PMouseObs delegateMouseObs = new PMouseObs() {
+		public void mouseMoved(PMouse mouse) {
+			for (PMouseObs obs : mouseObsList) {
+				obs.mouseMoved(mouse);
+			}
+		}
+		public void buttonTriggered(PMouse mouse, MouseButton btn) {
+			for (PMouseObs obs : mouseObsList) {
+				obs.buttonTriggered(mouse, btn);
+			}
+		}
+		public void buttonReleased(PMouse mouse, MouseButton btn) {
+			for (PMouseObs obs : mouseObsList) {
+				obs.buttonReleased(mouse, btn);
+			}
+		}
+		public void buttonPressed(PMouse mouse, MouseButton btn) {
+			for (PMouseObs obs : mouseObsList) {
+				obs.buttonPressed(mouse, btn);
+			}
+		}
+	};
+	/**
+	 * Is registered at the keyboard of the current {@link PRoot} when available.<br>
+	 * This observer is used to pass down events to {@link PKeyboardObs PKeyboardObservers} 
+	 * that are registered at this {@link PComponent}.<br>
+	 */
+	protected final PKeyboardObs delegateKeyObs = new PKeyboardObs() {
+		public void keyPressed(PKeyboard keyboard, Key key) {
+			for (PKeyboardObs obs : keyboardObsList) {
+				obs.keyPressed(keyboard, key);
+			}
+		}
+		public void keyTriggered(PKeyboard keyboard, Key key) {
+			for (PKeyboardObs obs : keyboardObsList) {
+				obs.keyTriggered(keyboard, key);
+			}
+		}
+		public void keyReleased(PKeyboard keyboard, Key key) {
+			for (PKeyboardObs obs : keyboardObsList) {
+				obs.keyReleased(keyboard, key);
 			}
 		}
 	};
@@ -121,8 +180,9 @@ public class AbstractPComponent implements PComponent {
 	public void setParent(PComponent parent) throws IllegalArgumentException, IllegalStateException {
 		if (parent != null && this.parent != null) {
 			throw new IllegalStateException(this+".getParent() != null");
-		}
-		if (PCompUtil.isDescendant(this, parent)) {
+		} if (parent == null) {
+			throw new NullPointerException("parent="+parent);
+		} if (PCompUtil.isDescendant(this, parent)) {
 			throw new IllegalArgumentException(this+" is descendant of "+parent);
 		}
 		PComponent oldParent = this.parent;
@@ -159,22 +219,22 @@ public class AbstractPComponent implements PComponent {
 			cachedRoot.addObs(rootFocusObs);
 		}
 		fireRootChangedEvent();
-		if (getKeyboardObs() != null) {
+		if (true) {
 			if (currentKeyboard != null) {
-				currentKeyboard.removeObs(getKeyboardObs());
+				currentKeyboard.removeObs(delegateKeyObs);
 			}
 			currentKeyboard = cachedRoot == null ? null : cachedRoot.getKeyboard();
 			if (currentKeyboard != null) {
-				currentKeyboard.addObs(getKeyboardObs());
+				currentKeyboard.addObs(delegateKeyObs);
 			}
 		}
-		if (getMouseObs() != null) {
+		if (true) {
 			if (currentMouse != null) {
-				currentMouse.removeObs(getMouseObs());
+				currentMouse.removeObs(delegateMouseObs);
 			}
 			currentMouse = cachedRoot == null ? null : cachedRoot.getMouse();
 			if (currentMouse != null) {
-				currentMouse.addObs(getMouseObs());
+				currentMouse.addObs(delegateMouseObs);
 			}
 		}
 	}
@@ -310,6 +370,34 @@ public class AbstractPComponent implements PComponent {
 		focusObsList.remove(obs);
 	}
 	
+	public void addObs(PMouseObs obs) throws NullPointerException {
+		if (obs == null) {
+			throw new NullPointerException("obs="+obs);
+		}
+		mouseObsList.add(obs);
+	}
+	
+	public void removeObs(PMouseObs obs) throws NullPointerException {
+		if (obs == null) {
+			throw new NullPointerException("obs="+obs);
+		}
+		mouseObsList.remove(obs);
+	}
+	
+	public void addObs(PKeyboardObs obs) throws NullPointerException {
+		if (obs == null) {
+			throw new NullPointerException("obs="+obs);
+		}
+		keyboardObsList.add(obs);
+	}
+	
+	public void removeObs(PKeyboardObs obs) throws NullPointerException {
+		if (obs == null) {
+			throw new NullPointerException("obs="+obs);
+		}
+		keyboardObsList.remove(obs);
+	}
+	
 	protected void fireRootChangedEvent() {
 		for (PComponentObs obs : compObsList) {
 			obs.rootChanged(this, cachedRoot);
@@ -363,14 +451,6 @@ public class AbstractPComponent implements PComponent {
 			lastPrefH = currentPrefSize.getHeight();
 			firePreferredSizeChangedEvent();
 		}
-	}
-	
-	protected PKeyboardObs getKeyboardObs() {
-		return null;
-	}
-	
-	protected PMouseObs getMouseObs() {
-		return null;
 	}
 	
 	public void setID(String value) {

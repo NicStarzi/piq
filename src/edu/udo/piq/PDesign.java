@@ -87,7 +87,7 @@ public interface PDesign {
 	 * @see PComponent
 	 * @see PComponent#getDefaultPreferredSize()
 	 * @see PLayout
-	 * @see PLayout#getPreferredHeight()
+	 * @see PLayout#getPreferredSize()
 	 */
 	public PSize getPreferredSize(PComponent component) throws NullPointerException, IllegalArgumentException;
 	

@@ -61,7 +61,10 @@ public interface PRenderer {
 	 * ignored and only pixels within the clip bounds will be rendered 
 	 * to screen.<br>
 	 * 
-	 * @param bounds the new clip bounds used by subsequent rendering operations
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
 	 * @see PBounds
 	 * @see #setClipBounds(PBounds)
 	 * @see #getClipBounds()

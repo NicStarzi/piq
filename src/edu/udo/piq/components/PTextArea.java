@@ -59,6 +59,9 @@ public class PTextArea extends AbstractPComponent {
 	});
 	private final PKeyboardObs keyObs = new PTextComponentKeyboardObs() {
 		public void textTyped(PKeyboard keyboard, String typedString) {
+			if (!isEditable()) {
+				return;
+			}
 			PTextSelection selection = getSelection();
 			int from = selection.getFrom();
 			int to = selection.getTo();
@@ -68,7 +71,7 @@ public class PTextArea extends AbstractPComponent {
 			String oldText = getText();
 			String newText = oldText.substring(0, from) + typedString + oldText.substring(to);
 			selection.setSelection(newFrom, newFrom);
-			getModel().setText(newText);
+			getModel().setValue(newText);
 		}
 		public void controlInput(PKeyboard keyboard, Key key) {
 			PTextSelection selection = getSelection();
@@ -165,12 +168,13 @@ public class PTextArea extends AbstractPComponent {
 				break;
 			case PAGE_UP:
 				break;
+				//$CASES-OMITTED$
 			default:
 				break;
 			}
 			
-			if (oldText != newText) {
-				getModel().setText(newText);
+			if (isEditable() && oldText != newText) {
+				getModel().setValue(newText);
 			}
 			if (newFirst != first || newSecond != second) {
 				selection.setSelection(newFirst, newSecond);
@@ -235,6 +239,7 @@ public class PTextArea extends AbstractPComponent {
 	private int pressedIndex = INDEX_NO_SELECTION;
 	private int focusRenderToggleTimer;
 	private boolean focusRenderToggle;
+	private boolean editable;
 	
 	public PTextArea() {
 		this(new DefaultPTextModel());
@@ -297,6 +302,14 @@ public class PTextArea extends AbstractPComponent {
 	
 	public PTextModel getModel() {
 		return model;
+	}
+	
+	public void setEditable(boolean isEditable) {
+		editable = isEditable;
+	}
+	
+	public boolean isEditable() {
+		return editable;
 	}
 	
 	public String getText() {

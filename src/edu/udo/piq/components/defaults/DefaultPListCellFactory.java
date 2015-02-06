@@ -10,7 +10,7 @@ public class DefaultPListCellFactory implements PListCellFactory {
 		Object text = listModel.getElement(index).toString();
 		
 		DefaultPListCellComponent label = new DefaultPListCellComponent();
-		label.getModel().setText(text);
+		label.getModel().setValue(text);
 		
 		return label;
 	}

@@ -24,7 +24,7 @@ public class DefaultPListCellComponent extends PLabel implements PListCellCompon
 	}
 	
 	public void elementChanged(PListModel model, Integer index) {
-		getModel().setText(model.getElement(index).toString());
+		getModel().setValue(model.getElement(index).toString());
 	}
 	
 	protected PColor getDefaultTextColor() {

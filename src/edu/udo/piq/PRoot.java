@@ -2,6 +2,8 @@ package edu.udo.piq;
 
 import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.components.PGlassPanel;
+import edu.udo.piq.components.PPanel;
+import edu.udo.piq.layouts.PRootLayout;
 
 /**
  * The root of a GUI tree. Such a root is also a {@link PComponent}.<br>
@@ -27,6 +29,15 @@ public interface PRoot extends PComponent {
 	 * @throws UnsupportedOperationException
 	 */
 	public void setParent(PComponent parent) throws UnsupportedOperationException;
+	
+	/**
+	 * Returns the {@link PLayout} of this {@link PRoot}.<br>
+	 * The layout of a root is always an instance of {@link PRootLayout} as it is 
+	 * needed to support {@link PRootOverlay PRootOverlays} and body {@link PPanel panels}.<br>
+	 * 
+	 * @see #getOverlay()
+	 */
+	public PRootLayout getLayout();
 	
 	/**
 	 * Returns null.<br>
@@ -179,8 +190,18 @@ public interface PRoot extends PComponent {
 	 * @return an instance of {@link PRootOverlay} or null if an overlay is not supported
 	 * @see PGlassPanel
 	 * @see PDnDManager
+	 * @see PRootLayout
 	 */
 	public PRootOverlay getOverlay();
+	
+	/**
+	 * Returns the body {@link PComponent} of this {@link PRoot}, this is usually a 
+	 * {@link PPanel} but could be any kind of component or even null.<br>
+	 * 
+	 * @return the body component of this root or null
+	 * @see PRootLayout
+	 */
+	public PComponent getBody();
 	
 	/**
 	 * Returns the drag and drop manager for this {@link PRoot} or null if drag and drop is 

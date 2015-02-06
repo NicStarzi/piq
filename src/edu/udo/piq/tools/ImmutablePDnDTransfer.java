@@ -31,12 +31,27 @@ public class ImmutablePDnDTransfer implements PDnDTransfer {
 		return y;
 	}
 	
-	public Object getElement() {
+	public Object getData() {
 		return obj;
 	}
 	
 	public PComponent getVisibleRepresentation() {
 		return visPres;
+	}
+	
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append(getClass().getSimpleName());
+		builder.append(" [source=");
+		builder.append(getSource());
+		builder.append(", data=");
+		builder.append(getData());
+		builder.append(", x=");
+		builder.append(getDragStartX());
+		builder.append(", y=");
+		builder.append(getDragStartY());
+		builder.append("]");
+		return builder.toString();
 	}
 	
 }

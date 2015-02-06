@@ -3,6 +3,7 @@ package edu.udo.piq.components;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PImageResource;
 import edu.udo.piq.PRenderer;
+import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.defaults.DefaultPPictureModel;
 import edu.udo.piq.tools.AbstractPComponent;
@@ -84,7 +85,11 @@ public class PPicture extends AbstractPComponent {
 		if (model == null || model.getImagePath() == null) {
 			return null;
 		}
-		return getRoot().fetchImageResource(model.getImagePath());
+		PRoot root = getRoot();
+		if (root == null) {
+			return null;
+		}
+		return root.fetchImageResource(model.getImagePath());
 	}
 	
 }

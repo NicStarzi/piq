@@ -122,7 +122,7 @@ public class AbstractPComponent implements PComponent {
 		if (parent != null && this.parent != null) {
 			throw new IllegalStateException(this+".getParent() != null");
 		}
-		if (PCompUtil.isDescendant(this, parent)) {
+		if (parent != null && PCompUtil.isDescendant(this, parent)) {
 			throw new IllegalArgumentException(this+" is descendant of "+parent);
 		}
 		PComponent oldParent = this.parent;
@@ -143,7 +143,8 @@ public class AbstractPComponent implements PComponent {
 		if (this.parent instanceof PRoot) {
 			setCachedRoot((PRoot) this.parent);
 		} else {
-			setCachedRoot(parent.getRoot());
+			PRoot root = parent == null ? null : parent.getRoot();
+			setCachedRoot(root);
 		}
 	}
 	

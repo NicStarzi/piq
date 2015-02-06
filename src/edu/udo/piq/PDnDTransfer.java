@@ -8,7 +8,7 @@ public interface PDnDTransfer {
 	
 	public int getDragStartY();
 	
-	public Object getElement();
+	public Object getData();
 	
 	public PComponent getVisibleRepresentation();
 	

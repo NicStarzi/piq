@@ -29,11 +29,11 @@ public class PFreeLayout extends AbstractPLayout {
 		addObs(new AbstractPLayoutObs() {
 			public void childRemoved(PLayout layout, PComponent child, Object constraint) {
 				sortedChildren.remove(child);
-				System.out.println("PFreeLayout.removeChild("+child+") => "+sortedChildren);
+//				System.out.println("PFreeLayout.removeChild("+child+") => "+sortedChildren);
 			}
 			public void childAdded(PLayout layout, PComponent child, Object constraint) {
 				addChildSorted(child, (FreeConstraint) constraint);
-				System.out.println("PFreeLayout.addChild("+child+") => "+sortedChildren);
+//				System.out.println("PFreeLayout.addChild("+child+") => "+sortedChildren);
 			}
 		});
 	}
@@ -104,7 +104,7 @@ public class PFreeLayout extends AbstractPLayout {
 	
 	private void addChildSorted(PComponent component, FreeConstraint constraint) {
 		int index = sortedChildren.size();
-		while (true) {
+		while (index > 0) {
 			PComponent child = sortedChildren.get(index - 1);
 			FreeConstraint childCon = getChildConstraint(child);
 			if (childCon.z > constraint.z) {
@@ -144,7 +144,7 @@ public class PFreeLayout extends AbstractPLayout {
 		con.z = z;
 		sortedChildren.remove(child);
 		addChildSorted(child, con);
-		System.out.println("PFreeLayout.updateConstraint("+child+") => "+sortedChildren);
+//		System.out.println("PFreeLayout.updateConstraint("+child+") => "+sortedChildren);
 		fireInvalidateEvent();
 	}
 	

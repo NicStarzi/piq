@@ -6,12 +6,15 @@ import java.util.List;
 import java.util.Set;
 
 import edu.udo.piq.PComponent;
+import edu.udo.piq.PDnDManager;
 import edu.udo.piq.PDnDTransfer;
 import edu.udo.piq.PDnDSupport;
 import edu.udo.piq.components.PList;
 import edu.udo.piq.components.PListModel;
 import edu.udo.piq.components.PListSelection;
+import edu.udo.piq.components.PPicture;
 import edu.udo.piq.tools.ImmutablePDnDTransfer;
+import edu.udo.piq.util.PCompUtil;
 
 public class DefaultPListDnDSupport implements PDnDSupport {
 	
@@ -26,14 +29,18 @@ public class DefaultPListDnDSupport implements PDnDSupport {
 		}
 		try {
 			PList list = (PList) target;
-			// Index might be -1 but in that case the model will return false with canAddElement
-			int index = list.getIndexAt(x, y);
+			// Model might be null
 			PListModel model = list.getModel();
 			if (model == null) {
 				return false;
 			}
+			// Index might be -1, in that case use element count of model for index
+			int index = list.getIndexAt(x, y);
+			if (index == -1) {
+				index = model.getElementCount();
+			}
 			
-			Object data = transfer.getElement();
+			Object data = transfer.getData();
 			// We might get a transfer from a different kind of component.
 			// We assume that a PList does not hold Collections as elements which might not always be true
 			// In case a user wants to store Collections inside a PList a custom PDnDSupport is required
@@ -59,19 +66,22 @@ public class DefaultPListDnDSupport implements PDnDSupport {
 	
 	@SuppressWarnings("rawtypes")
 	public void drop(PComponent target, PDnDTransfer transfer, int x, int y) {
-		// Throws NullPointerExceptions as well
+		// canDrop(...) throws NullPointerExceptions if needed as well
 		if (!canDrop(target, transfer, x, y)) {
 			throw new IllegalArgumentException();
 		}
 		try {
 			// We know that this is a PList since the canDrop method returned true
 			PList list = (PList) target;
-			// We know this index is valid since the canDrop method returned true
-			int index = list.getIndexAt(x, y);
 			// We know the model is not null since the canDrop method returned true
 			PListModel model = list.getModel();
+			// If index is -1 we append at the end of the list
+			int index = list.getIndexAt(x, y);
+			if (index == -1) {
+				index = model.getElementCount();
+			}
 			
-			Object data = transfer.getElement();
+			Object data = transfer.getData();
 			// We might get a transfer from a different kind of component.
 			// We assume that a PList does not hold Collections as elements which might not always be true
 			// In case a user wants to store Collections inside a PList a custom PDnDSupport is required
@@ -96,6 +106,11 @@ public class DefaultPListDnDSupport implements PDnDSupport {
 		if (!(source instanceof PList)) {
 			return false;
 		}
+		// If the root does not support drag and drop or if there is no root to begin with
+		PDnDManager dndMngr = PCompUtil.getDragAndDropManagerOf(source);
+		if (dndMngr == null || !dndMngr.canDrag()) {
+			return false;
+		}
 		try {
 			PList list = (PList) source;
 			PListSelection selection = list.getSelection();
@@ -104,6 +119,7 @@ public class DefaultPListDnDSupport implements PDnDSupport {
 				return false;
 			}
 			PListModel model = list.getModel();
+			// Can happen
 			if (model == null) {
 				return false;
 			}
@@ -120,8 +136,8 @@ public class DefaultPListDnDSupport implements PDnDSupport {
 		}
 	}
 	
-	public PDnDTransfer startDrag(PComponent source, int x, int y) {
-		// Throws NullPointerExceptions as well
+	public void startDrag(PComponent source, int x, int y) {
+		// canDrag(...) throws NullPointerExceptions if needed as well
 		if (!canDrag(source, x, y)) {
 			throw new IllegalArgumentException();
 		}
@@ -139,22 +155,24 @@ public class DefaultPListDnDSupport implements PDnDSupport {
 			for (Integer index : selectedIndices) {
 				data.add(model.getElement(index.intValue()));
 			}
+			PDnDTransfer transfer = new ImmutablePDnDTransfer(source, x, y, data, 
+					createVisibleRepresentation(data));
 			
-			return new ImmutablePDnDTransfer(source, x, y, data, null);
+			PCompUtil.getDragAndDropManagerOf(source).startDrag(transfer);
 		} catch (Exception e) {
 			// Just in case
 			throw new IllegalArgumentException(e);
 		}
 	}
 	
-	public void finishDrag(PComponent source, PDnDTransfer transfer) {
-		if (source == null) {
+	public void finishDrag(PComponent source, PComponent target, PDnDTransfer transfer) {
+		if (source == null || target == null || transfer == null) {
 			throw new NullPointerException();
 		}
 		try {
 			@SuppressWarnings("unchecked")
 			// We know that this is a List since we created it in the startDrag method
-			List<Object> elementList = (List<Object>) transfer.getElement();
+			List<Object> elementList = (List<Object>) transfer.getData();
 			// We know that this is a PList since the canDrag method returned true
 			PList list = (PList) source;
 			// We know the model is not null since the canDrag method returned true
@@ -173,11 +191,24 @@ public class DefaultPListDnDSupport implements PDnDSupport {
 		}
 	}
 	
-	public void abortDrag(PComponent source, PDnDTransfer data) {
+	public void abortDrag(PComponent source, PDnDTransfer transfer) {
 		if (source == null) {
 			throw new NullPointerException();
 		}
 		// do nothing
+	}
+	
+	protected PComponent createVisibleRepresentation(List<Object> data) {
+		PPicture pic = new PPicture();
+		pic.getModel().setImagePath("DragAndDrop.png");
+		pic.setStretchToSize(true);
+		return pic;
+	}
+	
+	public void showDropLocation(PComponent source, PDnDTransfer transfer, int x, int y) {
+	}
+	
+	public void hideDropLocation(PComponent source, PDnDTransfer transfer, int x, int y) {
 	}
 	
 }

@@ -39,6 +39,7 @@ public class PDnDManager {
 	 * The root for which this manager was created
 	 */
 	private final PRoot root;
+	private PComponent dropLocationComponent;
 	private PDnDTransfer activeTransfer;
 	private PRootOverlay currentOverlay;
 	private PMouse currentMouse;
@@ -115,6 +116,17 @@ public class PDnDManager {
 	}
 	
 	/**
+	 * If this method returns true then the given transfer can be used as an argument to the 
+	 * {@link #startDrag(PDnDTransfer)} method without causing an exception to be thrown.<br>
+	 * 
+	 * @param transfer
+	 * @return
+	 */
+	public boolean canDrag() {
+		return getActiveTransfer() == null;
+	}
+	
+	/**
 	 * Initializes a drag.<br>
 	 * If the root supports an overlay and the transfer supports a visual representation 
 	 * then the visual representation will be added to the overlay and updated as needed.<br>
@@ -169,23 +181,24 @@ public class PDnDManager {
 	
 	/**
 	 * Called when the drag is supposed to be successfully finished.<br>
-	 * Invokes {@link PDnDSupport#finishDrag(PComponent, PDnDTransfer)} on the drag and drop 
-	 * support of the source of the active drag. Also removes the visual representation from 
-	 * the overlay if it exists and unregisters the {@link PMouseObs}.<br>
+	 * Invokes {@link PDnDSupport#finishDrag(PComponent, PComponent, PDnDTransfer)} on the drag 
+	 * and drop support of the source of the active drag. Also removes the visual representation 
+	 * from the overlay if it exists and unregisters the {@link PMouseObs}.<br>
 	 * Afterwards the active transfer will be null.<br>
 	 * <br>
 	 * This method is invoked before the transfer has been dropped on the target component.<br>
 	 * 
+	 * @param target that component that the data is dropped to
 	 * @throws IllegalStateException if no drag is taking place
 	 * @see #finishDrag()
 	 * @see #startDrag(PDnDTransfer)
 	 */
-	protected void finishDrag() throws IllegalStateException {
+	protected void finishDrag(PComponent target) throws IllegalStateException {
 		throwExceptionIfNoDragActive();
 		
 		PComponent source = getActiveTransfer().getSource();
 		PDnDSupport dndSup = source.getDragAndDropSupport();
-		dndSup.finishDrag(source, getActiveTransfer());
+		dndSup.finishDrag(source, target, getActiveTransfer());
 		
 		endDrag();
 	}
@@ -227,6 +240,11 @@ public class PDnDManager {
 			currentMouse.removeObs(mouseObs);
 		}
 		
+		if (dropLocationComponent != null) {
+			PDnDSupport dndSup = dropLocationComponent.getDragAndDropSupport();
+			dndSup.hideDropLocation(dropLocationComponent, activeTransfer, -1, -1);
+		}
+		
 		if (hasVisualRepresentation()) {
 			currentOverlay.getLayout().removeChild(
 					getActiveTransfer().getVisibleRepresentation());
@@ -250,11 +268,11 @@ public class PDnDManager {
 	protected void drop(int x, int y) throws IllegalStateException, NullPointerException {
 		throwExceptionIfNoDragActive();
 		
+		PComponent dropTarget = getDropTarget(x, y);
 		// finishDrag() will reset the activeTransfer to null
 		PDnDTransfer transfer = getActiveTransfer();
-		finishDrag();
+		finishDrag(dropTarget);
 		
-		PComponent dropTarget = getDropTarget(x, y);
 		// Indicates an internal error as this method should only be called after checking if drop is possible
 		if (dropTarget == null) {
 			throw new NullPointerException("getDropTarget("+x+", "+y+")="+dropTarget);
@@ -264,6 +282,19 @@ public class PDnDManager {
 		dndSup.drop(dropTarget, transfer, x, y);
 	}
 	
+	/**
+	 * Returns true if the active transfer can be dropped on the given point.<br>
+	 * If this method returns true the {@link #getDropTarget(int, int)} method will return a 
+	 * non null component as the drop target.<br>
+	 * Furthermore the drop target will have a {@link PDnDSupport} that returns true with 
+	 * its {@link PDnDSupport#canDrop(PComponent, PDnDTransfer, int, int)} method for the 
+	 * active transfer.<br>
+	 * 
+	 * @param x where to drop the transfer
+	 * @param y where to drop the transfer
+	 * @return true if the active transfer can be dropped
+	 * @throws IllegalStateException if no drag is currently taking place
+	 */
 	protected boolean canDrop(int x, int y) throws IllegalStateException {
 		return getDropTarget(x, y) != null;
 	}
@@ -291,6 +322,21 @@ public class PDnDManager {
 	protected void updatePosition(int x, int y) throws IllegalStateException {
 		throwExceptionIfNoDragActive();
 		
+		// Hide old drop location if drop target changed
+		PComponent dropTarget = getDropTarget(x, y);
+		if (dropLocationComponent != null 
+				&& dropLocationComponent != dropTarget) 
+		{
+			PDnDSupport dndSup = dropLocationComponent.getDragAndDropSupport();
+			dndSup.hideDropLocation(dropLocationComponent, getActiveTransfer(), x, y);
+		}
+		dropLocationComponent = dropTarget;
+		// Show drop location on drop target component
+		if (dropLocationComponent != null) {
+			PDnDSupport dndSup = dropLocationComponent.getDragAndDropSupport();
+			dndSup.showDropLocation(dropLocationComponent, getActiveTransfer(), x, y);
+		}
+		// Update position of visual representation of transfer
 		if (hasVisualRepresentation()) {
 			PComponent cmp = getActiveTransfer().getVisibleRepresentation();
 			PSize prefSize = PCompUtil.getPreferredSizeOf(cmp);

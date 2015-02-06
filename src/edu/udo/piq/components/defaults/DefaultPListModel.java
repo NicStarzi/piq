@@ -27,7 +27,7 @@ public class DefaultPListModel extends AbstractPListModel {
 	
 	public void addElement(int index, Object element) {
 		if (!canAddElement(index, element)) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("index="+index+", element="+element);
 		}
 		elements.add(index, element);
 		fireAddedEvent(element, index);

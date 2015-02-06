@@ -97,6 +97,9 @@ public abstract class AbstractPLayout implements PLayout {
 	}
 	
 	public PBounds getChildBounds(PComponent child) throws NullPointerException, IllegalArgumentException {
+		if (child == null) {
+			throw new NullPointerException("child == null");
+		}
 		PCompInfo info = compMap.get(child);
 		if (info != null) {
 			return info.bounds;
@@ -105,6 +108,9 @@ public abstract class AbstractPLayout implements PLayout {
 	}
 	
 	public Object getChildConstraint(PComponent child) throws NullPointerException {
+		if (child == null) {
+			throw new NullPointerException("child == null");
+		}
 		PCompInfo info = compMap.get(child);
 		if (info != null) {
 			return info.constr;

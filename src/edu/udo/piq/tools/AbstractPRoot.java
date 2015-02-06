@@ -13,7 +13,11 @@ import edu.udo.piq.PDesign;
 import edu.udo.piq.PDesignSheet;
 import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PFontResource.Style;
+import edu.udo.piq.components.PGlassPanel;
+import edu.udo.piq.components.PPanel;
 import edu.udo.piq.layouts.PBorderLayout;
+import edu.udo.piq.layouts.PRootLayout;
+import edu.udo.piq.layouts.PRootLayout.Constraint;
 import edu.udo.piq.util.PCompUtil;
 import edu.udo.piq.PDnDManager;
 import edu.udo.piq.PDnDSupport;
@@ -31,11 +35,12 @@ import edu.udo.piq.PTimer;
 
 public abstract class AbstractPRoot implements PRoot {
 	
-	protected PLayout layout;
+	protected final PRootLayout layout;
+//	protected PLayout layout;
 	protected PDesignSheet designSheet = new AbstractPDesignSheet();
 	protected PMouse mouse;
 	protected PKeyboard keyboard;
-	protected PRootOverlay overlay;
+//	protected PRootOverlay overlay;
 	protected PDnDManager dndManager;
 	
 	private final PComponentObs childObs = new AbstractPComponentObs() {
@@ -64,7 +69,13 @@ public abstract class AbstractPRoot implements PRoot {
 	private boolean needReLayout = true;
 	
 	public AbstractPRoot() {
-		setLayout(new PBorderLayout(this));
+		layout = new PRootLayout(this);
+		getLayout().addObs(layoutObs);
+		PPanel body = new PPanel();
+		body.setLayout(new PBorderLayout(body));
+		getLayout().addChild(body, Constraint.BODY);
+		getLayout().addChild(new PGlassPanel(), Constraint.OVERLAY);
+//		setLayout(new PBorderLayout(this));
 	}
 	
 	/*
@@ -125,19 +136,19 @@ public abstract class AbstractPRoot implements PRoot {
 		}
 	}
 	
-	public void setLayout(PLayout layout) {
-		if (getLayout() != null) {
-			getLayout().removeObs(layoutObs);
-		}
-		this.layout = layout;
-		if (getLayout() != null) {
-			getLayout().addObs(layoutObs);
-		}
-		needReLayout = true;
-		reRender(this);
-	}
+//	public void setLayout(PLayout layout) {
+//		if (getLayout() != null) {
+//			getLayout().removeObs(layoutObs);
+//		}
+//		this.layout = layout;
+//		if (getLayout() != null) {
+//			getLayout().addObs(layoutObs);
+//		}
+//		needReLayout = true;
+//		reRender(this);
+//	}
 	
-	public PLayout getLayout() {
+	public PRootLayout getLayout() {
 		return layout;
 	}
 	
@@ -160,7 +171,11 @@ public abstract class AbstractPRoot implements PRoot {
 	}
 	
 	public PRootOverlay getOverlay() {
-		return overlay;
+		return getLayout().getOverlay();
+	}
+	
+	public PComponent getBody() {
+		return getLayout().getBody();
 	}
 	
 	public PDnDManager getDragAndDropManager() {

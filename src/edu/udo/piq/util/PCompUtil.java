@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PDesign;
+import edu.udo.piq.PDnDManager;
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PLayout;
 import edu.udo.piq.PMouse;
@@ -203,6 +204,23 @@ public class PCompUtil {
 	}
 	
 	/**
+	 * Returns the drag and drop manager installed in the {@link PRoot} that component 
+	 * is a descendant of.<br>
+	 * If component is not a descendant of a root or if the root of descendant does not 
+	 * support a drag and drop manager null is returned.<br>
+	 * 
+	 * @param component
+	 * @return an instance of {@link PDnDManager} or null
+	 */
+	public static PDnDManager getDragAndDropManagerOf(PComponent component) {
+		PRoot root = getRootOf(component);
+		if (root == null) {
+			return null;
+		}
+		return root.getDragAndDropManager();
+	}
+	
+	/**
 	 * Returns the portion of the components {@link PBounds} that is not 
 	 * clipped by the bounds of an ancestor of component.<br>
 	 * More specifically the returned PBounds are those bounds that are 
@@ -376,9 +394,10 @@ public class PCompUtil {
 		if (!isWithinClippedBounds(root, x, y)) {
 			return null;
 		}
-		if (root.getLayout() == null) {
-			return root;
-		}
+		// The root never has a null layout
+//		if (root.getLayout() == null) {
+//			return root;
+//		}
 		
 		PLayout current = root.getLayout();
 		while (true) {

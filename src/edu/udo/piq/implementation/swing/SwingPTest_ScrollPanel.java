@@ -7,19 +7,12 @@ import java.awt.event.ActionListener;
 import javax.swing.JFrame;
 import javax.swing.Timer;
 
-import edu.udo.piq.PDialog;
-import edu.udo.piq.components.PButton;
-import edu.udo.piq.components.PButtonObs;
-import edu.udo.piq.components.PLabel;
-import edu.udo.piq.components.PPanel;
 import edu.udo.piq.components.PPicture;
 import edu.udo.piq.components.PScrollPanel;
 import edu.udo.piq.components.PSplitPanel;
 import edu.udo.piq.components.PTextArea;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.layouts.PBorderLayout;
-import edu.udo.piq.layouts.PListLayout;
-import edu.udo.piq.layouts.PListLayout.ListAlignment;
 
 public class SwingPTest_ScrollPanel {
 	public static void main(String[] args) {
@@ -69,41 +62,6 @@ public class SwingPTest_ScrollPanel {
 		PTextArea txtAr = new PTextArea();
 		txtAr.setModel(new DefaultPTextModel("This\nis\na\ntest.\nWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na"));
 		scrl.setView(txtAr);
-	}
-	
-	public static class MyLittleDialog {
-		
-		public MyLittleDialog(PDialog dlg) {
-			PBorderLayout layout = new PBorderLayout(dlg);
-			dlg.setLayout(layout);
-			
-			PPanel pnlBody = new PPanel();
-			pnlBody.setLayout(new PBorderLayout(pnlBody));
-			layout.addChild(pnlBody, PBorderLayout.Constraint.CENTER);
-			
-			PLabel lblBodyContent = new PLabel();
-			lblBodyContent.getModel().setValue("This is a dialog body!");
-			pnlBody.addChild(lblBodyContent, PBorderLayout.Constraint.CENTER);
-			
-			PPanel pnlButtons = new PPanel();
-			pnlButtons.setLayout(new PListLayout(pnlButtons, ListAlignment.CENTERED_HORIZONTAL));
-			layout.addChild(pnlButtons, PBorderLayout.Constraint.BOTTOM);
-			
-			PLabel lblOkayBtn = new PLabel();
-			lblOkayBtn.getModel().setValue("OK");
-			
-			PButton btnOkay = new PButton();
-			btnOkay.setContent(lblOkayBtn);
-			btnOkay.addObs(new PButtonObs() {
-				public void onClick(PButton button) {
-					System.out.println("OK!");
-				}
-			});
-			pnlButtons.addChild(btnOkay, null);
-			
-			dlg.show();
-		}
-		
 	}
 	
 }

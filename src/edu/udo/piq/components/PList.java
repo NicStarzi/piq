@@ -8,6 +8,7 @@ import java.util.Set;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
+import edu.udo.piq.PDnDSupport;
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PKeyboardObs;
 import edu.udo.piq.PMouse;
@@ -16,6 +17,7 @@ import edu.udo.piq.PRenderer;
 import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.components.defaults.DefaultPListCellFactory;
+import edu.udo.piq.components.defaults.DefaultPListDnDSupport;
 import edu.udo.piq.components.defaults.DefaultPListModel;
 import edu.udo.piq.components.defaults.DefaultPListSelection;
 import edu.udo.piq.layouts.PListLayout;
@@ -26,6 +28,8 @@ import edu.udo.piq.tools.AbstractPMouseObs;
 import edu.udo.piq.util.PCompUtil;
 
 public class PList extends AbstractPLayoutOwner {
+	
+	private static final int DRAG_AND_DROP_DISTANCE = 16;
 	
 	private final PKeyboardObs keyObs = new AbstractPKeyboardObs() {
 		public void keyPressed(PKeyboard keyboard, Key key) {
@@ -55,16 +59,25 @@ public class PList extends AbstractPLayoutOwner {
 		}
 	};
 	private final PMouseObs mouseObs = new AbstractPMouseObs() {
+		private int lastMouseX;
+		private int lastMouseY;
+		private boolean isSelected = false;
+		
 		public void buttonTriggered(PMouse mouse, MouseButton btn) {
 			if (getModel() == null || getSelection() == null) {
 				return;
 			}
 			PKeyboard keyboard = PCompUtil.getKeyboardOf(PList.this);
-			if (PCompUtil.isWithinClippedBounds(PList.this, mouse.getX(), mouse.getY())) {
-				PComponent selected = getLayout().getChildAt(mouse.getX(), mouse.getY());
+			int mx = mouse.getX();
+			int my = mouse.getY();
+			if (PCompUtil.isWithinClippedBounds(PList.this, mx, my)) {
+				PComponent selected = getLayout().getChildAt(mx, my);
 				if (selected != null) {
-					Integer index = Integer.valueOf(getLayout().getChildIndex(selected));
+					lastMouseX = mx;
+					lastMouseY = my;
+					isSelected = true;
 					
+					Integer index = Integer.valueOf(getLayout().getChildIndex(selected));
 					if (keyboard != null && keyboard.isPressed(Key.CTRL)) {
 						toggleSelection(index);
 					} else if (keyboard != null && keyboard.isPressed(Key.SHIFT)) {
@@ -78,13 +91,33 @@ public class PList extends AbstractPLayoutOwner {
 				}
 			}
 		}
+		public void buttonReleased(PMouse mouse, MouseButton btn) {
+			if (isSelected && btn == MouseButton.LEFT) {
+				isSelected = false;
+			}
+		}
+		public void mouseMoved(PMouse mouse) {
+			PDnDSupport dndSup = getDragAndDropSupport();
+			if (isSelected && mouse.isPressed(MouseButton.LEFT) && dndSup != null) {
+				int mx = mouse.getX();
+				int my = mouse.getY();
+				int disX = Math.abs(lastMouseX - mx);
+				int disY = Math.abs(lastMouseY - my);
+				int dis = disX + disY;
+				if (dis >= DRAG_AND_DROP_DISTANCE) {
+					if (dndSup.canDrag(PList.this, mx, my)) {
+						dndSup.startDrag(PList.this, mx, my);
+					}
+				}
+			}
+		}
 	};
 	private final PListModelObs modelObs = new PListModelObs() {
 		public void elementAdded(PListModel model, Object element, int index) {
 			PList.this.elementAdded(index);
 		}
 		public void elementRemoved(PListModel model, Object element, int index) {
-			PList.this.elementRemoved(index);
+			PList.this.elementRemoved(element);
 		}
 		public void elementChanged(PListModel model, Object element, int index) {
 			PList.this.elementChanged(index);
@@ -99,12 +132,14 @@ public class PList extends AbstractPLayoutOwner {
 		}
 	};
 	private final Map<Object, PListCellComponent> elementToCompMap = new HashMap<>();
+	private PDnDSupport dndSup;
 	private PListSelection selection;
 	private PListModel model;
 	private PListCellFactory cellFac;
 	
 	public PList() {
 		setLayout(new PListLayout(this, ListAlignment.FROM_TOP, 1));
+		setDragAndDropSupport(new DefaultPListDnDSupport());
 		setModel(new DefaultPListModel());
 		setSelection(new DefaultPListSelection());
 		setCellFactory(new DefaultPListCellFactory());
@@ -112,6 +147,14 @@ public class PList extends AbstractPLayoutOwner {
 	
 	public PListLayout getLayout() {
 		return (PListLayout) super.getLayout();
+	}
+	
+	public void setDragAndDropSupport(PDnDSupport support) {
+		dndSup = support;
+	}
+	
+	public PDnDSupport getDragAndDropSupport() {
+		return dndSup;
 	}
 	
 	public void setCellFactory(PListCellFactory factory) {
@@ -227,16 +270,22 @@ public class PList extends AbstractPLayoutOwner {
 	}
 	
 	private void elementAdded(int index) {
+		if (getSelection() != null) {
+			getSelection().clearSelection();
+		}
 		Object element = getModel().getElement(Integer.valueOf(index));
 		PListCellComponent cellComp = getCellFactory().getCellComponentFor(getModel(), index);
 		elementToCompMap.put(element, cellComp);
-		getLayout().addChild(cellComp, null);
+		getLayout().addChild(cellComp, Integer.valueOf(index));
 	}
 	
-	private void elementRemoved(int index) {
-		Object element = getModel().getElement(Integer.valueOf(index));
+	private void elementRemoved(Object element) {
+		if (getSelection() != null) {
+			getSelection().clearSelection();
+		}
 		PComponent cellComp = elementToCompMap.get(element);
 		getLayout().removeChild(cellComp);
+		elementToCompMap.remove(element);
 	}
 	
 	private void elementChanged(int index) {
@@ -248,11 +297,15 @@ public class PList extends AbstractPLayoutOwner {
 	}
 	
 	private void selectionChanged(int index, boolean value) {
+		if (index >= getModel().getElementCount()) {
+			return;
+		}
 		Object elem = getModel().getElement(index);
 		PListCellComponent comp = elementToCompMap.get(elem);
 		if (comp != null && comp.isSelected() != value) {
 			comp.setSelected(value);
 		}
+//		System.out.println(getSelection().getSelection());
 	}
 	
 }

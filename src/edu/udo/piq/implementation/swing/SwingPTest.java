@@ -7,7 +7,6 @@ import java.awt.event.ActionListener;
 import javax.swing.JFrame;
 import javax.swing.Timer;
 
-import edu.udo.piq.PDialog;
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PButtonObs;
 import edu.udo.piq.components.PCheckBox;
@@ -26,7 +25,6 @@ import edu.udo.piq.components.PSplitPanel;
 import edu.udo.piq.components.PTextArea;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.layouts.PBorderLayout;
-import edu.udo.piq.layouts.PListLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
 import edu.udo.piq.layouts.PSplitLayout.Orientation;
 import edu.udo.piq.layouts.PWrapLayout;
@@ -69,7 +67,7 @@ public class SwingPTest {
 		
 		PSplitPanel splitV = new PSplitPanel();
 		splitV.getLayout().setOrientation(Orientation.VERTICAL);
-		root.getLayout().addChild(splitV, PBorderLayout.Constraint.CENTER);
+		root.getBody().getLayout().addChild(splitV, PBorderLayout.Constraint.CENTER);
 		
 		PSplitPanel splitH = new PSplitPanel();
 		splitH.getLayout().setOrientation(Orientation.HORIZONTAL);
@@ -117,7 +115,7 @@ public class SwingPTest {
 		PPanel btnPnl = new PPanel();
 		btnPnl.setLayout(new PWrapLayout(btnPnl, ListAlignment.FROM_LEFT));
 //		btnPnl.setLayout(new PListLayout(btnPnl, ListAlignment.FROM_LEFT));
-		root.getLayout().addChild(btnPnl, PBorderLayout.Constraint.BOTTOM);
+		root.getBody().getLayout().addChild(btnPnl, PBorderLayout.Constraint.BOTTOM);
 		
 		final PButton btnChange = new PButton();
 		btnChange.setContent(new PSlider());
@@ -200,46 +198,46 @@ public class SwingPTest {
 		prgBar.getModel().addObs(new PProgressBarModelObs() {
 			public void valueChanged(PProgressBarModel model) {
 				if (model.getValue() == model.getMaxValue()) {
-					PDialog dlg = prgBar.getRoot().createDialog();
-					new MyLittleDialog(dlg);
+//					PDialog dlg = prgBar.getRoot().createDialog();
+//					new MyLittleDialog(dlg);
 				}
 			}
 		});
 	}
 	
-	public static class MyLittleDialog {
-		
-		public MyLittleDialog(final PDialog dlg) {
-			dlg.setLayout(new PBorderLayout(dlg));
-			
-			PPanel pnlBody = new PPanel();
-			pnlBody.setLayout(new PBorderLayout(pnlBody));
-			dlg.getLayout().addChild(pnlBody, PBorderLayout.Constraint.CENTER);
-			
-			PLabel lblBodyContent = new PLabel();
-			lblBodyContent.getModel().setValue("This is a dialog body!");
-			pnlBody.addChild(lblBodyContent, PBorderLayout.Constraint.CENTER);
-			
-			PPanel pnlButtons = new PPanel();
-			pnlButtons.setLayout(new PListLayout(pnlButtons, ListAlignment.CENTERED_HORIZONTAL));
-			dlg.getLayout().addChild(pnlButtons, PBorderLayout.Constraint.BOTTOM);
-			
-			PLabel lblOkayBtn = new PLabel();
-			lblOkayBtn.getModel().setValue("OK");
-			
-			PButton btnOkay = new PButton();
-			btnOkay.setContent(lblOkayBtn);
-			btnOkay.addObs(new PButtonObs() {
-				public void onClick(PButton button) {
-					System.out.println("OK!");
-					dlg.dispose();
-				}
-			});
-			pnlButtons.addChild(btnOkay, null);
-			
-			dlg.show();
-		}
-		
-	}
+//	public static class MyLittleDialog {
+//		
+//		public MyLittleDialog(final PDialog dlg) {
+//			dlg.setLayout(new PBorderLayout(dlg));
+//			
+//			PPanel pnlBody = new PPanel();
+//			pnlBody.setLayout(new PBorderLayout(pnlBody));
+//			dlg.getLayout().addChild(pnlBody, PBorderLayout.Constraint.CENTER);
+//			
+//			PLabel lblBodyContent = new PLabel();
+//			lblBodyContent.getModel().setText("This is a dialog body!");
+//			pnlBody.addChild(lblBodyContent, PBorderLayout.Constraint.CENTER);
+//			
+//			PPanel pnlButtons = new PPanel();
+//			pnlButtons.setLayout(new PListLayout(pnlButtons, ListAlignment.CENTERED_HORIZONTAL));
+//			dlg.getLayout().addChild(pnlButtons, PBorderLayout.Constraint.BOTTOM);
+//			
+//			PLabel lblOkayBtn = new PLabel();
+//			lblOkayBtn.getModel().setText("OK");
+//			
+//			PButton btnOkay = new PButton();
+//			btnOkay.setContent(lblOkayBtn);
+//			btnOkay.addObs(new PButtonObs() {
+//				public void onClick(PButton button) {
+//					System.out.println("OK!");
+//					dlg.dispose();
+//				}
+//			});
+//			pnlButtons.addChild(btnOkay, null);
+//			
+//			dlg.show();
+//		}
+//		
+//	}
 	
 }

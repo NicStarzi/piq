@@ -39,16 +39,16 @@ public interface PDialog extends PRoot {
 	 */
 	public boolean isDisposed();
 	
-	/**
-	 * Sets the {@link PLayout} of this {@link PDialog} to layout.<br>
-	 * Afterwards any future calls to {@link #getLayout()} will return 
-	 * the layout given as argument.<br>
-	 * 
-	 * @param layout the new layout for this dialog
-	 * @see #getLayout()
-	 * @see PLayout
-	 */
-	public void setLayout(PLayout layout);
+//	/**
+//	 * Sets the {@link PLayout} of this {@link PDialog} to layout.<br>
+//	 * Afterwards any future calls to {@link #getLayout()} will return 
+//	 * the layout given as argument.<br>
+//	 * 
+//	 * @param layout the new layout for this dialog
+//	 * @see #getLayout()
+//	 * @see PLayout
+//	 */
+//	public void setLayout(PLayout layout);
 	
 	/**
 	 * Returns the {@link PBounds} of this {@link PDialog}.<br>

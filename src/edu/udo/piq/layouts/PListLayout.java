@@ -52,7 +52,11 @@ public class PListLayout extends AbstractPLayout {
 		
 		addObs(new AbstractPLayoutObs() {
 			public void childAdded(PLayout layout, PComponent child, Object constraint) {
-				compList.add(child);
+				if (constraint == null) {
+					compList.add(child);
+				} else {
+					compList.add((Integer) constraint, child);
+				}
 			}
 			public void childRemoved(PLayout layout, PComponent child, Object constraint) {
 				compList.remove(child);
@@ -104,11 +108,25 @@ public class PListLayout extends AbstractPLayout {
 	}
 	
 	public int getChildIndex(PComponent child) {
+		if (child == null) {
+			throw new NullPointerException();
+		}
 		return compList.indexOf(child);
 	}
 	
+	public Object getChildConstraint(PComponent child) throws NullPointerException {
+		if (child == null) {
+			throw new NullPointerException();
+		}
+		return compList.indexOf(child);
+	}
+	
+	public PComponent getChildForConstraint(Object constraint) {
+		return getChild((Integer) constraint);
+	}
+	
 	protected boolean canAdd(PComponent cmp, Object constraint) {
-		return constraint == null && !compList.contains(cmp);
+		return (constraint == null || constraint instanceof Integer) && !compList.contains(cmp);
 	}
 	
 	public void layOut() {
@@ -119,6 +137,8 @@ public class PListLayout extends AbstractPLayout {
 		int minY = ob.getY() + insets.getFromTop();
 		int alignedX = minX;
 		int alignedY = minY;
+		int w = ob.getWidth() - insets.getHorizontal();
+		int h = ob.getHeight() - insets.getVertical();
 		
 		int prefW = 0;
 		int prefH = 0;
@@ -156,8 +176,6 @@ public class PListLayout extends AbstractPLayout {
 		}
 		int x = Math.max(alignedX, minX);
 		int y = Math.max(alignedY, minY);
-//		int w = ob.getWidth() - insets.getHorizontal();
-//		int h = ob.getHeight() - insets.getVertical();
 		
 		for (int i = 0; i < compList.size(); i++) {
 			PComponent comp = compList.get(i);
@@ -166,10 +184,12 @@ public class PListLayout extends AbstractPLayout {
 			int compPrefH = compPrefSize.getHeight();
 			
 			if (isHorizontal) {
-				setChildBounds(comp, x, y, compPrefW, compPrefH);
+				setChildBounds(comp, x, y, compPrefW, h);
+//				setChildBounds(comp, x, y, compPrefW, compPrefH);
 				x += compPrefW + gap;
 			} else {
-				setChildBounds(comp, x, y, compPrefW, compPrefH);
+				setChildBounds(comp, x, y, w, compPrefH);
+//				setChildBounds(comp, x, y, compPrefW, compPrefH);
 				y += compPrefH + gap;
 			}
 		}

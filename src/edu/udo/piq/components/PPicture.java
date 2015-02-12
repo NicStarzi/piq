@@ -68,7 +68,7 @@ public class PPicture extends AbstractPComponent {
 		}
 	}
 	
-	public boolean isDefaultOpaque() {
+	public boolean fillsAllPixels() {
 		return false;
 	}
 	

@@ -59,15 +59,15 @@ public class PCompUtil {
 		return design.getPreferredSize(component);
 	}
 	
-	public static boolean isOpaque(PComponent component) throws NullPointerException {
+	public static boolean fillsAllPixels(PComponent component) throws NullPointerException {
 		if (component instanceof PRoot) {
 			return true;
 		}
 		PDesign design = component.getDesign();
 		if (design == null) {
-			return component.isDefaultOpaque();
+			return component.fillsAllPixels();
 		}
-		return design.isOpaque(component);
+		return design.fillsAllPixels(component);
 	}
 	
 	/**
@@ -395,10 +395,6 @@ public class PCompUtil {
 			return null;
 		}
 		// The root never has a null layout
-//		if (root.getLayout() == null) {
-//			return root;
-//		}
-		
 		PLayout current = root.getLayout();
 		while (true) {
 			PComponent child = current.getChildAt(x, y);

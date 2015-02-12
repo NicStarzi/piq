@@ -17,7 +17,7 @@ public interface PLayoutObs {
 	 * @param child the component that was added
 	 * @param constraint the constraint the component was added with
 	 */
-	public void childAdded(PLayout layout, PComponent child, Object constraint);
+	public default void childAdded(PLayout layout, PComponent child, Object constraint) {}
 	
 	/**
 	 * This even is fired when a {@link PComponent} was removed from a 
@@ -26,7 +26,7 @@ public interface PLayoutObs {
 	 * @param layout the layout that the component was removed from
 	 * @param child the component that was removed
 	 */
-	public void childRemoved(PLayout layout, PComponent child, Object constraint);
+	public default void childRemoved(PLayout layout, PComponent child, Object constraint) {}
 	
 	/**
 	 * This event is fired when a {@link PComponent} was laid out by this {@link PLayout}.<br>
@@ -34,7 +34,7 @@ public interface PLayoutObs {
 	 * @param layout the layout that laid out the component
 	 * @param child the component that was laid out
 	 */
-	public void childLaidOut(PLayout layout, PComponent child, Object constraint);
+	public default void childLaidOut(PLayout layout, PComponent child, Object constraint) {}
 	
 	/**
 	 * This event is fired when the {@link PLayout} has been invalidated and needs to 
@@ -44,6 +44,6 @@ public interface PLayoutObs {
 	 * 
 	 * @param layout the layout
 	 */
-	public void layoutInvalidated(PLayout layout);
+	public default void layoutInvalidated(PLayout layout) {}
 	
 }

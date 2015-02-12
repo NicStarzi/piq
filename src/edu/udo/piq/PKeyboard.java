@@ -1,5 +1,7 @@
 package edu.udo.piq;
 
+import edu.udo.piq.components.util.PFocusTraversal;
+
 public interface PKeyboard {
 	
 	/**
@@ -33,34 +35,14 @@ public interface PKeyboard {
 	public boolean isTriggered(Key key);
 	
 	/**
-	 * Returns true if the shift key is currently being pressed or the capslock key is toggled. 
-	 * @return true if caps is toggled
+	 * Returns true if the given modifier is currently toggled.<br>
+	 * 
+	 * @param modifier
+	 * @return true if the modifier is active
+	 * @throws NullPointerException
+	 * @see Modifier
 	 */
-	public boolean isCapsToggled();
-	
-	/**
-	 * Returns true if the alt key is currently being pressed. 
-	 * @return true if alt is torggled
-	 */
-	public boolean isAltToggled();
-	
-	/**
-	 * Returns true if the alt graph key is currently being pressed. 
-	 * @return true if alt-graph is torggled
-	 */
-	public boolean isAltGraphToggled();
-	
-	/**
-	 * Returns true if the ctrl key is currently being pressed. 
-	 * @return true if ctrl is torggled
-	 */
-	public boolean isCtrlToggled();
-	
-	/**
-	 * Returns true if the meta key is currently being pressed. 
-	 * @return true if meta is torggled
-	 */
-	public boolean isMetaToggled();
+	public boolean isModifierToggled(Modifier modifier);
 	
 	public void addObs(PKeyboardObs obs);
 	
@@ -85,7 +67,57 @@ public interface PKeyboard {
 		
 		SHIFT, TAB, CTRL, SPACE, ENTER, BACKSPACE, 
 		DEL, HOME, PAGE_UP, PAGE_DOWN, ALT_GR, 
-		ESC, CAPSLOCK, ALT, END, 
+		ESC, CAPSLOCK, ALT, END,
+		
+		/**
+		 * When this key is triggered the next component in the 
+		 * current {@link PFocusTraversal} will become focused.<br>
+		 */
+		FOCUS_NEXT,
+		/**
+		 * When this key is triggered the previous component in the 
+		 * current {@link PFocusTraversal} will become focused.<br>
+		 */
+		FOCUS_PREV, 
+		/**
+		 * When this key is triggered the current {@link PFocusTraversal} 
+		 * will go up by one level if possible.<br>
+		 */
+		FOCUS_UP,
+		/**
+		 * When this key is triggered the current {@link PFocusTraversal} 
+		 * will go down by one level if possible.<br>
+		 */
+		FOCUS_DOWN, 
+		/**
+		 * This key is used for the COPY-shortcuts. On windows this is Ctrl + C.<br>
+		 */
+		COPY, 
+		/**
+		 * This key is used for the CUT-shortcuts. On windows this is Ctrl + X.<br>
+		 */
+		CUT, 
+		/**
+		 * This key is used for the PASTE-shortcuts. On windows this is Ctrl + V.<br>
+		 */
+		PASTE, 
+		/**
+		 * This key is used for the UNDO-shortcuts. On windows this is Ctrl + Z.<br>
+		 */
+		UNDO, 
+		/**
+		 * This key is used for the REDO-shortcuts. On windows this is Ctrl + Y.<br>
+		 */
+		REDO, 
+		;
+	}
+	
+	public static enum Modifier {
+		CAPS,
+		ALT,
+		ALT_GRAPH,
+		CTRL,
+		META,
 		;
 	}
 	

@@ -3,6 +3,7 @@ package edu.udo.piq.components;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
+import edu.udo.piq.PComponentObs;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
@@ -11,8 +12,6 @@ import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.components.defaults.DefaultPScrollBarModel;
 import edu.udo.piq.layouts.PScrollPanelLayout;
 import edu.udo.piq.tools.AbstractPComponent;
-import edu.udo.piq.tools.AbstractPComponentObs;
-import edu.udo.piq.tools.AbstractPMouseObs;
 import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.util.PCompUtil;
 import edu.udo.piq.util.PRenderUtil;
@@ -22,7 +21,7 @@ public class PScrollBar extends AbstractPComponent {
 	private static final int MIN_SLIDER_WIDTH = PScrollPanelLayout.SCROLL_BAR_SIZE;
 	private static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(MIN_SLIDER_WIDTH, MIN_SLIDER_WIDTH);
 	
-	private final PMouseObs mouseObs = new AbstractPMouseObs() {
+	private final PMouseObs mouseObs = new PMouseObs() {
 		public void mouseMoved(PMouse mouse) {
 			if (pressed && mouse.isPressed(MouseButton.LEFT)) {
 				moveTo(mouse.getX());
@@ -62,7 +61,7 @@ public class PScrollBar extends AbstractPComponent {
 		super();
 		setModel(new DefaultPScrollBarModel());
 		
-		addObs(new AbstractPComponentObs() {
+		addObs(new PComponentObs() {
 			public void wasRemoved(PComponent component) {
 				pressed = false;
 				getModel().setContentSize(0);
@@ -70,6 +69,7 @@ public class PScrollBar extends AbstractPComponent {
 				getModel().setScroll(0);
 			}
 		});
+		addObs(mouseObs);
 	}
 	
 	public void setModel(PScrollBarModel model) {
@@ -149,10 +149,6 @@ public class PScrollBar extends AbstractPComponent {
 	
 	public PSize getDefaultPreferredSize() {
 		return DEFAULT_PREFERRED_SIZE;
-	}
-	
-	protected PMouseObs getMouseObs() {
-		return mouseObs;
 	}
 	
 }

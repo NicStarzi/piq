@@ -3,7 +3,9 @@ package edu.udo.piq.implementation.swing;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.Timer;
@@ -19,6 +21,7 @@ import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PListLayout;
 import edu.udo.piq.layouts.PWrapLayout;
+import edu.udo.piq.tools.AbstractPListModel;
 
 public class SwingPTest_DragAndDrop {
 	public static void main(String[] args) {
@@ -59,22 +62,54 @@ public class SwingPTest_DragAndDrop {
 		root.getBody().getLayout().addChild(split, PBorderLayout.Constraint.CENTER);
 		
 		final PList listLeft = new PList();
-		listLeft.setID("LEFT");
-//		listLeft.setModel(new DefaultPListModel() {
-//			public boolean canAddElement(int index, Object element) {
-//				return super.canAddElement(index, element) && element instanceof Integer;
-//			}
-//		});
 		listLeft.getModel().addElement(0, Integer.valueOf(1));
 		listLeft.getModel().addElement(1, Integer.valueOf(2));
 		listLeft.getModel().addElement(2, Integer.valueOf(3));
 		split.setFirstComponent(listLeft);
 		
 		PList listRight = new PList();
-		listRight.setID("RIGHT");
-		listRight.getModel().addElement(0, "Anna");
-		listRight.getModel().addElement(1, "Brigitte");
-		listRight.getModel().addElement(2, "Chloe");
+		listRight.setModel(new AbstractPListModel() {
+			
+			List<Person> list = new ArrayList<>();
+			
+			public void removeElement(int index) throws IllegalArgumentException {
+				Object element = getElement(index);
+				list.remove(index);
+				fireRemovedEvent(element, index);
+			}
+			
+			public int getIndexOfElement(Object element) {
+				return list.indexOf(element);
+			}
+			
+			public int getElementCount() {
+				return list.size();
+			}
+			
+			public Object getElement(int index) throws IndexOutOfBoundsException {
+				return list.get(index);
+			}
+			
+			public boolean canRemoveElement(int index) {
+				return index >= 0 && index < list.size();
+			}
+			
+			public boolean canAddElement(int index, Object element) {
+				if (element instanceof Person && index >= 0 && index <= list.size()) {
+					return true;
+				}
+				return false;
+			}
+			
+			public void addElement(int index, Object element)
+					throws IllegalArgumentException {
+				list.add(index, (Person) element);
+				fireAddedEvent(element, index);
+			}
+		});
+		listRight.getModel().addElement(0, new Person("Anna", "A"));
+		listRight.getModel().addElement(1, new Person("Brigitte", "B"));
+		listRight.getModel().addElement(2, new Person("Chloe", "C"));
 		split.setSecondComponent(listRight);
 		
 		PPanel btnPnl = new PPanel();
@@ -111,6 +146,22 @@ public class SwingPTest_DragAndDrop {
 				}
 			}
 		});
+	}
+	
+	public static class Person {
+		
+		String firstName;
+		String lastName;
+		
+		public Person(String a, String b) {
+			firstName = a;
+			lastName = b;
+		}
+		
+		public String toString() {
+			return firstName + " " + lastName + ".";
+		}
+		
 	}
 	
 }

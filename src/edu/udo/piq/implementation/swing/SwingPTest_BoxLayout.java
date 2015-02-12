@@ -13,12 +13,12 @@ import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PBoxLayout;
 import edu.udo.piq.layouts.PBoxLayout.Box;
 
-public class SwingPLayoutTest {
+public class SwingPTest_BoxLayout {
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					SwingPLayoutTest window = new SwingPLayoutTest();
+					SwingPTest_BoxLayout window = new SwingPTest_BoxLayout();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -30,7 +30,7 @@ public class SwingPLayoutTest {
 	private final JFrame frame;
 	private final JCompPRoot root;
 	
-	public SwingPLayoutTest() {
+	public SwingPTest_BoxLayout() {
 		frame = new JFrame();
 		frame.setSize(640, 480);
 		frame.setLocationRelativeTo(null);
@@ -51,7 +51,7 @@ public class SwingPLayoutTest {
 		PPanel pnl = new PPanel();
 		PBoxLayout boxLayout = new PBoxLayout(pnl);
 		pnl.setLayout(boxLayout);
-		root.getLayout().addChild(pnl, PBorderLayout.Constraint.CENTER);
+		root.getBody().getLayout().addChild(pnl, PBorderLayout.Constraint.CENTER);
 		
 		Box b1 = boxLayout.getRootBox();
 		b1.splitVertical(0.4);

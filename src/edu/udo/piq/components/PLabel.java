@@ -72,7 +72,7 @@ public class PLabel extends AbstractPComponent {
 		renderer.drawString(font, text, bounds.getX(), bounds.getY());
 	}
 	
-	public boolean isDefaultOpaque() {
+	public boolean fillsAllPixels() {
 		return false;
 	}
 	

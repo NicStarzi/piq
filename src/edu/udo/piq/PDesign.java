@@ -28,48 +28,7 @@ public interface PDesign {
 	 * If there is no better design available this design could be used for 
 	 * a component.<br>
 	 */
-	public static final PDesign PASS_THROUGH_DESIGN = new PDesign() {
-		
-		/**
-		 * Delegates the rendering to the {@link PComponent#defaultRender(PRenderer)} 
-		 * method of the component.<br>
-		 * This design works for any component and never throws an 
-		 * {@link IllegalArgumentException}.<br>
-		 * 
-		 * @see PComponent#defaultRender(PRenderer)
-		 */
-		public void render(PRenderer renderer, PComponent component)
-				throws NullPointerException, IllegalArgumentException {
-			
-			component.defaultRender(renderer);
-		}
-		
-		/**
-		 * Returns the default preferred size of the component as defined by 
-		 * {@link PComponent#getDefaultPreferredSize()}.<br>
-		 * This design works for any component and never throws an 
-		 * {@link IllegalArgumentException}.<br>
-		 * 
-		 * @see PComponent#getDefaultPreferredSize()
-		 */
-		public PSize getPreferredSize(PComponent component)
-				throws NullPointerException, IllegalArgumentException {
-			
-			return component.getDefaultPreferredSize();
-		}
-		
-		/**
-		 * Delegates to the {@link PComponent#isDefaultOpaque()} method of 
-		 * the given component.<br>
-		 * This design works for any component and never throws an 
-		 * {@link IllegalArgumentException}.<br>
-		 * 
-		 * @see PComponent#isDefaultOpaque()
-		 */
-		public boolean isOpaque(PComponent component) {
-			return component.isDefaultOpaque();
-		}
-	};
+	public static final PDesign PASS_THROUGH_DESIGN = new PDesign() {};
 	
 	/**
 	 * Returns the preferred size for the given {@link PComponent} as is needed 
@@ -89,7 +48,11 @@ public interface PDesign {
 	 * @see PLayout
 	 * @see PLayout#getPreferredSize()
 	 */
-	public PSize getPreferredSize(PComponent component) throws NullPointerException, IllegalArgumentException;
+	public default PSize getPreferredSize(PComponent component) 
+			throws NullPointerException, IllegalArgumentException 
+	{
+		return component.getDefaultPreferredSize();
+	}
 	
 	/**
 	 * Renders the given {@link PComponent} at the given {@link PRenderer}.<br>
@@ -105,7 +68,11 @@ public interface PDesign {
 	 * @see PLayout#getChildBounds(PComponent)
 	 * @see PCompUtil#getBoundsOf(PComponent)
 	 */
-	public void render(PRenderer renderer, PComponent component) throws NullPointerException, IllegalArgumentException;
+	public default void render(PRenderer renderer, PComponent component) 
+			throws NullPointerException, IllegalArgumentException 
+	{
+		component.defaultRender(renderer);
+	}
 	
 	/**
 	 * Returns true if the given component fills all pixels within its 
@@ -119,8 +86,13 @@ public interface PDesign {
 	 * @throws IllegalArgumentException if this design is not intended to be used with the given component
 	 * @see #render(PRenderer, PComponent)
 	 * @see PRenderer
-	 * @see PComponent#isDefaultOpaque()
+	 * @see PComponent#fillsAllPixels()
+	 * @see PCompUtil#fillsAllPixels(PComponent)
 	 */
-	public boolean isOpaque(PComponent component);
+	public default boolean fillsAllPixels(PComponent component) 
+			throws NullPointerException 
+	{
+		return component.fillsAllPixels();
+	}
 	
 }

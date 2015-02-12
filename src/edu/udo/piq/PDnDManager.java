@@ -3,7 +3,6 @@ package edu.udo.piq;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.components.PGlassPanel;
 import edu.udo.piq.layouts.PFreeLayout.FreeConstraint;
-import edu.udo.piq.tools.AbstractPMouseObs;
 import edu.udo.piq.util.PCompUtil;
 
 /**
@@ -61,7 +60,7 @@ public class PDnDManager {
 			throw new NullPointerException("root == null");
 		}
 		this.root = root;
-		mouseObs = new AbstractPMouseObs() {
+		mouseObs = new PMouseObs() {
 			public void mouseMoved(PMouse mouse) {
 				onMouseMove(mouse);
 			}
@@ -119,8 +118,7 @@ public class PDnDManager {
 	 * If this method returns true then the given transfer can be used as an argument to the 
 	 * {@link #startDrag(PDnDTransfer)} method without causing an exception to be thrown.<br>
 	 * 
-	 * @param transfer
-	 * @return
+	 * @return true if drag is possible
 	 */
 	public boolean canDrag() {
 		return getActiveTransfer() == null;
@@ -190,7 +188,6 @@ public class PDnDManager {
 	 * 
 	 * @param target that component that the data is dropped to
 	 * @throws IllegalStateException if no drag is taking place
-	 * @see #finishDrag()
 	 * @see #startDrag(PDnDTransfer)
 	 */
 	protected void finishDrag(PComponent target) throws IllegalStateException {
@@ -230,7 +227,6 @@ public class PDnDManager {
 	 * 
 	 * @throws IllegalStateException if no drag is currently taking place
 	 * @see #abortDrag()
-	 * @see #finishDrag()
 	 * @see #startDrag(PDnDTransfer)
 	 */
 	protected void endDrag() throws IllegalStateException {
@@ -254,7 +250,7 @@ public class PDnDManager {
 	}
 	
 	/**
-	 * Finishes the drag as defined by {@link #finishDrag()}, then drops the transfer on 
+	 * Finishes the drag as defined by {@link #finishDrag(PComponent)}, then drops the transfer on 
 	 * the target component by invoking {@link PDnDSupport#drop(PComponent, PDnDTransfer, int, int)} 
 	 * on the components drag and drop support.<br>
 	 * 

@@ -11,7 +11,6 @@ import edu.udo.piq.PSize;
 import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.tools.AbstractPComponent;
-import edu.udo.piq.tools.AbstractPMouseObs;
 import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.util.PRenderUtil;
 
@@ -25,7 +24,7 @@ public class PToolTip extends AbstractPComponent {
 	protected static final PColor DEFAULT_BORDER_COLOR = PColor.BLACK;
 	protected static final int DEFAULT_GAP = 2;
 	
-	private final PMouseObs mouseObs = new AbstractPMouseObs() {
+	private final PMouseObs mouseObs = new PMouseObs() {
 		public void mouseMoved(PMouse mouse) {
 		}
 	};

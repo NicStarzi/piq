@@ -12,8 +12,6 @@ import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.components.defaults.DefaultPSliderModel;
 import edu.udo.piq.tools.AbstractPComponent;
-import edu.udo.piq.tools.AbstractPKeyboardObs;
-import edu.udo.piq.tools.AbstractPMouseObs;
 import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.util.PCompUtil;
 import edu.udo.piq.util.PRenderUtil;
@@ -23,7 +21,7 @@ public class PSlider extends AbstractPComponent {
 	protected static final int DEFAULT_SLIDER_WIDTH = 12;
 	protected static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(100, DEFAULT_SLIDER_WIDTH);
 	
-	private final PMouseObs mouseObs = new AbstractPMouseObs() {
+	private final PMouseObs mouseObs = new PMouseObs() {
 		public void mouseMoved(PMouse mouse) {
 			if (mouse.isPressed(MouseButton.LEFT) && getModel().isPressed()) {
 				updatePosition(mouse);
@@ -50,7 +48,7 @@ public class PSlider extends AbstractPComponent {
 			getModel().setValuePercent(valuePercent);
 		}
 	};
-	private final PKeyboardObs keyObs = new AbstractPKeyboardObs() {
+	private final PKeyboardObs keyObs = new PKeyboardObs() {
 		public void keyPressed(PKeyboard keyboard, Key key) {
 			if (!PCompUtil.hasFocus(PSlider.this)) {
 				return;
@@ -86,6 +84,8 @@ public class PSlider extends AbstractPComponent {
 	
 	public PSlider() {
 		setModel(model);
+		addObs(keyObs);
+		addObs(mouseObs);
 	}
 	
 	public void setModel(PSliderModel model) {
@@ -135,20 +135,12 @@ public class PSlider extends AbstractPComponent {
 		return DEFAULT_PREFERRED_SIZE;
 	}
 	
-	public boolean isDefaultOpaque() {
+	public boolean fillsAllPixels() {
 		return false;
 	}
 	
 	public boolean isFocusable() {
 		return true;
-	}
-	
-	protected PKeyboardObs getKeyboardObs() {
-		return keyObs;
-	}
-	
-	protected PMouseObs getMouseObs() {
-		return mouseObs;
 	}
 	
 }

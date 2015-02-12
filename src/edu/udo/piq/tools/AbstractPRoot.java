@@ -43,12 +43,12 @@ public abstract class AbstractPRoot implements PRoot {
 //	protected PRootOverlay overlay;
 	protected PDnDManager dndManager;
 	
-	private final PComponentObs childObs = new AbstractPComponentObs() {
+	private final PComponentObs childObs = new PComponentObs() {
 		public void preferredSizeChanged(PComponent component) {
 			needReLayout = true;
 		}
 	};
-	private final PLayoutObs layoutObs = new AbstractPLayoutObs() {
+	private final PLayoutObs layoutObs = new PLayoutObs() {
 		public void layoutInvalidated(PLayout layout) {
 			needReLayout = true;
 		}
@@ -308,7 +308,7 @@ public abstract class AbstractPRoot implements PRoot {
 		return getBounds();
 	}
 	
-	public boolean isDefaultOpaque() {
+	public boolean fillsAllPixels() {
 		return true;
 	}
 	

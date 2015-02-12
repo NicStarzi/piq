@@ -2,7 +2,9 @@ package edu.udo.piq.implementation.swing;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.JComponent;
@@ -13,18 +15,26 @@ import edu.udo.piq.PKeyboardObs;
 public class SwingPKeyboard implements PKeyboard {
 	
 	private final List<PKeyboardObs> obsList = new CopyOnWriteArrayList<>();
+	private final Map<Key, Key> ctrlMetaMap = new EnumMap<>(Key.class);
 	private final boolean[] nowPressed = new boolean[Key.values().length];
 	private final boolean[] prevPressed = new boolean[Key.values().length];
-	private boolean shiftDown;
+	private final boolean[] modState = new boolean[Modifier.values().length];
 	private boolean capsLockDown;
-	private boolean altDown;
-	private boolean altGraphDown;
-	private boolean ctrlDown;
-	private boolean metaDown;
 	
 	public SwingPKeyboard(JComponent base) {
+		ctrlMetaMap.put(Key.C, Key.COPY);
+		ctrlMetaMap.put(Key.X, Key.CUT);
+		ctrlMetaMap.put(Key.V, Key.PASTE);
+		ctrlMetaMap.put(Key.Z, Key.UNDO);
+		ctrlMetaMap.put(Key.Y, Key.REDO);
+		
 		base.addKeyListener(new KeyListener() {
 			public void keyTyped(KeyEvent e) {
+				char c = e.getKeyChar();
+				if (c != KeyEvent.CHAR_UNDEFINED) {
+					String typedString = String.valueOf(new char[] {c});
+					fireStringTypedEvent(typedString);
+				}
 			}
 			public void keyReleased(KeyEvent e) {
 				updateKey(e, false);
@@ -36,16 +46,19 @@ public class SwingPKeyboard implements PKeyboard {
 	}
 	
 	private void updateKey(KeyEvent e, boolean newPressedValue) {
-		shiftDown = e.isShiftDown();
-		altDown = e.isAltDown();
-		altGraphDown = e.isAltGraphDown();
-		ctrlDown = e.isControlDown();
-		metaDown = e.isMetaDown();
+		setModifierState(Modifier.ALT, e.isAltDown());
+		setModifierState(Modifier.ALT_GRAPH, e.isAltGraphDown());
+		setModifierState(Modifier.CTRL, e.isControlDown());
+		setModifierState(Modifier.META, e.isMetaDown());
 		
 		int keyCode = e.getKeyCode();
 		Key key = keyCodeToKey(keyCode);
 		if (key == Key.CAPSLOCK && newPressedValue) {
 			capsLockDown = !capsLockDown;
+		}
+		setModifierState(Modifier.CAPS, e.isShiftDown() || capsLockDown);
+		if (key != null && isModifierToggled(Modifier.CTRL)) {
+			key = ctrlMetaMap.get(key);
 		}
 		if (key != null) {
 			int index = key.ordinal();
@@ -62,6 +75,14 @@ public class SwingPKeyboard implements PKeyboard {
 		}
 	}
 	
+	private void setModifierState(Modifier mod, boolean newState) {
+		boolean oldState = modState[mod.ordinal()];
+		if (oldState != newState) {
+			modState[mod.ordinal()] = newState;
+			fireModifierToggledEvent(mod);
+		}
+	}
+	
 	public boolean isPressed(Key key) {
 		return nowPressed[key.ordinal()];
 	}
@@ -74,24 +95,8 @@ public class SwingPKeyboard implements PKeyboard {
 		return !nowPressed[key.ordinal()] && prevPressed[key.ordinal()];
 	}
 	
-	public boolean isCapsToggled() {
-		return shiftDown || capsLockDown;
-	}
-	
-	public boolean isAltToggled() {
-		return altDown;
-	}
-	
-	public boolean isAltGraphToggled() {
-		return altGraphDown;
-	}
-	
-	public boolean isCtrlToggled() {
-		return ctrlDown;
-	}
-	
-	public boolean isMetaToggled() {
-		return metaDown;
+	public boolean isModifierToggled(Modifier modifier) {
+		return modState[modifier.ordinal()];
 	}
 	
 	public void addObs(PKeyboardObs obs) {
@@ -117,6 +122,18 @@ public class SwingPKeyboard implements PKeyboard {
 	protected void fireReleaseEvent(Key key) {
 		for (PKeyboardObs obs : obsList) {
 			obs.keyReleased(this, key);
+		}
+	}
+	
+	protected void fireModifierToggledEvent(Modifier mod) {
+		for (PKeyboardObs obs : obsList) {
+			obs.modifierToggled(this, mod);
+		}
+	}
+	
+	protected void fireStringTypedEvent(String string) {
+		for (PKeyboardObs obs : obsList) {
+			obs.stringTyped(this, string);
 		}
 	}
 	

@@ -10,6 +10,7 @@ import edu.udo.piq.PDnDManager;
 import edu.udo.piq.PDnDTransfer;
 import edu.udo.piq.PDnDSupport;
 import edu.udo.piq.components.PList;
+import edu.udo.piq.components.PListCellComponent;
 import edu.udo.piq.components.PListModel;
 import edu.udo.piq.components.PListSelection;
 import edu.udo.piq.components.PPicture;
@@ -17,6 +18,8 @@ import edu.udo.piq.tools.ImmutablePDnDTransfer;
 import edu.udo.piq.util.PCompUtil;
 
 public class DefaultPListDnDSupport implements PDnDSupport {
+	
+	private PListCellComponent highlightedCellComp;
 	
 	@SuppressWarnings("rawtypes")
 	public boolean canDrop(PComponent target, PDnDTransfer transfer, int x, int y) {
@@ -206,9 +209,49 @@ public class DefaultPListDnDSupport implements PDnDSupport {
 	}
 	
 	public void showDropLocation(PComponent source, PDnDTransfer transfer, int x, int y) {
+		if (source == null || transfer == null) {
+			throw new NullPointerException();
+		}
+		// In case somebody uses this PDnDSupport for any other kind of PComponent
+		if (!(source instanceof PList)) {
+			return;
+		}
+		try {
+			if (highlightedCellComp != null) {
+				highlightedCellComp.setDropHighlighted(false);
+				highlightedCellComp = null;
+			}
+			
+			// We know that this is a PList since the canDrag method returned true
+			PList list = (PList) source;
+			
+			highlightedCellComp = list.getCellComponentAt(x, y);
+			if (highlightedCellComp != null) {
+				highlightedCellComp.setDropHighlighted(true);
+			}
+		} catch (Exception e) {
+			// Just in case
+			throw new IllegalArgumentException(e);
+		}
 	}
 	
 	public void hideDropLocation(PComponent source, PDnDTransfer transfer, int x, int y) {
+		if (source == null || transfer == null) {
+			throw new NullPointerException();
+		}
+		// In case somebody uses this PDnDSupport for any other kind of PComponent
+		if (!(source instanceof PList)) {
+			return;
+		}
+		try {
+			if (highlightedCellComp != null) {
+				highlightedCellComp.setDropHighlighted(false);
+				highlightedCellComp = null;
+			}
+		} catch (Exception e) {
+			// Just in case
+			throw new IllegalArgumentException(e);
+		}
 	}
 	
 }

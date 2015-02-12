@@ -30,7 +30,7 @@ import edu.udo.piq.components.PTextArea;
  * of the target component<br><br>
  * 
  * 6) If the user indicates that the drop should happen and the drop is allowed the 
- * {@link #finishDrag(PComponent, PDnDTransfer)} method is called on the {@link PDnDSupport} of the source 
+ * {@link #finishDrag(PComponent, PComponent, PDnDTransfer)} method is called on the {@link PDnDSupport} of the source 
  * component, then the {@link #drop(PComponent, PDnDTransfer, int, int)} method is called on the 
  * {@link PDnDSupport} of the target component<br><br>
  * 
@@ -65,7 +65,7 @@ public interface PDnDSupport {
 	 * has just returned true for the same target, transfer and coordinates.<br>
 	 * If for whatever reason the drop can still not happen an {@link IllegalArgumentException}
 	 * should be thrown.<br>
-	 * This method is called after {@link #finishDrag(PComponent, PDnDTransfer)} was successfully 
+	 * This method is called after {@link #finishDrag(PComponent, PComponent, PDnDTransfer)} was successfully 
 	 * invoked on the source of the drag.<br>  
 	 * 
 	 * @param target the component that will be dropped onto
@@ -81,7 +81,7 @@ public interface PDnDSupport {
 	 * Returns true if a drag can be started on the source component at the given coordinates.<br>
 	 * If this method returns true it means that source is part of a GUI that has a 
 	 * {@link PDnDManager} installed at its root and that the {@link PDnDManager} is accepting 
-	 * a new drag as defined by {@link PDnDManager#canDrag(PDnDTransfer)}.<br>
+	 * a new drag as defined by {@link PDnDManager#canDrag()}.<br>
 	 * A return value of true also implies that there is data that can be dragged at the given 
 	 * coordinates for the given source component and that the data can be removed from the 
 	 * components model.<br> 
@@ -92,7 +92,7 @@ public interface PDnDSupport {
 	 * @return true if a drag can be started, false otherwise
 	 * @throws NullPointerException if source is null
 	 * @see #startDrag(PComponent, int, int)
-	 * @see PDnDManager#canDrag(PDnDTransfer)
+	 * @see PDnDManager#canDrag()
 	 */
 	public boolean canDrag(PComponent source, int x, int y) throws NullPointerException;
 	

@@ -17,14 +17,14 @@ public interface PComponentObs {
 	 * @param component the component that fired the event
 	 * @param currentRoot a PRoot or null
 	 */
-	public void rootChanged(PComponent component, PRoot currentRoot);
+	public default void rootChanged(PComponent component, PRoot currentRoot) {}
 	
 	/**
 	 * This event is fired when a {@link PComponent} has changed its preferred size.<br>
 	 * 
 	 * @param component the component that changed its preferred size
 	 */
-	public void preferredSizeChanged(PComponent component);
+	public default void preferredSizeChanged(PComponent component) {}
 	
 	/**
 	 * This event is fired by a {@link PComponent} when the component 
@@ -32,7 +32,7 @@ public interface PComponentObs {
 	 * 
 	 * @param component the component that fired the event
 	 */
-	public void wasAdded(PComponent component);
+	public default void wasAdded(PComponent component) {}
 	
 	/**
 	 * This event is fired by a {@link PComponent} when the component 
@@ -40,6 +40,6 @@ public interface PComponentObs {
 	 * 
 	 * @param component the component that fired the event
 	 */
-	public void wasRemoved(PComponent component);
+	public default void wasRemoved(PComponent component) {}
 	
 }

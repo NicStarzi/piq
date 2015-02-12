@@ -5,18 +5,12 @@ import java.util.Map;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
-import edu.udo.piq.PComponent;
-import edu.udo.piq.PKeyboard;
-import edu.udo.piq.PKeyboard.Key;
-import edu.udo.piq.PMouse;
 import edu.udo.piq.PRenderer;
-import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.components.defaults.DefaultPTableCellFactory;
 import edu.udo.piq.components.defaults.DefaultPTableModel;
 import edu.udo.piq.components.defaults.DefaultPTableSelection;
 import edu.udo.piq.layouts.PTableLayout;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
-import edu.udo.piq.util.PCompUtil;
 import edu.udo.piq.util.PRenderUtil;
 
 public class PTable extends AbstractPLayoutOwner {

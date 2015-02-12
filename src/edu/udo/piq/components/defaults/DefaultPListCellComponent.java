@@ -11,8 +11,10 @@ public class DefaultPListCellComponent extends PLabel implements PListCellCompon
 	
 	protected static final PColor DEFAULT_TEXT_SELECTED_COLOR = PColor.WHITE;
 	protected static final PColor DEFAULT_BACKGROUND_SELECTED_COLOR = PColor.BLUE;
+	protected static final PColor DEFAULT_DROP_HIGHLIGHT_COLOR = PColor.BLUE;
 	
 	protected boolean selected;
+	protected boolean dropHighlight;
 	
 	public void setSelected(boolean isSelected) {
 		selected = isSelected;
@@ -21,6 +23,15 @@ public class DefaultPListCellComponent extends PLabel implements PListCellCompon
 	
 	public boolean isSelected() {
 		return selected;
+	}
+	
+	public void setDropHighlighted(boolean isHighlighted) {
+		dropHighlight = isHighlighted;
+		fireReRenderEvent();
+	}
+	
+	public boolean isDropHighlighted() {
+		return dropHighlight;
 	}
 	
 	public void elementChanged(PListModel model, Integer index) {
@@ -43,6 +54,16 @@ public class DefaultPListCellComponent extends PLabel implements PListCellCompon
 			int fy = bounds.getFinalY();
 			
 			renderer.setColor(DEFAULT_BACKGROUND_SELECTED_COLOR);
+			renderer.drawQuad(x, y, fx, fy);
+		}
+		if (isDropHighlighted()) {
+			PBounds bounds = getBounds();
+			int x = bounds.getX();
+			int y = bounds.getY();
+			int fx = bounds.getFinalX();
+			int fy = y + 2;
+			
+			renderer.setColor(DEFAULT_DROP_HIGHLIGHT_COLOR);
 			renderer.drawQuad(x, y, fx, fy);
 		}
 		

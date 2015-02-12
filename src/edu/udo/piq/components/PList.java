@@ -22,16 +22,26 @@ import edu.udo.piq.components.defaults.DefaultPListModel;
 import edu.udo.piq.components.defaults.DefaultPListSelection;
 import edu.udo.piq.layouts.PListLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
-import edu.udo.piq.tools.AbstractPKeyboardObs;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
-import edu.udo.piq.tools.AbstractPMouseObs;
 import edu.udo.piq.util.PCompUtil;
 
 public class PList extends AbstractPLayoutOwner {
 	
 	private static final int DRAG_AND_DROP_DISTANCE = 16;
 	
-	private final PKeyboardObs keyObs = new AbstractPKeyboardObs() {
+	private final PKeyboardObs keyObs = new PKeyboardObs() {
+		public void keyTriggered(PKeyboard keyboard, Key key) {
+			if (!PCompUtil.hasFocus(PList.this) || getSelection() == null) {
+				return;
+			}
+			if (key == Key.COPY) {
+				System.out.println("Copy from PList");
+			} else if (key == Key.PASTE) {
+				System.out.println("Paste into PList");
+			} else if (key == Key.CUT) {
+				System.out.println("Cut from PList");
+			}
+		}
 		public void keyPressed(PKeyboard keyboard, Key key) {
 			if (!PCompUtil.hasFocus(PList.this) || getSelection() == null) {
 				return;
@@ -58,7 +68,7 @@ public class PList extends AbstractPLayoutOwner {
 			}
 		}
 	};
-	private final PMouseObs mouseObs = new AbstractPMouseObs() {
+	private final PMouseObs mouseObs = new PMouseObs() {
 		private int lastMouseX;
 		private int lastMouseY;
 		private boolean isSelected = false;
@@ -143,6 +153,8 @@ public class PList extends AbstractPLayoutOwner {
 		setModel(new DefaultPListModel());
 		setSelection(new DefaultPListSelection());
 		setCellFactory(new DefaultPListCellFactory());
+		addObs(keyObs);
+		addObs(mouseObs);
 	}
 	
 	public PListLayout getLayout() {
@@ -202,6 +214,10 @@ public class PList extends AbstractPLayoutOwner {
 		return getLayout().getChildIndex(cellComp);
 	}
 	
+	public PListCellComponent getCellComponentAt(int x, int y) {
+		return (PListCellComponent) getLayout().getChildAt(x, y);
+	}
+	
 	public void defaultRender(PRenderer renderer) {
 		PBounds bounds = getBounds();
 		int x = bounds.getX();
@@ -215,14 +231,6 @@ public class PList extends AbstractPLayoutOwner {
 	
 	public boolean isFocusable() {
 		return true;
-	}
-	
-	protected PKeyboardObs getKeyboardObs() {
-		return keyObs;
-	}
-	
-	protected PMouseObs getMouseObs() {
-		return mouseObs;
 	}
 	
 	private void rangeSelection(Integer index) {

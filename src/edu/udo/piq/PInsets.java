@@ -49,7 +49,9 @@ public interface PInsets {
 	 * 
 	 * @return distance from left and distance from right summed up
 	 */
-	public int getHorizontal();
+	public default int getHorizontal() {
+		return getFromLeft() + getFromRight();
+	}
 	
 	/**
 	 * Returns the total vertical distance, that is 
@@ -58,7 +60,9 @@ public interface PInsets {
 	 * 
 	 * @return distance from top and distance from bottom summed up
 	 */
-	public int getVertical();
+	public default int getVertical() {
+		return getFromTop() + getFromBottom();
+	}
 	
 	/**
 	 * Two instances of PInsets are referred to as equal if their 

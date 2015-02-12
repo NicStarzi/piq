@@ -12,6 +12,7 @@ import edu.udo.piq.PDnDSupport;
 import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PKeyboard.Key;
+import edu.udo.piq.PKeyboard.Modifier;
 import edu.udo.piq.PKeyboardObs;
 import edu.udo.piq.PLayout;
 import edu.udo.piq.PLayoutObs;
@@ -35,11 +36,11 @@ public class AbstractPComponent implements PComponent {
 	 */
 	private PDesign customDesign;
 	/**
-	 * Holds all {@link PComponentObs}ervers of this component.
+	 * Holds all {@link PComponentObs PComponentObservers} of this component.
 	 */
 	protected final List<PComponentObs> compObsList = new CopyOnWriteArrayList<>();
 	/**
-	 * Holds all {@link PFocusObs}ervers of this component.
+	 * Holds all {@link PFocusObs PFocusObservers} of this component.
 	 */
 	protected final List<PFocusObs> focusObsList = new CopyOnWriteArrayList<>();
 	/**
@@ -67,7 +68,7 @@ public class AbstractPComponent implements PComponent {
 			}
 		}
 	};
-	protected final PComponentObs parentObs = new AbstractPComponentObs() {
+	protected final PComponentObs parentObs = new PComponentObs() {
 		public void rootChanged(PComponent component, PRoot currentRoot) {
 			setCachedRoot(currentRoot);
 		}
@@ -77,7 +78,7 @@ public class AbstractPComponent implements PComponent {
 	 * Notices when this component has been laid out to set the 
 	 * flag needReLayout to true.
 	 */
-	protected final PLayoutObs parentLayoutObs = new AbstractPLayoutObs() {
+	protected final PLayoutObs parentLayoutObs = new PLayoutObs() {
 		public void childLaidOut(PLayout layout, PComponent child, Object constraint) {
 			if (child == AbstractPComponent.this) {
 				needReLayout = true;
@@ -118,6 +119,16 @@ public class AbstractPComponent implements PComponent {
 	 * that are registered at this {@link PComponent}.<br>
 	 */
 	protected final PKeyboardObs delegateKeyObs = new PKeyboardObs() {
+		public void stringTyped(PKeyboard keyboard, String string) {
+			for (PKeyboardObs obs : keyboardObsList) {
+				obs.stringTyped(keyboard, string);
+			}
+		}
+		public void modifierToggled(PKeyboard keyboard, Modifier modifier) {
+			for (PKeyboardObs obs : keyboardObsList) {
+				obs.modifierToggled(keyboard, modifier);
+			}
+		}
 		public void keyPressed(PKeyboard keyboard, Key key) {
 			for (PKeyboardObs obs : keyboardObsList) {
 				obs.keyPressed(keyboard, key);
@@ -164,7 +175,9 @@ public class AbstractPComponent implements PComponent {
 	 * Cached for removing observers
 	 */
 	private PKeyboard currentKeyboard;
+	private boolean keyObsRegistered;
 	private PMouse currentMouse;
+	private boolean mouseObsRegistered;
 	
 	/**
 	 * Uses the utility method {@link PCompUtil#getRootOf(PComponent)} to 
@@ -218,23 +231,41 @@ public class AbstractPComponent implements PComponent {
 			cachedRoot.addObs(rootFocusObs);
 		}
 		fireRootChangedEvent();
-		if (true) {
-			if (currentKeyboard != null) {
-				currentKeyboard.removeObs(delegateKeyObs);
-			}
-			currentKeyboard = cachedRoot == null ? null : cachedRoot.getKeyboard();
-			if (currentKeyboard != null) {
-				currentKeyboard.addObs(delegateKeyObs);
-			}
+		if (keyObsRegistered) {
+			currentKeyboard.removeObs(delegateKeyObs);
 		}
-		if (true) {
-			if (currentMouse != null) {
-				currentMouse.removeObs(delegateMouseObs);
-			}
-			currentMouse = cachedRoot == null ? null : cachedRoot.getMouse();
-			if (currentMouse != null) {
-				currentMouse.addObs(delegateMouseObs);
-			}
+		currentKeyboard = cachedRoot == null ? null : cachedRoot.getKeyboard();
+		keyObsRegistered = false;
+		registerKeyBoardObs();
+		if (mouseObsRegistered) {
+			currentMouse.removeObs(delegateMouseObs);
+		}
+		currentMouse = cachedRoot == null ? null : cachedRoot.getMouse();
+		mouseObsRegistered = false;
+		registerMouseObs();
+	}
+	
+	private void registerKeyBoardObs() {
+		if (keyObsRegistered && keyboardObsList.isEmpty()) {
+			currentKeyboard.removeObs(delegateKeyObs);
+			keyObsRegistered = false;
+		} else if (!keyObsRegistered && currentKeyboard != null 
+				&& !keyboardObsList.isEmpty()) 
+		{
+			currentKeyboard.addObs(delegateKeyObs);
+			keyObsRegistered = true;
+		}
+	}
+	
+	private void registerMouseObs() {
+		if (mouseObsRegistered && mouseObsList.isEmpty()) {
+			currentMouse.removeObs(delegateMouseObs);
+			mouseObsRegistered = false;
+		} else if (!mouseObsRegistered && currentMouse != null 
+				&& !mouseObsList.isEmpty()) 
+		{
+			currentMouse.addObs(delegateMouseObs);
+			mouseObsRegistered = true;
 		}
 	}
 	
@@ -295,7 +326,7 @@ public class AbstractPComponent implements PComponent {
 	 * 
 	 * @return true
 	 */
-	public boolean isDefaultOpaque() {
+	public boolean fillsAllPixels() {
 		return true;
 	}
 	
@@ -374,6 +405,7 @@ public class AbstractPComponent implements PComponent {
 			throw new NullPointerException("obs="+obs);
 		}
 		mouseObsList.add(obs);
+		registerMouseObs();
 	}
 	
 	public void removeObs(PMouseObs obs) throws NullPointerException {
@@ -388,6 +420,7 @@ public class AbstractPComponent implements PComponent {
 			throw new NullPointerException("obs="+obs);
 		}
 		keyboardObsList.add(obs);
+		registerKeyBoardObs();
 	}
 	
 	public void removeObs(PKeyboardObs obs) throws NullPointerException {

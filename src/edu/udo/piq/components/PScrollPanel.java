@@ -4,9 +4,9 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PLayout;
+import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.layouts.PScrollPanelLayout;
-import edu.udo.piq.tools.AbstractPLayoutObs;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.util.PCompUtil;
 
@@ -32,7 +32,7 @@ public class PScrollPanel extends AbstractPLayoutOwner {
 				getLayout().scrollChanged();
 			}
 		});
-		getLayout().addObs(new AbstractPLayoutObs() {
+		getLayout().addObs(new PLayoutObs() {
 			public void childLaidOut(PLayout layout, PComponent child, Object constraint) {
 				if (constraint == PScrollPanelLayout.Constraint.VIEW) {
 					scrollH.getModel().setContentSize(child.getDefaultPreferredSize().getWidth());

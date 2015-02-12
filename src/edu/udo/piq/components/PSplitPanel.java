@@ -15,14 +15,13 @@ import edu.udo.piq.layouts.PSplitLayout;
 import edu.udo.piq.layouts.PSplitLayout.Constraint;
 import edu.udo.piq.layouts.PSplitLayout.Orientation;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
-import edu.udo.piq.tools.AbstractPMouseObs;
 import edu.udo.piq.util.PCompUtil;
 
 public class PSplitPanel extends AbstractPLayoutOwner {
 	
 	protected final PDivider divider;
 	private final List<PSplitPanelObs> obsList = new CopyOnWriteArrayList<>();
-	private final PMouseObs mouseObs = new AbstractPMouseObs() {
+	private final PMouseObs mouseObs = new PMouseObs() {
 		public void mouseMoved(PMouse mouse) {
 			if (pressed) {
 				if (mouse.isPressed(MouseButton.LEFT)) {
@@ -68,6 +67,7 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 		setLayout(new PSplitLayout(this));
 		divider = new PDivider();
 		getLayout().addChild(divider, Constraint.DIVIDER);
+		addObs(mouseObs);
 	}
 	
 	public void defaultRender(PRenderer renderer) {
@@ -82,10 +82,6 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 	
 	public boolean isFocusable() {
 		return true;
-	}
-	
-	protected PMouseObs getMouseObs() {
-		return mouseObs;
 	}
 	
 	public PSplitLayout getLayout() {

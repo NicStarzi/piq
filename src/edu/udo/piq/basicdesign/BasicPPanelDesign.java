@@ -37,7 +37,7 @@ public class BasicPPanelDesign implements PDesign {
 		renderer.drawQuad(x, y, fx, fy);
 	}
 	
-	public boolean isOpaque(PComponent component) {
+	public boolean fillsAllPixels(PComponent component) {
 		return true;
 	}
 	

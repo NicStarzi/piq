@@ -42,7 +42,11 @@ public interface PDesignSheet {
 	 * @see #registerDesignFactory(Class, PDesignFactory)
 	 * @see #unregisterDesignFactory(Class)
 	 */
-	public PDesign getDesignFor(PComponent component) throws NullPointerException;
+	public default PDesign getDesignFor(PComponent component) 
+			throws NullPointerException 
+	{
+		return PDesign.PASS_THROUGH_DESIGN;
+	}
 	
 	/**
 	 * Registers the given {@link PDesignFactory} with the given {@link PComponent} 
@@ -64,8 +68,9 @@ public interface PDesignSheet {
 	 * @see PComponent
 	 * @see #unregisterDesignFactory(Class)
 	 */
-	public void registerDesignFactory(Class<? extends PComponent> compClass, PDesignFactory factory) throws NullPointerException;
-	
+	public void registerDesignFactory(
+			Class<? extends PComponent> compClass, PDesignFactory factory) 
+			throws NullPointerException;
 	
 	/**
 	 * Unregisters the {@link PDesignFactory} which was previously registered for the 
@@ -82,6 +87,8 @@ public interface PDesignSheet {
 	 * @see PComponent
 	 * @see #registerDesignFactory(Class, PDesignFactory)
 	 */
-	public void unregisterDesignFactory(Class<? extends PComponent> compClass) throws NullPointerException;
+	public void unregisterDesignFactory(
+			Class<? extends PComponent> compClass) 
+			throws NullPointerException;
 	
 }

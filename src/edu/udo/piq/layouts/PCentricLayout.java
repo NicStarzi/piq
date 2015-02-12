@@ -4,9 +4,9 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PLayout;
+import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractPLayout;
-import edu.udo.piq.tools.AbstractPLayoutObs;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.tools.MutablePSize;
 
@@ -26,7 +26,7 @@ public class PCentricLayout extends AbstractPLayout {
 		super(component);
 		prefSize = new MutablePSize();
 		
-		addObs(new AbstractPLayoutObs() {
+		addObs(new PLayoutObs() {
 			public void childAdded(PLayout layout, PComponent child, Object constraint) {
 				content = child;
 			}

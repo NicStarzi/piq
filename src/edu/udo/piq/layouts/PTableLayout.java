@@ -5,10 +5,10 @@ import java.util.Arrays;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PLayout;
+import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.PTableCell;
 import edu.udo.piq.tools.AbstractPLayout;
-import edu.udo.piq.tools.AbstractPLayoutObs;
 import edu.udo.piq.tools.MutablePSize;
 
 public class PTableLayout extends AbstractPLayout {
@@ -44,7 +44,7 @@ public class PTableLayout extends AbstractPLayout {
 		colSizes = new int[0];
 		rowSizes = new int[0];
 		
-		addObs(new AbstractPLayoutObs() {
+		addObs(new PLayoutObs() {
 			public void childAdded(PLayout layout, PComponent child, Object constraint) {
 				PTableCell cell = (PTableCell) constraint;
 				setContent(cell, child);

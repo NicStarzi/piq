@@ -25,6 +25,10 @@ public interface PDesignFactory {
 	 * @see PDesignSheet
 	 * @see PComponent
 	 */
-	public PDesign getDesignFor(PComponent component) throws NullPointerException, IllegalArgumentException;
+	public default PDesign getDesignFor(PComponent component) 
+			throws NullPointerException, IllegalArgumentException 
+	{
+		return PDesign.PASS_THROUGH_DESIGN;
+	}
 	
 }

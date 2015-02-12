@@ -31,6 +31,7 @@ import edu.udo.piq.layouts.PWrapLayout;
 import edu.udo.piq.tools.AbstractPTextModel;
 
 public class SwingPTest {
+	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -109,7 +110,7 @@ public class SwingPTest {
 		PTextArea txtAr = new PTextArea(new DefaultPTextModel(
 			"This is \n a simple test \nto see whether the PTextArea class \nworks as intended."
 		));
-		txtAr.setEditable(false);
+		txtAr.setEditable(true);
 		splitV.setSecondComponent(txtAr);
 		
 		PPanel btnPnl = new PPanel();

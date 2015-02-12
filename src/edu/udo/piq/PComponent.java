@@ -148,7 +148,7 @@ public interface PComponent {
 	 * @see PDesignSheet
 	 * @see PDesign
 	 */
-	public boolean isDefaultOpaque();
+	public boolean fillsAllPixels();
 	
 	/**
 	 * This method returns the default preferred size for this component 

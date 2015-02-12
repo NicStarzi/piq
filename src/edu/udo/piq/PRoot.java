@@ -22,13 +22,19 @@ public interface PRoot extends PComponent {
 	 * Returns this.<br>
 	 * @return this
 	 */
-	public PRoot getRoot();
+	public default PRoot getRoot() {
+		return this;
+	}
 	
 	/**
 	 * Throws an {@link UnsupportedOperationException}.<br>
 	 * @throws UnsupportedOperationException
 	 */
-	public void setParent(PComponent parent) throws UnsupportedOperationException;
+	public default void setParent(PComponent parent) 
+			throws UnsupportedOperationException 
+	{
+		throw new UnsupportedOperationException("this instanceof PRoot");
+	}
 	
 	/**
 	 * Returns the {@link PLayout} of this {@link PRoot}.<br>
@@ -43,31 +49,47 @@ public interface PRoot extends PComponent {
 	 * Returns null.<br>
 	 * @return null
 	 */
-	public PComponent getParent();
+	public default PComponent getParent() {
+		return null;
+	}
 	
 	/**
 	 * Throws an {@link UnsupportedOperationException}.<br>
 	 * @throws UnsupportedOperationException
 	 */
-	public void setDesign(PDesign design) throws UnsupportedOperationException;
+	public default void setDesign(PDesign design) 
+			throws UnsupportedOperationException  
+	{
+		throw new UnsupportedOperationException("this instanceof PRoot");
+	}
 	
 	/**
 	 * Throws an {@link UnsupportedOperationException}.<br>
 	 * @throws UnsupportedOperationException
 	 */
-	public PDesign getDesign() throws UnsupportedOperationException;
+	public default PDesign getDesign() 
+			throws UnsupportedOperationException  
+	{
+		throw new UnsupportedOperationException("this instanceof PRoot");
+	}
 	
 	/**
 	 * Throws an {@link UnsupportedOperationException}.<br>
 	 * @throws UnsupportedOperationException
 	 */
-	public void defaultRender(PRenderer renderer) throws UnsupportedOperationException;
+	public default void defaultRender(PRenderer renderer) 
+			throws UnsupportedOperationException  
+	{
+		throw new UnsupportedOperationException("this instanceof PRoot");
+	}
 	
 	/**
 	 * Always returns true for {@link PRoot} instances.<br>
 	 * @return true
 	 */
-	public boolean isDefaultOpaque();
+	public default boolean fillsAllPixels() {
+		return true;
+	}
 	
 	/**
 	 * Returns the {@link PBounds} of this {@link PRoot}.<br>

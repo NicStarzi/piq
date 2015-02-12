@@ -21,8 +21,6 @@ import edu.udo.piq.PTimer;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.components.defaults.DefaultPTextSelection;
 import edu.udo.piq.tools.AbstractPComponent;
-import edu.udo.piq.tools.AbstractPMouseObs;
-import edu.udo.piq.tools.AbstractPTextSelectionObs;
 import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.tools.PTextIndex;
 import edu.udo.piq.tools.PTextIndexTable;
@@ -58,8 +56,8 @@ public class PTextArea extends AbstractPComponent {
 		}
 	});
 	private final PKeyboardObs keyObs = new PTextComponentKeyboardObs() {
-		public void textTyped(PKeyboard keyboard, String typedString) {
-			if (!isEditable()) {
+		public void stringTyped(PKeyboard keyboard, String typedString) {
+			if (!isEditable() || skipInput(keyboard, null)) {
 				return;
 			}
 			PTextSelection selection = getSelection();
@@ -186,7 +184,7 @@ public class PTextArea extends AbstractPComponent {
 					|| getModel() == null;
 		}
 	};
-	private final PMouseObs mouseObs = new AbstractPMouseObs() {
+	private final PMouseObs mouseObs = new PMouseObs() {
 		public void mouseMoved(PMouse mouse) {
 			if (mouse.isPressed(MouseButton.LEFT) && pressedIndex != INDEX_NO_SELECTION) {
 				int mx = mouse.getX();
@@ -226,7 +224,7 @@ public class PTextArea extends AbstractPComponent {
 			fireReRenderEvent();
 		}
 	};
-	private final PTextSelectionObs selectionObs = new AbstractPTextSelectionObs() {
+	private final PTextSelectionObs selectionObs = new PTextSelectionObs() {
 		public void selectionChanged(PTextSelection selection) {
 			focusRenderToggle = true;
 			focusRenderToggleTimer = 0;
@@ -262,6 +260,8 @@ public class PTextArea extends AbstractPComponent {
 				focusToggleTimer.start();
 			}
 		});
+		addObs(keyObs);
+		addObs(mouseObs);
 	}
 	
 	public void setSelection(PTextSelection selection) {
@@ -433,14 +433,6 @@ public class PTextArea extends AbstractPComponent {
 			prefH += lineH;
 		}
 		return new ImmutablePSize(prefW, prefH);
-	}
-	
-	protected PKeyboardObs getKeyboardObs() {
-		return keyObs;
-	}
-	
-	protected PMouseObs getMouseObs() {
-		return mouseObs;
 	}
 	
 	protected int getTextIndex(int row, int column) {

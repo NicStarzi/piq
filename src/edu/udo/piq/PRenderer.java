@@ -49,10 +49,13 @@ public interface PRenderer {
 	 * @see #drawTriangle(float, float, float, float, float, float)
 	 * @see #drawQuad(float, float, float, float)
 	 * @see #drawQuad(float, float, float, float, float, float, float, float)
-	 * @see #drawLetter(PFontResource, char, float, float)
 	 * @see #drawString(PFontResource, String, float, float)
 	 */
-	public void setClipBounds(PBounds bounds) throws NullPointerException;
+	public default void setClipBounds(PBounds bounds) 
+			throws NullPointerException 
+	{
+		setClipBounds(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
+	}
 	
 	/**
 	 * Sets the clipping bounds that will be used for any subsequent 
@@ -72,7 +75,6 @@ public interface PRenderer {
 	 * @see #drawTriangle(float, float, float, float, float, float)
 	 * @see #drawQuad(float, float, float, float)
 	 * @see #drawQuad(float, float, float, float, float, float, float, float)
-	 * @see #drawLetter(PFontResource, char, float, float)
 	 * @see #drawString(PFontResource, String, float, float)
 	 */
 	public void setClipBounds(int x, int y, int width, int height);
@@ -93,7 +95,6 @@ public interface PRenderer {
 	 * @see #drawTriangle(float, float, float, float, float, float)
 	 * @see #drawQuad(float, float, float, float)
 	 * @see #drawQuad(float, float, float, float, float, float, float, float)
-	 * @see #drawLetter(PFontResource, char, float, float)
 	 * @see #drawString(PFontResource, String, float, float)
 	 * @see #drawImage(PImageResource, float, float, float, float)
 	 * @see #drawImage(PImageResource, int, int, int, int, float, float, float, float)
@@ -115,10 +116,11 @@ public interface PRenderer {
 	 * @see #drawTriangle(float, float, float, float, float, float)
 	 * @see #drawQuad(float, float, float, float)
 	 * @see #drawQuad(float, float, float, float, float, float, float, float)
-	 * @see #drawLetter(PFontResource, char, float, float)
 	 * @see #drawString(PFontResource, String, float, float)
 	 */
-	public void setColor(PColor color);
+	public default void setColor(PColor color) {
+		setColor1(color.getRed1(), color.getGreen1(), color.getBlue1(), color.getAlpha1());
+	}
 	
 	/**
 	 * Sets the {@link PColor} that will be used by any subsequent 
@@ -137,10 +139,11 @@ public interface PRenderer {
 	 * @see #drawTriangle(float, float, float, float, float, float)
 	 * @see #drawQuad(float, float, float, float)
 	 * @see #drawQuad(float, float, float, float, float, float, float, float)
-	 * @see #drawLetter(PFontResource, char, float, float)
 	 * @see #drawString(PFontResource, String, float, float)
 	 */
-	public void setColor255(int r, int g, int b, int a);
+	public default void setColor255(int r, int g, int b, int a) {
+		setColor1(r / 255.0, g / 255.0, b / 255.0, a / 255.0);
+	}
 	
 	/**
 	 * Sets the {@link PColor} that will be used by any subsequent 
@@ -159,7 +162,6 @@ public interface PRenderer {
 	 * @see #drawTriangle(float, float, float, float, float, float)
 	 * @see #drawQuad(float, float, float, float)
 	 * @see #drawQuad(float, float, float, float, float, float, float, float)
-	 * @see #drawLetter(PFontResource, char, float, float)
 	 * @see #drawString(PFontResource, String, float, float)
 	 */
 	public void setColor1(double r, double g, double b, double a);
@@ -178,24 +180,52 @@ public interface PRenderer {
 	 * @see #drawTriangle(float, float, float, float, float, float)
 	 * @see #drawQuad(float, float, float, float)
 	 * @see #drawQuad(float, float, float, float, float, float, float, float)
-	 * @see #drawLetter(PFontResource, char, float, float)
 	 * @see #drawString(PFontResource, String, float, float)
 	 */
 	public PColor getColor();
 	
-	public void drawImage(PImageResource imgRes, float x, float y, float fx, float fy);
+	public default void drawImage(PImageResource imgRes, float x, float y, float fx, float fy) {
+		PSize size = imgRes.getSize();
+		drawImage(imgRes, 0, 0, size.getWidth(), size.getHeight(), x, y, fx, fy);
+	}
 	
 	public void drawImage(PImageResource imgRes, int u, int v, int fu, int fv, float x, float y, float fx, float fy);
 	
 	public void drawLine(float x1, float y1, float x2, float y2, float lineWidth);
 	
-	public void drawTriangle(float x1, float y1, float x2, float y2, float x3, float y3);
+	public default void drawTriangle(
+			float x1, float y1, 
+			float x2, float y2, 
+			float x3, float y3) 
+	{
+		float[] xCoords = new float[] {x1, x2, x3};
+		float[] yCoords = new float[] {y1, y2, y3};
+		drawPolygon(xCoords, yCoords);
+	}
 	
-	public void drawQuad(float x, float y, float fx, float fy);
+	public default void drawQuad(PBounds bounds) {
+		drawQuad(bounds.getX(), bounds.getY(), bounds.getFinalX(), bounds.getFinalY());
+	}
 	
-	public void drawQuad(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4);
+	public default void drawQuad(
+			float x, float y, 
+			float fx, float fy) 
+	{
+		drawQuad(x, y, x, fy, fx, fy, fx, y);
+	}
 	
-	public void drawLetter(PFontResource font, char c, float x, float y);
+	public default void drawQuad(
+			float x1, float y1, 
+			float x2, float y2, 
+			float x3, float y3, 
+			float x4, float y4) 
+	{
+		float[] xCoords = new float[] {x1, x2, x3, x4};
+		float[] yCoords = new float[] {y1, y2, y3, y4};
+		drawPolygon(xCoords, yCoords);
+	}
+	
+	public void drawPolygon(float[] xCoords, float[] yCoords);
 	
 	public void drawString(PFontResource font, String text, float x, float y);
 	

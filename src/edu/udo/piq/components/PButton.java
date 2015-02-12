@@ -17,9 +17,7 @@ import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.components.defaults.DefaultPButtonModel;
 import edu.udo.piq.layouts.PCentricLayout;
-import edu.udo.piq.tools.AbstractPKeyboardObs;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
-import edu.udo.piq.tools.AbstractPMouseObs;
 import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.util.PCompUtil;
 import edu.udo.piq.util.PRenderUtil;
@@ -27,7 +25,7 @@ import edu.udo.piq.util.PRenderUtil;
 public class PButton extends AbstractPLayoutOwner {
 	
 	protected final List<PButtonObs> obsList = new CopyOnWriteArrayList<>();
-	private final PKeyboardObs keyObs = new AbstractPKeyboardObs() {
+	private final PKeyboardObs keyObs = new PKeyboardObs() {
 		public void keyTriggered(PKeyboard keyboard, Key key) {
 			if (!PCompUtil.hasFocus(PButton.this)) {
 				return;
@@ -46,7 +44,7 @@ public class PButton extends AbstractPLayoutOwner {
 			}
 		}
 	};
-	private final PMouseObs mouseObs = new AbstractPMouseObs() {
+	private final PMouseObs mouseObs = new PMouseObs() {
 		public void buttonTriggered(PMouse mouse, MouseButton btn) {
 			if (btn == MouseButton.LEFT && PCompUtil.isWithinClippedBounds(PButton.this, mouse.getX(), mouse.getY())) {
 				model.setPressed(true);
@@ -72,6 +70,8 @@ public class PButton extends AbstractPLayoutOwner {
 	public PButton() {
 		setLayout(new PCentricLayout(this));
 		setModel(model);
+		addObs(keyObs);
+		addObs(mouseObs);
 	}
 	
 	public void setContent(PComponent component) {
@@ -152,14 +152,6 @@ public class PButton extends AbstractPLayoutOwner {
 	
 	public boolean isFocusable() {
 		return true;
-	}
-	
-	protected PKeyboardObs getKeyboardObs() {
-		return keyObs;
-	}
-	
-	protected PMouseObs getMouseObs() {
-		return mouseObs;
 	}
 	
 	public void addObs(PButtonObs obs) {

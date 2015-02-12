@@ -21,7 +21,7 @@ public interface PFocusObs {
 	 * @param oldOwner the component that lost focus or null
 	 * @param newOwner the component that gained focus
 	 */
-	public void focusGained(PComponent oldOwner, PComponent newOwner);
+	public default void focusGained(PComponent oldOwner, PComponent newOwner) {}
 	
 	/**
 	 * This event is fired when a {@link PComponent} lost its focus.<br>
@@ -29,6 +29,6 @@ public interface PFocusObs {
 	 * 
 	 * @param oldOwner the component that lost focus
 	 */
-	public void focusLost(PComponent oldOwner);
+	public default void focusLost(PComponent oldOwner) {}
 	
 }

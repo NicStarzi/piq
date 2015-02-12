@@ -7,11 +7,11 @@ import java.util.List;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PLayout;
+import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PRootOverlay;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractPLayout;
-import edu.udo.piq.tools.AbstractPLayoutObs;
 
 public class PRootLayout extends AbstractPLayout {
 	
@@ -21,7 +21,7 @@ public class PRootLayout extends AbstractPLayout {
 	public PRootLayout(PRoot owner) {
 		super(owner);
 		this.owner = owner;
-		addObs(new AbstractPLayoutObs() {
+		addObs(new PLayoutObs() {
 			public void childAdded(PLayout layout, PComponent child, Object constraint) {
 				Constraint pos = (Constraint) constraint;
 				if (pos == Constraint.OVERLAY && !(child instanceof PRootOverlay)) {

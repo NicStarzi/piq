@@ -60,7 +60,8 @@ public interface PLayout {
 	 * @see #clearChildren()
 	 * @see #getChildren()
 	 */
-	public void addChild(PComponent component, Object constraint) throws NullPointerException, IllegalArgumentException, IllegalStateException;
+	public void addChild(PComponent component, Object constraint) 
+			throws NullPointerException, IllegalArgumentException, IllegalStateException;
 	
 	/**
 	 * Removes the given child from this layout.<br>
@@ -76,7 +77,8 @@ public interface PLayout {
 	 * @see #clearChildren()
 	 * @see #containsChild(PComponent)
 	 */
-	public void removeChild(PComponent child) throws NullPointerException, IllegalArgumentException;
+	public void removeChild(PComponent child) 
+			throws NullPointerException, IllegalArgumentException;
 	
 	/**
 	 * Removes the child that is registered with the associated constraint.<br>
@@ -92,7 +94,8 @@ public interface PLayout {
 	 * @see #getChildConstraint(PComponent)
 	 * @see #containsChild(Object)
 	 */
-	public void removeChild(Object constraint) throws IllegalArgumentException, IllegalStateException;
+	public void removeChild(Object constraint) 
+			throws IllegalArgumentException, IllegalStateException;
 	
 	/**
 	 * Removes all children of this layout if this layout contains any children.<br>
@@ -115,7 +118,8 @@ public interface PLayout {
 	 * @see #addChild(PComponent, Object)
 	 * @see #containsChild(Object)
 	 */
-	public boolean containsChild(PComponent child) throws NullPointerException;
+	public boolean containsChild(PComponent child) 
+			throws NullPointerException;
 	
 	/**
 	 * Returns true if this layout contains a child component that is associated 
@@ -128,7 +132,8 @@ public interface PLayout {
 	 * @see #addChild(PComponent, Object)
 	 * @see #removeChild(Object)
 	 */
-	public boolean containsChild(Object constraint) throws IllegalArgumentException;
+	public boolean containsChild(Object constraint) 
+			throws IllegalArgumentException;
 	
 	/**
 	 * Returns the {@link PBounds} within this layout for the given child.<br>
@@ -141,7 +146,8 @@ public interface PLayout {
 	 * @throws NullPointerException if child is null
 	 * @throws IllegalArgumentException if child is not a child of this layout
 	 */
-	public PBounds getChildBounds(PComponent child) throws NullPointerException, IllegalArgumentException;
+	public PBounds getChildBounds(PComponent child) 
+			throws NullPointerException, IllegalArgumentException;
 	
 	/**
 	 * Returns the Constraint which was used when the child component has 
@@ -157,7 +163,8 @@ public interface PLayout {
 	 * @see #removeChild(Object)
 	 * @see #containsChild(Object)
 	 */
-	public Object getChildConstraint(PComponent child) throws NullPointerException, IllegalArgumentException;
+	public Object getChildConstraint(PComponent child) 
+			throws NullPointerException, IllegalArgumentException;
 	
 	/**
 	 * Returns the child of this {@link PLayout} that contains the given coordinates.<br>
@@ -169,7 +176,14 @@ public interface PLayout {
 	 * @param y coordinate on the Y-axis in window space
 	 * @return a child of this layout that contains (x, y) or null if no such child exists
 	 */
-	public PComponent getChildAt(int x, int y);
+	public default PComponent getChildAt(int x, int y) {
+		for (PComponent child : getChildren()) {
+			if (getChildBounds(child).contains(x, y)) {
+				return child;
+			}
+		}
+		return null;
+	}
 	
 	/**
 	 * Returns an unmodifiable collection containing all children that 

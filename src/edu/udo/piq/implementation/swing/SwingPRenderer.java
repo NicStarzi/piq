@@ -27,10 +27,6 @@ public class SwingPRenderer implements PRenderer {
 		graphics = g;
 	}
 	
-	public void setClipBounds(PBounds bounds) {
-		setClipBounds(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
-	}
-	
 	public void setClipBounds(int x, int y, int width, int height) {
 		graphics.setClip(x, y, width, height);
 	}
@@ -102,14 +98,6 @@ public class SwingPRenderer implements PRenderer {
 	
 	public void drawQuad(float x, float y, float fx, float fy) {
 		graphics.fillRect((int) x, (int) y, (int) (fx - x), (int) (fy - y));
-//		if (img == null) {
-//			
-//		} else {
-//			graphics.drawImage(img.getBufferedImage(), 
-//					(int) x, (int) y, (int) fx, (int) fy, 
-//					uv[U1], uv[V1], uv[U3], uv[V2], 
-//					null);
-//		}
 	}
 	
 	public void drawQuad(
@@ -137,6 +125,18 @@ public class SwingPRenderer implements PRenderer {
 		yCoords[2] = (int) y3;
 		yCoords[3] = (int) y4;
 		graphics.fillPolygon(xCoords, xCoords, number);
+	}
+	
+	public void drawPolygon(float[] xCoords, float[] yCoords) {
+		int count = Math.min(xCoords.length, yCoords.length);
+		
+		int[] xCoords2 = new int[count];
+		int[] yCoords2 = new int[count];
+		for (int i = 0; i < count; i++) {
+			xCoords2[i] = Math.round(xCoords[i]);
+			yCoords2[i] = Math.round(yCoords[i]);
+		}
+		graphics.fillPolygon(xCoords2, xCoords2, count);
 	}
 	
 	public void drawLetter(PFontResource font, char c, float x, float y) {

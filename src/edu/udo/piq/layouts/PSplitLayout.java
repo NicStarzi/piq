@@ -3,9 +3,9 @@ package edu.udo.piq.layouts;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PLayout;
+import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractPLayout;
-import edu.udo.piq.tools.AbstractPLayoutObs;
 import edu.udo.piq.tools.MutablePSize;
 
 public class PSplitLayout extends AbstractPLayout {
@@ -28,7 +28,7 @@ public class PSplitLayout extends AbstractPLayout {
 	
 	public PSplitLayout(PComponent component) {
 		super(component);
-		addObs(new AbstractPLayoutObs() {
+		addObs(new PLayoutObs() {
 			public void childAdded(PLayout layout, PComponent child, Object constraint) {
 				if (constraint == Constraint.FIRST) {
 					first = child;

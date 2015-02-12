@@ -76,7 +76,9 @@ public interface PColor {
 	 * 
 	 * @return red color component between 0 and 255 inclusive.
 	 */
-	public int getRed255();
+	public default int getRed255() {
+		return (int) (getRed1() * 255);
+	}
 	
 	/**
 	 * Returns the value for the red color component in floating point 
@@ -95,7 +97,9 @@ public interface PColor {
 	 * 
 	 * @return green color component between 0 and 255 inclusive.
 	 */
-	public int getGreen255();
+	public default int getGreen255() {
+		return (int) (getGreen1() * 255);
+	}
 	
 	/**
 	 * Returns the value for the green color component in floating point 
@@ -114,7 +118,9 @@ public interface PColor {
 	 * 
 	 * @return blue color component between 0 and 255 inclusive.
 	 */
-	public int getBlue255();
+	public default int getBlue255() {
+		return (int) (getBlue1() * 255);
+	}
 	
 	/**
 	 * Returns the value for the blue color component in floating point 
@@ -133,7 +139,9 @@ public interface PColor {
 	 * 
 	 * @return alpha color component between 0 and 255 inclusive.
 	 */
-	public int getAlpha255();
+	public default int getAlpha255() {
+		return (int) (getAlpha1() * 255);
+	}
 	
 	/**
 	 * Returns the value for the alpha color component in floating point 

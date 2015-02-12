@@ -15,6 +15,7 @@ import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PKeyboard.Key;
+import edu.udo.piq.PKeyboard.Modifier;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.components.defaults.DefaultPListCellFactory;
 import edu.udo.piq.components.defaults.DefaultPListDnDSupport;
@@ -88,7 +89,7 @@ public class PList extends AbstractPLayoutOwner {
 					isSelected = true;
 					
 					Integer index = Integer.valueOf(getLayout().getChildIndex(selected));
-					if (keyboard != null && keyboard.isPressed(Key.CTRL)) {
+					if (keyboard != null && keyboard.isModifierToggled(Modifier.CTRL)) {
 						toggleSelection(index);
 					} else if (keyboard != null && keyboard.isPressed(Key.SHIFT)) {
 						rangeSelection(index);

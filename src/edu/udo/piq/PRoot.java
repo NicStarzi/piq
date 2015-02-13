@@ -87,7 +87,7 @@ public interface PRoot extends PComponent {
 	 * Always returns true for {@link PRoot} instances.<br>
 	 * @return true
 	 */
-	public default boolean fillsAllPixels() {
+	public default boolean defaultFillsAllPixels() {
 		return true;
 	}
 	

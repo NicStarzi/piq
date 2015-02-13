@@ -25,7 +25,7 @@ public class PGlassPanel extends PPanel implements PRootOverlay {
 	public void defaultRender(PRenderer renderer) {
 	}
 	
-	public boolean fillsAllPixels() {
+	public boolean defaultFillsAllPixels() {
 		return false;
 	}
 	

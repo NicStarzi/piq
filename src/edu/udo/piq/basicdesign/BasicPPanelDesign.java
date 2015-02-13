@@ -27,7 +27,7 @@ public class BasicPPanelDesign implements PDesign {
 	
 	public void render(PRenderer renderer, PComponent component)
 			throws NullPointerException, IllegalArgumentException {
-		PBounds bnds = PCompUtil.getBoundsOf(component);
+		PBounds bnds = component.getBounds();
 		int x = bnds.getX();
 		int y = bnds.getY();
 		int fx = bnds.getFinalX();

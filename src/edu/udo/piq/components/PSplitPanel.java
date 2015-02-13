@@ -15,7 +15,6 @@ import edu.udo.piq.layouts.PSplitLayout;
 import edu.udo.piq.layouts.PSplitLayout.Constraint;
 import edu.udo.piq.layouts.PSplitLayout.Orientation;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
-import edu.udo.piq.util.PCompUtil;
 
 public class PSplitPanel extends AbstractPLayoutOwner {
 	
@@ -45,9 +44,7 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 			}
 		}
 		public void buttonTriggered(PMouse mouse, MouseButton btn) {
-			if (btn == MouseButton.LEFT 
-					&& PCompUtil.isWithinClippedBounds(divider, mouse.getX(), mouse.getY())) {
-				
+			if (btn == MouseButton.LEFT && divider.isMouseWithinClippedBounds()) {
 				pressed = true;
 				fireDividerTouchedEvent();
 			}

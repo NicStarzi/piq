@@ -13,7 +13,6 @@ import edu.udo.piq.components.defaults.DefaultPScrollBarModel;
 import edu.udo.piq.layouts.PScrollPanelLayout;
 import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.ImmutablePSize;
-import edu.udo.piq.util.PCompUtil;
 import edu.udo.piq.util.PRenderUtil;
 
 public class PScrollBarVertical extends AbstractPComponent {
@@ -28,8 +27,7 @@ public class PScrollBarVertical extends AbstractPComponent {
 			}
 		}
 		public void buttonTriggered(PMouse mouse, MouseButton btn) {
-			if (btn == MouseButton.LEFT 
-					&& PCompUtil.isWithinClippedBounds(PScrollBarVertical.this, mouse.getX(), mouse.getY())) 
+			if (btn == MouseButton.LEFT && isMouseWithinClippedBounds()) 
 			{
 //				pressOffset = mouse.getY();
 				pressed = true;

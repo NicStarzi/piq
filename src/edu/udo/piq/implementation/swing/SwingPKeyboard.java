@@ -2,6 +2,7 @@ package edu.udo.piq.implementation.swing;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.lang.Character.UnicodeBlock;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,7 @@ public class SwingPKeyboard implements PKeyboard {
 		base.addKeyListener(new KeyListener() {
 			public void keyTyped(KeyEvent e) {
 				char c = e.getKeyChar();
-				if (c != KeyEvent.CHAR_UNDEFINED) {
+				if (isTypeable(c)) {
 					String typedString = String.valueOf(new char[] {c});
 					fireStringTypedEvent(typedString);
 				}
@@ -43,6 +44,17 @@ public class SwingPKeyboard implements PKeyboard {
 				updateKey(e, true);
 			}
 		});
+	}
+	
+	private boolean isTypeable(char c) {
+		if (c == KeyEvent.CHAR_UNDEFINED) {
+			return false;
+		}
+		if (Character.isISOControl(c) && !Character.isWhitespace(c)) {
+			return false;
+		}
+		UnicodeBlock block = UnicodeBlock.of(c);
+		return block != null && block != UnicodeBlock.SPECIALS;
 	}
 	
 	private void updateKey(KeyEvent e, boolean newPressedValue) {

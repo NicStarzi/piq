@@ -18,7 +18,6 @@ import edu.udo.piq.components.PPanel;
 import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PRootLayout;
 import edu.udo.piq.layouts.PRootLayout.Constraint;
-import edu.udo.piq.util.PCompUtil;
 import edu.udo.piq.PDnDManager;
 import edu.udo.piq.PDnDSupport;
 import edu.udo.piq.PKeyboard;
@@ -36,11 +35,9 @@ import edu.udo.piq.PTimer;
 public abstract class AbstractPRoot implements PRoot {
 	
 	protected final PRootLayout layout;
-//	protected PLayout layout;
 	protected PDesignSheet designSheet = new AbstractPDesignSheet();
 	protected PMouse mouse;
 	protected PKeyboard keyboard;
-//	protected PRootOverlay overlay;
 	protected PDnDManager dndManager;
 	
 	private final PComponentObs childObs = new PComponentObs() {
@@ -75,7 +72,6 @@ public abstract class AbstractPRoot implements PRoot {
 		body.setLayout(new PBorderLayout(body));
 		getLayout().addChild(body, Constraint.BODY);
 		getLayout().addChild(new PGlassPanel(), Constraint.OVERLAY);
-//		setLayout(new PBorderLayout(this));
 	}
 	
 	/*
@@ -308,7 +304,7 @@ public abstract class AbstractPRoot implements PRoot {
 		return getBounds();
 	}
 	
-	public boolean fillsAllPixels() {
+	public boolean defaultFillsAllPixels() {
 		return true;
 	}
 	
@@ -339,7 +335,7 @@ public abstract class AbstractPRoot implements PRoot {
 			builder.append(getID());
 		}
 		builder.append(" [bounds=");
-		builder.append(PCompUtil.getBoundsOf(this));
+		builder.append(getBounds());
 		builder.append("]");
 		return builder.toString();
 	}

@@ -15,6 +15,7 @@ import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PKeyboard.Key;
+import edu.udo.piq.PKeyboard.Modifier;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.components.defaults.DefaultPListCellFactory;
 import edu.udo.piq.components.defaults.DefaultPListDnDSupport;
@@ -23,7 +24,6 @@ import edu.udo.piq.components.defaults.DefaultPListSelection;
 import edu.udo.piq.layouts.PListLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
-import edu.udo.piq.util.PCompUtil;
 
 public class PList extends AbstractPLayoutOwner {
 	
@@ -31,7 +31,7 @@ public class PList extends AbstractPLayoutOwner {
 	
 	private final PKeyboardObs keyObs = new PKeyboardObs() {
 		public void keyTriggered(PKeyboard keyboard, Key key) {
-			if (!PCompUtil.hasFocus(PList.this) || getSelection() == null) {
+			if (!hasFocus() || getSelection() == null) {
 				return;
 			}
 			if (key == Key.COPY) {
@@ -43,7 +43,7 @@ public class PList extends AbstractPLayoutOwner {
 			}
 		}
 		public void keyPressed(PKeyboard keyboard, Key key) {
-			if (!PCompUtil.hasFocus(PList.this) || getSelection() == null) {
+			if (!hasFocus() || getSelection() == null) {
 				return;
 			}
 			PListSelection selection = getSelection();
@@ -77,10 +77,10 @@ public class PList extends AbstractPLayoutOwner {
 			if (getModel() == null || getSelection() == null) {
 				return;
 			}
-			PKeyboard keyboard = PCompUtil.getKeyboardOf(PList.this);
+			PKeyboard keyboard = getKeyboard();
 			int mx = mouse.getX();
 			int my = mouse.getY();
-			if (PCompUtil.isWithinClippedBounds(PList.this, mx, my)) {
+			if (getClippedBounds().contains(mx, my)) {
 				PComponent selected = getLayout().getChildAt(mx, my);
 				if (selected != null) {
 					lastMouseX = mx;
@@ -88,15 +88,15 @@ public class PList extends AbstractPLayoutOwner {
 					isSelected = true;
 					
 					Integer index = Integer.valueOf(getLayout().getChildIndex(selected));
-					if (keyboard != null && keyboard.isPressed(Key.CTRL)) {
+					if (keyboard != null && keyboard.isModifierToggled(Modifier.CTRL)) {
 						toggleSelection(index);
 					} else if (keyboard != null && keyboard.isPressed(Key.SHIFT)) {
 						rangeSelection(index);
 					} else {
 						setSelection(index);
 					}
-					if (!PCompUtil.hasFocus(PList.this)) {
-						PCompUtil.takeFocus(PList.this);
+					if (!hasFocus()) {
+						takeFocus();
 					}
 				}
 			}

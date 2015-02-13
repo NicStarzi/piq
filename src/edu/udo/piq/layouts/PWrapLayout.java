@@ -25,7 +25,7 @@ public class PWrapLayout extends PListLayout {
 	
 	public void layOut() {
 		PInsets insets = getInsets();
-		PBounds ob = getOwnerBounds();
+		PBounds ob = getOwner().getBounds();
 		int gap = getGap();
 		int minX = ob.getX() + insets.getFromLeft();
 		int minY = ob.getY() + insets.getFromTop();
@@ -111,7 +111,7 @@ public class PWrapLayout extends PListLayout {
 	
 	public PSize getPreferredSize() {
 		PInsets insets = getInsets();
-		PBounds bnds = getOwnerBounds();
+		PBounds bnds = getOwner().getBounds();
 		int w = bnds.getWidth() - insets.getHorizontal();
 		int h = bnds.getHeight() - insets.getVertical();
 		

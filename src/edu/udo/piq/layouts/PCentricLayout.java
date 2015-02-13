@@ -62,7 +62,7 @@ public class PCentricLayout extends AbstractPLayout {
 	
 	public void layOut() {
 		if (content != null) {
-			PBounds ob = getOwnerBounds();
+			PBounds ob = getOwner().getBounds();
 			PInsets insets = getInsets();
 			
 			int x = ob.getX() + insets.getFromLeft();

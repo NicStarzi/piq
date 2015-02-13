@@ -8,7 +8,6 @@ import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.layouts.PScrollPanelLayout;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
-import edu.udo.piq.util.PCompUtil;
 
 public class PScrollPanel extends AbstractPLayoutOwner {
 	
@@ -36,10 +35,10 @@ public class PScrollPanel extends AbstractPLayoutOwner {
 			public void childLaidOut(PLayout layout, PComponent child, Object constraint) {
 				if (constraint == PScrollPanelLayout.Constraint.VIEW) {
 					scrollH.getModel().setContentSize(child.getDefaultPreferredSize().getWidth());
-					scrollH.getModel().setViewportSize(PCompUtil.getBoundsOf(getParent()).getWidth());
+					scrollH.getModel().setViewportSize(getParent().getBounds().getWidth());
 					
 					scrollV.getModel().setContentSize(child.getDefaultPreferredSize().getHeight());
-					scrollV.getModel().setViewportSize(PCompUtil.getBoundsOf(getParent()).getHeight());
+					scrollV.getModel().setViewportSize(getParent().getBounds().getHeight());
 				}
 			}
 		});

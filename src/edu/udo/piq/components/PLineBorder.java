@@ -30,7 +30,7 @@ public class PLineBorder extends AbstractPBorder {
 		renderer.drawQuad( x - 0, fy - 1, fx + 0, fy + 0);
 	}
 	
-	public boolean fillsAllPixels() {
+	public boolean defaultFillsAllPixels() {
 		return false;
 	}
 	

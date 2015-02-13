@@ -110,7 +110,7 @@ public class PMatrixLayout extends AbstractPLayout {
 	}
 	
 	public void layOut() {
-		PBounds ob = getOwnerBounds();
+		PBounds ob = getOwner().getBounds();
 		PInsets insets = getInsets();
 		int ownerX = ob.getX() + insets.getFromLeft();
 		int ownerY = ob.getY() + insets.getFromTop();

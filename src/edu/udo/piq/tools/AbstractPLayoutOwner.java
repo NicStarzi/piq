@@ -1,12 +1,9 @@
 package edu.udo.piq.tools;
 
-import java.util.Collection;
-
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PComponentObs;
 import edu.udo.piq.PLayout;
 import edu.udo.piq.PLayoutObs;
-import edu.udo.piq.util.PCompUtil;
 
 public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 	
@@ -58,15 +55,15 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 		return layout;
 	}
 	
-	/**
-	 * Returns a {@link Collection} containing all children of this 
-	 * containers {@link PLayout} as returned by {@link PLayout#getChildren()}.<br>
-	 * 
-	 * @return the children of this container
-	 */
-	protected Collection<PComponent> getChildren() {
-		return PCompUtil.getChildrenOf(this);
-	}
+//	/**
+//	 * Returns a {@link Collection} containing all children of this 
+//	 * containers {@link PLayout} as returned by {@link PLayout#getChildren()}.<br>
+//	 * 
+//	 * @return the children of this container
+//	 */
+//	protected Collection<PComponent> getChildren() {
+//		return PCompUtil.getChildrenOf(this);
+//	}
 	
 	/**
 	 * Returns true if the {@link PLayout} of this container has at least 

@@ -24,7 +24,6 @@ import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.tools.PTextIndex;
 import edu.udo.piq.tools.PTextIndexTable;
-import edu.udo.piq.util.PCompUtil;
 
 public class PTextArea extends AbstractPComponent {
 	
@@ -43,8 +42,7 @@ public class PTextArea extends AbstractPComponent {
 			PTextSelection selection = getSelection();
 			int selectionFrom = selection.getFrom();
 			int selectionTo = selection.getTo();
-			if (PCompUtil.hasFocus(PTextArea.this) 
-					&& selectionFrom != INDEX_NO_SELECTION && selectionFrom == selectionTo) 
+			if (hasFocus() && selectionFrom != INDEX_NO_SELECTION && selectionFrom == selectionTo) 
 			{
 				focusRenderToggleTimer += 1;
 				if (focusRenderToggleTimer >= DEFAULT_FOCUS_RENDER_TOGGLE_TIMER_DELAY) {
@@ -63,6 +61,8 @@ public class PTextArea extends AbstractPComponent {
 			PTextSelection selection = getSelection();
 			int from = selection.getFrom();
 			int to = selection.getTo();
+			System.out.println("from="+selection.getFrom());
+			System.out.println("to="+selection.getTo());
 			
 			int newFrom = from + typedString.length();
 			
@@ -179,7 +179,7 @@ public class PTextArea extends AbstractPComponent {
 			}
 		}
 		public boolean skipInput(PKeyboard keyboard, Key key) {
-			return !PCompUtil.hasFocus(PTextArea.this) 
+			return !hasFocus() 
 					|| getSelection() == null 
 					|| getModel() == null;
 		}
@@ -190,9 +190,7 @@ public class PTextArea extends AbstractPComponent {
 				int mx = mouse.getX();
 				int my = mouse.getY();
 				selection.setSelection(getTextIndexAt(mx, my), pressedIndex);
-				if (!PCompUtil.hasFocus(PTextArea.this)) {
-					PCompUtil.takeFocus(PTextArea.this);
-				}
+				takeFocus();
 				fireReRenderEvent();
 			}
 		}
@@ -200,12 +198,12 @@ public class PTextArea extends AbstractPComponent {
 			if (btn == MouseButton.LEFT) {
 				int mx = mouse.getX();
 				int my = mouse.getY();
-				if (PCompUtil.isWithinClippedBounds(PTextArea.this, mx, my)) {
+				System.out.println("bounds="+getClippedBounds()+", x="+mx+", y="+my);
+				if (getClippedBounds().contains(mx, my)) {
 					pressedIndex = getTextIndexAt(mx, my);
+					System.out.println("pressedIndex="+pressedIndex);
 					selection.setSelection(pressedIndex, pressedIndex);
-					if (!PCompUtil.hasFocus(PTextArea.this)) {
-						PCompUtil.takeFocus(PTextArea.this);
-					}
+					takeFocus();
 					fireReRenderEvent();
 				}
 			}
@@ -226,6 +224,8 @@ public class PTextArea extends AbstractPComponent {
 	};
 	private final PTextSelectionObs selectionObs = new PTextSelectionObs() {
 		public void selectionChanged(PTextSelection selection) {
+			System.out.println("from="+selection.getFrom());
+			System.out.println("to="+selection.getTo());
 			focusRenderToggle = true;
 			focusRenderToggleTimer = 0;
 			fireReRenderEvent();
@@ -366,7 +366,7 @@ public class PTextArea extends AbstractPComponent {
 		int to = selection.getTo();
 		
 		if (from != INDEX_NO_SELECTION) {
-			if (from == to && PCompUtil.hasFocus(this)) {
+			if (from == to && hasFocus()) {
 				if (focusRenderToggle) {
 					PBounds letterBounds = getBoundsForLetter(from);
 					int letterX = letterBounds.getX() + x - 1;

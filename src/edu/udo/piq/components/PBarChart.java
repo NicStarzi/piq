@@ -59,7 +59,7 @@ public class PBarChart extends AbstractPComponent {
 		}
 	}
 	
-	public boolean fillsAllPixels() {
+	public boolean defaultFillsAllPixels() {
 		return false;
 	}
 	

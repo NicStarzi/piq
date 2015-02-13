@@ -127,10 +127,6 @@ public abstract class AbstractPLayout implements PLayout {
 	 * Utility methods
 	 */
 	
-	protected PBounds getOwnerBounds() {
-		return PCompUtil.getBoundsOf(getOwner());
-	}
-	
 	protected PSize getPreferredSizeOf(PComponent child) {
 		if (child == null) {
 			return PSize.NULL_SIZE;

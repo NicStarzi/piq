@@ -21,7 +21,6 @@ import edu.udo.piq.PLayout;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.tools.AbstractPDialog;
-import edu.udo.piq.util.PCompUtil;
 
 public class SwingPDialog extends AbstractPDialog implements PDialog {
 	
@@ -143,7 +142,7 @@ public class SwingPDialog extends AbstractPDialog implements PDialog {
 		while (!stack.isEmpty()) {
 			StackInfo info = stack.pop();
 			PComponent comp = info.child;
-			PBounds compBounds = PCompUtil.getBoundsOf(comp);
+			PBounds compBounds = comp.getBounds();
 			int clipX = Math.max(compBounds.getX(), info.clipX);
 			int clipY = Math.max(compBounds.getY(), info.clipY);
 			int clipFx = Math.min(compBounds.getFinalX(), info.clipFx);

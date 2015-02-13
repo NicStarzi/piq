@@ -35,7 +35,6 @@ import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.PImageResource;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.tools.AbstractPRoot;
-import edu.udo.piq.util.PCompUtil;
 
 public class JCompPRoot extends AbstractPRoot implements PRoot {
 	
@@ -235,7 +234,7 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 		while (!stack.isEmpty()) {
 			StackInfo info = stack.pop();
 			PComponent comp = info.child;
-			PBounds compBounds = PCompUtil.getBoundsOf(comp);
+			PBounds compBounds = comp.getBounds();
 			int clipX = Math.max(compBounds.getX(), info.clipX);
 			int clipY = Math.max(compBounds.getY(), info.clipY);
 			int clipFx = Math.min(compBounds.getFinalX(), info.clipFx);

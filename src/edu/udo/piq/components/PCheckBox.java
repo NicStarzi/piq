@@ -16,7 +16,6 @@ import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.components.defaults.DefaultPCheckBoxModel;
 import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.ImmutablePSize;
-import edu.udo.piq.util.PCompUtil;
 import edu.udo.piq.util.PRenderUtil;
 
 public class PCheckBox extends AbstractPComponent {
@@ -26,7 +25,7 @@ public class PCheckBox extends AbstractPComponent {
 	private final List<PCheckBoxObs> obsList = new CopyOnWriteArrayList<>();
 	private final PKeyboardObs keyObs = new PKeyboardObs() {
 		public void keyTriggered(PKeyboard keyboard, Key key) {
-			if (!PCompUtil.hasFocus(PCheckBox.this)) {
+			if (!hasFocus()) {
 				return;
 			}
 			if (key == Key.ENTER) {
@@ -48,9 +47,9 @@ public class PCheckBox extends AbstractPComponent {
 	};
 	private final PMouseObs mouseObs = new PMouseObs() {
 		public void buttonTriggered(PMouse mouse, MouseButton btn) {
-			if (btn == MouseButton.LEFT && PCompUtil.isWithinClippedBounds(PCheckBox.this, mouse.getX(), mouse.getY())) {
+			if (btn == MouseButton.LEFT && isMouseWithinClippedBounds()) {
 				getModel().setChecked(!getModel().isChecked());
-				PCompUtil.takeFocus(PCheckBox.this);
+				takeFocus();
 				fireClickEvent();
 			}
 		}

@@ -15,7 +15,6 @@ import edu.udo.piq.components.PListModel;
 import edu.udo.piq.components.PListSelection;
 import edu.udo.piq.components.PPicture;
 import edu.udo.piq.tools.ImmutablePDnDTransfer;
-import edu.udo.piq.util.PCompUtil;
 
 public class DefaultPListDnDSupport implements PDnDSupport {
 	
@@ -110,7 +109,7 @@ public class DefaultPListDnDSupport implements PDnDSupport {
 			return false;
 		}
 		// If the root does not support drag and drop or if there is no root to begin with
-		PDnDManager dndMngr = PCompUtil.getDragAndDropManagerOf(source);
+		PDnDManager dndMngr = source.getDragAndDropManager();
 		if (dndMngr == null || !dndMngr.canDrag()) {
 			return false;
 		}
@@ -161,7 +160,7 @@ public class DefaultPListDnDSupport implements PDnDSupport {
 			PDnDTransfer transfer = new ImmutablePDnDTransfer(source, x, y, data, 
 					createVisibleRepresentation(data));
 			
-			PCompUtil.getDragAndDropManagerOf(source).startDrag(transfer);
+			source.getDragAndDropManager().startDrag(transfer);
 		} catch (Exception e) {
 			// Just in case
 			throw new IllegalArgumentException(e);

@@ -41,7 +41,7 @@ public class PRootLayout extends AbstractPLayout {
 	}
 	
 	public void layOut() {
-		PBounds ob = getOwnerBounds();
+		PBounds ob = getOwner().getBounds();
 		int x = ob.getX();
 		int y = ob.getY();
 		int w = ob.getWidth();

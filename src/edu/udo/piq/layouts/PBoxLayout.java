@@ -53,7 +53,7 @@ public class PBoxLayout extends AbstractPLayout {
 	}
 	
 	public void layOut() {
-		PBounds ob = getOwnerBounds();
+		PBounds ob = getOwner().getBounds();
 		PInsets insets = getInsets();
 		int x = ob.getX() + insets.getFromLeft();
 		int y = ob.getY() + insets.getFromRight();

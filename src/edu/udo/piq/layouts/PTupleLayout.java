@@ -86,7 +86,7 @@ public class PTupleLayout extends AbstractPLayout {
 		int prefW = prefSize.getWidth();
 		int prefH = prefSize.getHeight();
 		
-		PBounds ob = getOwnerBounds();
+		PBounds ob = getOwner().getBounds();
 		int x = ob.getX() + ob.getWidth() / 2 - prefW / 2;
 		int y = ob.getY() + ob.getHeight() / 2 - prefH / 2;
 		

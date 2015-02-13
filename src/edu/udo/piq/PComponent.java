@@ -1,9 +1,12 @@
 package edu.udo.piq;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import edu.udo.piq.tools.AbstractPComponent;
+import edu.udo.piq.tools.ImmutablePBounds;
 import edu.udo.piq.util.PCompUtil;
 import edu.udo.piq.util.PGuiUtil;
 
@@ -41,17 +44,6 @@ import edu.udo.piq.util.PGuiUtil;
  * @see PComponentObs
  */
 public interface PComponent {
-	
-	/**
-	 * Returns the {@link PRoot} of the GUI-tree this component 
-	 * is a part of.<br>
-	 * If this component is not part of a GUI-tree this method 
-	 * will return null.<br>
-	 * 
-	 * @return the root of this GUI-tree or null
-	 * @see PRoot
-	 */
-	public PRoot getRoot();
 	
 	/**
 	 * This method is supposed to be used internally by a {@link PLayout} to set 
@@ -130,7 +122,7 @@ public interface PComponent {
 	 * @see PDesignSheet
 	 * @see PDesign
 	 */
-	public void defaultRender(PRenderer renderer);
+	public default void defaultRender(PRenderer renderer) {}
 	
 	/**
 	 * Returns true if this component fills all pixels within its 
@@ -148,7 +140,9 @@ public interface PComponent {
 	 * @see PDesignSheet
 	 * @see PDesign
 	 */
-	public boolean fillsAllPixels();
+	public default boolean defaultFillsAllPixels() {
+		return false;
+	}
 	
 	/**
 	 * This method returns the default preferred size for this component 
@@ -167,7 +161,13 @@ public interface PComponent {
 	 * @see PLayout
 	 * @see PLayout#getChildBounds(PComponent)
 	 */
-	public PSize getDefaultPreferredSize();
+	public default PSize getDefaultPreferredSize() {
+		PLayout layout = getLayout();
+		if (layout != null) {
+			return layout.getPreferredSize();
+		}
+		return PSize.NULL_SIZE;
+	}
 	
 	/**
 	 * Returns true if this {@link PComponent} may become the focus owner of a GUI.<br>
@@ -281,5 +281,281 @@ public interface PComponent {
 	 * @see PGuiUtil#guiTreeToString(PComponent)
 	 */
 	public String getID();
+	
+	/*
+	 * Default convenience methods
+	 */
+	
+	/**
+	 * Returns the {@link PRoot} of the GUI that this component is a part of.<br>
+	 * If this component is not part of a GUI this method will return null.<br>
+	 * 
+	 * @return the root of this GUI or null
+	 * @see PRoot
+	 * @see #getParent()
+	 */
+	public default PRoot getRoot() {
+		PComponent comp = this;
+		while (comp.getParent() != null) {
+			comp = comp.getParent();
+		}
+		if (comp instanceof PRoot) {
+			return (PRoot) comp;
+		}
+		return null;
+	}
+	
+	/**
+	 * If this component has a parent then the {@link PBounds} of this component 
+	 * will be defined by the parents {@link PLayout}.<br>
+	 * If this component is a {@link PRoot} then the {@link PBounds} will be 
+	 * returned directly.<br>
+	 * If this component does neither have a parent nor is a {@link PRoot} null 
+	 * is returned.<br>
+	 * 
+	 * @return the {@link PBounds} of this component or null
+	 * @see PLayout#getChildBounds(PComponent)
+	 * @see PRoot#getBounds()
+	 */
+	public default PBounds getBounds() {
+		if (getParent() != null) {
+			return getParent().getLayout().getChildBounds(this);
+		}
+		if (this instanceof PRoot) {
+			return ((PRoot) this).getBounds();
+		}
+		return null;
+	}
+	
+	/**
+	 * Returns a {@link Collection} of all child components of this component.<br>
+	 * If this component has a {@link PLayout} then the method {@link PLayout#getChildren()} 
+	 * is used on the layout to retrieve the children.<br>
+	 * If this component does not have a {@link PLayout} an unmodifiable empty list is 
+	 * returned.<br>
+	 * This method does never return null.<br>
+	 * <br>
+	 * The returned Collection is unmodifiable and is not synchronized with the 
+	 * layout.<br>
+	 * 
+	 * @return a Collection of {@link PComponent PComponents} that are children of this component
+	 * @see PLayout#getChildren()
+	 */
+	public default Collection<PComponent> getChildren() {
+		if (getLayout() != null) {
+			return getLayout().getChildren();
+		}
+		return Collections.emptyList();
+	}
+	
+	/**
+	 * Returns true if any positive number of steps up in the GUI hierarchy, 
+	 * starting from maybeDescendant, will get to this component.<br>
+	 * A component is not an ancestor of itself.<br>
+	 * 
+	 * @param maybeDescendant the component for which the hierarchy is tested
+	 * @return true if this is an ancestor of maybeDescendant, false otherwise
+	 * @throws NullPointerException if maybeDescendant is null
+	 * @see #isDescendantOf(PComponent)
+	 * @see #getParent()
+	 */
+	public default boolean isAncestorOf(PComponent maybeDescendant) {
+		PComponent comp = maybeDescendant.getParent();
+		while (comp != null) {
+			if (comp == this) {
+				return true;
+			}
+			comp = comp.getParent();
+		}
+		return false;
+	}
+	
+	/**
+	 * Returns true if any positive number of steps up in the GUI hierarchy, 
+	 * starting from this component, will get to maybeAncestor.<br>
+	 * A component is not a descendant of itself.<br>
+	 * 
+	 * @param maybeAncestor the component for which the hierarchy is tested
+	 * @return true if this is a descendant of maybeAncestor, false otherwise
+	 * @throws NullPointerException if maybeAncestor is null
+	 * @see #isAncestorOf(PComponent)
+	 * @see #getParent()
+	 */
+	public default boolean isDescendantOf(PComponent maybeAncestor) {
+		return maybeAncestor.isAncestorOf(this);
+	}
+	
+	/**
+	 * Returns the {@link PMouse} installed in the {@link PRoot} of this 
+	 * component.<br>
+	 * If this component is not part of a GUI or the GUI does not support a 
+	 * {@link PMouse} null is returned.<br>
+	 * 
+	 * @return the {@link PMouse} for this GUI or null
+	 * @see #getRoot()
+	 * @see PRoot#getMouse()
+	 */
+	public default PMouse getMouse() {
+		PRoot root = getRoot();
+		if (root == null) {
+			return null;
+		}
+		return root.getMouse();
+	}
+	
+	/**
+	 * Returns the {@link PKeyboard} installed in the {@link PRoot} of this 
+	 * component.<br>
+	 * If this component is not part of a GUI or the GUI does not support a 
+	 * {@link PKeyboard} null is returned.<br>
+	 * 
+	 * @return the {@link PKeyboard} for this GUI or null
+	 * @see #getRoot()
+	 * @see PRoot#getKeyboard()
+	 */
+	public default PKeyboard getKeyboard() {
+		PRoot root = getRoot();
+		if (root == null) {
+			return null;
+		}
+		return root.getKeyboard();
+	}
+	
+	/**
+	 * Returns the drag and drop manager installed in the {@link PRoot} of this 
+	 * component.<br>
+	 * If this component is not part of a GUI or the GUI does not support a 
+	 * {@link PDnDManager} null is returned.<br>
+	 * 
+	 * @return the {@link PDnDManager} for this GUI or null
+	 * @see #getRoot()
+	 * @see PRoot#getDragAndDropManager()
+	 */
+	public default PDnDManager getDragAndDropManager() {
+		PRoot root = getRoot();
+		if (root == null) {
+			return null;
+		}
+		return root.getDragAndDropManager();
+	}
+	
+	/**
+	 * Returns the portion of this components {@link PBounds} that is not 
+	 * clipped by the bounds of an ancestor of this component.<br>
+	 * More specifically the returned {@link PBounds} are those bounds that 
+	 * are created by recursively intersecting this components bounds with 
+	 * its parents bounds.<br>
+	 * The returned {@link PBounds} are immutable and not synchronized with 
+	 * the components bounds.<br>
+	 * <br>
+	 * If the clipped bounds of this component would have negative size 
+	 * null is returned instead.<br>
+	 * 
+	 * @return the clipped {@link PBounds} of this component or null
+	 * @see #getBounds()
+	 * @see PBounds#getIntersection(PBounds)
+	 */
+	public default PBounds getClippedBounds() {
+		PComponent current = this;
+		int clipX = Integer.MIN_VALUE;
+		int clipY = Integer.MIN_VALUE;
+		int clipFx = Integer.MAX_VALUE;
+		int clipFy = Integer.MAX_VALUE;
+		while (current != null) {
+			PBounds bounds = current.getBounds();
+			clipX = Math.max(bounds.getX(), clipX);
+			clipY = Math.max(bounds.getY(), clipY);
+			clipFx = Math.min(bounds.getFinalX(), clipFx);
+			clipFy = Math.min(bounds.getFinalY(), clipFy);
+			int clipW = clipFx - clipX;
+			int clipH = clipFy - clipY;
+			if (clipW < 0 || clipH < 0) {
+				return null;
+			}
+			current = current.getParent();
+		}
+		return new ImmutablePBounds(clipX, clipY, clipFx - clipX, clipFy - clipY);
+	}
+	
+	/**
+	 * Returns true if this component is part of a GUI with a mouse and the mouse 
+	 * is within the clipped bounds of this component.<br>
+	 * If any of the above conditions are not met false is returned.<br>
+	 *  
+	 * @return true if this component is part of a GUI with a mouse and the mouse position is within the clipped bounds of this component
+	 * @see #getClippedBounds()
+	 * @see #getMouse()
+	 * @see PBounds#contains(int, int)
+	 */
+	public default boolean isMouseWithinClippedBounds() {
+		PMouse mouse = getMouse();
+		if (mouse == null) {
+			return false;
+		}
+		PBounds bounds = getClippedBounds();
+		if (bounds == null) {
+			return false;
+		}
+//		System.out.println("bounds="+bounds);
+//		System.out.println("x="+mouse.getX());
+//		System.out.println("y="+mouse.getY());
+		return bounds.contains(mouse.getX(), mouse.getY());
+	}
+	
+	/**
+	 * Returns true if this component is currently holding the focus within its 
+	 * GUI.<br>
+	 * If this component is not part of a GUI this method will return false.<br>
+	 * 
+	 * @return true if this component is part of a GUI and holds the focus within it
+	 * @see PRoot#getFocusOwner()
+	 * @see PRoot#setFocusOwner(PComponent)
+	 * @see #takeFocus()
+	 * @see #releaseFocus()
+	 */
+	public default boolean hasFocus() {
+		PRoot root = getRoot();
+		if (root == null) {
+			return false;
+		}
+		return root.getFocusOwner() == this;
+	}
+	
+	/**
+	 * Makes this component the focus owner of its GUI.<br>
+	 * 
+	 * @throws IllegalStateException if component is not part of a GUI
+	 * @see PRoot#getFocusOwner()
+	 * @see PRoot#setFocusOwner(PComponent)
+	 * @see #hasFocus()
+	 * @see #releaseFocus()
+	 */
+	public default void takeFocus() {
+		PRoot root = getRoot();
+		if (root == null) {
+			throw new IllegalStateException(this+".getRoot() == null");
+		}
+		root.setFocusOwner(this);
+	}
+	
+	/**
+	 * If this component currently holds the focus within its GUI the focus will 
+	 * be released and the new focus owner will be null.<br>
+	 * 
+	 * @throws IllegalStateException if this component is not part of a GUI or if this component does not have the focus
+	 * @see PRoot#getFocusOwner()
+	 * @see PRoot#setFocusOwner(PComponent)
+	 * @see #hasFocus()
+	 * @see #takeFocus()
+	 */
+	public default void releaseFocus() {
+		PRoot root = getRoot();
+		if (root == null) {
+			throw new IllegalStateException(this+".getRoot() == null");
+		} if (root.getFocusOwner() != this) {
+			throw new IllegalStateException(this+".hasFocus() == false");
+		}
+		root.setFocusOwner(null);
+	}
 	
 }

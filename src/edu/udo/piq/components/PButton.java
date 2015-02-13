@@ -19,7 +19,6 @@ import edu.udo.piq.components.defaults.DefaultPButtonModel;
 import edu.udo.piq.layouts.PCentricLayout;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.tools.ImmutablePSize;
-import edu.udo.piq.util.PCompUtil;
 import edu.udo.piq.util.PRenderUtil;
 
 public class PButton extends AbstractPLayoutOwner {
@@ -27,7 +26,7 @@ public class PButton extends AbstractPLayoutOwner {
 	protected final List<PButtonObs> obsList = new CopyOnWriteArrayList<>();
 	private final PKeyboardObs keyObs = new PKeyboardObs() {
 		public void keyTriggered(PKeyboard keyboard, Key key) {
-			if (!PCompUtil.hasFocus(PButton.this)) {
+			if (!hasFocus()) {
 				return;
 			}
 			if (key == Key.ENTER) {
@@ -35,7 +34,7 @@ public class PButton extends AbstractPLayoutOwner {
 			}
 		}
 		public void keyReleased(PKeyboard keyboard, Key key) {
-			if (!PCompUtil.hasFocus(PButton.this)) {
+			if (!hasFocus()) {
 				return;
 			}
 			if (key == Key.ENTER) {
@@ -46,15 +45,15 @@ public class PButton extends AbstractPLayoutOwner {
 	};
 	private final PMouseObs mouseObs = new PMouseObs() {
 		public void buttonTriggered(PMouse mouse, MouseButton btn) {
-			if (btn == MouseButton.LEFT && PCompUtil.isWithinClippedBounds(PButton.this, mouse.getX(), mouse.getY())) {
+			if (btn == MouseButton.LEFT && isMouseWithinClippedBounds()) {
 				model.setPressed(true);
 			}
 		}
 		public void buttonReleased(PMouse mouse, MouseButton btn) {
 			if (btn == MouseButton.LEFT) {
 				model.setPressed(false);
-				if (PCompUtil.isWithinClippedBounds(PButton.this, mouse.getX(), mouse.getY())) {
-					PCompUtil.takeFocus(PButton.this);
+				if (isMouseWithinClippedBounds()) {
+					takeFocus();
 					fireClickEvent();
 				}
 			}
@@ -132,7 +131,7 @@ public class PButton extends AbstractPLayoutOwner {
 			renderer.setColor(PColor.GREY75);
 			renderer.drawQuad(x + 1, y + 1, fx - 1, fy - 1);
 		}
-		if (PCompUtil.hasFocus(this)) {
+		if (hasFocus()) {
 			PInsets insets = getLayout().getInsets();
 			int innerX = x + insets.getFromLeft();
 			int innerY = y + insets.getFromTop();

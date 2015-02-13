@@ -3,7 +3,6 @@ package edu.udo.piq.tools;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PComponentObs;
 import edu.udo.piq.PDesign;
@@ -180,20 +179,19 @@ public class AbstractPComponent implements PComponent {
 	private boolean mouseObsRegistered;
 	
 	/**
-	 * Uses the utility method {@link PCompUtil#getRootOf(PComponent)} to 
-	 * obtain the root for this component if it is not cached.<br>
+	 * The root is being cached by the {@link AbstractPComponent}.<br>
 	 */
 	public PRoot getRoot() {
 		if (cachedRoot != null) {
 			return cachedRoot;
 		}
-		return PCompUtil.getRootOf(this);
+		return null;
 	}
 	
 	public void setParent(PComponent parent) throws IllegalArgumentException, IllegalStateException {
 		if (parent != null && this.parent != null) {
 			throw new IllegalStateException(this+".getParent() != null");
-		} if (parent != null && PCompUtil.isDescendant(this, parent)) {
+		} if (parent != null && isDescendantOf(parent)) {
 			throw new IllegalArgumentException(this+" is descendant of "+parent);
 		}
 		PComponent oldParent = this.parent;
@@ -273,13 +271,13 @@ public class AbstractPComponent implements PComponent {
 		return parent;
 	}
 	
-	/**
-	 * Uses the utility method {@link PCompUtil#getBoundsOf(PComponent)} to 
-	 * obtain the bounds for this component.<br>
-	 */
-	public PBounds getBounds() {
-		return PCompUtil.getBoundsOf(this);
-	}
+//	/**
+//	 * Uses the utility method {@link PCompUtil#getBoundsOf(PComponent)} to 
+//	 * obtain the bounds for this component.<br>
+//	 */
+//	public PBounds getBounds() {
+//		return PCompUtil.getBoundsOf(this);
+//	}
 	
 	public void setDesign(PDesign design) {
 		customDesign = design;
@@ -326,7 +324,7 @@ public class AbstractPComponent implements PComponent {
 	 * 
 	 * @return true
 	 */
-	public boolean fillsAllPixels() {
+	public boolean defaultFillsAllPixels() {
 		return true;
 	}
 	
@@ -501,7 +499,7 @@ public class AbstractPComponent implements PComponent {
 			builder.append(getID());
 		}
 		builder.append(" [bounds=");
-		builder.append(PCompUtil.getBoundsOf(this));
+		builder.append(getBounds());
 		builder.append("]");
 		return builder.toString();
 	}

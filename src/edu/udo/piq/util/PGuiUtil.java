@@ -40,7 +40,7 @@ public class PGuiUtil {
 		while (!stack.isEmpty()) {
 			PrintInfo current = stack.pop();
 			
-			Collection<PComponent> children = PCompUtil.getChildrenOf(current.comp);
+			Collection<PComponent> children = current.comp.getChildren();
 			for (PComponent comp : children) {
 				stack.addFirst(new PrintInfo(comp, current.level + 1));
 			}

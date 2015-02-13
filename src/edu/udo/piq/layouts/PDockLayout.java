@@ -70,7 +70,7 @@ public class PDockLayout extends AbstractPLayout {
 	}
 	
 	public void layOut() {
-		PBounds ob = getOwnerBounds();
+		PBounds ob = getOwner().getBounds();
 	}
 	
 	public PSize getPreferredSize() {

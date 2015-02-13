@@ -41,7 +41,7 @@ public class PTuple extends AbstractPLayoutOwner {
 		return getLayout().getAt(Constraint.SECOND);
 	}
 	
-	public boolean fillsAllPixels() {
+	public boolean defaultFillsAllPixels() {
 		return false;
 	}
 	

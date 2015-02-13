@@ -161,7 +161,7 @@ public class PTableLayout extends AbstractPLayout {
 	}
 	
 	public void layOut() {
-		PBounds ob = getOwnerBounds();
+		PBounds ob = getOwner().getBounds();
 		int x = ob.getX();
 		int y = ob.getY();
 //		int fx = ob.getFinalX();

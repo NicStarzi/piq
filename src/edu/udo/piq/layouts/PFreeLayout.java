@@ -41,7 +41,7 @@ public class PFreeLayout extends AbstractPLayout {
 	}
 	
 	public void layOut() {
-		PBounds ob = getOwnerBounds();
+		PBounds ob = getOwner().getBounds();
 		int parentX = ob.getX();
 		int parentY = ob.getY();
 		

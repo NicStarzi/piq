@@ -13,7 +13,6 @@ import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.components.defaults.DefaultPSliderModel;
 import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.ImmutablePSize;
-import edu.udo.piq.util.PCompUtil;
 import edu.udo.piq.util.PRenderUtil;
 
 public class PSlider extends AbstractPComponent {
@@ -29,10 +28,10 @@ public class PSlider extends AbstractPComponent {
 		}
 		public void buttonTriggered(PMouse mouse, MouseButton btn) {
 			if (btn == MouseButton.LEFT && !getModel().isPressed()
-					&& PCompUtil.isWithinClippedBounds(PSlider.this, mouse.getX(), mouse.getY())) {
+					&& isMouseWithinClippedBounds()) {
 				
 				getModel().setPressed(true);
-				PCompUtil.takeFocus(PSlider.this);
+				takeFocus();
 				updatePosition(mouse);
 			}
 		}
@@ -50,7 +49,7 @@ public class PSlider extends AbstractPComponent {
 	};
 	private final PKeyboardObs keyObs = new PKeyboardObs() {
 		public void keyPressed(PKeyboard keyboard, Key key) {
-			if (!PCompUtil.hasFocus(PSlider.this)) {
+			if (!hasFocus()) {
 				return;
 			}
 			if (key == Key.UP || key == Key.RIGHT) {
@@ -125,7 +124,7 @@ public class PSlider extends AbstractPComponent {
 		renderer.setColor(PColor.GREY50);
 		renderer.drawQuad(sliderX, y, sliderFx, fy);
 		
-		if (PCompUtil.hasFocus(this)) {
+		if (hasFocus()) {
 			renderer.setColor(PColor.GREY50);
 			PRenderUtil.strokeQuad(renderer, x, y, fx, fy, 1);
 		}
@@ -135,7 +134,7 @@ public class PSlider extends AbstractPComponent {
 		return DEFAULT_PREFERRED_SIZE;
 	}
 	
-	public boolean fillsAllPixels() {
+	public boolean defaultFillsAllPixels() {
 		return false;
 	}
 	

@@ -86,13 +86,13 @@ public interface PDesign {
 	 * @throws IllegalArgumentException if this design is not intended to be used with the given component
 	 * @see #render(PRenderer, PComponent)
 	 * @see PRenderer
-	 * @see PComponent#fillsAllPixels()
+	 * @see PComponent#defaultFillsAllPixels()
 	 * @see PCompUtil#fillsAllPixels(PComponent)
 	 */
 	public default boolean fillsAllPixels(PComponent component) 
 			throws NullPointerException 
 	{
-		return component.fillsAllPixels();
+		return component.defaultFillsAllPixels();
 	}
 	
 }

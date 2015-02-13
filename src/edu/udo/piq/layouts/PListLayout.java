@@ -131,7 +131,7 @@ public class PListLayout extends AbstractPLayout {
 	
 	public void layOut() {
 		PInsets insets = getInsets();
-		PBounds ob = getOwnerBounds();
+		PBounds ob = getOwner().getBounds();
 		int gap = getGap();
 		int minX = ob.getX() + insets.getFromLeft();
 		int minY = ob.getY() + insets.getFromTop();

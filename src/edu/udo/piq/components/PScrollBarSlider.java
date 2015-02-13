@@ -33,7 +33,7 @@ public class PScrollBarSlider extends PSlider {
 		return DEFAULT_PREFERRED_SIZE;
 	}
 	
-	public boolean fillsAllPixels() {
+	public boolean defaultFillsAllPixels() {
 		return true;
 	}
 	

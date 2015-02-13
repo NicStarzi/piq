@@ -54,7 +54,7 @@ public class PBorderLayout extends AbstractPLayout {
 	}
 	
 	public void layOut() {
-		PBounds ob = getOwnerBounds();
+		PBounds ob = getOwner().getBounds();
 		int lft = ob.getX();
 		int rgt = ob.getFinalX();
 		int top = ob.getY();

@@ -54,15 +54,15 @@ public class SwingPTest_BoxLayout {
 		root.getBody().getLayout().addChild(pnl, PBorderLayout.Constraint.CENTER);
 		
 		Box b1 = boxLayout.getRootBox();
-		b1.splitVertical(0.4);
+		b1.splitVertical(0.4, 5);
 		Box b2 = b1.getLeft();
 		Box b3 = b1.getRight();
 		
-		b2.splitHorizontal(0.3);
+		b2.splitHorizontal(0.3, 10);
 		Box c1 = b2.getTop();
 		Box c2 = b2.getBottom();
 		
-		b3.splitHorizontal(0.6);
+		b3.splitHorizontal(0.6, 20);
 		Box c3 = b3.getTop();
 		Box c4 = b3.getBottom();
 		

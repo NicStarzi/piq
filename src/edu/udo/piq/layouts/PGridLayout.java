@@ -97,4 +97,10 @@ public class PGridLayout extends AbstractPLayout {
 		;
 	}
 	
+	public static enum Growth {
+		PREFERRED, 
+		MAXIMIZE,
+		;
+	}
+	
 }

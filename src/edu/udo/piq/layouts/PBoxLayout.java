@@ -2,20 +2,22 @@ package edu.udo.piq.layouts;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
+import edu.udo.piq.PInsets;
 import edu.udo.piq.PLayout;
 import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractPLayout;
+import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.tools.MutablePSize;
 
 public class PBoxLayout extends AbstractPLayout {
 	
-	protected final MutablePSize prefSize;
+	protected final MutablePSize prefSize = new MutablePSize();;
+	protected PInsets insets = new ImmutablePInsets(4, 4);
 	private Box rootBox;
 	
 	public PBoxLayout(PComponent owner) {
 		super(owner);
-		prefSize = new MutablePSize();
 		
 		addObs(new PLayoutObs() {
 			public void childAdded(PLayout layout, PComponent child, Object constraint) {
@@ -26,6 +28,18 @@ public class PBoxLayout extends AbstractPLayout {
 			}
 		});
 		rootBox = new Box();
+	}
+	
+	public void setInsets(PInsets value) {
+		if (value == null) {
+			throw new IllegalArgumentException("insets="+value);
+		}
+		insets = new ImmutablePInsets(value);
+		fireInvalidateEvent();
+	}
+	
+	public PInsets getInsets() {
+		return insets;
 	}
 	
 	public Box getRootBox() {
@@ -40,10 +54,11 @@ public class PBoxLayout extends AbstractPLayout {
 	
 	public void layOut() {
 		PBounds ob = getOwnerBounds();
-		int x = ob.getX();
-		int y = ob.getY();
-		int w = ob.getWidth();
-		int h = ob.getHeight();
+		PInsets insets = getInsets();
+		int x = ob.getX() + insets.getFromLeft();
+		int y = ob.getY() + insets.getFromRight();
+		int w = ob.getWidth() - insets.getHorizontal();
+		int h = ob.getHeight() - insets.getVertical();
 		
 		Box root = getRootBox();
 		if (root.isBox()) {
@@ -63,18 +78,20 @@ public class PBoxLayout extends AbstractPLayout {
 		int h1;
 		int h2;
 		if (box.isHorizontal()) {
+			int hNoGap = h - box.gap;
 			w1 = w;
 			w2 = w;
-			h1 = (int) Math.ceil(h * box.getTopWeight());
-			h2 = h - h1;
+			h1 = (int) Math.ceil(hNoGap * box.getTopWeight());
+			h2 = hNoGap - h1;
 			x2 = x;
-			y2 = y + h1;
+			y2 = y + h1 + box.gap;
 		} else {
-			w1 = (int) Math.ceil(w * box.getLeftWeight());
-			w2 = w - w1;
+			int wNoGap = w - box.gap;
+			w1 = (int) Math.ceil(wNoGap * box.getLeftWeight());
+			w2 = wNoGap - w1;
 			h1 = h;
 			h2 = h;
-			x2 = x + w1;
+			x2 = x + w1 + box.gap;
 			y2 = y;
 		}
 		Box one = box.one;
@@ -105,7 +122,7 @@ public class PBoxLayout extends AbstractPLayout {
 	private int recursiveGetPrefW(Box cell) {
 		if (cell.isBox()) {
 			Box box = cell;
-			return recursiveGetPrefW(box.one) + recursiveGetPrefW(box.other);
+			return recursiveGetPrefW(box.one) + recursiveGetPrefW(box.other) + box.gap;
 		}
 		return getPreferredSizeOf(getChildForConstraint(cell)).getWidth();
 	}
@@ -113,7 +130,7 @@ public class PBoxLayout extends AbstractPLayout {
 	private int recursiveGetPrefH(Box cell) {
 		if (cell.isBox()) {
 			Box box = cell;
-			return recursiveGetPrefH(box.one) + recursiveGetPrefH(box.other);
+			return recursiveGetPrefH(box.one) + recursiveGetPrefH(box.other) + box.gap;
 		}
 		return getPreferredSizeOf(getChildForConstraint(cell)).getHeight();
 	}
@@ -121,17 +138,25 @@ public class PBoxLayout extends AbstractPLayout {
 	public static class Box {
 		
 		double weightOfFirst;
+		int gap;
 		boolean horizontal;
 		Box parent;
 		Box one;
 		Box other;
 		
 		public void splitHorizontal(double weight) {
+			splitHorizontal(weight, 0);
+		}
+		
+		public void splitHorizontal(double weight, int gap) {
 			if (one != null) {
 				throw new IllegalStateException("Box is already split");
 			} if (weight < 0 || weight > 1.0) {
-				throw new IllegalArgumentException("weight == "+weight);
+				throw new IllegalArgumentException("weight="+weight);
+			} if (gap < 0) {
+				throw new IllegalArgumentException("gap="+gap);
 			}
+			this.gap = gap;
 			one = new Box();
 			one.parent = this;
 			other = new Box();
@@ -141,11 +166,18 @@ public class PBoxLayout extends AbstractPLayout {
 		}
 		
 		public void splitVertical(double weight) {
+			splitVertical(weight, 0);
+		}
+		
+		public void splitVertical(double weight, int gap) {
 			if (one != null) {
 				throw new IllegalStateException("Box is already split");
 			} if (weight < 0 || weight > 1.0) {
-				throw new IllegalArgumentException("weight == "+weight);
+				throw new IllegalArgumentException("weight="+weight);
+			} if (gap < 0) {
+				throw new IllegalArgumentException("gap="+gap);
 			}
+			this.gap = gap;
 			one = new Box();
 			one.parent = this;
 			other = new Box();

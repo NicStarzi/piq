@@ -95,8 +95,9 @@ public class SwingPTest_FreeLayout {
 		PDropDownList ddl = new PDropDownList();
 		String[] elems = new String[] {"eins", "zwei", "drei", "vier"};
 		for (String s : elems) {
-			ddl.getList().getModel().addElement(0, s);
+			ddl.getList().getModel().addElement(ddl.getList().getModel().getElementCount(), s);
 		}
+//		pnlDd.addChild(ddl, null);
 		bodyPnl.getLayout().addChild(ddl, new PFreeLayout.FreeConstraint(122, 175));
 	}
 	

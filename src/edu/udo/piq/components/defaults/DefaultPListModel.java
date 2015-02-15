@@ -57,7 +57,7 @@ public class DefaultPListModel extends AbstractPListModel {
 			throw new IllegalArgumentException();
 		}
 		Object element = elements.remove(index);
-		fireRemovedEvent(element, Integer.valueOf(index));
+		fireRemovedEvent(element, index);
 	}
 	
 	public void fireChangedEvent(Object element) {

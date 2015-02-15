@@ -12,7 +12,7 @@ import edu.udo.piq.components.PButtonObs;
 import edu.udo.piq.components.PCheckBox;
 import edu.udo.piq.components.PCheckBoxObs;
 import edu.udo.piq.components.PCheckBoxTuple;
-import edu.udo.piq.components.PDropDown;
+import edu.udo.piq.components.PDropDownList;
 import edu.udo.piq.components.PLabel;
 import edu.udo.piq.components.PList;
 import edu.udo.piq.components.PPanel;
@@ -151,9 +151,12 @@ public class SwingPTest {
 		final PLabel lblDd = new PLabel();
 		lblDd.getModel().setValue("Drop Down");
 		
-		PDropDown dd = new PDropDown();
-		dd.setPreview(lblDd);
-		btnPnl.addChild(dd, null);
+		PDropDownList ddl = new PDropDownList();
+		String[] elems = new String[] {"one", "two", "three", "four"};
+		for (String s : elems) {
+			ddl.getList().getModel().addElement(ddl.getList().getModel().getElementCount(), s);
+		}
+		btnPnl.addChild(ddl, null);
 		
 		btnChange.addObs(new PButtonObs() {
 			boolean increment = true;

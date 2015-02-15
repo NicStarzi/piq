@@ -194,7 +194,7 @@ public class PDropDown extends AbstractPLayoutOwner {
 	}
 	
 	private void hideDropDown() {
-		getRoot().getOverlay().getLayout().removeChild(dropDownContainer);
+		dropDownContainer.getRoot().getOverlay().getLayout().removeChild(dropDownContainer);
 		bodyShown = false;
 		fireHideEvent();
 	}

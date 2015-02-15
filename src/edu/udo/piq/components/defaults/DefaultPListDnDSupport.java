@@ -94,6 +94,7 @@ public class DefaultPListDnDSupport implements PDnDSupport {
 			}
 		} catch (Exception e) {
 			// Just in case
+			e.printStackTrace();
 			throw new IllegalArgumentException(e);
 		}
 	}
@@ -157,6 +158,7 @@ public class DefaultPListDnDSupport implements PDnDSupport {
 			source.getDragAndDropManager().startDrag(transfer);
 		} catch (Exception e) {
 			// Just in case
+			e.printStackTrace();
 			throw new IllegalArgumentException(e);
 		}
 	}
@@ -182,6 +184,7 @@ public class DefaultPListDnDSupport implements PDnDSupport {
 			}
 		} catch (Exception e) {
 			// Just in case
+			e.printStackTrace();
 			throw new IllegalArgumentException(e);
 		}
 	}
@@ -224,6 +227,7 @@ public class DefaultPListDnDSupport implements PDnDSupport {
 			}
 		} catch (Exception e) {
 			// Just in case
+			e.printStackTrace();
 			throw new IllegalArgumentException(e);
 		}
 	}
@@ -245,6 +249,7 @@ public class DefaultPListDnDSupport implements PDnDSupport {
 			}
 		} catch (Exception e) {
 			// Just in case
+			e.printStackTrace();
 			throw new IllegalArgumentException(e);
 		}
 	}

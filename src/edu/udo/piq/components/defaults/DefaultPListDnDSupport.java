@@ -20,7 +20,6 @@ public class DefaultPListDnDSupport implements PDnDSupport {
 	
 	private PListCellComponent highlightedCellComp;
 	
-	@SuppressWarnings("rawtypes")
 	public boolean canDrop(PComponent target, PDnDTransfer transfer, int x, int y) {
 		if (target == null || transfer == null) {
 			throw new NullPointerException();
@@ -47,7 +46,7 @@ public class DefaultPListDnDSupport implements PDnDSupport {
 			// We assume that a PList does not hold Collections as elements which might not always be true
 			// In case a user wants to store Collections inside a PList a custom PDnDSupport is required
 			if (data instanceof Collection) {
-				for (Object element : (Collection) data) {
+				for (Object element : (Collection<?>) data) {
 					// We use the same index for each element but we are going to add them to different 
 					// indices later. This might become an issue with non-standard PListModels.
 					// For the moment the issue is simply ignored and a standard model is assumed.
@@ -66,7 +65,6 @@ public class DefaultPListDnDSupport implements PDnDSupport {
 		}
 	}
 	
-	@SuppressWarnings("rawtypes")
 	public void drop(PComponent target, PDnDTransfer transfer, int x, int y) {
 		// canDrop(...) throws NullPointerExceptions if needed as well
 		if (!canDrop(target, transfer, x, y)) {
@@ -88,7 +86,7 @@ public class DefaultPListDnDSupport implements PDnDSupport {
 			// We assume that a PList does not hold Collections as elements which might not always be true
 			// In case a user wants to store Collections inside a PList a custom PDnDSupport is required
 			if (data instanceof Collection) {
-				for (Object element : (Collection) data) {
+				for (Object element : (Collection<?>) data) {
 					model.addElement(index++, element);
 				}
 			} else {
@@ -125,8 +123,9 @@ public class DefaultPListDnDSupport implements PDnDSupport {
 			if (model == null) {
 				return false;
 			}
-			for (Integer index : selection.getSelection()) {
-				if (!model.canRemoveElement(index.intValue())) {
+			for (Object element : selection.getSelection()) {
+				int index = model.getIndexOfElement(element);
+				if (!model.canRemoveElement(index)) {
 					return false;
 				}
 			}
@@ -149,14 +148,9 @@ public class DefaultPListDnDSupport implements PDnDSupport {
 			// We know the selection is not null since the canDrag method returned true
 			PListSelection selection = list.getSelection();
 			
-			Set<Integer> selectedIndices = selection.getSelection();
-			List<Object> data = new ArrayList<>(selectedIndices.size());
+			Set<Object> selectedElements = selection.getSelection();
+			List<Object> data = new ArrayList<>(selectedElements);
 			
-			// We know the model is not null since the canDrag method returned true
-			PListModel model = list.getModel();
-			for (Integer index : selectedIndices) {
-				data.add(model.getElement(index.intValue()));
-			}
 			PDnDTransfer transfer = new ImmutablePDnDTransfer(source, x, y, data, 
 					createVisibleRepresentation(data));
 			
@@ -172,9 +166,8 @@ public class DefaultPListDnDSupport implements PDnDSupport {
 			throw new NullPointerException();
 		}
 		try {
-			@SuppressWarnings("unchecked")
 			// We know that this is a List since we created it in the startDrag method
-			List<Object> elementList = (List<Object>) transfer.getData();
+			List<?> elementList = (List<?>) transfer.getData();
 			// We know that this is a PList since the canDrag method returned true
 			PList list = (PList) source;
 			// We know the model is not null since the canDrag method returned true
@@ -222,10 +215,10 @@ public class DefaultPListDnDSupport implements PDnDSupport {
 				highlightedCellComp = null;
 			}
 			
-			// We know that this is a PList since the canDrag method returned true
 			PList list = (PList) source;
 			
 			highlightedCellComp = list.getCellComponentAt(x, y);
+			list.setDropHighlighted(highlightedCellComp == null);
 			if (highlightedCellComp != null) {
 				highlightedCellComp.setDropHighlighted(true);
 			}
@@ -244,6 +237,8 @@ public class DefaultPListDnDSupport implements PDnDSupport {
 			return;
 		}
 		try {
+			PList list = (PList) source;
+			list.setDropHighlighted(false);
 			if (highlightedCellComp != null) {
 				highlightedCellComp.setDropHighlighted(false);
 				highlightedCellComp = null;

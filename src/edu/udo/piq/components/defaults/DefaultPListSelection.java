@@ -11,40 +11,36 @@ import edu.udo.piq.tools.AbstractPListSelection;
 
 public class DefaultPListSelection extends AbstractPListSelection implements PListSelection {
 	
-	private final Set<Integer> selection = new HashSet<>();
+	private final Set<Object> selection = new HashSet<>();
 	
-	public void addSelection(Integer index) {
-		Integer trueIndex = Integer.valueOf(index);
-		if (!selection.contains(trueIndex)) {
-			selection.add(trueIndex);
-			fireSelectionAddedEvent(index);
+	public void addSelection(Object element) {
+		if (selection.add(element)) {
+			fireSelectionAddedEvent(element);
 		}
 	}
 	
-	public void removeSelection(Integer index) {
-		Integer trueIndex = Integer.valueOf(index);
-		if (selection.contains(trueIndex)) {
-			selection.remove(trueIndex);
-			fireSelectionRemovedEvent(index);
+	public void removeSelection(Object element) {
+		if (selection.remove(element)) {
+			fireSelectionRemovedEvent(element);
 		}
 	}
 	
 	public void clearSelection() {
 		if (!selection.isEmpty()) {
-			List<Integer> copy = new ArrayList<>(selection);
+			List<Object> copy = new ArrayList<>(selection);
 			selection.clear();
-			for (Integer index : copy) {
-				fireSelectionRemovedEvent(index.intValue());
+			for (Object element : copy) {
+				fireSelectionRemovedEvent(element);
 			}
 		}
 	}
 	
-	public Set<Integer> getSelection() {
+	public Set<Object> getSelection() {
 		return Collections.unmodifiableSet(selection);
 	}
 	
-	public boolean isSelected(Integer index) {
-		return selection.contains(Integer.valueOf(index));
+	public boolean isSelected(Object element) {
+		return selection.contains(element);
 	}
 	
 }

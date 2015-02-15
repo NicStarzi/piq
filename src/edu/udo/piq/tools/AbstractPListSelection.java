@@ -28,15 +28,15 @@ public abstract class AbstractPListSelection implements PListSelection {
 		obsList.remove(obs);
 	}
 	
-	protected void fireSelectionAddedEvent(int index) {
+	protected void fireSelectionAddedEvent(Object element) {
 		for (PListSelectionObs obs : obsList) {
-			obs.selectionAdded(this, index);
+			obs.selectionAdded(this, element);
 		}
 	}
 	
-	protected void fireSelectionRemovedEvent(int index) {
+	protected void fireSelectionRemovedEvent(Object element) {
 		for (PListSelectionObs obs : obsList) {
-			obs.selectionRemoved(this, index);
+			obs.selectionRemoved(this, element);
 		}
 	}
 	

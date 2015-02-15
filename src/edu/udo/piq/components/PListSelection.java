@@ -1,6 +1,6 @@
 package edu.udo.piq.components;
 
-public interface PListSelection extends PSelection<Integer> {
+public interface PListSelection extends PSelection<Object> {
 	
 	public static final SelectionMode DEFAULT_SELECTION_MODE = SelectionMode.SINGLE_ROW;
 	

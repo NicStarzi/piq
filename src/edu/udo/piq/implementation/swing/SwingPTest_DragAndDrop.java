@@ -4,17 +4,14 @@ import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.Timer;
 
 import edu.udo.piq.components.PButton;
-import edu.udo.piq.components.PButtonObs;
 import edu.udo.piq.components.PLabel;
 import edu.udo.piq.components.PList;
-import edu.udo.piq.components.PListSelection;
 import edu.udo.piq.components.PPanel;
 import edu.udo.piq.components.PSplitPanel;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
@@ -124,28 +121,28 @@ public class SwingPTest_DragAndDrop {
 		btnRmv.setContent(new PLabel(new DefaultPTextModel("Remove")));
 		btnPnl.getLayout().addChild(btnRmv, null);
 		
-		btnAdd.addObs(new PButtonObs() {
-			int num = 0;
-			
-			public void onClick(PButton button) {
-				PListSelection selected = listLeft.getSelection();
-				Integer maxIndex;
-				if (selected.getSelection().isEmpty()) {
-					maxIndex = Integer.valueOf(0);
-				} else {
-					maxIndex = Collections.max(selected.getSelection());
-				}
-				listLeft.getModel().addElement(maxIndex.intValue(), "Text "+(num++));
-			}
-		});
-		btnRmv.addObs(new PButtonObs() {
-			public void onClick(PButton button) {
-				PListSelection selected = listLeft.getSelection();
-				for (Integer index : selected.getSelection()) {
-					listLeft.getModel().removeElement(index.intValue());
-				}
-			}
-		});
+//		btnAdd.addObs(new PButtonObs() {
+//			int num = 0;
+//			
+//			public void onClick(PButton button) {
+//				PListSelection selected = listLeft.getSelection();
+//				Integer maxIndex;
+//				if (selected.getSelection().isEmpty()) {
+//					maxIndex = Integer.valueOf(0);
+//				} else {
+//					maxIndex = Collections.max(selected.getSelection());
+//				}
+//				listLeft.getModel().addElement(maxIndex.intValue(), "Text "+(num++));
+//			}
+//		});
+//		btnRmv.addObs(new PButtonObs() {
+//			public void onClick(PButton button) {
+//				PListSelection selected = listLeft.getSelection();
+//				for (Integer index : selected.getSelection()) {
+//					listLeft.getModel().removeElement(index.intValue());
+//				}
+//			}
+//		});
 	}
 	
 	public static class Person {

@@ -5,7 +5,6 @@ import edu.udo.piq.PColor;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.components.PLabel;
 import edu.udo.piq.components.PListCellComponent;
-import edu.udo.piq.components.PListModel;
 
 public class DefaultPListCellComponent extends PLabel implements PListCellComponent {
 	
@@ -13,6 +12,7 @@ public class DefaultPListCellComponent extends PLabel implements PListCellCompon
 	protected static final PColor DEFAULT_BACKGROUND_SELECTED_COLOR = PColor.BLUE;
 	protected static final PColor DEFAULT_DROP_HIGHLIGHT_COLOR = PColor.BLUE;
 	
+	protected Object element;
 	protected boolean selected;
 	protected boolean dropHighlight;
 	
@@ -34,8 +34,13 @@ public class DefaultPListCellComponent extends PLabel implements PListCellCompon
 		return dropHighlight;
 	}
 	
-	public void elementChanged(PListModel model, Integer index) {
-		getModel().setValue(model.getElement(index).toString());
+	public void setElement(Object element) {
+		this.element = element;
+		getModel().setValue(element.toString());
+	}
+	
+	public Object getElement() {
+		return element;
 	}
 	
 	protected PColor getDefaultTextColor() {

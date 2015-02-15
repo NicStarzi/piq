@@ -17,8 +17,9 @@ import edu.udo.piq.util.PRenderUtil;
 
 public class PSlider extends AbstractPComponent {
 	
-	protected static final int DEFAULT_SLIDER_WIDTH = 12;
-	protected static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(100, DEFAULT_SLIDER_WIDTH);
+	protected static final int DEFAULT_SLIDER_WIDTH = 8;
+	protected static final int DEFAULT_SLIDER_HEIGHT = 12;
+	protected static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(100, DEFAULT_SLIDER_HEIGHT + 2);
 	
 	private final PMouseObs mouseObs = new PMouseObs() {
 		public void mouseMoved(PMouse mouse) {
@@ -119,11 +120,22 @@ public class PSlider extends AbstractPComponent {
 		renderer.setColor(PColor.BLACK);
 		renderer.drawQuad(x, centerY - 1, fx, centerY + 1);
 		
-		int sliderX = x + (int) (getModel().getValuePercent() * bnds.getWidth()) - DEFAULT_SLIDER_WIDTH / 2;
-		int sliderFx = sliderX + DEFAULT_SLIDER_WIDTH;
+		int sldX = x + (int) (getModel().getValuePercent() * bnds.getWidth()) - DEFAULT_SLIDER_WIDTH / 2;
+		int sldY = y + 1;
+		int sldFx = sldX + DEFAULT_SLIDER_WIDTH;
+		int sldFy = fy - 1;
 		
-		renderer.setColor(PColor.GREY50);
-		renderer.drawQuad(sliderX, y, sliderFx, fy);
+//		renderer.setColor(PColor.GREY50);
+//		renderer.drawQuad(sldX, y, sldFx, fy);
+		
+		renderer.setColor(PColor.BLACK);
+		PRenderUtil.strokeBottom(renderer, sldX, sldY, sldFx, sldFy);
+		PRenderUtil.strokeRight(renderer, sldX, sldY, sldFx, sldFy);
+		renderer.setColor(PColor.WHITE);
+		PRenderUtil.strokeTop(renderer, sldX, sldY, sldFx, sldFy);
+		PRenderUtil.strokeLeft(renderer, sldX, sldY, sldFx, sldFy);
+		renderer.setColor(PColor.GREY75);
+		renderer.drawQuad(sldX + 1, sldY + 1, sldFx - 1, sldFy - 1);
 		
 		if (hasFocus()) {
 			renderer.setColor(PColor.GREY50);

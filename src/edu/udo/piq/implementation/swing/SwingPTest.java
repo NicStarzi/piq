@@ -12,6 +12,7 @@ import edu.udo.piq.components.PButtonObs;
 import edu.udo.piq.components.PCheckBox;
 import edu.udo.piq.components.PCheckBoxObs;
 import edu.udo.piq.components.PCheckBoxTuple;
+import edu.udo.piq.components.PDropDown;
 import edu.udo.piq.components.PLabel;
 import edu.udo.piq.components.PList;
 import edu.udo.piq.components.PPanel;
@@ -136,12 +137,8 @@ public class SwingPTest {
 		btnPnl.addChild(prgBar, null);
 		
 		final PLabel lblChkBx = new PLabel();
-//		btnPnl.addChild(lblChkBx, null);
-		
 		final PCheckBoxTuple chkBxTpl = new PCheckBoxTuple(lblChkBx);
 		btnPnl.addChild(chkBxTpl, null);
-//		final PCheckBox chkBx = new PCheckBox();
-//		btnPnl.addChild(chkBx, null);
 		
 		final PSlider sld = new PSlider();
 		sld.getModel().setMinValue(13);
@@ -150,6 +147,13 @@ public class SwingPTest {
 		
 		final PLabel lblSld = new PLabel();
 		btnPnl.addChild(lblSld, null);
+		
+		final PLabel lblDd = new PLabel();
+		lblDd.getModel().setValue("Drop Down");
+		
+		PDropDown dd = new PDropDown();
+		dd.setPreview(lblDd);
+		btnPnl.addChild(dd, null);
 		
 		btnChange.addObs(new PButtonObs() {
 			boolean increment = true;

@@ -14,7 +14,11 @@ public class DefaultPListSelection extends AbstractPListSelection implements PLi
 	private final Set<Object> selection = new HashSet<>();
 	
 	public void addSelection(Object element) {
-		if (selection.add(element)) {
+		if (getSelectionMode() == SelectionMode.SINGLE_ROW 
+				&& !selection.contains(element)) 
+		{
+			clearSelection();
+		} if (selection.add(element)) {
 			fireSelectionAddedEvent(element);
 		}
 	}

@@ -8,11 +8,16 @@ import javax.swing.JFrame;
 import javax.swing.Timer;
 
 import edu.udo.piq.components.PButton;
+import edu.udo.piq.components.PCheckBoxTuple;
+import edu.udo.piq.components.PDropDown;
+import edu.udo.piq.components.PDropDownList;
 import edu.udo.piq.components.PLabel;
 import edu.udo.piq.components.PPanel;
+import edu.udo.piq.components.PSlider;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PFreeLayout;
+import edu.udo.piq.layouts.PWrapLayout;
 
 public class SwingPTest_FreeLayout {
 	public static void main(String[] args) {
@@ -65,6 +70,34 @@ public class SwingPTest_FreeLayout {
 		bodyPnl.getLayout().addChild(btn, new PFreeLayout.FreeConstraint(36, 53));
 		
 		p.firstName = "Frederick";
+		
+		PPanel pnlDd = new PPanel();
+		pnlDd.setLayout(new PWrapLayout(pnlDd));
+		
+		PButton pnlDdBtn1 = new PButton();
+		pnlDdBtn1.setContent(new PLabel(new DefaultPTextModel("Button 1")));
+		pnlDd.addChild(pnlDdBtn1, null);
+		
+		PSlider pnlDdSld1 = new PSlider();
+		pnlDdSld1.getModel().setMaxValue(123);
+		pnlDdSld1.getModel().setMinValue(31);
+		pnlDd.addChild(pnlDdSld1, null);
+		
+		PCheckBoxTuple pnlDdChkBx1 = new PCheckBoxTuple();
+		pnlDdChkBx1.setSecondComponent(new PLabel(new DefaultPTextModel("Check this!")));
+		pnlDd.addChild(pnlDdChkBx1, null);
+		
+		PDropDown dd = new PDropDown();
+		dd.setPreview(new PLabel(new DefaultPTextModel("Click Me!")));
+		dd.setBody(pnlDd);
+		bodyPnl.getLayout().addChild(dd, new PFreeLayout.FreeConstraint(285, 64));
+		
+		PDropDownList ddl = new PDropDownList();
+		String[] elems = new String[] {"eins", "zwei", "drei", "vier"};
+		for (String s : elems) {
+			ddl.getList().getModel().addElement(0, s);
+		}
+		bodyPnl.getLayout().addChild(ddl, new PFreeLayout.FreeConstraint(122, 175));
 	}
 	
 	public static class Person {

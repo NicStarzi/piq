@@ -59,11 +59,14 @@ public abstract class AbstractPRoot implements PRoot {
 		}
 	};
 	private final Set<PTimer> timerSet = new HashSet<>();
+	private final Set<PTimer> timersToAdd = new HashSet<>();
+	private final Set<PTimer> timersToRemove = new HashSet<>();
 	private final List<PComponentObs> compObsList = new CopyOnWriteArrayList<>();
 	private final List<PFocusObs> focusObsList = new CopyOnWriteArrayList<>();
 	private PComponent focusOwner;
 	private String id;
 	private boolean needReLayout = true;
+	private boolean timerIterationInProgress;
 	
 	public AbstractPRoot() {
 		layout = new PRootLayout(this);
@@ -92,9 +95,15 @@ public abstract class AbstractPRoot implements PRoot {
 	}
 	
 	protected void tickAllTimers() {
+		timerIterationInProgress = true;
 		for (PTimer timer : timerSet) {
 			timer.tick();
 		}
+		timerIterationInProgress = false;
+		timerSet.removeAll(timersToRemove);
+		timersToRemove.clear();
+		timerSet.addAll(timersToAdd);
+		timersToAdd.clear();
 	}
 	
 	protected void updateComponents() {
@@ -189,8 +198,10 @@ public abstract class AbstractPRoot implements PRoot {
 		if (timer == null) {
 			throw new NullPointerException("timer="+timer);
 		}
-		if (!timerSet.add(timer)) {
-			throw new IllegalArgumentException(timer+" was already registered.");
+		if (timerIterationInProgress) {
+			timersToAdd.add(timer);
+		} else {
+			timerSet.add(timer);
 		}
 	}
 	
@@ -198,8 +209,10 @@ public abstract class AbstractPRoot implements PRoot {
 		if (timer == null) {
 			throw new NullPointerException("timer="+timer);
 		}
-		if (!timerSet.remove(timer)) {
-			throw new IllegalArgumentException(timer+" was not registered.");
+		if (timerIterationInProgress) {
+			timersToRemove.add(timer);
+		} else {
+			timerSet.remove(timer);
 		}
 	}
 	

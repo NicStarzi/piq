@@ -49,8 +49,6 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 			timerUpdate.stop();
 		}
 		public void paintComponent(Graphics g) {
-//			g.setColor(Color.BLACK);
-//			g.fillRect(0, 0, getWidth(), getHeight());
 			render((Graphics2D) g);
 		}
 	};

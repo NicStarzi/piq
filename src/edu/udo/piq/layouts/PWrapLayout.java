@@ -112,8 +112,10 @@ public class PWrapLayout extends PListLayout {
 	public PSize getPreferredSize() {
 		PInsets insets = getInsets();
 		PBounds bnds = getOwner().getBounds();
-		int w = bnds.getWidth() - insets.getHorizontal();
-		int h = bnds.getHeight() - insets.getVertical();
+		int bndsW = bnds == null ? 0 : bnds.getWidth();
+		int bndsH = bnds == null ? 0 : bnds.getHeight();
+		int w = bndsW - insets.getHorizontal();
+		int h = bndsH - insets.getVertical();
 		
 		int prefW = 0;
 		int prefH = 0;

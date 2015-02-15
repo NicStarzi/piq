@@ -1,5 +1,6 @@
 package edu.udo.piq.components;
 
+import edu.udo.piq.PBounds;
 import edu.udo.piq.PLayout;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRootOverlay;
@@ -27,6 +28,14 @@ public class PGlassPanel extends PPanel implements PRootOverlay {
 	
 	public boolean defaultFillsAllPixels() {
 		return false;
+	}
+	
+	public PBounds getBounds() {
+		return super.getBounds();
+	}
+	
+	public boolean isElusive() {
+		return true;
 	}
 	
 }

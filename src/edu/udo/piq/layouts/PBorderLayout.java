@@ -42,10 +42,10 @@ public class PBorderLayout extends AbstractPLayout {
 	}
 	
 	protected boolean canAdd(PComponent cmp, Object constraint) {
-		return constraint != null && constraint instanceof Constraint && getAt(constraint) == null;
+		return constraint != null && constraint instanceof Constraint && getChildForConstraint(constraint) == null;
 	}
 	
-	public PComponent getAt(Object constraint) {
+	public PComponent getChildForConstraint(Object constraint) {
 		if (constraint == null || !(constraint instanceof Constraint)) {
 			throw new IllegalArgumentException();
 		}
@@ -60,11 +60,11 @@ public class PBorderLayout extends AbstractPLayout {
 		int top = ob.getY();
 		int btm = ob.getFinalY();
 		
-		PComponent nCmp = getAt(Constraint.TOP);
-		PComponent eCmp = getAt(Constraint.RIGHT);
-		PComponent wCmp = getAt(Constraint.LEFT);
-		PComponent sCmp = getAt(Constraint.BOTTOM);
-		PComponent cCmp = getAt(Constraint.CENTER);
+		PComponent nCmp = getChildForConstraint(Constraint.TOP);
+		PComponent eCmp = getChildForConstraint(Constraint.RIGHT);
+		PComponent wCmp = getChildForConstraint(Constraint.LEFT);
+		PComponent sCmp = getChildForConstraint(Constraint.BOTTOM);
+		PComponent cCmp = getChildForConstraint(Constraint.CENTER);
 		
 		if (nCmp != null/* && nCmp.isVisible()*/) {
 			int cmpPrefH = getPreferredSizeOf(nCmp).getHeight();
@@ -92,11 +92,11 @@ public class PBorderLayout extends AbstractPLayout {
 	}
 	
 	public PSize getPreferredSize() {
-		PSize prefLft = getPreferredSizeOf(getAt(Constraint.LEFT));
-		PSize prefRgt = getPreferredSizeOf(getAt(Constraint.RIGHT));
-		PSize prefTop = getPreferredSizeOf(getAt(Constraint.TOP));
-		PSize prefBtm = getPreferredSizeOf(getAt(Constraint.BOTTOM));
-		PSize prefCnt = getPreferredSizeOf(getAt(Constraint.CENTER));
+		PSize prefLft = getPreferredSizeOf(getChildForConstraint(Constraint.LEFT));
+		PSize prefRgt = getPreferredSizeOf(getChildForConstraint(Constraint.RIGHT));
+		PSize prefTop = getPreferredSizeOf(getChildForConstraint(Constraint.TOP));
+		PSize prefBtm = getPreferredSizeOf(getChildForConstraint(Constraint.BOTTOM));
+		PSize prefCnt = getPreferredSizeOf(getChildForConstraint(Constraint.CENTER));
 		int prefW = prefLft.getWidth() + prefRgt.getWidth() + prefCnt.getWidth();
 		int prefH = prefTop.getHeight() + prefBtm.getHeight() + prefCnt.getHeight();
 		prefSize.setWidth(prefW);

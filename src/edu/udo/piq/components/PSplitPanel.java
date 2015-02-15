@@ -94,7 +94,7 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 	}
 	
 	public PComponent getFirstComponent() {
-		return getLayout().getAt(Constraint.FIRST);
+		return getLayout().getChildForConstraint(Constraint.FIRST);
 	}
 	
 	public void setSecondComponent(PComponent component) {
@@ -106,7 +106,7 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 	}
 	
 	public PComponent getSecondComponent() {
-		return getLayout().getAt(Constraint.SECOND);
+		return getLayout().getChildForConstraint(Constraint.SECOND);
 	}
 	
 	public Orientation getOrientation() {

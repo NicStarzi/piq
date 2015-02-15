@@ -9,6 +9,21 @@ public class DefaultPListModel extends AbstractPListModel {
 	
 	protected final List<Object> elements = new ArrayList<>();
 	
+	public DefaultPListModel() {
+	}
+	
+	public DefaultPListModel(Object[] initialElements) {
+		for (int i = 0; i < initialElements.length; i++) {
+			addElement(initialElements[i]);
+		}
+	}
+	
+	public DefaultPListModel(Iterable<?> initialElements) {
+		for (Object obj : initialElements) {
+			addElement(obj);
+		}
+	}
+	
 	public int getElementCount() {
 		return elements.size();
 	}

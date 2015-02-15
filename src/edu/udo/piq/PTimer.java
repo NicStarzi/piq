@@ -3,20 +3,39 @@ package edu.udo.piq;
 public class PTimer {
 	
 	protected final PTimerCallback callback;
-	protected final PComponent owner;
+	protected PComponent owner;
 	protected int delayInMillis;
 	protected int timeCount;
 	protected boolean repeating;
 	protected boolean running;
 	
-	public PTimer(PComponent component, PTimerCallback callback) {
-		if (component == null) {
-			throw new IllegalArgumentException("component=null");
-		} if (callback == null) {
+	public PTimer(PTimerCallback callback) {
+		this(null, callback);
+	}
+	
+	public PTimer(PComponent owner, PTimerCallback callback) {
+		if (callback == null) {
 			throw new IllegalArgumentException("callback=null");
 		}
-		owner = component;
+		this.owner = owner;
 		this.callback = callback;
+	}
+	
+	public void setOwner(PComponent component) {
+		if (owner != component) {
+			PComponent oldOwner = owner;
+			owner = component;
+			if (isRunning()) {
+				PRoot oldRoot = oldOwner.getRoot();
+				oldRoot.unregisterTimer(this);
+				
+				PRoot newRoot = owner.getRoot();
+				if (newRoot == null) {
+					throw new IllegalStateException("getOwner().getRoot()=null");
+				}
+				newRoot.registerTimer(this);
+			}
+		}
 	}
 	
 	public PComponent getOwner() {
@@ -43,25 +62,38 @@ public class PTimer {
 	}
 	
 	public void start() {
-		if (!running) {
+		if (!isRunning()) {
 			PRoot root = getOwner().getRoot();
 			if (root == null) {
-				throw new IllegalStateException("getOwner().getRoot() == null");
+				throw new IllegalStateException("getOwner().getRoot()=null");
 			}
 			root.registerTimer(this);
+			timeCount = 0;
 			running = true;
 		}
 	}
 	
 	public void stop() {
-		if (running) {
+		if (isRunning()) {
 			PRoot root = getOwner().getRoot();
 			if (root == null) {
-				throw new IllegalStateException("getOwner().getRoot() == null");
+				throw new IllegalStateException("getOwner().getRoot()=null");
 			}
 			root.unregisterTimer(this);
+			timeCount = 0;
 			running = false;
 		}
+	}
+	
+	public void restart() {
+		if (!isRunning()) {
+			throw new IllegalStateException("isRunning()=false");
+		}
+		timeCount = 0;
+	}
+	
+	public boolean isRunning() {
+		return running;
 	}
 	
 	public void tick() {

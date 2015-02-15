@@ -23,6 +23,8 @@ import edu.udo.piq.components.PSliderModel;
 import edu.udo.piq.components.PSliderModelObs;
 import edu.udo.piq.components.PSplitPanel;
 import edu.udo.piq.components.PTextArea;
+import edu.udo.piq.components.PToolTip;
+import edu.udo.piq.components.defaults.DefaultPListModel;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
@@ -79,21 +81,26 @@ public class SwingPTest {
 		pic.setStretchToSize(true);
 		splitH.setFirstComponent(pic);
 		
-		PList list = new PList();
-		String[] items = new String[] {
-			"A",
-			"B",
-			"C",
-			"D",
-			"E",
-			"F",
-			"G",
-			"H",
-		};
-		for (int i = 0; i < items.length; i++) {
-			list.getModel().addElement(i, items[i]);
-		}
+		PList list = new PList(new DefaultPListModel(new String[] {
+			"A", "B", "C", "D",
+			"E", "F", "G", "H",
+		}));
 		splitH.setSecondComponent(list);
+		
+		PToolTip tipList = new PToolTip(new DefaultPTextModel("This is a nice list!"));
+		tipList.setTooltipComponent(list);
+		
+		PToolTip tipPic = new PToolTip();
+		tipPic.setShowDelay(120);
+		tipPic.setTooltipComponent(pic);
+		PButton tipPicBtn = new PButton();
+		tipPicBtn.setContent(new PLabel(new DefaultPTextModel("Tooltip Button")));
+		tipPicBtn.addObs(new PButtonObs() {
+			public void onClick(PButton button) {
+				System.out.println("You clicked a button inside a tooltip!");
+			}
+		});
+		tipPic.setContent(tipPicBtn);
 		
 //		final DefaultPTableModel tableModel = new DefaultPTableModel(new Object[][] {
 //				{"John", "Smith", "001"},

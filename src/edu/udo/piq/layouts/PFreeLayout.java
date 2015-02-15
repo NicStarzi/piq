@@ -117,8 +117,14 @@ public class PFreeLayout extends AbstractPLayout {
 	public PComponent getChildAt(int x, int y) {
 		for (int i = sortedChildren.size() - 1; i >= 0; i--) {
 			PComponent child = sortedChildren.get(i);
-			PBounds childBounds = getChildBounds(child);
-			if (childBounds.contains(x, y)) {
+			if (child.isElusive()) {
+				if (child.getLayout() != null) {
+					PComponent grandChild = child.getLayout().getChildAt(x, y);
+					if (grandChild != null) {
+						return grandChild;
+					}
+				}
+			} else if (getChildBounds(child).contains(x, y)) {
 				return child;
 			}
 		}
@@ -133,13 +139,13 @@ public class PFreeLayout extends AbstractPLayout {
 		return (FreeConstraint) super.getChildConstraint(child);
 	}
 	
-	public void updateConstraint(PComponent child, int x, int y, int width, int height, int z) {
+	public void updateConstraint(PComponent child, FreeConstraint newConstraint) {
 		FreeConstraint con = getChildConstraint(child);
-		con.x = x;
-		con.y = y;
-		con.w = width;
-		con.h = height;
-		con.z = z;
+		con.x = newConstraint.getX();
+		con.y = newConstraint.getY();
+		con.w = newConstraint.getWidth();
+		con.h = newConstraint.getHeight();
+		con.z = newConstraint.getZ();
 		sortedChildren.remove(child);
 		addChildSorted(child, con);
 //		System.out.println("PFreeLayout.updateConstraint("+child+") => "+sortedChildren);

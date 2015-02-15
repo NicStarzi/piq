@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import edu.udo.piq.components.PGlassPanel;
 import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.ImmutablePBounds;
 import edu.udo.piq.util.PCompUtil;
@@ -172,10 +173,10 @@ public interface PComponent {
 	/**
 	 * Returns true if this {@link PComponent} may become the focus owner of a GUI.<br>
 	 * If this method returns false this method will be ignored when the user is 
-	 * tabbing through components with the focus traversal keys.<br>
+	 * traversing the focus through the GUI.<br>
 	 * A component that is not focusable may still get the focus programmatically 
 	 * through the use of the {@link PRoot#setFocusOwner(PComponent)} or 
-	 * {@link PCompUtil#takeFocus(PComponent)} method.<br>
+	 * {@link #takeFocus()} method.<br>
 	 * 
 	 * @return true if this component should be included in focus traversal
 	 * @see PRoot#setFocusOwner(PComponent)
@@ -184,6 +185,19 @@ public interface PComponent {
 	 * @see PCompUtil#hasFocus(PComponent)
 	 */
 	public boolean isFocusable();
+	
+	/**
+	 * Returns true if this {@link PComponent} should not be returned by the 
+	 * {@link PLayout#getChildAt(int, int)} method.<br>
+	 * This property can be used to construct components that can be placed on top 
+	 * of other components without obstructing the components below. For example to 
+	 * keep their original behavior unchanged.<br>
+	 * One component that makes use of this attribute is the {@link PGlassPanel}.<br>
+	 * Most components return false for this attribute.<br>
+	 * 
+	 * @return true if this component can not be returned by {@link PLayout#getChildAt(int, int)}
+	 */
+	public boolean isElusive();
 	
 	/**
 	 * Returns either an instance of {@link PDnDSupport} if this component supports 
@@ -481,6 +495,9 @@ public interface PComponent {
 	 * Returns true if this component is part of a GUI with a mouse and the mouse 
 	 * is within the clipped bounds of this component.<br>
 	 * If any of the above conditions are not met false is returned.<br>
+	 * Please note the difference between this method and {@link #isMouseOver()} 
+	 * is, that this method will return true even if other components are displayed 
+	 * on top of this component.<br>
 	 *  
 	 * @return true if this component is part of a GUI with a mouse and the mouse position is within the clipped bounds of this component
 	 * @see #getClippedBounds()
@@ -496,10 +513,51 @@ public interface PComponent {
 		if (bounds == null) {
 			return false;
 		}
-//		System.out.println("bounds="+bounds);
-//		System.out.println("x="+mouse.getX());
-//		System.out.println("y="+mouse.getY());
 		return bounds.contains(mouse.getX(), mouse.getY());
+	}
+	
+	/**
+	 * Returns true if the {@link PMouse} of this {@link PComponent PComponents} {@link PRoot} 
+	 * is currently sitting on top of this component.<br>
+	 * If this component is not part of a GUI or the GUI does not have a {@link PMouse} false 
+	 * is returned.<br>
+	 * 
+	 * @return true if the mouse is currently on top of this component
+	 * @see #isMouseOverThisOrChild()
+	 * @see #getMouse()
+	 * @see PCompUtil#getComponentAt(PComponent, int, int)
+	 */
+	public default boolean isMouseOver() {
+		PMouse mouse = getMouse();
+		if (mouse == null) {
+			return false;
+		}
+		int mx = mouse.getX();
+		int my = mouse.getY();
+		PComponent compAtMouse = PCompUtil.getComponentAt(getRoot(), mx, my);
+		return compAtMouse == this;
+	}
+	
+	/**
+	 * Returns true if the {@link PMouse} of this {@link PComponent PComponents} {@link PRoot} 
+	 * is currently sitting on top of this component.<br>
+	 * If this component is not part of a GUI or the GUI does not have a {@link PMouse} false 
+	 * is returned.<br>
+	 * 
+	 * @return true if the mouse is currently on top of this component
+	 * @see #isMouseOver()
+	 * @see #getMouse()
+	 * @see PCompUtil#getComponentAt(PComponent, int, int)
+	 */
+	public default boolean isMouseOverThisOrChild() {
+		PMouse mouse = getMouse();
+		if (mouse == null) {
+			return false;
+		}
+		int mx = mouse.getX();
+		int my = mouse.getY();
+		PComponent compAtMouse = PCompUtil.getComponentAt(getRoot(), mx, my);
+		return compAtMouse == this || isAncestorOf(compAtMouse);
 	}
 	
 	/**

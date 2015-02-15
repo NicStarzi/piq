@@ -92,6 +92,14 @@ public interface PRoot extends PComponent {
 	}
 	
 	/**
+	 * Always returns false for {@link PRoot} instances.<br>
+	 * @return true
+	 */
+	public default boolean isElusive() {
+		return false;
+	}
+	
+	/**
 	 * Returns the {@link PBounds} of this {@link PRoot}.<br>
 	 * Since a root does not have a parent its bounds are not defined 
 	 * by a layout, instead the bounds of a root should be set directly 

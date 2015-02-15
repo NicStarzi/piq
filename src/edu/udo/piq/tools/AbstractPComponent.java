@@ -26,6 +26,12 @@ import edu.udo.piq.util.PCompUtil;
 public class AbstractPComponent implements PComponent {
 	
 	/**
+	 * The value returned by {@link #isElusive()} if the user does not 
+	 * call the {@link #setElusive(boolean)} method is false.<br>
+	 */
+	public static final boolean DEFAULT_IS_ELUSIVE = false;
+	
+	/**
 	 * Holds the parent of this component in the GUI tree.<br>
 	 * This field is null if this component has no parent.<br>
 	 */
@@ -177,6 +183,10 @@ public class AbstractPComponent implements PComponent {
 	private boolean keyObsRegistered;
 	private PMouse currentMouse;
 	private boolean mouseObsRegistered;
+	/**
+	 * Used by the {@link #isElusive()} method
+	 */
+	private boolean elusive = DEFAULT_IS_ELUSIVE;
 	
 	/**
 	 * The root is being cached by the {@link AbstractPComponent}.<br>
@@ -271,14 +281,6 @@ public class AbstractPComponent implements PComponent {
 		return parent;
 	}
 	
-//	/**
-//	 * Uses the utility method {@link PCompUtil#getBoundsOf(PComponent)} to 
-//	 * obtain the bounds for this component.<br>
-//	 */
-//	public PBounds getBounds() {
-//		return PCompUtil.getBoundsOf(this);
-//	}
-	
 	public void setDesign(PDesign design) {
 		customDesign = design;
 		fireReRenderEvent();
@@ -368,6 +370,30 @@ public class AbstractPComponent implements PComponent {
 	 */
 	public boolean isFocusable() {
 		return false;
+	}
+	
+	/**
+	 * Sets the value that will be returned by the {@link #isElusive()} method 
+	 * hereafter.<br>
+	 * 
+	 * @param isElusive whether this component is elusive or not
+	 * @see #DEFAULT_IS_ELUSIVE
+	 * @see #isElusive()
+	 */
+	public void setElusive(boolean isElusive) {
+		elusive = isElusive;
+	}
+	
+	/**
+	 * The behavior of this method can be changed with the {@link #setElusive(boolean)} 
+	 * method.<br>
+	 * 
+	 * @return whether this component is currently elusive or not
+	 * @see #DEFAULT_IS_ELUSIVE
+	 * @see #setElusive(boolean)
+	 */
+	public boolean isElusive() {
+		return elusive;
 	}
 	
 	public void addObs(PComponentObs obs) throws NullPointerException {

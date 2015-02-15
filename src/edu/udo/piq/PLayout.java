@@ -178,7 +178,14 @@ public interface PLayout {
 	 */
 	public default PComponent getChildAt(int x, int y) {
 		for (PComponent child : getChildren()) {
-			if (getChildBounds(child).contains(x, y)) {
+			if (child.isElusive()) {
+				if (child.getLayout() != null) {
+					PComponent grandChild = child.getLayout().getChildAt(x, y);
+					if (grandChild != null) {
+						return grandChild;
+					}
+				}
+			} else if (getChildBounds(child).contains(x, y)) {
 				return child;
 			}
 		}

@@ -64,6 +64,13 @@ public class PRootLayout extends AbstractPLayout {
 	}
 	
 	public PComponent getChildAt(int x, int y) {
+		PRootOverlay overlay = getOverlay();
+		if (overlay.getBounds().contains(x, y)) {
+			PComponent overlayComp = overlay.getLayout().getChildAt(x, y);
+			if (overlayComp != null) {
+				return overlayComp;
+			}
+		}
 		PComponent body = getBody();
 		if (getChildBounds(body).contains(x, y)) {
 			return body;

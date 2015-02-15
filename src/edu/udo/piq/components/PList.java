@@ -77,10 +77,10 @@ public class PList extends AbstractPLayoutOwner {
 			if (getModel() == null || getSelection() == null) {
 				return;
 			}
-			PKeyboard keyboard = getKeyboard();
-			int mx = mouse.getX();
-			int my = mouse.getY();
-			if (getClippedBounds().contains(mx, my)) {
+			if (isMouseOverThisOrChild()) {//getClippedBounds().contains(mx, my)
+				PKeyboard keyboard = getKeyboard();
+				int mx = mouse.getX();
+				int my = mouse.getY();
 				PComponent selected = getLayout().getChildAt(mx, my);
 				if (selected != null) {
 					lastMouseX = mx;
@@ -148,11 +148,16 @@ public class PList extends AbstractPLayoutOwner {
 	private PListCellFactory cellFac;
 	
 	public PList() {
+		this(new DefaultPListModel());
+	}
+	
+	public PList(PListModel model) {
+		super();
 		setLayout(new PListLayout(this, ListAlignment.FROM_TOP, 1));
 		setDragAndDropSupport(new DefaultPListDnDSupport());
-		setModel(new DefaultPListModel());
 		setSelection(new DefaultPListSelection());
 		setCellFactory(new DefaultPListCellFactory());
+		setModel(model);
 		addObs(keyObs);
 		addObs(mouseObs);
 	}

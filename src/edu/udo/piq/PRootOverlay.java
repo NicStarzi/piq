@@ -33,4 +33,13 @@ public interface PRootOverlay {
 	 */
 	public PFreeLayout getLayout();
 	
+	/**
+	 * Returns the {@link PBounds} for this overlay. This might be useful to certain components 
+	 * that make use of the overlay and try to stay within the visible area.<br>
+	 * The returned bounds are never null.<br>
+	 * 
+	 * @return the current {@link PBounds} of the {@link PRootOverlay}
+	 */
+	public PBounds getBounds();
+	
 }

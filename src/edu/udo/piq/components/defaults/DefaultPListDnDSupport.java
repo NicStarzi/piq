@@ -204,6 +204,7 @@ public class DefaultPListDnDSupport implements PDnDSupport {
 		PPicture pic = new PPicture();
 		pic.getModel().setImagePath("DragAndDrop.png");
 		pic.setStretchToSize(true);
+		pic.setElusive(true);
 		return pic;
 	}
 	

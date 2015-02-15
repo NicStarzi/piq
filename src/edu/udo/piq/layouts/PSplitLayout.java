@@ -80,7 +80,11 @@ public class PSplitLayout extends AbstractPLayout {
 		return splitPos;
 	}
 	
-	public PComponent getAt(Constraint constr) {
+	public PComponent getChildForConstraint(Object constraint) {
+		if (constraint == null || !(constraint instanceof Constraint)) {
+			throw new IllegalArgumentException();
+		}
+		Constraint constr = (Constraint) constraint;
 		if (constr == Constraint.FIRST) {
 			return first;
 		} else if (constr == Constraint.SECOND) {
@@ -94,7 +98,7 @@ public class PSplitLayout extends AbstractPLayout {
 	
 	protected boolean canAdd(PComponent component, Object constraint) {
 		return constraint != null && constraint instanceof Constraint 
-				&& getAt((Constraint) constraint) == null;
+				&& getChildForConstraint((Constraint) constraint) == null;
 	}
 	
 	public void layOut() {

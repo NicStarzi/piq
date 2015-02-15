@@ -394,8 +394,11 @@ public class PCompUtil {
 		if (root == null) {
 			throw new IllegalArgumentException("root == null");
 		}
-		// The root never has a null layout
 		PLayout current = root.getLayout();
+		if (current == null) {
+			return null;
+		}
+		// Will always stop because in each step we go down 1 level in the GUI
 		while (true) {
 			PComponent child = current.getChildAt(x, y);
 			if (child == null) {

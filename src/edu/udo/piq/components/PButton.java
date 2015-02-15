@@ -18,7 +18,7 @@ import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.components.defaults.DefaultPButtonModel;
 import edu.udo.piq.layouts.PCentricLayout;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
-import edu.udo.piq.tools.ImmutablePSize;
+import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.util.PRenderUtil;
 
 public class PButton extends AbstractPLayoutOwner {
@@ -37,7 +37,7 @@ public class PButton extends AbstractPLayoutOwner {
 			if (!hasFocus()) {
 				return;
 			}
-			if (key == Key.ENTER) {
+			if (key == Key.ENTER && model.isPressed()) {
 				model.setPressed(false);
 				fireClickEvent();
 			}
@@ -45,14 +45,15 @@ public class PButton extends AbstractPLayoutOwner {
 	};
 	private final PMouseObs mouseObs = new PMouseObs() {
 		public void buttonTriggered(PMouse mouse, MouseButton btn) {
-			if (btn == MouseButton.LEFT && isMouseWithinClippedBounds()) {
+			if (btn == MouseButton.LEFT && isMouseOverThisOrChild()) {
 				model.setPressed(true);
 			}
 		}
 		public void buttonReleased(PMouse mouse, MouseButton btn) {
 			if (btn == MouseButton.LEFT) {
+				boolean oldPressed = model.isPressed();
 				model.setPressed(false);
-				if (isMouseWithinClippedBounds()) {
+				if (oldPressed && isMouseOverThisOrChild()) {
 					takeFocus();
 					fireClickEvent();
 				}
@@ -67,7 +68,9 @@ public class PButton extends AbstractPLayoutOwner {
 	protected PButtonModel model = new DefaultPButtonModel();
 	
 	public PButton() {
-		setLayout(new PCentricLayout(this));
+		PCentricLayout defaultLayout = new PCentricLayout(this);
+		defaultLayout.setInsets(new ImmutablePInsets(8));
+		setLayout(defaultLayout);
 		setModel(model);
 		addObs(keyObs);
 		addObs(mouseObs);
@@ -143,10 +146,7 @@ public class PButton extends AbstractPLayoutOwner {
 	}
 	
 	public PSize getDefaultPreferredSize() {
-		PSize layoutSize = getLayout().getPreferredSize();
-		int w = layoutSize.getWidth() + 8;
-		int h = layoutSize.getHeight() + 8;
-		return new ImmutablePSize(w, h);
+		return getLayout().getPreferredSize();
 	}
 	
 	public boolean isFocusable() {

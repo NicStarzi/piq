@@ -34,7 +34,7 @@ public class PGridLayout extends AbstractPLayout {
 			for (int j = 0; j < constr.h; j++) {
 				int cellX = constr.x + i;
 				int cellY = constr.y + j;
-				if (getComponentAt(cellX, cellY) != null) {
+				if (getChildAt(cellX, cellY) != null) {
 					return false;
 				}
 			}
@@ -42,8 +42,18 @@ public class PGridLayout extends AbstractPLayout {
 		return true;
 	}
 	
-	protected PComponent getComponentAt(int x, int y) {
-		return componentGrid[x + y * w];
+	public PComponent getChildAt(int x, int y) {
+		PComponent child = componentGrid[x + y * w];
+		if (child.isElusive()) {
+			if (child.getLayout() != null) {
+				PComponent grandChild = child.getLayout().getChildAt(x, y);
+				if (grandChild != null) {
+					return grandChild;
+				}
+			}
+			return null;
+		}
+		return child;
 	}
 	
 	public void layOut() {

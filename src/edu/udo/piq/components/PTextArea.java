@@ -61,8 +61,6 @@ public class PTextArea extends AbstractPComponent {
 			PTextSelection selection = getSelection();
 			int from = selection.getFrom();
 			int to = selection.getTo();
-			System.out.println("from="+selection.getFrom());
-			System.out.println("to="+selection.getTo());
 			
 			int newFrom = from + typedString.length();
 			
@@ -198,10 +196,8 @@ public class PTextArea extends AbstractPComponent {
 			if (btn == MouseButton.LEFT) {
 				int mx = mouse.getX();
 				int my = mouse.getY();
-				System.out.println("bounds="+getClippedBounds()+", x="+mx+", y="+my);
 				if (getClippedBounds().contains(mx, my)) {
 					pressedIndex = getTextIndexAt(mx, my);
-					System.out.println("pressedIndex="+pressedIndex);
 					selection.setSelection(pressedIndex, pressedIndex);
 					takeFocus();
 					fireReRenderEvent();
@@ -224,8 +220,6 @@ public class PTextArea extends AbstractPComponent {
 	};
 	private final PTextSelectionObs selectionObs = new PTextSelectionObs() {
 		public void selectionChanged(PTextSelection selection) {
-			System.out.println("from="+selection.getFrom());
-			System.out.println("to="+selection.getTo());
 			focusRenderToggle = true;
 			focusRenderToggleTimer = 0;
 			fireReRenderEvent();

@@ -123,6 +123,9 @@ public abstract class AbstractPRoot implements PRoot {
 	
 	public void setFocusOwner(PComponent component) {
 		PComponent oldOwner = getFocusOwner();
+		if (component == oldOwner) {
+			return;
+		}
 		if (oldOwner != null) {
 			fireFocusLostEvent(oldOwner);
 		}

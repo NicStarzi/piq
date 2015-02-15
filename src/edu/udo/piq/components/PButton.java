@@ -65,13 +65,14 @@ public class PButton extends AbstractPLayoutOwner {
 			fireReRenderEvent();
 		}
 	};
-	protected PButtonModel model = new DefaultPButtonModel();
+	protected PButtonModel model;
 	
 	public PButton() {
+		super();
 		PCentricLayout defaultLayout = new PCentricLayout(this);
 		defaultLayout.setInsets(new ImmutablePInsets(8));
 		setLayout(defaultLayout);
-		setModel(model);
+		setModel(new DefaultPButtonModel());
 		addObs(keyObs);
 		addObs(mouseObs);
 	}

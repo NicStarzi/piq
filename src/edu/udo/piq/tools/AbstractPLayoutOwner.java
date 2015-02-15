@@ -55,16 +55,6 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 		return layout;
 	}
 	
-//	/**
-//	 * Returns a {@link Collection} containing all children of this 
-//	 * containers {@link PLayout} as returned by {@link PLayout#getChildren()}.<br>
-//	 * 
-//	 * @return the children of this container
-//	 */
-//	protected Collection<PComponent> getChildren() {
-//		return PCompUtil.getChildrenOf(this);
-//	}
-	
 	/**
 	 * Returns true if the {@link PLayout} of this container has at least 
 	 * one child.<br>

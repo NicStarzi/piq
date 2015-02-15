@@ -36,6 +36,7 @@ public class PProgressBar extends AbstractPComponent {
 	}
 	
 	public PProgressBar(PProgressBarModel model) {
+		super();
 		setModel(model);
 	}
 	

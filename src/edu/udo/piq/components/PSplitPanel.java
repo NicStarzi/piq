@@ -60,6 +60,7 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 	protected boolean pressed;
 	
 	public PSplitPanel() {
+		super();
 		setModel(new DefaultPSplitPanelModel());
 		setLayout(new PSplitLayout(this));
 		divider = new PDivider();

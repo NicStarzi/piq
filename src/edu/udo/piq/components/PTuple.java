@@ -8,6 +8,7 @@ import edu.udo.piq.tools.AbstractPLayoutOwner;
 public class PTuple extends AbstractPLayoutOwner {
 	
 	public PTuple(PComponent first, PComponent second) {
+		super();
 		setLayout(new PTupleLayout(this));
 		setFirstComponent(first);
 		setSecondComponent(second);

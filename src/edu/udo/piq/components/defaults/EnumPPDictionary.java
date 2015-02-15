@@ -3,7 +3,7 @@ package edu.udo.piq.components.defaults;
 import java.util.EnumMap;
 import java.util.Map;
 
-import edu.udo.piq.components.PDictionary;
+import edu.udo.piq.components.util.PDictionary;
 
 public class EnumPPDictionary<E extends Enum<E>> implements PDictionary {
 	

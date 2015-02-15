@@ -79,10 +79,11 @@ public class PSlider extends AbstractPComponent {
 			fireReRenderEvent();
 		}
 	};
-	protected PSliderModel model = new DefaultPSliderModel();
+	protected PSliderModel model;
 	
 	public PSlider() {
-		setModel(model);
+		super();
+		setModel(new DefaultPSliderModel());
 		addObs(keyObs);
 		addObs(mouseObs);
 	}

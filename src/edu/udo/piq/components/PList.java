@@ -74,6 +74,14 @@ public class PList extends AbstractPLayoutOwner {
 				for (Object element : selectedElements) {
 					model.removeElement(model.getIndexOfElement(element));
 				}
+			} else if (key == Key.UNDO) {
+				if (getModel().getHistory() != null && getModel().getHistory().canUndo()) {
+					getModel().getHistory().undo();
+				}
+			} else if (key == Key.REDO) {
+				if (getModel().getHistory() != null && getModel().getHistory().canUndo()) {
+					getModel().getHistory().redo();
+				}
 			}
 		}
 		public void keyPressed(PKeyboard keyboard, Key key) {

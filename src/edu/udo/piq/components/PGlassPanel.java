@@ -9,6 +9,7 @@ import edu.udo.piq.layouts.PFreeLayout;
 public class PGlassPanel extends PPanel implements PRootOverlay {
 	
 	public PGlassPanel() {
+		super();
 		setLayout(new PFreeLayout(this));
 	}
 	

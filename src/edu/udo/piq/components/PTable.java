@@ -38,6 +38,7 @@ public class PTable extends AbstractPLayoutOwner {
 	private PTableCellFactory cellFac;
 	
 	public PTable() {
+		super();
 		setLayout(new PTableLayout(this));
 		setModel(new DefaultPTableModel(new Object[0][0]));
 		setSelection(new DefaultPTableSelection());

@@ -1,7 +1,7 @@
 package edu.udo.piq.components.defaults;
 
 import edu.udo.piq.components.PTextModel;
-import edu.udo.piq.components.PDictionary;
+import edu.udo.piq.components.util.PDictionary;
 import edu.udo.piq.tools.AbstractPTextModel;
 
 public class DefaultPTextModel extends AbstractPTextModel implements PTextModel {

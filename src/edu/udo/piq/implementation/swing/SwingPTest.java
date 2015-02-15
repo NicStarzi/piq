@@ -11,6 +11,7 @@ import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PButtonObs;
 import edu.udo.piq.components.PCheckBox;
 import edu.udo.piq.components.PCheckBoxObs;
+import edu.udo.piq.components.PCheckBoxTuple;
 import edu.udo.piq.components.PLabel;
 import edu.udo.piq.components.PList;
 import edu.udo.piq.components.PPanel;
@@ -134,11 +135,13 @@ public class SwingPTest {
 		prgBar.getModel().setMaximum(17);
 		btnPnl.addChild(prgBar, null);
 		
-		final PCheckBox chkBx = new PCheckBox();
-		btnPnl.addChild(chkBx, null);
-		
 		final PLabel lblChkBx = new PLabel();
-		btnPnl.addChild(lblChkBx, null);
+//		btnPnl.addChild(lblChkBx, null);
+		
+		final PCheckBoxTuple chkBxTpl = new PCheckBoxTuple(lblChkBx);
+		btnPnl.addChild(chkBxTpl, null);
+//		final PCheckBox chkBx = new PCheckBox();
+//		btnPnl.addChild(chkBx, null);
 		
 		final PSlider sld = new PSlider();
 		sld.getModel().setMinValue(13);
@@ -159,7 +162,7 @@ public class SwingPTest {
 				}
 			}
 		});
-		chkBx.addObs(new PCheckBoxObs() {
+		chkBxTpl.getCheckBox().addObs(new PCheckBoxObs() {
 			public void clicked(PCheckBox checkBox) {
 				lblChkBx.getModel().setValue(null);
 				lblSld.getModel().setValue(null);
@@ -181,7 +184,7 @@ public class SwingPTest {
 				return null;
 			}
 			public String getText() {
-				if (chkBx.isChecked()) {
+				if (chkBxTpl.isChecked()) {
 					return "Relative";
 				}
 				return "Absolute";
@@ -195,7 +198,7 @@ public class SwingPTest {
 				return null;
 			}
 			public String getText() {
-				if (chkBx.isChecked()) {
+				if (chkBxTpl.isChecked()) {
 					double percent = sld.getModel().getValuePercent();
 					double val = ((int) (10000 * percent)) / 100.0;
 					return val+"%";

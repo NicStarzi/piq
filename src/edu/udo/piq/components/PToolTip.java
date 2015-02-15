@@ -56,7 +56,6 @@ public class PToolTip extends AbstractPLayoutOwner {
 	private int showX;
 	private int showY;
 	private boolean isShown = false;
-//	private boolean isWithin = false;
 	private PComponent target;
 	
 	public PToolTip() {

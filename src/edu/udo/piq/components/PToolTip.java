@@ -4,7 +4,6 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PComponentObs;
-import edu.udo.piq.PLayout;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
@@ -158,7 +157,7 @@ public class PToolTip extends AbstractPLayoutOwner {
 	}
 	
 	protected void addToOverlay() {
-		PLayout overlayLayout = target.getRoot().getOverlay().getLayout();
+		PFreeLayout overlayLayout = target.getRoot().getOverlay().getLayout();
 		FreeConstraint constr = new FreeConstraint(showX, showY);
 		overlayLayout.addChild(this, constr);
 		isShown = true;
@@ -166,7 +165,7 @@ public class PToolTip extends AbstractPLayoutOwner {
 	}
 	
 	protected void removeFromOverlay() {
-		PLayout overlayLayout = target.getRoot().getOverlay().getLayout();
+		PFreeLayout overlayLayout = target.getRoot().getOverlay().getLayout();
 		overlayLayout.removeChild(this);
 		isShown = false;
 	}

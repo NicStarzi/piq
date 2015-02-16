@@ -31,4 +31,8 @@ public abstract class AbstractPBorder extends AbstractPLayoutOwner implements PB
 		return getLayout().getContent();
 	}
 	
+	public boolean defaultFillsAllPixels() {
+		return false;
+	}
+	
 }

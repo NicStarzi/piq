@@ -6,7 +6,7 @@ import java.util.List;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PLayout;
+import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PRootOverlay;
@@ -22,14 +22,14 @@ public class PRootLayout extends AbstractPLayout {
 		super(owner);
 		this.owner = owner;
 		addObs(new PLayoutObs() {
-			public void childAdded(PLayout layout, PComponent child, Object constraint) {
+			public void childAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
 				Constraint pos = (Constraint) constraint;
 				if (pos == Constraint.OVERLAY && !(child instanceof PRootOverlay)) {
 					throw new IllegalArgumentException("child="+child+", constraint="+constraint);
 				}
 				components.set(pos.ordinal(), child);
 			}
-			public void childRemoved(PLayout layout, PComponent child, Object constraint) {
+			public void childRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
 				Constraint pos = (Constraint) constraint;
 				components.set(pos.ordinal(), null);
 			}
@@ -65,14 +65,14 @@ public class PRootLayout extends AbstractPLayout {
 	
 	public PComponent getChildAt(int x, int y) {
 		PRootOverlay overlay = getOverlay();
-		if (overlay.getBounds().contains(x, y)) {
+		if (overlay != null && overlay.getBounds().contains(x, y)) {
 			PComponent overlayComp = overlay.getLayout().getChildAt(x, y);
 			if (overlayComp != null) {
 				return overlayComp;
 			}
 		}
 		PComponent body = getBody();
-		if (getChildBounds(body).contains(x, y)) {
+		if (body != null && getChildBounds(body).contains(x, y)) {
 			return body;
 		}
 		return null;

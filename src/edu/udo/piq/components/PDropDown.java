@@ -69,22 +69,22 @@ public class PDropDown extends AbstractPLayoutOwner {
 		dropDownContainer.addObs(containerObs);
 		
 		setLayout(new PCentricLayout(this));
-		getLayout().setInsets(new ImmutablePInsets(4, 4, 4, TRIANGLE_MIN_W + 2 + 2 + 4));
+		getLayoutInternal().setInsets(new ImmutablePInsets(4, 4, 4, TRIANGLE_MIN_W + 2 + 2 + 4));
 		setModel(new DefaultPButtonModel());
 		
 		addObs(mouseObs);
 	}
 	
-	public PCentricLayout getLayout() {
+	protected PCentricLayout getLayoutInternal() {
 		return (PCentricLayout) super.getLayout();
 	}
 	
 	public void setPreview(PComponent component) {
-		getLayout().setContent(component);
+		getLayoutInternal().setContent(component);
 	}
 	
 	public PComponent getPreview() {
-		return getLayout().getContent();
+		return getLayoutInternal().getContent();
 	}
 	
 	public void setBody(PComponent component) {
@@ -145,7 +145,7 @@ public class PDropDown extends AbstractPLayoutOwner {
 			renderer.drawQuad(x + 1, y + 1, fx - 1, fy - 1);
 		}
 		
-		PInsets insets = getLayout().getInsets();
+		PInsets insets = getLayoutInternal().getInsets();
 		int btnX = fx - (insets.getFromRight() - 2);
 		int btnY = y + insets.getFromTop();
 		int btnFx = btnX + (insets.getFromRight() - 2 - insets.getFromLeft());

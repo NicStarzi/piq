@@ -37,7 +37,7 @@ public interface PRoot extends PComponent {
 	}
 	
 	/**
-	 * Returns the {@link PLayout} of this {@link PRoot}.<br>
+	 * Returns the {@link PReadOnlyLayout} of this {@link PRoot}.<br>
 	 * The layout of a root is always an instance of {@link PRootLayout} as it is 
 	 * needed to support {@link PRootOverlay PRootOverlays} and body {@link PPanel panels}.<br>
 	 * 
@@ -233,6 +233,15 @@ public interface PRoot extends PComponent {
 	 * @see PRootLayout
 	 */
 	public PRootOverlay getOverlay();
+	
+	/**
+	 * Sets the body {@link PComponent} of this {@link PRoot} to the given component.<br>
+	 * Although it does not seem to be very useful it is possible to set the body to null.<br>
+	 * 
+	 * @param component the new body for this {@link PRoot} or null
+	 * @see PRootLayout
+	 */
+	public void setBody(PComponent component);
 	
 	/**
 	 * Returns the body {@link PComponent} of this {@link PRoot}, this is usually a 

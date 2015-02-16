@@ -35,7 +35,7 @@ public interface PDesign {
 	 * by this {@link PDesign} to display the component correctly.<br>
 	 * The preferred size should usually be as small as possible but as big as 
 	 * needed.<br>
-	 * This method might take the {@link PLayout} of the component into
+	 * This method might take the {@link PReadOnlyLayout} of the component into
 	 * consideration but is not forced to.<br>
 	 * This method will never return null.<br> 
 	 * 
@@ -45,8 +45,8 @@ public interface PDesign {
 	 * @throws IllegalArgumentException if this design is not intended to be used with the given component
 	 * @see PComponent
 	 * @see PComponent#getDefaultPreferredSize()
-	 * @see PLayout
-	 * @see PLayout#getPreferredSize()
+	 * @see PReadOnlyLayout
+	 * @see PReadOnlyLayout#getPreferredSize()
 	 */
 	public default PSize getPreferredSize(PComponent component) 
 			throws NullPointerException, IllegalArgumentException 
@@ -64,8 +64,8 @@ public interface PDesign {
 	 * @throws NullPointerException if component is null
 	 * @throws IllegalArgumentException if this design is not intended to be used with the given component
 	 * @see PComponent
-	 * @see PLayout
-	 * @see PLayout#getChildBounds(PComponent)
+	 * @see PReadOnlyLayout
+	 * @see PReadOnlyLayout#getChildBounds(PComponent)
 	 * @see PCompUtil#getBoundsOf(PComponent)
 	 */
 	public default void render(PRenderer renderer, PComponent component) 

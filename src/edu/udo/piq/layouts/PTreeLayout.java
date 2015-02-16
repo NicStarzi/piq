@@ -11,14 +11,14 @@ import java.util.Map;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
-import edu.udo.piq.PLayout;
+import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractPLayout;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.tools.MutablePSize;
 
-public class PTreeLayout extends AbstractPLayout implements PLayout {
+public class PTreeLayout extends AbstractPLayout implements PReadOnlyLayout {
 	
 	public static final int DEFAULT_INDENT_SIZE = 20;
 	public static final int DEFAULT_GAP = 2;
@@ -34,7 +34,7 @@ public class PTreeLayout extends AbstractPLayout implements PLayout {
 		super(component);
 		
 		addObs(new PLayoutObs() {
-			public void childAdded(PLayout layout, PComponent child, Object constraint) {
+			public void childAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
 				Constraint constr = (Constraint) constraint;
 				
 				PComponent parent = constr.getParent();
@@ -51,7 +51,7 @@ public class PTreeLayout extends AbstractPLayout implements PLayout {
 					sibblings.add(index, child);
 				}
 			}
-			public void childRemoved(PLayout layout, PComponent child, Object constraint) {
+			public void childRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
 				Constraint constr = (Constraint) constraint;
 				
 				PComponent parent = constr.getParent();

@@ -56,8 +56,12 @@ public class SwingPTest_DragAndDrop {
 		updateTimer.setRepeats(true);
 		updateTimer.start();
 		
+		PPanel bodyPnl = new PPanel();
+		bodyPnl.setLayout(new PBorderLayout(bodyPnl));
+		root.setBody(bodyPnl);
+		
 		PSplitPanel split = new PSplitPanel();
-		root.getBody().getLayout().addChild(split, PBorderLayout.Constraint.CENTER);
+		bodyPnl.addChild(split, PBorderLayout.Constraint.CENTER);
 		
 		final PList listLeft = new PList();
 		listLeft.getSelection().setSelectionMode(SelectionMode.ARBITRARY_ROWS);
@@ -113,7 +117,7 @@ public class SwingPTest_DragAndDrop {
 		
 		PPanel btnPnl = new PPanel();
 		btnPnl.setLayout(new PWrapLayout(btnPnl, PListLayout.ListAlignment.CENTERED_HORIZONTAL));
-		root.getBody().getLayout().addChild(btnPnl, PBorderLayout.Constraint.BOTTOM);
+		bodyPnl.addChild(btnPnl, PBorderLayout.Constraint.BOTTOM);
 		
 		PButton btnAdd = new PButton();
 		btnAdd.setContent(new PLabel(new DefaultPTextModel("Add")));

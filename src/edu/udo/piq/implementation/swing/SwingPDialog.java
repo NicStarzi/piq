@@ -17,7 +17,7 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PDesign;
 import edu.udo.piq.PDialog;
 import edu.udo.piq.PKeyboard;
-import edu.udo.piq.PLayout;
+import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.tools.AbstractPDialog;
@@ -157,7 +157,7 @@ public class SwingPDialog extends AbstractPDialog implements PDialog {
 			PDesign design = comp.getDesign();
 			design.render(renderer, comp);
 			
-			PLayout layout = comp.getLayout();
+			PReadOnlyLayout layout = comp.getLayout();
 			if (layout != null) {
 				for (PComponent child : layout.getChildren()) {
 					stack.addFirst(new StackInfo(child, clipX, clipY, clipFx, clipFy));

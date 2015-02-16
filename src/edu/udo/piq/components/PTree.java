@@ -123,7 +123,7 @@ public class PTree extends AbstractPLayoutOwner {
 		addObs(mouseObs);
 	}
 	
-	public PTreeLayout getLayout() {
+	protected PTreeLayout getLayoutInternal() {
 		return (PTreeLayout) super.getLayout();
 	}
 	
@@ -193,7 +193,7 @@ public class PTree extends AbstractPLayoutOwner {
 	}
 	
 	public PTreeCellComponent getCellComponentAt(int x, int y) {
-		return (PTreeCellComponent) getLayout().getComponentAt(x, y);
+		return (PTreeCellComponent) getLayoutInternal().getComponentAt(x, y);
 	}
 	
 	public void defaultRender(PRenderer renderer) {
@@ -208,7 +208,7 @@ public class PTree extends AbstractPLayoutOwner {
 		
 		renderer.setColor(PColor.BLACK);
 		
-		PTreeLayout layout = getLayout();
+		PTreeLayout layout = getLayoutInternal();
 		Deque<PTreeCellComponent> stack = new LinkedList<>();
 		stack.push((PTreeCellComponent) layout.getRootComponent());
 		while (!stack.isEmpty()) {
@@ -240,7 +240,7 @@ public class PTree extends AbstractPLayoutOwner {
 	}
 	
 	private void modelChanged() {
-		getLayout().clearChildren();
+		getLayoutInternal().clearChildren();
 		elementToCompMap.clear();
 		
 		PTreeModel model = getModel();
@@ -305,7 +305,7 @@ public class PTree extends AbstractPLayoutOwner {
 		int index = getModel().getChildIndex(parent, node);
 		PTreeCellComponent parentComp = elementToCompMap.get(parent);
 		
-		getLayout().addChild(cellComp, new Constraint(parentComp, index));
+		getLayoutInternal().addChild(cellComp, new Constraint(parentComp, index));
 	}
 	
 	protected void nodeRemoved(Object element) {
@@ -313,7 +313,7 @@ public class PTree extends AbstractPLayoutOwner {
 			getSelection().removeSelection(element);
 		}
 		PComponent cellComp = elementToCompMap.get(element);
-		getLayout().removeChild(cellComp);
+		getLayoutInternal().removeChild(cellComp);
 		elementToCompMap.remove(element);
 	}
 	

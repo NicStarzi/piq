@@ -5,7 +5,7 @@ import edu.udo.piq.tools.ImmutablePBounds;
 /**
  * A simple bounding box that can be used for all kinds of purposes.<br>
  * All {@link PComponent}s have a bounding box when they are part of a 
- * GUI, its defined by the {@link PLayout} of their parent.<br>
+ * GUI, its defined by the {@link PReadOnlyLayout} of their parent.<br>
  * 
  * @author Nic Starzi
  */

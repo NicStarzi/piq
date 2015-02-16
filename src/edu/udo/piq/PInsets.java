@@ -3,7 +3,7 @@ package edu.udo.piq;
 /**
  * {@link PInsets} define a padding inside a bounding box 
  * with individual distances to each side.<br>
- * Insets are used, amongst others, by {@link PLayout}s to 
+ * Insets are used, amongst others, by {@link PReadOnlyLayout}s to 
  * define a padding for the contents of a container.<br>
  * 
  * @author Nic Starzi

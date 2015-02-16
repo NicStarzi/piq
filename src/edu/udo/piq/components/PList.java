@@ -133,7 +133,7 @@ public class PList extends AbstractPLayoutOwner {
 					lastMouseY = my;
 					isSelected = true;
 					
-					Integer index = Integer.valueOf(getLayout().getChildIndex(selected));
+					Integer index = Integer.valueOf(getLayoutInternal().getChildIndex(selected));
 					Object element = getModel().getElement(index.intValue());
 					if (keyboard != null && keyboard.isModifierToggled(Modifier.CTRL)) {
 						toggleSelection(element);
@@ -210,7 +210,7 @@ public class PList extends AbstractPLayoutOwner {
 		addObs(mouseObs);
 	}
 	
-	public PListLayout getLayout() {
+	protected PListLayout getLayoutInternal() {
 		return (PListLayout) super.getLayout();
 	}
 	
@@ -276,7 +276,7 @@ public class PList extends AbstractPLayoutOwner {
 		if (cellComp == null) {
 			return -1;
 		}
-		return getLayout().getChildIndex(cellComp);
+		return getLayoutInternal().getChildIndex(cellComp);
 	}
 	
 	public PListCellComponent getCellComponentAt(int x, int y) {
@@ -301,7 +301,7 @@ public class PList extends AbstractPLayoutOwner {
 			if (highestIndex == -1) {
 				renderer.drawQuad(x, y, fx, y + 2);
 			} else {
-				PListCellComponent cellComp = (PListCellComponent) getLayout().getChild(highestIndex);
+				PListCellComponent cellComp = (PListCellComponent) getLayoutInternal().getChild(highestIndex);
 				PBounds cellBounds = cellComp.getBounds();
 				int cx = cellBounds.getX();
 				int cy = cellBounds.getFinalY();
@@ -357,7 +357,7 @@ public class PList extends AbstractPLayoutOwner {
 	}
 	
 	private void modelChanged() {
-		getLayout().clearChildren();
+		getLayoutInternal().clearChildren();
 		elementToCompMap.clear();
 		
 		PListModel model = getModel();
@@ -370,7 +370,7 @@ public class PList extends AbstractPLayoutOwner {
 		int index = getModel().getIndexOfElement(element);
 		PListCellComponent cellComp = getCellFactory().getCellComponentFor(getModel(), element);
 		elementToCompMap.put(element, cellComp);
-		getLayout().addChild(cellComp, Integer.valueOf(index));
+		getLayoutInternal().addChild(cellComp, Integer.valueOf(index));
 	}
 	
 	protected void elementRemoved(Object element) {
@@ -378,7 +378,7 @@ public class PList extends AbstractPLayoutOwner {
 			getSelection().removeSelection(element);
 		}
 		PComponent cellComp = elementToCompMap.get(element);
-		getLayout().removeChild(cellComp);
+		getLayoutInternal().removeChild(cellComp);
 		elementToCompMap.remove(element);
 	}
 	

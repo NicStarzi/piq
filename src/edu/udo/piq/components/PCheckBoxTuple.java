@@ -5,7 +5,7 @@ import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PKeyboard;
-import edu.udo.piq.PLayout;
+import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouseObs;
@@ -61,7 +61,7 @@ public class PCheckBoxTuple extends AbstractPLayoutOwner {
 		}
 	};
 	private final PLayoutObs layoutObs = new PLayoutObs() {
-		public void childAdded(PLayout layout, PComponent child, Object constraint) {
+		public void childAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
 			if (constraint == Constraint.FIRST) {
 				if (!(child instanceof PCheckBox)) {
 					throw new IllegalArgumentException("child="+child);
@@ -69,7 +69,7 @@ public class PCheckBoxTuple extends AbstractPLayoutOwner {
 				((PCheckBox) child).addObs(chkBxObs);
 			}
 		}
-		public void childRemoved(PLayout layout, PComponent child, Object constraint) {
+		public void childRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
 			if (constraint == Constraint.FIRST) {
 				((PCheckBox) child).removeObs(chkBxObs);
 			}
@@ -79,7 +79,7 @@ public class PCheckBoxTuple extends AbstractPLayoutOwner {
 	public PCheckBoxTuple() {
 		super();
 		setLayout(new PTupleLayout(this));
-		getLayout().addChild(new PCheckBox(), Constraint.FIRST);
+		getLayoutInternal().addChild(new PCheckBox(), Constraint.FIRST);
 		addObs(keyObs);
 		addObs(mouseObs);
 		addObs(new PFocusObs() {
@@ -97,7 +97,7 @@ public class PCheckBoxTuple extends AbstractPLayoutOwner {
 		setSecondComponent(secondComponent);
 	}
 	
-	protected void setLayout(PLayout layout) {
+	protected void setLayout(PTupleLayout layout) {
 		if (getLayout() != null) {
 			getLayout().removeObs(layoutObs);
 		}
@@ -107,24 +107,24 @@ public class PCheckBoxTuple extends AbstractPLayoutOwner {
 		}
 	}
 	
-	public PTupleLayout getLayout() {
-		return (PTupleLayout) layout;
+	protected PTupleLayout getLayoutInternal() {
+		return (PTupleLayout) super.getLayout();
 	}
 	
 	public void setSecondComponent(PComponent component) {
 		if (component == null) {
-			getLayout().removeChild(Constraint.SECOND);
+			getLayoutInternal().removeChild(Constraint.SECOND);
 		} else {
-			getLayout().addChild(component, Constraint.SECOND);
+			getLayoutInternal().addChild(component, Constraint.SECOND);
 		}
 	}
 	
 	public PComponent getSecondComponent() {
-		return getLayout().getAt(Constraint.SECOND);
+		return getLayoutInternal().getAt(Constraint.SECOND);
 	}
 	
 	public PCheckBox getCheckBox() {
-		return (PCheckBox) getLayout().getAt(Constraint.FIRST);
+		return (PCheckBox) getLayoutInternal().getAt(Constraint.FIRST);
 	}
 	
 	public boolean isChecked() {

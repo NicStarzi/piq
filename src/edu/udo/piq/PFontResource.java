@@ -52,7 +52,7 @@ public interface PFontResource {
 	 * @see PSize#NULL_SIZE
 	 * @see PComponent#getDefaultPreferredSize()
 	 * @see PDesign#getPreferredSize(PComponent)
-	 * @see PLayout#getPreferredSize()
+	 * @see PReadOnlyLayout#getPreferredSize()
 	 * @see PCompUtil#getPreferredSizeOf(PComponent)
 	 */
 	public PSize getSize(String text);

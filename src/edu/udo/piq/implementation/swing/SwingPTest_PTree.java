@@ -58,7 +58,7 @@ public class SwingPTest_PTree {
 		
 		PPanel bodyPnl = new PPanel();
 		bodyPnl.setLayout(new PBorderLayout(bodyPnl));
-		root.getBody().getLayout().addChild(bodyPnl, PBorderLayout.Constraint.CENTER);
+		root.setBody(bodyPnl);
 		
 		PTree tree = new PTree();
 		tree.getModel().setRoot("Root");

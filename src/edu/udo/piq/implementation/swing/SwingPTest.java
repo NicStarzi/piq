@@ -70,12 +70,16 @@ public class SwingPTest {
 		updateTimer.setRepeats(true);
 		updateTimer.start();
 		
+		PPanel bodyPnl = new PPanel();
+		bodyPnl.setLayout(new PBorderLayout(bodyPnl));
+		root.setBody(bodyPnl);
+		
 		PSplitPanel splitV = new PSplitPanel();
-		splitV.getLayout().setOrientation(Orientation.VERTICAL);
-		root.getBody().getLayout().addChild(splitV, PBorderLayout.Constraint.CENTER);
+		splitV.setOrientation(Orientation.VERTICAL);
+		bodyPnl.addChild(splitV, PBorderLayout.Constraint.CENTER);
 		
 		PSplitPanel splitH = new PSplitPanel();
-		splitH.getLayout().setOrientation(Orientation.HORIZONTAL);
+		splitH.setOrientation(Orientation.HORIZONTAL);
 		splitV.setFirstComponent(splitH);
 		
 		PPicture pic = new PPicture();
@@ -125,7 +129,7 @@ public class SwingPTest {
 		PPanel btnPnl = new PPanel();
 		btnPnl.setLayout(new PWrapLayout(btnPnl, ListAlignment.FROM_LEFT));
 //		btnPnl.setLayout(new PListLayout(btnPnl, ListAlignment.FROM_LEFT));
-		root.getBody().getLayout().addChild(btnPnl, PBorderLayout.Constraint.BOTTOM);
+		bodyPnl.addChild(btnPnl, PBorderLayout.Constraint.BOTTOM);
 		
 		final PButton btnChange = new PButton();
 		btnChange.setContent(new PSlider());

@@ -30,7 +30,7 @@ import edu.udo.piq.PDesignSheet;
 import edu.udo.piq.PDialog;
 import edu.udo.piq.PDnDManager;
 import edu.udo.piq.PFontResource;
-import edu.udo.piq.PLayout;
+import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.PImageResource;
 import edu.udo.piq.PRoot;
@@ -249,7 +249,7 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 			PDesign design = comp.getDesign();
 			design.render(renderer, comp);
 			
-			PLayout layout = comp.getLayout();
+			PReadOnlyLayout layout = comp.getLayout();
 			if (layout != null) {
 				for (PComponent child : layout.getChildren()) {
 					stack.addFirst(new StackInfo(child, clipX, clipY, clipFx, clipFy));

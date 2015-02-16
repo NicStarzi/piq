@@ -77,15 +77,19 @@ public class PButton extends AbstractPLayoutOwner {
 	}
 	
 	public void setContent(PComponent component) {
-		getLayout().clearChildren();
-		getLayout().addChild(component, null);
+		getLayoutInternal().clearChildren();
+		getLayoutInternal().addChild(component, null);
 	}
 	
 	public PComponent getContent() {
-		return getLayout().getContent();
+		return getLayoutInternal().getContent();
 	}
 	
-	public PCentricLayout getLayout() {
+//	public PCentricLayout getLayout() {
+//		return (PCentricLayout) super.getLayout();
+//	}
+	
+	protected PCentricLayout getLayoutInternal() {
 		return (PCentricLayout) super.getLayout();
 	}
 	
@@ -135,7 +139,7 @@ public class PButton extends AbstractPLayoutOwner {
 			renderer.drawQuad(x + 1, y + 1, fx - 1, fy - 1);
 		}
 		if (hasFocus()) {
-			PInsets insets = getLayout().getInsets();
+			PInsets insets = getLayoutInternal().getInsets();
 			int innerX = x + insets.getFromLeft();
 			int innerY = y + insets.getFromTop();
 			int innerFx = fx - insets.getFromRight();

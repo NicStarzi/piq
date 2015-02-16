@@ -15,7 +15,6 @@ import edu.udo.piq.components.PLabel;
 import edu.udo.piq.components.PPanel;
 import edu.udo.piq.components.PSlider;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
-import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PFreeLayout;
 import edu.udo.piq.layouts.PWrapLayout;
 
@@ -56,7 +55,7 @@ public class SwingPTest_FreeLayout {
 		
 		PPanel bodyPnl = new PPanel();
 		bodyPnl.setLayout(new PFreeLayout(bodyPnl));
-		root.getBody().getLayout().addChild(bodyPnl, PBorderLayout.Constraint.CENTER);
+		root.setBody(bodyPnl);
 		
 		Person p = new Person("Max", "Mustermann");
 		

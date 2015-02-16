@@ -13,7 +13,7 @@ import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PKeyboard.Modifier;
 import edu.udo.piq.PKeyboardObs;
-import edu.udo.piq.PLayout;
+import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouseObs;
@@ -84,7 +84,7 @@ public class AbstractPComponent implements PComponent {
 	 * flag needReLayout to true.
 	 */
 	protected final PLayoutObs parentLayoutObs = new PLayoutObs() {
-		public void childLaidOut(PLayout layout, PComponent child, Object constraint) {
+		public void childLaidOut(PReadOnlyLayout layout, PComponent child, Object constraint) {
 			if (child == AbstractPComponent.this) {
 				needReLayout = true;
 				fireReRenderEvent();
@@ -306,9 +306,9 @@ public class AbstractPComponent implements PComponent {
 	
 	/**
 	 * Returns null.<br>
-	 * Subclasses should overwrite this method to return a {@link PLayout}.<br>
+	 * Subclasses should overwrite this method to return a {@link PReadOnlyLayout}.<br>
 	 */
-	public PLayout getLayout() {
+	public PReadOnlyLayout getLayout() {
 		return null;
 	}
 	

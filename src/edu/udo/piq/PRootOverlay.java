@@ -10,9 +10,9 @@ import edu.udo.piq.layouts.PFreeLayout;
  * drag and drop.<br>
  * The {@link PRootOverlay} interface does not extend {@link PComponent} 
  * but its safe to assume that the implementing class is a 
- * {@link PComponent} because the {@link PLayout} returned by the 
+ * {@link PComponent} because the {@link PReadOnlyLayout} returned by the 
  * {@link #getLayout()} requires an owner as defined by 
- * {@link PLayout#getOwner()}.<br>
+ * {@link PReadOnlyLayout#getOwner()}.<br>
  * <br>
  * A default implementation of {@link PRootOverlay} is the 
  * {@link PGlassPanel} which is recommended to be used with the 
@@ -24,7 +24,7 @@ import edu.udo.piq.layouts.PFreeLayout;
 public interface PRootOverlay {
 	
 	/**
-	 * Returns the {@link PLayout} for this overlay which is always a {@link PFreeLayout} 
+	 * Returns the {@link PReadOnlyLayout} for this overlay which is always a {@link PFreeLayout} 
 	 * or a subclass of it.<br>
 	 * The returned layout will never change over the life cycle of an overlay and is never 
 	 * null.<br>

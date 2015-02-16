@@ -23,7 +23,7 @@ import edu.udo.piq.PDnDManager;
 import edu.udo.piq.PDnDSupport;
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PKeyboardObs;
-import edu.udo.piq.PLayout;
+import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouseObs;
@@ -48,14 +48,14 @@ public abstract class AbstractPRoot implements PRoot {
 		}
 	};
 	private final PLayoutObs layoutObs = new PLayoutObs() {
-		public void layoutInvalidated(PLayout layout) {
+		public void layoutInvalidated(PReadOnlyLayout layout) {
 			needReLayout = true;
 		}
-		public void childRemoved(PLayout layout, PComponent child, Object constraint) {
+		public void childRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
 			child.removeObs(childObs);
 			needReLayout = true;
 		}
-		public void childAdded(PLayout layout, PComponent child, Object constraint) {
+		public void childAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
 			child.addObs(childObs);
 			needReLayout = true;
 		}
@@ -115,7 +115,7 @@ public abstract class AbstractPRoot implements PRoot {
 			PComponent comp = stack.pop();
 			comp.update();
 			
-			PLayout layout = comp.getLayout();
+			PReadOnlyLayout layout = comp.getLayout();
 			if (layout != null) {
 				for (PComponent child : layout.getChildren()) {
 					stack.addFirst(child);
@@ -186,6 +186,15 @@ public abstract class AbstractPRoot implements PRoot {
 	
 	public PRootOverlay getOverlay() {
 		return getLayout().getOverlay();
+	}
+	
+	public void setBody(PComponent component) {
+		if (getBody() != null) {
+			getLayout().removeChild(Constraint.BODY);
+		}
+		if (component != null) {
+			getLayout().addChild(component, Constraint.BODY);
+		}
 	}
 	
 	public PComponent getBody() {

@@ -4,7 +4,11 @@ import edu.udo.piq.components.util.PModelHistory;
 
 public interface PTreeModel {
 	
+	public void setRoot(Object node);
+	
 	public Object getRoot();
+	
+	public boolean isLeaf(Object node);
 	
 	public Object getParentOf(Object child);
 	
@@ -21,6 +25,14 @@ public interface PTreeModel {
 	public boolean canRemoveChild(Object parent, int index);
 	
 	public void removeChild(Object parent, int index);
+	
+	public default PTreePosition getPositionFor(Object node) {
+		return new PTreePosition(this, node);
+	}
+	
+	public default PTreePosition getPositionAt(Object parent, int index) {
+		return new PTreePosition(this, parent, index);
+	}
 	
 	public PModelHistory getHistory();
 	

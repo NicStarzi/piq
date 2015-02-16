@@ -10,7 +10,6 @@ import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.components.defaults.DefaultPProgressBarModel;
 import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.ImmutablePSize;
-import edu.udo.piq.util.PRenderUtil;
 
 public class PProgressBar extends AbstractPComponent {
 	
@@ -65,7 +64,7 @@ public class PProgressBar extends AbstractPComponent {
 		int fy = bounds.getFinalY();
 		
 		renderer.setColor(getDefaultBorderColor());
-		PRenderUtil.strokeQuad(renderer, x, y, fx, fy);
+		renderer.strokeQuad(x, y, fx, fy);
 		
 		double value = getModel().getValue();
 		double maxValue = getModel().getMaxValue();

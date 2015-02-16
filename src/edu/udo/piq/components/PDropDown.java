@@ -21,7 +21,6 @@ import edu.udo.piq.layouts.PFreeLayout.FreeConstraint;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.util.PCompUtil;
-import edu.udo.piq.util.PRenderUtil;
 
 public class PDropDown extends AbstractPLayoutOwner {
 	
@@ -132,16 +131,16 @@ public class PDropDown extends AbstractPLayoutOwner {
 		
 		if (isPressed()) {
 			renderer.setColor(PColor.GREY25);
-			PRenderUtil.strokeQuad(renderer, x, y, fx, fy);
+			renderer.strokeQuad(x, y, fx, fy);
 			renderer.setColor(PColor.GREY75);
 			renderer.drawQuad(x + 1, y + 1, fx - 1, fy - 1);
 		} else {
 			renderer.setColor(PColor.BLACK);
-			PRenderUtil.strokeBottom(renderer, x, y, fx, fy);
-			PRenderUtil.strokeRight(renderer, x, y, fx, fy);
+			renderer.strokeBottom(x, y, fx, fy);
+			renderer.strokeRight(x, y, fx, fy);
 			renderer.setColor(PColor.WHITE);
-			PRenderUtil.strokeTop(renderer, x, y, fx, fy);
-			PRenderUtil.strokeLeft(renderer, x, y, fx, fy);
+			renderer.strokeTop(x, y, fx, fy);
+			renderer.strokeLeft(x, y, fx, fy);
 			renderer.setColor(PColor.GREY75);
 			renderer.drawQuad(x + 1, y + 1, fx - 1, fy - 1);
 		}
@@ -153,11 +152,11 @@ public class PDropDown extends AbstractPLayoutOwner {
 		int btnFy = fy - insets.getFromBottom();
 		
 		renderer.setColor(PColor.BLACK);
-		PRenderUtil.strokeBottom(renderer, btnX, btnY, btnFx, btnFy);
-		PRenderUtil.strokeRight(renderer, btnX, btnY, btnFx, btnFy);
+		renderer.strokeBottom(btnX, btnY, btnFx, btnFy);
+		renderer.strokeRight(btnX, btnY, btnFx, btnFy);
 		renderer.setColor(PColor.WHITE);
-		PRenderUtil.strokeTop(renderer, btnX, btnY, btnFx, btnFy);
-		PRenderUtil.strokeLeft(renderer, btnX, btnY, btnFx, btnFy);
+		renderer.strokeTop(btnX, btnY, btnFx, btnFy);
+		renderer.strokeLeft(btnX, btnY, btnFx, btnFy);
 		renderer.setColor(PColor.GREY75);
 		renderer.drawQuad(btnX + 1, btnY + 1, btnFx - 1, btnFy - 1);
 		
@@ -274,7 +273,7 @@ public class PDropDown extends AbstractPLayoutOwner {
 			int fy = bnds.getFinalY();
 			
 			renderer.setColor(PColor.BLACK);
-			PRenderUtil.strokeQuad(renderer, x, y, fx, fy);
+			renderer.strokeQuad(x, y, fx, fy);
 			renderer.setColor(PColor.WHITE);
 			renderer.drawQuad(x + 1, y + 1, fx - 1, fy - 1);
 		}

@@ -4,10 +4,10 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.components.PLabel;
-import edu.udo.piq.components.PListCellComponent;
-import edu.udo.piq.components.PListModel;
+import edu.udo.piq.components.PTreeCellComponent;
+import edu.udo.piq.components.PTreeModel;
 
-public class DefaultPListCellComponent extends PLabel implements PListCellComponent {
+public class DefaultPTreeCellComponent extends PLabel implements PTreeCellComponent {
 	
 	protected static final PColor DEFAULT_TEXT_SELECTED_COLOR = PColor.WHITE;
 	protected static final PColor DEFAULT_BACKGROUND_SELECTED_COLOR = PColor.BLUE;
@@ -34,11 +34,11 @@ public class DefaultPListCellComponent extends PLabel implements PListCellCompon
 		return dropHighlight;
 	}
 	
-	public void setElement(PListModel model, Object element) {
+	public void setNode(PTreeModel model, Object element) {
 		getModel().setValue(element);
 	}
 	
-	public Object getElement() {
+	public Object getNode() {
 		return getModel().getValue();
 	}
 	

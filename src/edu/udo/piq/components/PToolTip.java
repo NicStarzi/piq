@@ -17,7 +17,6 @@ import edu.udo.piq.layouts.PFreeLayout;
 import edu.udo.piq.layouts.PFreeLayout.FreeConstraint;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.util.PCompUtil;
-import edu.udo.piq.util.PRenderUtil;
 
 public class PToolTip extends AbstractPLayoutOwner {
 	
@@ -123,7 +122,7 @@ public class PToolTip extends AbstractPLayoutOwner {
 		renderer.setColor(PColor.WHITE);
 		renderer.drawQuad(x + 1, y + 1, fx - 1, fy - 1);
 		renderer.setColor(PColor.BLACK);
-		PRenderUtil.strokeQuad(renderer, x, y, fx, fy);
+		renderer.strokeQuad(x, y, fx, fy);
 	}
 	
 	public PSize getDefaultPreferredSize() {

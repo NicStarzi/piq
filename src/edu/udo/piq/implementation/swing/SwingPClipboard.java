@@ -1,4 +1,4 @@
-package edu.udo.piq.util;
+package edu.udo.piq.implementation.swing;
 
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -8,13 +8,15 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
-public class PClipboardUtil {
+import edu.udo.piq.PClipboard;
+
+public class SwingPClipboard implements PClipboard {
 	
 	private static Clipboard getClipboard() {
 		return Toolkit.getDefaultToolkit().getSystemClipboard();
 	}
 	
-	public static void setClipboardContent(Object object) {
+	public boolean store(Object object) {
 		try {
 			Transferable trans;
 			if (object instanceof String) {
@@ -23,18 +25,20 @@ public class PClipboardUtil {
 				trans = new ObjectTransferable<Object>(object);
 			}
 			getClipboard().setContents(trans, null);
+			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
+			return false;
 		}
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <E> E getClipboardContent(Class<E> objClass) {
+	public <E> E load(Class<E> expectedClass) {
 		try {
 			Transferable transferable = getClipboard().getContents(null);
 			for (DataFlavor dataFlavor : transferable.getTransferDataFlavors()) {
 				Object obj = transferable.getTransferData(dataFlavor);
-				if (objClass.isInstance(obj)) {
+				if (expectedClass == null || expectedClass.isInstance(obj)) {
 					return (E) obj;
 				}
 			}
@@ -78,9 +82,6 @@ public class PClipboardUtil {
 			return flavors[0].equals(flavor);
 		}
 		
-	}
-	
-	private PClipboardUtil() {
 	}
 	
 }

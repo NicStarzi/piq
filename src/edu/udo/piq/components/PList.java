@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import edu.udo.piq.PBounds;
+import edu.udo.piq.PClipboard;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PDnDSupport;
@@ -26,7 +27,6 @@ import edu.udo.piq.components.defaults.DefaultPListSelection;
 import edu.udo.piq.layouts.PListLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
-import edu.udo.piq.util.PClipboardUtil;
 
 public class PList extends AbstractPLayoutOwner {
 	
@@ -39,7 +39,8 @@ public class PList extends AbstractPLayoutOwner {
 			}
 			if (key == Key.COPY) {
 				Set<Object> selectedElements = getSelection().getSelection();
-				PClipboardUtil.setClipboardContent(new ArrayList<>(selectedElements));
+				PClipboard clipBrd = getRoot().getClipboard();
+				clipBrd.store(selectedElements);
 			} else if (key == Key.PASTE) {
 				PListModel model = getModel();
 				
@@ -51,7 +52,8 @@ public class PList extends AbstractPLayoutOwner {
 					index = Collections.max(getSelectedIndices()) + 1;
 				}
 				
-				Iterable<?> elements = PClipboardUtil.getClipboardContent(Iterable.class);
+				PClipboard clipBrd = getRoot().getClipboard();
+				Iterable<?> elements = clipBrd.load(Iterable.class);
 				for (Object element : elements) {
 					if (!model.canAddElement(index, element)) {
 						return;
@@ -70,7 +72,8 @@ public class PList extends AbstractPLayoutOwner {
 					}
 				}
 				
-				PClipboardUtil.setClipboardContent(selectedElements);
+				PClipboard clipBrd = getRoot().getClipboard();
+				clipBrd.store(selectedElements);
 				for (Object element : selectedElements) {
 					model.removeElement(model.getIndexOfElement(element));
 				}
@@ -152,7 +155,7 @@ public class PList extends AbstractPLayoutOwner {
 		}
 		public void mouseMoved(PMouse mouse) {
 			PDnDSupport dndSup = getDragAndDropSupport();
-			if (isSelected && mouse.isPressed(MouseButton.LEFT) && dndSup != null) {
+			if (dndSup != null && isSelected && mouse.isPressed(MouseButton.LEFT)) {
 				int mx = mouse.getX();
 				int my = mouse.getY();
 				int disX = Math.abs(lastMouseX - mx);
@@ -365,7 +368,7 @@ public class PList extends AbstractPLayoutOwner {
 	
 	protected void elementAdded(Object element) {
 		int index = getModel().getIndexOfElement(element);
-		PListCellComponent cellComp = getCellFactory().getCellComponentFor(element);
+		PListCellComponent cellComp = getCellFactory().getCellComponentFor(getModel(), element);
 		elementToCompMap.put(element, cellComp);
 		getLayout().addChild(cellComp, Integer.valueOf(index));
 	}
@@ -382,7 +385,7 @@ public class PList extends AbstractPLayoutOwner {
 	protected void elementChanged(Object element) {
 		PListCellComponent comp = elementToCompMap.get(element);
 		if (comp != null) {
-			comp.setElement(element);
+			comp.setElement(getModel(), element);
 		}
 	}
 	

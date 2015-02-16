@@ -58,6 +58,7 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 	private final SwingPRenderer renderer = new SwingPRenderer();
 	private final SwingPMouse mouse = new SwingPMouse(panel);
 	private final SwingPKeyboard keyboard = new SwingPKeyboard(panel);
+	private final SwingPClipboard clipboard = new SwingPClipboard();
 	private final PDnDManager dndManager = new PDnDManager(this);
 	private final JPanelPBounds bounds = new JPanelPBounds(panel);
 	private final Timer timerUpdate = new Timer(1, new ActionListener() {
@@ -84,6 +85,7 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 		});
 		super.mouse = mouse;
 		super.keyboard = keyboard;
+		super.clipboard = clipboard;
 		super.dndManager = dndManager;
 		
 		timerUpdate.setRepeats(true);

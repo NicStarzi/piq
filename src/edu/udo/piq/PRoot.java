@@ -207,6 +207,16 @@ public interface PRoot extends PComponent {
 	public PKeyboard getKeyboard();
 	
 	/**
+	 * Returns an implementation of {@link PClipboard}.<br>
+	 * The implementation is platform dependent.<br>
+	 * This method might return null if the GUI does not support a 
+	 * clipboard.<br>
+	 * 
+	 * @return an implementation of {@link PClipboard} or null if a clipboard is not supported
+	 */
+	public PClipboard getClipboard();
+	
+	/**
 	 * Returns the overlay for this {@link PRoot} or null if no overlay is supported.<br>
 	 * The overlay is used (among other possible uses) for drop down menus, tooltips and the 
 	 * visual representation of a drag and drop.<br>

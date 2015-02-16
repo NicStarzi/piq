@@ -18,6 +18,7 @@ import edu.udo.piq.components.PPanel;
 import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PRootLayout;
 import edu.udo.piq.layouts.PRootLayout.Constraint;
+import edu.udo.piq.PClipboard;
 import edu.udo.piq.PDnDManager;
 import edu.udo.piq.PDnDSupport;
 import edu.udo.piq.PKeyboard;
@@ -38,6 +39,7 @@ public abstract class AbstractPRoot implements PRoot {
 	protected PDesignSheet designSheet = new AbstractPDesignSheet();
 	protected PMouse mouse;
 	protected PKeyboard keyboard;
+	protected PClipboard clipboard;
 	protected PDnDManager dndManager;
 	
 	private final PComponentObs childObs = new PComponentObs() {
@@ -176,6 +178,10 @@ public abstract class AbstractPRoot implements PRoot {
 	
 	public PKeyboard getKeyboard() {
 		return keyboard;
+	}
+	
+	public PClipboard getClipboard() {
+		return clipboard;
 	}
 	
 	public PRootOverlay getOverlay() {

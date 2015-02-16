@@ -11,7 +11,6 @@ import edu.udo.piq.components.defaults.DefaultPTableModel;
 import edu.udo.piq.components.defaults.DefaultPTableSelection;
 import edu.udo.piq.layouts.PTableLayout;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
-import edu.udo.piq.util.PRenderUtil;
 
 public class PTable extends AbstractPLayoutOwner {
 	
@@ -104,7 +103,7 @@ public class PTable extends AbstractPLayoutOwner {
 		renderer.setColor(PColor.WHITE);
 		renderer.drawQuad(x + 1, y + 1, fx - 1, fy - 1);
 		renderer.setColor(PColor.BLACK);
-		PRenderUtil.strokeQuad(renderer, x, y, fx, fy, 1);
+		renderer.strokeQuad(x, y, fx, fy, 1);
 		
 		PTableLayout layout = getLayout();
 		int gap = layout.getGap();

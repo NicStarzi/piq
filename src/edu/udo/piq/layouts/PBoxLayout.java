@@ -12,7 +12,7 @@ import edu.udo.piq.tools.MutablePSize;
 
 public class PBoxLayout extends AbstractPLayout {
 	
-	protected final MutablePSize prefSize = new MutablePSize();;
+	protected final MutablePSize prefSize = new MutablePSize();
 	protected PInsets insets = new ImmutablePInsets(4, 4);
 	private Box rootBox;
 	

@@ -17,7 +17,6 @@ import edu.udo.piq.components.util.PModelHistory;
 import edu.udo.piq.layouts.PTupleLayout;
 import edu.udo.piq.layouts.PTupleLayout.Constraint;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
-import edu.udo.piq.util.PRenderUtil;
 
 public class PCheckBoxTuple extends AbstractPLayoutOwner {
 	
@@ -145,7 +144,7 @@ public class PCheckBoxTuple extends AbstractPLayoutOwner {
 			int fy = bnds.getFinalY();
 			
 			renderer.setColor(PColor.GREY50);
-			PRenderUtil.strokeQuad(renderer, x, y, fx, fy);
+			renderer.strokeQuad(x, y, fx, fy);
 		}
 	}
 	

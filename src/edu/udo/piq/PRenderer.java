@@ -229,4 +229,95 @@ public interface PRenderer {
 	
 	public void drawString(PFontResource font, String text, float x, float y);
 	
+	public default void strokeQuad(PBounds bounds) {
+		int x = bounds.getX();
+		int y = bounds.getY();
+		int fx = bounds.getFinalX();
+		int fy = bounds.getFinalY();
+		strokeQuad(x, y, fx, fy);
+	}
+	
+	public default void strokeQuad(PBounds bounds, int lineWidth) {
+		int x = bounds.getX();
+		int y = bounds.getY();
+		int fx = bounds.getFinalX();
+		int fy = bounds.getFinalY();
+		strokeQuad(x, y, fx, fy, lineWidth);
+	}
+	
+	public default void strokeQuad(int x, int y, int fx, int fy) {
+		strokeQuad(x, y, fx, fy, 1);
+	}
+	
+	public default void strokeQuad(int x, int y, int fx, int fy, int lineWidth) {
+		strokeTop(x, y, fx, fy, lineWidth);
+		strokeBottom(x, y, fx, fy, lineWidth);
+		strokeLeft(x, y, fx, fy, lineWidth);
+		strokeRight(x, y, fx, fy, lineWidth);
+	}
+	
+	public default void strokeTop(PBounds bounds) {
+		strokeTop(bounds.getX(), bounds.getY(), bounds.getFinalX(), bounds.getFinalY());
+	}
+	
+	public default void strokeTop(PBounds bounds, int lineWidth) {
+		strokeTop(bounds.getX(), bounds.getY(), bounds.getFinalX(), bounds.getFinalY(), lineWidth);
+	}
+	
+	public default void strokeTop(int x, int y, int fx, int fy) {
+		strokeTop(x, y, fx, fy, 1);
+	}
+	
+	public default void strokeTop(int x, int y, int fx, int fy, int lineWidth) {
+		drawQuad(x, y, fx, y + lineWidth);
+	}
+	
+	public default void strokeBottom(PBounds bounds) {
+		strokeBottom(bounds.getX(), bounds.getY(), bounds.getFinalX(), bounds.getFinalY());
+	}
+	
+	public default void strokeBottom(PBounds bounds, int lineWidth) {
+		strokeBottom(bounds.getX(), bounds.getY(), bounds.getFinalX(), bounds.getFinalY(), lineWidth);
+	}
+	
+	public default void strokeBottom(int x, int y, int fx, int fy) {
+		strokeBottom(x, y, fx, fy, 1);
+	}
+	
+	public default void strokeBottom(int x, int y, int fx, int fy, int lineWidth) {
+		drawQuad(x, fy - lineWidth, fx, fy);
+	}
+	
+	public default void strokeLeft(PBounds bounds) {
+		strokeLeft(bounds.getX(), bounds.getY(), bounds.getFinalX(), bounds.getFinalY());
+	}
+	
+	public default void strokeLeft(PBounds bounds, int lineWidth) {
+		strokeLeft(bounds.getX(), bounds.getY(), bounds.getFinalX(), bounds.getFinalY(), lineWidth);
+	}
+	
+	public default void strokeLeft(int x, int y, int fx, int fy) {
+		strokeLeft(x, y, fx, fy, 1);
+	}
+	
+	public default void strokeLeft(int x, int y, int fx, int fy, int lineWidth) {
+		drawQuad(x, y, x + lineWidth, fy);
+	}
+	
+	public default void strokeRight(PBounds bounds) {
+		strokeRight(bounds.getX(), bounds.getY(), bounds.getFinalX(), bounds.getFinalY());
+	}
+	
+	public default void strokeRight(PBounds bounds, int lineWidth) {
+		strokeRight(bounds.getX(), bounds.getY(), bounds.getFinalX(), bounds.getFinalY(), lineWidth);
+	}
+	
+	public default void strokeRight(int x, int y, int fx, int fy) {
+		strokeRight(x, y, fx, fy, 1);
+	}
+	
+	public default void strokeRight(int x, int y, int fx, int fy, int lineWidth) {
+		drawQuad(fx - lineWidth, y, fx, fy);
+	}
+	
 }

@@ -13,7 +13,6 @@ import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.components.defaults.DefaultPSliderModel;
 import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.ImmutablePSize;
-import edu.udo.piq.util.PRenderUtil;
 
 public class PSlider extends AbstractPComponent {
 	
@@ -125,21 +124,18 @@ public class PSlider extends AbstractPComponent {
 		int sldFx = sldX + DEFAULT_SLIDER_WIDTH;
 		int sldFy = fy - 1;
 		
-//		renderer.setColor(PColor.GREY50);
-//		renderer.drawQuad(sldX, y, sldFx, fy);
-		
 		renderer.setColor(PColor.BLACK);
-		PRenderUtil.strokeBottom(renderer, sldX, sldY, sldFx, sldFy);
-		PRenderUtil.strokeRight(renderer, sldX, sldY, sldFx, sldFy);
+		renderer.strokeBottom(sldX, sldY, sldFx, sldFy);
+		renderer.strokeRight(sldX, sldY, sldFx, sldFy);
 		renderer.setColor(PColor.WHITE);
-		PRenderUtil.strokeTop(renderer, sldX, sldY, sldFx, sldFy);
-		PRenderUtil.strokeLeft(renderer, sldX, sldY, sldFx, sldFy);
+		renderer.strokeTop(sldX, sldY, sldFx, sldFy);
+		renderer.strokeLeft(sldX, sldY, sldFx, sldFy);
 		renderer.setColor(PColor.GREY75);
 		renderer.drawQuad(sldX + 1, sldY + 1, sldFx - 1, sldFy - 1);
 		
 		if (hasFocus()) {
 			renderer.setColor(PColor.GREY50);
-			PRenderUtil.strokeQuad(renderer, x, y, fx, fy, 1);
+			renderer.strokeQuad(x, y, fx, fy, 1);
 		}
 	}
 	

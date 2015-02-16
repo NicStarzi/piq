@@ -13,31 +13,12 @@ import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.components.defaults.DefaultPCheckBoxModel;
 import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.ImmutablePSize;
-import edu.udo.piq.util.PRenderUtil;
 
 public class PCheckBox extends AbstractPComponent {
 	
 	private static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(12, 12);
 	
 	private final List<PCheckBoxObs> obsList = new CopyOnWriteArrayList<>();
-//	private final PKeyboardObs keyObs = new PKeyboardObs() {
-//		public void keyTriggered(PKeyboard keyboard, Key key) {
-//			if (!hasFocus()) {
-//				return;
-//			}
-//			if (key == Key.ENTER) {
-//				getModel().setChecked(!getModel().isChecked());
-//			} else if (key == Key.UNDO) {
-//				if (getModel().getHistory() != null && getModel().getHistory().canUndo()) {
-//					getModel().getHistory().undo();
-//				}
-//			} else if (key == Key.REDO) {
-//				if (getModel().getHistory() != null && getModel().getHistory().canUndo()) {
-//					getModel().getHistory().redo();
-//				}
-//			}
-//		}
-//	};
 	private final PMouseObs mouseObs = new PMouseObs() {
 		public void buttonTriggered(PMouse mouse, MouseButton btn) {
 			if (btn == MouseButton.LEFT && isMouseOver()) {
@@ -57,7 +38,6 @@ public class PCheckBox extends AbstractPComponent {
 	public PCheckBox() {
 		super();
 		setModel(new DefaultPCheckBoxModel());
-//		addObs(keyObs);
 		addObs(mouseObs);
 	}
 	
@@ -96,7 +76,7 @@ public class PCheckBox extends AbstractPComponent {
 		int fy = bnds.getFinalY();
 		
 		renderer.setColor(PColor.BLACK);
-		PRenderUtil.strokeQuad(renderer, x, y, fx, fy, 1);
+		renderer.strokeQuad(x, y, fx, fy, 1);
 		renderer.setColor(PColor.WHITE);
 		renderer.drawQuad(x + 1, y + 1, fx - 1, fy - 1);
 		

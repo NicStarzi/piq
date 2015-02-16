@@ -19,7 +19,6 @@ import edu.udo.piq.components.defaults.DefaultPButtonModel;
 import edu.udo.piq.layouts.PCentricLayout;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.tools.ImmutablePInsets;
-import edu.udo.piq.util.PRenderUtil;
 
 public class PButton extends AbstractPLayoutOwner {
 	
@@ -122,16 +121,16 @@ public class PButton extends AbstractPLayoutOwner {
 		
 		if (isPressed()) {
 			renderer.setColor(PColor.GREY25);
-			PRenderUtil.strokeQuad(renderer, x, y, fx, fy);
+			renderer.strokeQuad(x, y, fx, fy);
 			renderer.setColor(PColor.GREY75);
 			renderer.drawQuad(x + 1, y + 1, fx - 1, fy - 1);
 		} else {
 			renderer.setColor(PColor.BLACK);
-			PRenderUtil.strokeBottom(renderer, x, y, fx, fy);
-			PRenderUtil.strokeRight(renderer, x, y, fx, fy);
+			renderer.strokeBottom(x, y, fx, fy);
+			renderer.strokeRight(x, y, fx, fy);
 			renderer.setColor(PColor.WHITE);
-			PRenderUtil.strokeTop(renderer, x, y, fx, fy);
-			PRenderUtil.strokeLeft(renderer, x, y, fx, fy);
+			renderer.strokeTop(x, y, fx, fy);
+			renderer.strokeLeft(x, y, fx, fy);
 			renderer.setColor(PColor.GREY75);
 			renderer.drawQuad(x + 1, y + 1, fx - 1, fy - 1);
 		}
@@ -142,7 +141,7 @@ public class PButton extends AbstractPLayoutOwner {
 			int innerFx = fx - insets.getFromRight();
 			int innerFy = fy - insets.getFromBottom();
 			renderer.setColor(PColor.GREY50);
-			PRenderUtil.strokeQuad(renderer, innerX, innerY, innerFx, innerFy);
+			renderer.strokeQuad(innerX, innerY, innerFx, innerFy);
 		}
 	}
 	

@@ -3,7 +3,6 @@ package edu.udo.piq.components.defaults;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PDnDManager;
@@ -153,7 +152,7 @@ public class DefaultPTreeDnDSupport implements PDnDSupport {
 			// We know the selection is not null since the canDrag method returned true
 			PTreeSelection selection = tree.getSelection();
 			
-			Set<Object> selectedElements = selection.getSelection();
+			List<Object> selectedElements = selection.getSelection();
 			List<Object> data = new ArrayList<>(selectedElements);
 			
 			PDnDTransfer transfer = new ImmutablePDnDTransfer(source, x, y, data, 

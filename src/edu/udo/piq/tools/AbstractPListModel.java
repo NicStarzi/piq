@@ -17,7 +17,7 @@ public abstract class AbstractPListModel implements PListModel {
 	}
 	
 	public void removeElement(Object element) {
-		int index = getIndexOfElement(element);
+		int index = getElementIndex(element);
 		if (index == -1) {
 			throw new IllegalArgumentException(element+" is not contained");
 		}

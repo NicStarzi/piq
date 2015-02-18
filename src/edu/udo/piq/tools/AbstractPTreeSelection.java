@@ -10,7 +10,7 @@ import edu.udo.piq.components.PTreeSelectionObs;
 public abstract class AbstractPTreeSelection implements PTreeSelection {
 	
 	private final List<PTreeSelectionObs> obsList = new CopyOnWriteArrayList<>();
-	private SelectionMode mode = DEFAULT_SELECTION_MODE;
+//	private SelectionMode mode = DEFAULT_SELECTION_MODE;
 	private PTreeModel model;
 	
 	public void setModel(PTreeModel model) {
@@ -22,14 +22,14 @@ public abstract class AbstractPTreeSelection implements PTreeSelection {
 		return model;
 	}
 	
-	public void setSelectionMode(SelectionMode selectionMode) {
-		mode = selectionMode;
-		clearSelection();
-	}
-	
-	public SelectionMode getSelectionMode() {
-		return mode;
-	}
+//	public void setSelectionMode(SelectionMode selectionMode) {
+//		mode = selectionMode;
+//		clearSelection();
+//	}
+//	
+//	public SelectionMode getSelectionMode() {
+//		return mode;
+//	}
 	
 	public void addObs(PTreeSelectionObs obs) {
 		obsList.add(obs);

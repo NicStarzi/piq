@@ -12,7 +12,6 @@ import javax.swing.Timer;
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PLabel;
 import edu.udo.piq.components.PList;
-import edu.udo.piq.components.PListSelection.SelectionMode;
 import edu.udo.piq.components.PPanel;
 import edu.udo.piq.components.PSplitPanel;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
@@ -64,7 +63,6 @@ public class SwingPTest_DragAndDrop {
 		bodyPnl.addChild(split, PBorderLayout.Constraint.CENTER);
 		
 		final PList listLeft = new PList();
-		listLeft.getSelection().setSelectionMode(SelectionMode.ARBITRARY_ROWS);
 		for (int i = 0; i < 4; i++) {
 			listLeft.getModel().addElement(i, Integer.valueOf(i));
 		}
@@ -81,7 +79,7 @@ public class SwingPTest_DragAndDrop {
 				fireRemovedEvent(element, index);
 			}
 			
-			public int getIndexOfElement(Object element) {
+			public int getElementIndex(Object element) {
 				return list.indexOf(element);
 			}
 			

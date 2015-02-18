@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PClipboard;
@@ -23,7 +22,7 @@ import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.components.defaults.DefaultPListCellFactory;
 import edu.udo.piq.components.defaults.DefaultPListDnDSupport;
 import edu.udo.piq.components.defaults.DefaultPListModel;
-import edu.udo.piq.components.defaults.DefaultPListSelection;
+import edu.udo.piq.components.defaults.PListSelectionSingleRow;
 import edu.udo.piq.layouts.PListLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
@@ -38,7 +37,7 @@ public class PList extends AbstractPLayoutOwner {
 				return;
 			}
 			if (key == Key.COPY) {
-				Set<Object> selectedElements = getSelection().getSelection();
+				List<Object> selectedElements = getSelection().getSelection();
 				PClipboard clipBrd = getRoot().getClipboard();
 				clipBrd.store(selectedElements);
 			} else if (key == Key.PASTE) {
@@ -67,7 +66,7 @@ public class PList extends AbstractPLayoutOwner {
 				
 				List<Object> selectedElements = new ArrayList<>(getSelection().getSelection());
 				for (Object element : selectedElements) {
-					if (!model.canRemoveElement(model.getIndexOfElement(element))) {
+					if (!model.canRemoveElement(model.getElementIndex(element))) {
 						return;
 					}
 				}
@@ -75,7 +74,7 @@ public class PList extends AbstractPLayoutOwner {
 				PClipboard clipBrd = getRoot().getClipboard();
 				clipBrd.store(selectedElements);
 				for (Object element : selectedElements) {
-					model.removeElement(model.getIndexOfElement(element));
+					model.removeElement(model.getElementIndex(element));
 				}
 			} else if (key == Key.UNDO) {
 				if (getModel().getHistory() != null && getModel().getHistory().canUndo()) {
@@ -92,7 +91,7 @@ public class PList extends AbstractPLayoutOwner {
 				return;
 			}
 			PListSelection selection = getSelection();
-			Set<Object> selectedElements = selection.getSelection();
+			List<Object> selectedElements = selection.getSelection();
 			if (selectedElements.isEmpty()) {
 				return;
 			}
@@ -203,7 +202,7 @@ public class PList extends AbstractPLayoutOwner {
 		super();
 		setLayout(new PListLayout(this, ListAlignment.FROM_TOP, 1));
 		setDragAndDropSupport(new DefaultPListDnDSupport());
-		setSelection(new DefaultPListSelection());
+		setSelection(new PListSelectionSingleRow());
 		setCellFactory(new DefaultPListCellFactory());
 		setModel(model);
 		addObs(keyObs);
@@ -319,7 +318,7 @@ public class PList extends AbstractPLayoutOwner {
 	
 	protected void rangeSelection(Object element) {
 		PListModel model = getModel();
-		int index = model.getIndexOfElement(element);
+		int index = model.getElementIndex(element);
 		PListSelection selection = getSelection();
 		for (int i = index; i >= 0; i--) {
 			Object elem = model.getElement(i);
@@ -367,7 +366,7 @@ public class PList extends AbstractPLayoutOwner {
 	}
 	
 	protected void elementAdded(Object element) {
-		int index = getModel().getIndexOfElement(element);
+		int index = getModel().getElementIndex(element);
 		PListCellComponent cellComp = getCellFactory().getCellComponentFor(getModel(), element);
 		elementToCompMap.put(element, cellComp);
 		getLayoutInternal().addChild(cellComp, Integer.valueOf(index));
@@ -398,11 +397,11 @@ public class PList extends AbstractPLayoutOwner {
 	
 	protected List<Integer> getSelectedIndices() {
 		PListSelection selection = getSelection();
-		Set<Object> selectedElements = selection.getSelection();
+		List<Object> selectedElements = selection.getSelection();
 		PListModel model = getModel();
 		List<Integer> selectedIndices = new ArrayList<>();
 		for (Object element : selectedElements) {
-			selectedIndices.add(model.getIndexOfElement(element));
+			selectedIndices.add(model.getElementIndex(element));
 		}
 		return selectedIndices;
 	}

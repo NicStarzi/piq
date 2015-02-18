@@ -1,6 +1,5 @@
 package edu.udo.piq.components;
 
-import edu.udo.piq.components.PListSelection.SelectionMode;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
 
 public class PDropDownList extends PDropDown {
@@ -47,7 +46,7 @@ public class PDropDownList extends PDropDown {
 		super();
 		list = new PList();
 		list.getModel().addObs(modelObs);
-		list.getSelection().setSelectionMode(SelectionMode.SINGLE_ROW);
+//		list.getSelection().setSelectionMode(SelectionMode.SINGLE_ROW);
 		list.getSelection().addObs(listSelectObs);
 		setBody(list);
 		

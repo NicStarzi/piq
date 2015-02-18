@@ -32,7 +32,7 @@ public class DefaultPListModel extends AbstractPListModel {
 		return elements.get(index);
 	}
 	
-	public int getIndexOfElement(Object element) {
+	public int getElementIndex(Object element) {
 		return elements.indexOf(element);
 	}
 	

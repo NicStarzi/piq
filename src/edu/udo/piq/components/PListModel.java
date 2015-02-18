@@ -12,7 +12,7 @@ public interface PListModel {
 	 * 
 	 * @return the number of elements in this model
 	 * @see #getElement(int)
-	 * @see #getIndexOfElement(Object)
+	 * @see #getElementIndex(Object)
 	 */
 	public int getElementCount();
 	
@@ -26,7 +26,7 @@ public interface PListModel {
 	 * @return an element from this model
 	 * @throws IndexOutOfBoundsException if index < 0 or index >= {@link #getElementCount()}
 	 * @see #getElementCount()
-	 * @see #getIndexOfElement(Object)
+	 * @see #getElementIndex(Object)
 	 */
 	public Object getElement(int index) throws IndexOutOfBoundsException;
 	
@@ -41,7 +41,7 @@ public interface PListModel {
 	 * @see #getElementCount()
 	 * @see #getElement(int)
 	 */
-	public int getIndexOfElement(Object element);
+	public int getElementIndex(Object element);
 	
 	/**
 	 * Returns true if the given element can be added with the 

@@ -113,8 +113,9 @@ public class DefaultPTableSelection extends AbstractPTableSelection implements P
 		}
 	}
 	
-	public Set<PTableCell> getSelection() {
-		return Collections.unmodifiableSet(selection);
+	public List<PTableCell> getSelection() {
+		return null;
+//		return Collections.unmodifiableSet(selection);
 	}
 	
 	public boolean isSelected(PTableCell cell) {

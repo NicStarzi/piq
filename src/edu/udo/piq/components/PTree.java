@@ -19,7 +19,7 @@ import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.components.defaults.DefaultPTreeCellFactory;
 import edu.udo.piq.components.defaults.DefaultPTreeDnDSupport;
 import edu.udo.piq.components.defaults.DefaultPTreeModel;
-import edu.udo.piq.components.defaults.DefaultPTreeSelection;
+import edu.udo.piq.components.defaults.PTreeSelectionSingleNode;
 import edu.udo.piq.layouts.PTreeLayout;
 import edu.udo.piq.layouts.PTreeLayout.Constraint;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
@@ -116,7 +116,7 @@ public class PTree extends AbstractPLayoutOwner {
 		super();
 		setLayout(new PTreeLayout(this));
 		setDragAndDropSupport(new DefaultPTreeDnDSupport());
-		setSelection(new DefaultPTreeSelection());
+		setSelection(new PTreeSelectionSingleNode());
 		setCellFactory(new DefaultPTreeCellFactory());
 		setModel(model);
 //		addObs(keyObs);

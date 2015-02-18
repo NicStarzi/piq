@@ -1,6 +1,6 @@
 package edu.udo.piq.components;
 
-import java.util.Set;
+import java.util.List;
 
 public interface PSelection<E> {
 	
@@ -10,7 +10,7 @@ public interface PSelection<E> {
 	
 	public void clearSelection();
 	
-	public Set<E> getSelection();
+	public List<E> getSelection();
 	
 	public boolean isSelected(E cell);
 	

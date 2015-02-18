@@ -3,7 +3,6 @@ package edu.udo.piq.components.defaults;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PDnDManager;
@@ -125,7 +124,7 @@ public class DefaultPListDnDSupport implements PDnDSupport {
 				return false;
 			}
 			for (Object element : selection.getSelection()) {
-				int index = model.getIndexOfElement(element);
+				int index = model.getElementIndex(element);
 				if (!model.canRemoveElement(index)) {
 					return false;
 				}
@@ -149,7 +148,7 @@ public class DefaultPListDnDSupport implements PDnDSupport {
 			// We know the selection is not null since the canDrag method returned true
 			PListSelection selection = list.getSelection();
 			
-			Set<Object> selectedElements = selection.getSelection();
+			List<Object> selectedElements = selection.getSelection();
 			List<Object> data = new ArrayList<>(selectedElements);
 			
 			PDnDTransfer transfer = new ImmutablePDnDTransfer(source, x, y, data, 
@@ -179,7 +178,7 @@ public class DefaultPListDnDSupport implements PDnDSupport {
 				// We assume each element is only contained once in the list.
 				// This is a dangerous assumption that might not be true all the time, 
 				// In this case the user is forced to write a custom PDndSupport
-				int index = model.getIndexOfElement(element);
+				int index = model.getElementIndex(element);
 				model.removeElement(index);
 			}
 		} catch (Exception e) {

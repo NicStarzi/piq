@@ -23,11 +23,8 @@ import edu.udo.piq.components.PSlider;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.layouts.PFreeLayout;
 import edu.udo.piq.layouts.PWrapLayout;
-<<<<<<< HEAD:piq-swing/src/edu/udo/piq/swing/tests/SwingPTest_FreeLayout.java
 import edu.udo.piq.swing.JCompPRoot;
-=======
 import edu.udo.piq.tools.AbstractPDesignSheet;
->>>>>>> b82c6a800ddb5d97d38ef569d9710e9e3bf27a4a:src/edu/udo/piq/implementation/swing/SwingPTest_FreeLayout.java
 
 public class SwingPTest_FreeLayout {
 	public static void main(String[] args) {

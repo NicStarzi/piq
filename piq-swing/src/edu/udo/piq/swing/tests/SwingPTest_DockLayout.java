@@ -1,4 +1,4 @@
-package edu.udo.piq.implementation.swing;
+package edu.udo.piq.swing.tests;
 
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
@@ -13,6 +13,7 @@ import edu.udo.piq.components.PPanel;
 import edu.udo.piq.components.PPicture;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.layouts.PDockLayout;
+import edu.udo.piq.swing.JCompPRoot;
 import edu.udo.piq.tools.ImmutablePInsets;
 
 public class SwingPTest_DockLayout {

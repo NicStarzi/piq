@@ -28,6 +28,7 @@ import edu.udo.piq.components.PTextArea;
 import edu.udo.piq.components.PToolTip;
 import edu.udo.piq.components.defaults.DefaultPListModel;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
+import edu.udo.piq.designs.coolblue.CoolBluePDesignSheet;
 import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
 import edu.udo.piq.layouts.PSplitLayout.Orientation;
@@ -71,6 +72,8 @@ public class SwingPTest {
 		updateTimer.setRepeats(true);
 		updateTimer.start();
 		
+		root.setDesignSheet(new CoolBluePDesignSheet());
+		
 		PPanel bodyPnl = new PPanel();
 		bodyPnl.setLayout(new PBorderLayout(bodyPnl));
 		root.setBody(bodyPnl);
@@ -89,9 +92,9 @@ public class SwingPTest {
 		splitH.setFirstComponent(pic);
 		
 		PList list = new PList(new DefaultPListModel(new String[] {
-			"A", "B", "C", "D",
-			"E", "F", "G", "H",
-		}));
+				"A", "B", "C", "D",
+				"E", "F", "G", "H",
+			}));
 		splitH.setSecondComponent(list);
 		
 		PToolTip tipList = new PToolTip(new DefaultPTextModel("This is a nice list!"));

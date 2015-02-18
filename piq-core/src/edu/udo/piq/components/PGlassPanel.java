@@ -13,9 +13,6 @@ public class PGlassPanel extends PPanel implements PRootOverlay {
 	}
 	
 	public void setLayout(PFreeLayout layout) {
-		if (!(layout instanceof PFreeLayout)) {
-			throw new IllegalArgumentException("layout="+layout);
-		}
 		super.setLayout(layout);
 	}
 	

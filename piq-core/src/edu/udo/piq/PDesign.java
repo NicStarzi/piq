@@ -66,7 +66,7 @@ public interface PDesign {
 	 * @see PComponent
 	 * @see PReadOnlyLayout
 	 * @see PReadOnlyLayout#getChildBounds(PComponent)
-	 * @see PCompUtil#getBoundsOf(PComponent)
+	 * @see PComponent#getBounds()
 	 */
 	public default void render(PRenderer renderer, PComponent component) 
 			throws NullPointerException, IllegalArgumentException 

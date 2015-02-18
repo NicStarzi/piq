@@ -74,7 +74,7 @@ public class PMatrixLayout extends AbstractPLayout {
 	protected boolean canAdd(PComponent cmp, Object constraint) {
 		return constraint != null && constraint instanceof MatrixConstraint 
 				&& isValidCell((MatrixConstraint) constraint)
-				&& getChildForConstraint((MatrixConstraint) constraint) == null;
+				&& getChildForConstraint(constraint) == null;
 	}
 	
 	public PComponent getChildForConstraint(Object constraint) {

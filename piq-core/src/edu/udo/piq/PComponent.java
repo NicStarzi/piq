@@ -57,11 +57,11 @@ public interface PComponent {
 	 * @throws IllegalArgumentException if parent is a descendant of this component
 	 * @throws IllegalStateException if this component already has a non-null parent
 	 * @see #getParent()
-	 * @see PReadOnlyLayout#addChild(PComponent, Object)
-	 * @see PReadOnlyLayout#removeChild(Object)
-	 * @see PReadOnlyLayout#removeChild(PComponent)
-	 * @see PReadOnlyLayout#clearChildren()
-	 * @see PCompUtil#isDescendant(PComponent, PComponent)
+	 * @see PLayout#addChild(PComponent, Object)
+	 * @see PLayout#removeChild(Object)
+	 * @see PLayout#removeChild(PComponent)
+	 * @see PLayout#clearChildren()
+	 * @see #isDescendantOf(PComponent)
 	 */
 	public void setParent(PComponent parent) throws IllegalArgumentException, IllegalStateException;
 	
@@ -181,8 +181,8 @@ public interface PComponent {
 	 * @return true if this component should be included in focus traversal
 	 * @see PRoot#setFocusOwner(PComponent)
 	 * @see PRoot#getFocusOwner()
-	 * @see PCompUtil#takeFocus(PComponent)
-	 * @see PCompUtil#hasFocus(PComponent)
+	 * @see #takeFocus()
+	 * @see #hasFocus()
 	 */
 	public boolean isFocusable();
 	

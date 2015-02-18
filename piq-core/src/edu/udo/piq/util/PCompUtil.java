@@ -3,6 +3,7 @@ package edu.udo.piq.util;
 import java.util.Deque;
 import java.util.LinkedList;
 
+import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PDesign;
 import edu.udo.piq.PReadOnlyLayout;
@@ -386,8 +387,8 @@ public class PCompUtil {
 	 * @param y coordinate on the Y-axis in window space
 	 * @return a {@link PComponent} that contains (x, y) within its clipped bounds or null if no such component exists
 	 * @throws IllegalArgumentException if root is null
-	 * @see #getClippedBoundsOf(PComponent)
-	 * @see #isWithinClippedBounds(PComponent, int, int)
+	 * @see PComponent#getClippedBounds()
+	 * @see PBounds#contains(int, int)
 	 * @see PReadOnlyLayout#getChildAt(int, int)
 	 */
 	public static PComponent getComponentAt(PComponent root, int x, int y) throws IllegalArgumentException {

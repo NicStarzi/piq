@@ -12,7 +12,6 @@ import edu.udo.piq.components.PLabel;
 import edu.udo.piq.components.PPanel;
 import edu.udo.piq.components.PPicture;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
-import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PDockLayout;
 import edu.udo.piq.tools.ImmutablePInsets;
 
@@ -51,19 +50,12 @@ public class SwingPTest_DockLayout {
 		updateTimer.setRepeats(true);
 		updateTimer.start();
 		
-		/*
-		 * AAA BB CCC
-		 * 
-		 * AAAAAAAAAAAAAAAAAAAAA BB CCC
-		 */
-		
-		
 		PPanel pnl = new PPanel();
 		PDockLayout dockLayout = new PDockLayout(pnl);
 		dockLayout.setInsets(new ImmutablePInsets(12));
 		dockLayout.setGap(6);
 		pnl.setLayout(dockLayout);
-		root.getBody().getLayout().addChild(pnl, PBorderLayout.Constraint.CENTER);
+		root.setBody(pnl);
 		
 		PButton btn1 = new PButton();
 		btn1.setContent(new PLabel(new DefaultPTextModel("Button")));

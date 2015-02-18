@@ -46,7 +46,7 @@ public interface PReadOnlyLayout {
 	 * @param child the child component
 	 * @return true if child is a child of this layout, otherwise false
 	 * @throws NullPointerException if child is null
-	 * @see #addChild(PComponent, Object)
+	 * @see PLayout#addChild(PComponent, Object)
 	 * @see #containsChild(Object)
 	 */
 	public boolean containsChild(PComponent child) 
@@ -60,8 +60,8 @@ public interface PReadOnlyLayout {
 	 * @return true if a child with the given constraint exists, otherwise false
 	 * @throws IllegalArgumentException if constraint is not a valid constraint for this layout
 	 * @see #getChildConstraint(PComponent)
-	 * @see #addChild(PComponent, Object)
-	 * @see #removeChild(Object)
+	 * @see PLayout#addChild(PComponent, Object)
+	 * @see PLayout#removeChild(Object)
 	 */
 	public boolean containsChild(Object constraint) 
 			throws IllegalArgumentException;
@@ -90,8 +90,8 @@ public interface PReadOnlyLayout {
 	 * @return the Constraint of the child or null if the argument is not a child of this layout
 	 * @throws NullPointerException if child is null
 	 * @throws IllegalArgumentException if child is not a child of this layout
-	 * @see #addChild(PComponent, Object)
-	 * @see #removeChild(Object)
+	 * @see PLayout#addChild(PComponent, Object)
+	 * @see PLayout#removeChild(Object)
 	 * @see #containsChild(Object)
 	 */
 	public Object getChildConstraint(PComponent child) 
@@ -132,10 +132,10 @@ public interface PReadOnlyLayout {
 	 * returned collection after this method has been called previously.<br>
 	 * 
 	 * @return an unmodifiable collection of all children.
-	 * @see #addChild(PComponent, Object)
-	 * @see #removeChild(PComponent)
-	 * @see #removeChild(Object)
-	 * @see #clearChildren()
+	 * @see PLayout#addChild(PComponent, Object)
+	 * @see PLayout#removeChild(PComponent)
+	 * @see PLayout#removeChild(Object)
+	 * @see PLayout#clearChildren()
 	 */
 	public Collection<PComponent> getChildren();
 	

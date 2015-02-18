@@ -98,7 +98,7 @@ public class PSplitLayout extends AbstractPLayout {
 	
 	protected boolean canAdd(PComponent component, Object constraint) {
 		return constraint != null && constraint instanceof Constraint 
-				&& getChildForConstraint((Constraint) constraint) == null;
+				&& getChildForConstraint(constraint) == null;
 	}
 	
 	public void layOut() {

@@ -271,14 +271,6 @@ public class AbstractPComponent implements PComponent {
 		return parent;
 	}
 	
-//	/**
-//	 * Uses the utility method {@link PCompUtil#getBoundsOf(PComponent)} to 
-//	 * obtain the bounds for this component.<br>
-//	 */
-//	public PBounds getBounds() {
-//		return PCompUtil.getBoundsOf(this);
-//	}
-	
 	public void setDesign(PDesign design) {
 		customDesign = design;
 		fireReRenderEvent();

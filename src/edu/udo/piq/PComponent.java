@@ -7,7 +7,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.ImmutablePBounds;
-import edu.udo.piq.util.PCompUtil;
 import edu.udo.piq.util.PGuiUtil;
 
 /**
@@ -60,7 +59,7 @@ public interface PComponent {
 	 * @see PLayout#removeChild(Object)
 	 * @see PLayout#removeChild(PComponent)
 	 * @see PLayout#clearChildren()
-	 * @see PCompUtil#isDescendant(PComponent, PComponent)
+	 * @see #isDescendantOf(PComponent)
 	 */
 	public void setParent(PComponent parent) throws IllegalArgumentException, IllegalStateException;
 	
@@ -161,13 +160,7 @@ public interface PComponent {
 	 * @see PLayout
 	 * @see PLayout#getChildBounds(PComponent)
 	 */
-	public default PSize getDefaultPreferredSize() {
-		PLayout layout = getLayout();
-		if (layout != null) {
-			return layout.getPreferredSize();
-		}
-		return PSize.NULL_SIZE;
-	}
+	public PSize getDefaultPreferredSize();
 	
 	/**
 	 * Returns true if this {@link PComponent} may become the focus owner of a GUI.<br>
@@ -175,13 +168,13 @@ public interface PComponent {
 	 * tabbing through components with the focus traversal keys.<br>
 	 * A component that is not focusable may still get the focus programmatically 
 	 * through the use of the {@link PRoot#setFocusOwner(PComponent)} or 
-	 * {@link PCompUtil#takeFocus(PComponent)} method.<br>
+	 * {@link #takeFocus()} method.<br>
 	 * 
 	 * @return true if this component should be included in focus traversal
 	 * @see PRoot#setFocusOwner(PComponent)
 	 * @see PRoot#getFocusOwner()
-	 * @see PCompUtil#takeFocus(PComponent)
-	 * @see PCompUtil#hasFocus(PComponent)
+	 * @see #takeFocus()
+	 * @see #hasFocus()
 	 */
 	public boolean isFocusable();
 	

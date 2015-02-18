@@ -30,7 +30,7 @@ import edu.udo.piq.PDesignSheet;
 import edu.udo.piq.PDialog;
 import edu.udo.piq.PDnDManager;
 import edu.udo.piq.PFontResource;
-import edu.udo.piq.PLayout;
+import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.PImageResource;
 import edu.udo.piq.PRoot;
@@ -49,8 +49,6 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 			timerUpdate.stop();
 		}
 		public void paintComponent(Graphics g) {
-//			g.setColor(Color.BLACK);
-//			g.fillRect(0, 0, getWidth(), getHeight());
 			render((Graphics2D) g);
 		}
 	};
@@ -60,6 +58,7 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 	private final SwingPRenderer renderer = new SwingPRenderer();
 	private final SwingPMouse mouse = new SwingPMouse(panel);
 	private final SwingPKeyboard keyboard = new SwingPKeyboard(panel);
+	private final SwingPClipboard clipboard = new SwingPClipboard();
 	private final PDnDManager dndManager = new PDnDManager(this);
 	private final JPanelPBounds bounds = new JPanelPBounds(panel);
 	private final Timer timerUpdate = new Timer(1, new ActionListener() {
@@ -86,6 +85,7 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 		});
 		super.mouse = mouse;
 		super.keyboard = keyboard;
+		super.clipboard = clipboard;
 		super.dndManager = dndManager;
 		
 		timerUpdate.setRepeats(true);
@@ -249,7 +249,7 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 			PDesign design = comp.getDesign();
 			design.render(renderer, comp);
 			
-			PLayout layout = comp.getLayout();
+			PReadOnlyLayout layout = comp.getLayout();
 			if (layout != null) {
 				for (PComponent child : layout.getChildren()) {
 					stack.addFirst(new StackInfo(child, clipX, clipY, clipFx, clipFy));

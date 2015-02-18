@@ -37,7 +37,7 @@ public interface PRoot extends PComponent {
 	}
 	
 	/**
-	 * Returns the {@link PLayout} of this {@link PRoot}.<br>
+	 * Returns the {@link PReadOnlyLayout} of this {@link PRoot}.<br>
 	 * The layout of a root is always an instance of {@link PRootLayout} as it is 
 	 * needed to support {@link PRootOverlay PRootOverlays} and body {@link PPanel panels}.<br>
 	 * 
@@ -89,6 +89,14 @@ public interface PRoot extends PComponent {
 	 */
 	public default boolean defaultFillsAllPixels() {
 		return true;
+	}
+	
+	/**
+	 * Always returns false for {@link PRoot} instances.<br>
+	 * @return true
+	 */
+	public default boolean isElusive() {
+		return false;
 	}
 	
 	/**
@@ -199,6 +207,16 @@ public interface PRoot extends PComponent {
 	public PKeyboard getKeyboard();
 	
 	/**
+	 * Returns an implementation of {@link PClipboard}.<br>
+	 * The implementation is platform dependent.<br>
+	 * This method might return null if the GUI does not support a 
+	 * clipboard.<br>
+	 * 
+	 * @return an implementation of {@link PClipboard} or null if a clipboard is not supported
+	 */
+	public PClipboard getClipboard();
+	
+	/**
 	 * Returns the overlay for this {@link PRoot} or null if no overlay is supported.<br>
 	 * The overlay is used (among other possible uses) for drop down menus, tooltips and the 
 	 * visual representation of a drag and drop.<br>
@@ -215,6 +233,15 @@ public interface PRoot extends PComponent {
 	 * @see PRootLayout
 	 */
 	public PRootOverlay getOverlay();
+	
+	/**
+	 * Sets the body {@link PComponent} of this {@link PRoot} to the given component.<br>
+	 * Although it does not seem to be very useful it is possible to set the body to null.<br>
+	 * 
+	 * @param component the new body for this {@link PRoot} or null
+	 * @see PRootLayout
+	 */
+	public void setBody(PComponent component);
 	
 	/**
 	 * Returns the body {@link PComponent} of this {@link PRoot}, this is usually a 

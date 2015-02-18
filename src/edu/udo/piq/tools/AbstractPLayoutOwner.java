@@ -3,24 +3,25 @@ package edu.udo.piq.tools;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PComponentObs;
 import edu.udo.piq.PLayout;
+import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PLayoutObs;
 
 public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 	
 	protected final PLayoutObs layoutObs = new PLayoutObs() {
-		public void childRemoved(PLayout layout, PComponent child, Object constraint) {
+		public void childRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
 			child.removeObs(childObs);
 			needReLayout = true;
 			checkForPreferredSizeChange();
 		}
-		public void childAdded(PLayout layout, PComponent child, Object constraint) {
+		public void childAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
 			child.addObs(childObs);
 			needReLayout = true;
 			checkForPreferredSizeChange();
 		}
-		public void childLaidOut(PLayout layout, PComponent child, Object constraint) {
+		public void childLaidOut(PReadOnlyLayout layout, PComponent child, Object constraint) {
 		}
-		public void layoutInvalidated(PLayout layout) {
+		public void layoutInvalidated(PReadOnlyLayout layout) {
 			needReLayout = true;
 		}
 	};
@@ -33,7 +34,7 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 	protected PLayout layout;
 	
 	/**
-	 * Saves the given {@link PLayout} as the layout for this component.<br>
+	 * Saves the given {@link PReadOnlyLayout} as the layout for this component.<br>
 	 * If this component had a layout before it is cleared.<br>
 	 * This method registers an observer at the given layout to react to
 	 * changes with a re-render.<br>
@@ -51,22 +52,12 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 		}
 	}
 	
-	public PLayout getLayout() {
+	public PReadOnlyLayout getLayout() {
 		return layout;
 	}
 	
-//	/**
-//	 * Returns a {@link Collection} containing all children of this 
-//	 * containers {@link PLayout} as returned by {@link PLayout#getChildren()}.<br>
-//	 * 
-//	 * @return the children of this container
-//	 */
-//	protected Collection<PComponent> getChildren() {
-//		return PCompUtil.getChildrenOf(this);
-//	}
-	
 	/**
-	 * Returns true if the {@link PLayout} of this container has at least 
+	 * Returns true if the {@link PReadOnlyLayout} of this container has at least 
 	 * one child.<br>
 	 * 
 	 * @return true if this container has any children

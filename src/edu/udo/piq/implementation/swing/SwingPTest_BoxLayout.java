@@ -9,7 +9,6 @@ import javax.swing.Timer;
 
 import edu.udo.piq.components.PPanel;
 import edu.udo.piq.components.PPicture;
-import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PBoxLayout;
 import edu.udo.piq.layouts.PBoxLayout.Box;
 
@@ -51,7 +50,7 @@ public class SwingPTest_BoxLayout {
 		PPanel pnl = new PPanel();
 		PBoxLayout boxLayout = new PBoxLayout(pnl);
 		pnl.setLayout(boxLayout);
-		root.getBody().getLayout().addChild(pnl, PBorderLayout.Constraint.CENTER);
+		root.setBody(pnl);
 		
 		Box b1 = boxLayout.getRootBox();
 		b1.splitVertical(0.4, 5);

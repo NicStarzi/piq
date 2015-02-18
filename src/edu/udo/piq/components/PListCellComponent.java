@@ -12,6 +12,8 @@ public interface PListCellComponent extends PComponent {
 	
 	public boolean isDropHighlighted();
 	
-	public void elementChanged(PListModel model, Integer index);
+	public void setElement(PListModel model, Object element);
+	
+	public Object getElement();
 	
 }

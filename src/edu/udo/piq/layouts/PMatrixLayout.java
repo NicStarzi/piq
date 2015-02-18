@@ -3,7 +3,7 @@ package edu.udo.piq.layouts;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
-import edu.udo.piq.PLayout;
+import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractPLayout;
@@ -34,11 +34,11 @@ public class PMatrixLayout extends AbstractPLayout {
 		prefSize = new MutablePSize();
 		
 		addObs(new PLayoutObs() {
-			public void childAdded(PLayout layout, PComponent child, Object constraint) {
+			public void childAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
 				MatrixConstraint cell = (MatrixConstraint) constraint;
 				grid[gridID(cell.getX(), cell.getY())] = child;
 			}
-			public void childRemoved(PLayout layout, PComponent child, Object constraint) {
+			public void childRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
 				MatrixConstraint cell = (MatrixConstraint) constraint;
 				grid[gridID(cell.getX(), cell.getY())] = null;
 			}
@@ -74,19 +74,33 @@ public class PMatrixLayout extends AbstractPLayout {
 	protected boolean canAdd(PComponent cmp, Object constraint) {
 		return constraint != null && constraint instanceof MatrixConstraint 
 				&& isValidCell((MatrixConstraint) constraint)
-				&& getComponentAt((MatrixConstraint) constraint) == null;
+				&& getChildForConstraint((MatrixConstraint) constraint) == null;
 	}
 	
-	public PComponent getComponentAt(MatrixConstraint cell) {
-		return getComponentAt(cell.getX(), cell.getY());
+	public PComponent getChildForConstraint(Object constraint) {
+		if (constraint == null || !(constraint instanceof MatrixConstraint)) {
+			throw new IllegalArgumentException();
+		}
+		MatrixConstraint cell = (MatrixConstraint) constraint;
+		return getChildAt(cell.getX(), cell.getY());
 	}
 	
-	public PComponent getComponentAt(int x, int y) {
-		return grid[gridID(x, y)];
+	public PComponent getChildAt(int x, int y) {
+		PComponent child = grid[gridID(x, y)];
+		if (child.isElusive()) {
+			if (child.getLayout() != null) {
+				PComponent grandChild = child.getLayout().getChildAt(x, y);
+				if (grandChild != null) {
+					return grandChild;
+				}
+			}
+			return null;
+		}
+		return child;
 	}
 	
 	public PBounds getChildBoundsAt(int x, int y) {
-		return getChildBounds(getComponentAt(x, y));
+		return getChildBounds(getChildAt(x, y));
 	}
 	
 	private int gridID(int x, int y) {
@@ -125,7 +139,7 @@ public class PMatrixLayout extends AbstractPLayout {
 		
 		for (int x = 0; x < gridW; x++) {
 			for (int y = 0; y < gridH; y++) {
-				PComponent cmp = getComponentAt(x, y);
+				PComponent cmp = getChildAt(x, y);
 				if (cmp == null) {
 					continue;
 				}

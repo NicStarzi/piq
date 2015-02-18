@@ -20,6 +20,7 @@ public class PPicture extends AbstractPComponent {
 	private boolean stretchToSize = false;
 	
 	public PPicture() {
+		super();
 		setModel(model);
 	}
 	

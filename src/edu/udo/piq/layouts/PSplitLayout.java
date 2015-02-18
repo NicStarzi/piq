@@ -2,7 +2,7 @@ package edu.udo.piq.layouts;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PLayout;
+import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractPLayout;
@@ -29,7 +29,7 @@ public class PSplitLayout extends AbstractPLayout {
 	public PSplitLayout(PComponent component) {
 		super(component);
 		addObs(new PLayoutObs() {
-			public void childAdded(PLayout layout, PComponent child, Object constraint) {
+			public void childAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
 				if (constraint == Constraint.FIRST) {
 					first = child;
 				} else if (constraint == Constraint.SECOND) {
@@ -38,7 +38,7 @@ public class PSplitLayout extends AbstractPLayout {
 					divider = child;
 				}
 			}
-			public void childRemoved(PLayout layout, PComponent child, Object constraint) {
+			public void childRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
 				if (child == first) {
 					first = null;
 				} else if (child == second) {
@@ -80,7 +80,11 @@ public class PSplitLayout extends AbstractPLayout {
 		return splitPos;
 	}
 	
-	public PComponent getAt(Constraint constr) {
+	public PComponent getChildForConstraint(Object constraint) {
+		if (constraint == null || !(constraint instanceof Constraint)) {
+			throw new IllegalArgumentException();
+		}
+		Constraint constr = (Constraint) constraint;
 		if (constr == Constraint.FIRST) {
 			return first;
 		} else if (constr == Constraint.SECOND) {
@@ -94,7 +98,7 @@ public class PSplitLayout extends AbstractPLayout {
 	
 	protected boolean canAdd(PComponent component, Object constraint) {
 		return constraint != null && constraint instanceof Constraint 
-				&& getAt((Constraint) constraint) == null;
+				&& getChildForConstraint((Constraint) constraint) == null;
 	}
 	
 	public void layOut() {

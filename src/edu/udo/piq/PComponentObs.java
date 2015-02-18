@@ -4,7 +4,7 @@ package edu.udo.piq;
  * An observer for {@link PComponent}s.<br>
  * These observers can be used to get a notification when 
  * a {@link PComponent} changes its preferred size or is 
- * added to or removed from a {@link PLayout}.<br>
+ * added to or removed from a {@link PReadOnlyLayout}.<br>
  * 
  * @author Nic Starzi
  */
@@ -28,7 +28,7 @@ public interface PComponentObs {
 	
 	/**
 	 * This event is fired by a {@link PComponent} when the component 
-	 * was added to a {@link PLayout}.<br>
+	 * was added to a {@link PReadOnlyLayout}.<br>
 	 * 
 	 * @param component the component that fired the event
 	 */
@@ -36,7 +36,7 @@ public interface PComponentObs {
 	
 	/**
 	 * This event is fired by a {@link PComponent} when the component 
-	 * was removed from a {@link PLayout}.<br>
+	 * was removed from a {@link PReadOnlyLayout}.<br>
 	 * 
 	 * @param component the component that fired the event
 	 */

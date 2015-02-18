@@ -2,136 +2,172 @@ package edu.udo.piq.components;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
-import edu.udo.piq.PFontResource;
+import edu.udo.piq.PComponent;
+import edu.udo.piq.PComponentObs;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
-import edu.udo.piq.PRoot;
+import edu.udo.piq.PRootOverlay;
 import edu.udo.piq.PSize;
-import edu.udo.piq.PFontResource.Style;
-import edu.udo.piq.components.defaults.DefaultPTextModel;
-import edu.udo.piq.tools.AbstractPComponent;
-import edu.udo.piq.tools.ImmutablePSize;
-import edu.udo.piq.util.PRenderUtil;
+import edu.udo.piq.PTimer;
+import edu.udo.piq.PTimerCallback;
+import edu.udo.piq.layouts.PCentricLayout;
+import edu.udo.piq.layouts.PFreeLayout;
+import edu.udo.piq.layouts.PFreeLayout.FreeConstraint;
+import edu.udo.piq.tools.AbstractPLayoutOwner;
+import edu.udo.piq.util.PCompUtil;
 
-public class PToolTip extends AbstractPComponent {
+public class PToolTip extends AbstractPLayoutOwner {
 	
-	protected static final String DEFAULT_FONT_NAME = "Arial";
-	protected static final int DEFAULT_FONT_SIZE = 14;
-	protected static final Style DEFAULT_FONT_STYLE = Style.PLAIN;
-	protected static final PColor DEFAULT_TEXT_COLOR = PColor.BLACK;
-	protected static final PColor DEFAULT_BACKGROUND_COLOR = PColor.WHITE;
-	protected static final PColor DEFAULT_BORDER_COLOR = PColor.BLACK;
-	protected static final int DEFAULT_GAP = 2;
+	public static final int DEFAULT_SHOW_DELAY = 60;
 	
 	private final PMouseObs mouseObs = new PMouseObs() {
 		public void mouseMoved(PMouse mouse) {
+			if (isShown) {
+				if (!isMouseWithinClippedBounds()) {
+					removeFromOverlay();
+				}
+			} else {
+				boolean isWithin = target.isMouseWithinClippedBounds();
+				int newShowX = mouse.getX() - 4;
+				int newShowY = mouse.getY() - 4;
+				if (showX != newShowX || showY != newShowY) {
+					showX = newShowX;
+					showY = newShowY;
+					if (showTimer.isRunning()) {
+						showTimer.restart();
+					}
+				}
+				if (isWithin && !showTimer.isRunning()) {
+					showTimer.start();
+				} else if (!isWithin && showTimer.isRunning()) {
+					showTimer.stop();
+				}
+			}
 		}
 	};
-	private final PTextModelObs modelObs = new PTextModelObs() {
-		public void textChanged(PTextModel model) {
-			firePreferredSizeChangedEvent();
-			fireReRenderEvent();
+	private final PTimer showTimer = new PTimer(new PTimerCallback() {
+		public void action() {
+			addToOverlay();
 		}
-	};
-	private PTextModel model;
+	});
+	private int showX;
+	private int showY;
+	private boolean isShown = false;
+	private PComponent target;
 	
 	public PToolTip() {
-		this(new DefaultPTextModel());
+		super();
+		setLayout(new PCentricLayout(this));
+		showTimer.setRepeating(false);
+		showTimer.setDelay(DEFAULT_SHOW_DELAY);
+		
+		addObs(new PComponentObs() {
+			public void preferredSizeChanged(PComponent component) {
+				if (isShown) {
+					repositionOnOverlay();
+				}
+			}
+		});
 	}
 	
-	public PToolTip(PTextModel model) {
-		setModel(model);
+	public PToolTip(PTextModel textModel) {
+		this();
+		setContent(new PLabel(textModel));
 	}
 	
-	public void setModel(PTextModel model) {
-		if (getModel() != null) {
-			getModel().removeObs(modelObs);
-		}
-		this.model = model;
-		if (getModel() != null) {
-			getModel().addObs(modelObs);
-		}
-		firePreferredSizeChangedEvent();
-		fireReRenderEvent();
+	public void setShowDelay(int value) {
+		showTimer.setDelay(value);
 	}
 	
-	public PTextModel getModel() {
-		return model;
+	public int getShowDelay() {
+		return showTimer.getDelay();
 	}
 	
-	public String getText() {
-		if (getModel() == null) {
-			return "";
+	public void setTooltipComponent(PComponent component) {
+		if (target != null) {
+			target.removeObs(mouseObs);
 		}
-		Object text = model.getText();
-		if (text == null) {
-			return "";
+		target = component;
+		showTimer.setOwner(target);
+		if (target != null) {
+			target.addObs(mouseObs);
 		}
-		return text.toString();
+	}
+	
+	public PComponent getTooltipComponent() {
+		return target;
+	}
+	
+	public void setContent(PComponent component) {
+		getLayout().setContent(component);
+	}
+	
+	public PComponent getContent() {
+		return getLayout().getContent();
+	}
+	
+	public PCentricLayout getLayout() {
+		return (PCentricLayout) super.getLayout();
 	}
 	
 	public void defaultRender(PRenderer renderer) {
-		String text = getText();
-		if (text == null || text.isEmpty()) {
-			return;
-		}
-		PFontResource font = getDefaultFont();
-		if (font == null) {
-			return;
-		}
-		PBounds bounds = getBounds();
-		int x = bounds.getX();
-		int y = bounds.getY();
-		int fx = bounds.getFinalX();
-		int fy = bounds.getFinalY();
+		PBounds bnds = getBounds();
+		int x = bnds.getX();
+		int y = bnds.getY();
+		int fx = bnds.getFinalX();
+		int fy = bnds.getFinalY();
 		
-		renderer.setColor(getBackgroundTextColor());
-		renderer.drawQuad(x, y, fx, fy);
-		
-		renderer.setColor(getBorderTextColor());
-		PRenderUtil.strokeQuad(renderer, x, y, fx, fy);
-		
-		renderer.setColor(getDefaultTextColor());
-		renderer.drawString(font, text, x + DEFAULT_GAP, y + DEFAULT_GAP);
+		renderer.setColor(PColor.WHITE);
+		renderer.drawQuad(x + 1, y + 1, fx - 1, fy - 1);
+		renderer.setColor(PColor.BLACK);
+		renderer.strokeQuad(x, y, fx, fy);
 	}
 	
 	public PSize getDefaultPreferredSize() {
-		String text = getText();
-		if (text == null || text.isEmpty()) {
-			return PSize.NULL_SIZE;
+		if (getLayout() != null) {
+			return getLayout().getPreferredSize();
 		}
-		PFontResource font = getDefaultFont();
-		if (font == null) {
-			return PSize.NULL_SIZE;
+		return PSize.NULL_SIZE;
+	}
+	
+	protected void repositionOnOverlay() {
+		PSize ownSize = PCompUtil.getPreferredSizeOf(this);
+		int ownX = showX;
+		int ownY = showY;
+		int ownW = ownSize.getWidth();
+		int ownH = ownSize.getHeight();
+		
+		PRootOverlay overlay = target.getRoot().getOverlay();
+		PBounds overlayBounds = overlay.getBounds();
+		int overlayX = overlayBounds.getX();
+		int overlayY = overlayBounds.getY();
+		int overlayW = overlayBounds.getWidth();
+		int overlayH = overlayBounds.getHeight();
+		
+		if (ownX + ownW > overlayX + overlayW) {
+			ownX = (overlayX + overlayW) - ownW;
 		}
-		PSize textSize = font.getSize(text);
-		return new ImmutablePSize(
-				textSize.getWidth() + 2 * DEFAULT_GAP, 
-				textSize.getHeight() + 2 * DEFAULT_GAP);
-	}
-	
-	protected PMouseObs getMouseObs() {
-		return mouseObs;
-	}
-	
-	protected PColor getDefaultTextColor() {
-		return DEFAULT_TEXT_COLOR;
-	}
-	
-	protected PColor getBackgroundTextColor() {
-		return DEFAULT_BACKGROUND_COLOR;
-	}
-	
-	protected PColor getBorderTextColor() {
-		return DEFAULT_BORDER_COLOR;
-	}
-	
-	protected PFontResource getDefaultFont() {
-		PRoot root = getRoot();
-		if (root == null) {
-			return null;
+		if (ownY + ownH > overlayY + overlayH) {
+			ownY = (overlayY + overlayH) - ownH;
 		}
-		return root.fetchFontResource(DEFAULT_FONT_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_STYLE);
+		PFreeLayout overlayLayout = overlay.getLayout();
+		FreeConstraint constr = new FreeConstraint(ownX, ownY);
+		overlayLayout.updateConstraint(this, constr);
 	}
+	
+	protected void addToOverlay() {
+		PFreeLayout overlayLayout = target.getRoot().getOverlay().getLayout();
+		FreeConstraint constr = new FreeConstraint(showX, showY);
+		overlayLayout.addChild(this, constr);
+		isShown = true;
+		repositionOnOverlay();
+	}
+	
+	protected void removeFromOverlay() {
+		PFreeLayout overlayLayout = target.getRoot().getOverlay().getLayout();
+		overlayLayout.removeChild(this);
+		isShown = false;
+	}
+	
 }

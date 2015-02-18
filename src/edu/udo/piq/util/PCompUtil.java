@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PDesign;
-import edu.udo.piq.PLayout;
+import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
 
@@ -389,14 +389,17 @@ public class PCompUtil {
 	 * @throws IllegalArgumentException if root is null
 	 * @see PComponent#getClippedBounds()
 	 * @see PBounds#contains(int, int)
-	 * @see PLayout#getChildAt(int, int)
+	 * @see PReadOnlyLayout#getChildAt(int, int)
 	 */
 	public static PComponent getComponentAt(PComponent root, int x, int y) throws IllegalArgumentException {
 		if (root == null) {
 			throw new IllegalArgumentException("root == null");
 		}
-		// The root never has a null layout
-		PLayout current = root.getLayout();
+		PReadOnlyLayout current = root.getLayout();
+		if (current == null) {
+			return null;
+		}
+		// Will always stop because in each step we go down 1 level in the GUI
 		while (true) {
 			PComponent child = current.getChildAt(x, y);
 			if (child == null) {

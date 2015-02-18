@@ -4,17 +4,14 @@ import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.Timer;
 
 import edu.udo.piq.components.PButton;
-import edu.udo.piq.components.PButtonObs;
 import edu.udo.piq.components.PLabel;
 import edu.udo.piq.components.PList;
-import edu.udo.piq.components.PListSelection;
 import edu.udo.piq.components.PPanel;
 import edu.udo.piq.components.PSplitPanel;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
@@ -58,13 +55,17 @@ public class SwingPTest_DragAndDrop {
 		updateTimer.setRepeats(true);
 		updateTimer.start();
 		
+		PPanel bodyPnl = new PPanel();
+		bodyPnl.setLayout(new PBorderLayout(bodyPnl));
+		root.setBody(bodyPnl);
+		
 		PSplitPanel split = new PSplitPanel();
-		root.getBody().getLayout().addChild(split, PBorderLayout.Constraint.CENTER);
+		bodyPnl.addChild(split, PBorderLayout.Constraint.CENTER);
 		
 		final PList listLeft = new PList();
-		listLeft.getModel().addElement(0, Integer.valueOf(1));
-		listLeft.getModel().addElement(1, Integer.valueOf(2));
-		listLeft.getModel().addElement(2, Integer.valueOf(3));
+		for (int i = 0; i < 4; i++) {
+			listLeft.getModel().addElement(i, Integer.valueOf(i));
+		}
 		split.setFirstComponent(listLeft);
 		
 		PList listRight = new PList();
@@ -78,7 +79,7 @@ public class SwingPTest_DragAndDrop {
 				fireRemovedEvent(element, index);
 			}
 			
-			public int getIndexOfElement(Object element) {
+			public int getElementIndex(Object element) {
 				return list.indexOf(element);
 			}
 			
@@ -114,7 +115,7 @@ public class SwingPTest_DragAndDrop {
 		
 		PPanel btnPnl = new PPanel();
 		btnPnl.setLayout(new PWrapLayout(btnPnl, PListLayout.ListAlignment.CENTERED_HORIZONTAL));
-		root.getBody().getLayout().addChild(btnPnl, PBorderLayout.Constraint.BOTTOM);
+		bodyPnl.addChild(btnPnl, PBorderLayout.Constraint.BOTTOM);
 		
 		PButton btnAdd = new PButton();
 		btnAdd.setContent(new PLabel(new DefaultPTextModel("Add")));
@@ -124,28 +125,28 @@ public class SwingPTest_DragAndDrop {
 		btnRmv.setContent(new PLabel(new DefaultPTextModel("Remove")));
 		btnPnl.getLayout().addChild(btnRmv, null);
 		
-		btnAdd.addObs(new PButtonObs() {
-			int num = 0;
-			
-			public void onClick(PButton button) {
-				PListSelection selected = listLeft.getSelection();
-				Integer maxIndex;
-				if (selected.getSelection().isEmpty()) {
-					maxIndex = Integer.valueOf(0);
-				} else {
-					maxIndex = Collections.max(selected.getSelection());
-				}
-				listLeft.getModel().addElement(maxIndex.intValue(), "Text "+(num++));
-			}
-		});
-		btnRmv.addObs(new PButtonObs() {
-			public void onClick(PButton button) {
-				PListSelection selected = listLeft.getSelection();
-				for (Integer index : selected.getSelection()) {
-					listLeft.getModel().removeElement(index.intValue());
-				}
-			}
-		});
+//		btnAdd.addObs(new PButtonObs() {
+//			int num = 0;
+//			
+//			public void onClick(PButton button) {
+//				PListSelection selected = listLeft.getSelection();
+//				Integer maxIndex;
+//				if (selected.getSelection().isEmpty()) {
+//					maxIndex = Integer.valueOf(0);
+//				} else {
+//					maxIndex = Collections.max(selected.getSelection());
+//				}
+//				listLeft.getModel().addElement(maxIndex.intValue(), "Text "+(num++));
+//			}
+//		});
+//		btnRmv.addObs(new PButtonObs() {
+//			public void onClick(PButton button) {
+//				PListSelection selected = listLeft.getSelection();
+//				for (Integer index : selected.getSelection()) {
+//					listLeft.getModel().removeElement(index.intValue());
+//				}
+//			}
+//		});
 	}
 	
 	public static class Person {

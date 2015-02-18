@@ -5,21 +5,27 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import edu.udo.piq.components.PListModel;
 import edu.udo.piq.components.PListModelObs;
+import edu.udo.piq.components.util.PModelHistory;
 
 public abstract class AbstractPListModel implements PListModel {
 	
 	protected final List<PListModelObs> obsList = new CopyOnWriteArrayList<>();
+//	protected final PModelHistory history = new PModelHistory();
 	
 	public void addElement(Object element) {
 		addElement(getElementCount(), element);
 	}
 	
 	public void removeElement(Object element) {
-		int index = getIndexOfElement(element);
+		int index = getElementIndex(element);
 		if (index == -1) {
 			throw new IllegalArgumentException(element+" is not contained");
 		}
 		removeElement(index);
+	}
+	
+	public PModelHistory getHistory() {
+		return null;
 	}
 	
 	public void addObs(PListModelObs obs) {

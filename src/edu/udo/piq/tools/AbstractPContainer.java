@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PLayout;
+import edu.udo.piq.PReadOnlyLayout;
 
 public abstract class AbstractPContainer extends AbstractPLayoutOwner {
 	
@@ -15,11 +16,15 @@ public abstract class AbstractPContainer extends AbstractPLayoutOwner {
 		super.setLayout(layout);
 	}
 	
+	public PLayout getLayout() {
+		return (PLayout) super.getLayout();
+	}
+	
 	/**
 	 * Delegates to the layout of this container.<br> 
 	 * This method exists solely for convenience.<br>
 	 * @see #getLayout()
-	 * @see PLayout#addChild(PComponent, Object)
+	 * @see PReadOnlyLayout#addChild(PComponent, Object)
 	 */
 	public void addChild(PComponent component, Object constraint) {
 		getLayout().addChild(component, constraint);

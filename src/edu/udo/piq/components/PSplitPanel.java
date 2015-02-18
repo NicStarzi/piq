@@ -52,7 +52,7 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 	};
 	private final PSplitPanelModelObs modelObs = new PSplitPanelModelObs() {
 		public void positionChanged(PSplitPanelModel model) {
-			getLayout().setSplitPosition(model.getSplitPosition());
+			getLayoutInternal().setSplitPosition(model.getSplitPosition());
 			fireReRenderEvent();
 		}
 	};
@@ -60,10 +60,11 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 	protected boolean pressed;
 	
 	public PSplitPanel() {
+		super();
 		setModel(new DefaultPSplitPanelModel());
 		setLayout(new PSplitLayout(this));
 		divider = new PDivider();
-		getLayout().addChild(divider, Constraint.DIVIDER);
+		getLayoutInternal().addChild(divider, Constraint.DIVIDER);
 		addObs(mouseObs);
 	}
 	
@@ -81,40 +82,48 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 		return true;
 	}
 	
-	public PSplitLayout getLayout() {
+	protected PSplitLayout getLayoutInternal() {
 		return (PSplitLayout) super.getLayout();
 	}
 	
 	public void setFirstComponent(PComponent component) {
 		if (component == null) {
-			getLayout().removeChild(Constraint.FIRST);
+			getLayoutInternal().removeChild(Constraint.FIRST);
 		} else {
-			getLayout().addChild(component, Constraint.FIRST);
+			getLayoutInternal().addChild(component, Constraint.FIRST);
 		}
 	}
 	
 	public PComponent getFirstComponent() {
-		return getLayout().getAt(Constraint.FIRST);
+		return getLayoutInternal().getChildForConstraint(Constraint.FIRST);
 	}
 	
 	public void setSecondComponent(PComponent component) {
 		if (component == null) {
-			getLayout().removeChild(Constraint.SECOND);
+			getLayoutInternal().removeChild(Constraint.SECOND);
 		} else {
-			getLayout().addChild(component, Constraint.SECOND);
+			getLayoutInternal().addChild(component, Constraint.SECOND);
 		}
 	}
 	
 	public PComponent getSecondComponent() {
-		return getLayout().getAt(Constraint.SECOND);
+		return getLayoutInternal().getChildForConstraint(Constraint.SECOND);
+	}
+	
+	public void setOrientation(Orientation orientation) {
+		getLayoutInternal().setOrientation(orientation);
 	}
 	
 	public Orientation getOrientation() {
-		return getLayout().getOrientation();
+		return getLayoutInternal().getOrientation();
+	}
+	
+	public void setSplitPosition(double value) {
+		getLayoutInternal().setSplitPosition(value);
 	}
 	
 	public double getSplitPosition() {
-		return getLayout().getSplitPosition();
+		return getLayoutInternal().getSplitPosition();
 	}
 	
 	public void setModel(PSplitPanelModel model) {

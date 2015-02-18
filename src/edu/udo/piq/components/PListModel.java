@@ -1,5 +1,7 @@
 package edu.udo.piq.components;
 
+import edu.udo.piq.components.util.PModelHistory;
+
 public interface PListModel {
 	
 	/**
@@ -10,7 +12,7 @@ public interface PListModel {
 	 * 
 	 * @return the number of elements in this model
 	 * @see #getElement(int)
-	 * @see #getIndexOfElement(Object)
+	 * @see #getElementIndex(Object)
 	 */
 	public int getElementCount();
 	
@@ -24,7 +26,7 @@ public interface PListModel {
 	 * @return an element from this model
 	 * @throws IndexOutOfBoundsException if index < 0 or index >= {@link #getElementCount()}
 	 * @see #getElementCount()
-	 * @see #getIndexOfElement(Object)
+	 * @see #getElementIndex(Object)
 	 */
 	public Object getElement(int index) throws IndexOutOfBoundsException;
 	
@@ -39,7 +41,7 @@ public interface PListModel {
 	 * @see #getElementCount()
 	 * @see #getElement(int)
 	 */
-	public int getIndexOfElement(Object element);
+	public int getElementIndex(Object element);
 	
 	/**
 	 * Returns true if the given element can be added with the 
@@ -120,6 +122,15 @@ public interface PListModel {
 	 * @see #canRemoveElement(int)
 	 */
 	public void removeElement(int index) throws IllegalArgumentException;
+	
+	/**
+	 * Returns an instance of of {@link PModelHistory} if this model 
+	 * supports undo and redo operations or returns null if undo and 
+	 * redo is not supported.<br>
+	 * 
+	 * @return an instance of {@link PModelHistory} or null
+	 */
+	public PModelHistory getHistory();
 	
 	public void addObs(PListModelObs obs);
 	

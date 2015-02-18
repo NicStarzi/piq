@@ -3,7 +3,7 @@ package edu.udo.piq.layouts;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
-import edu.udo.piq.PLayout;
+import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractPLayout;
@@ -12,7 +12,7 @@ import edu.udo.piq.tools.MutablePSize;
 
 public class PBoxLayout extends AbstractPLayout {
 	
-	protected final MutablePSize prefSize = new MutablePSize();;
+	protected final MutablePSize prefSize = new MutablePSize();
 	protected PInsets insets = new ImmutablePInsets(4, 4);
 	private Box rootBox;
 	
@@ -20,7 +20,7 @@ public class PBoxLayout extends AbstractPLayout {
 		super(owner);
 		
 		addObs(new PLayoutObs() {
-			public void childAdded(PLayout layout, PComponent child, Object constraint) {
+			public void childAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
 				Box box = (Box) constraint;
 				if (box.isBox()) {
 					throw new IllegalArgumentException("constraint.isBox()=true");

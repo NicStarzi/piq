@@ -17,6 +17,7 @@ public class DefaultPTextSelection extends AbstractPTextSelection implements PTe
 		for (int i = oldFrom; i < oldTo; i++) {
 			fireSelectionRemovedEvent(i);
 		}
+		fireSelectionChangedEvent();
 	}
 	
 	public boolean isSelected(int index) {

@@ -6,12 +6,9 @@ import edu.udo.piq.components.PListModel;
 
 public class DefaultPListCellFactory implements PListCellFactory {
 	
-	public PListCellComponent getCellComponentFor(PListModel listModel, int index) {
-		Object text = listModel.getElement(index).toString();
-		
+	public PListCellComponent getCellComponentFor(PListModel model, Object element) {
 		DefaultPListCellComponent label = new DefaultPListCellComponent();
-		label.getModel().setValue(text);
-		
+		label.setElement(model, element);
 		return label;
 	}
 	

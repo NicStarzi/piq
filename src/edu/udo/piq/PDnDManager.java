@@ -340,7 +340,8 @@ public class PDnDManager {
 			int h = prefSize.getHeight();
 			x -= w / 2;
 			y -= h / 2;
-			currentOverlay.getLayout().updateConstraint(cmp, x, y, w, h, Integer.MAX_VALUE);
+			FreeConstraint constr = new FreeConstraint(x, y, w, h, Integer.MAX_VALUE);
+			currentOverlay.getLayout().updateConstraint(cmp, constr);
 		}
 	}
 	

@@ -18,11 +18,12 @@ import edu.udo.piq.components.PPanel;
 import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PRootLayout;
 import edu.udo.piq.layouts.PRootLayout.Constraint;
+import edu.udo.piq.PClipboard;
 import edu.udo.piq.PDnDManager;
 import edu.udo.piq.PDnDSupport;
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PKeyboardObs;
-import edu.udo.piq.PLayout;
+import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouseObs;
@@ -38,6 +39,7 @@ public abstract class AbstractPRoot implements PRoot {
 	protected PDesignSheet designSheet = new AbstractPDesignSheet();
 	protected PMouse mouse;
 	protected PKeyboard keyboard;
+	protected PClipboard clipboard;
 	protected PDnDManager dndManager;
 	
 	private final PComponentObs childObs = new PComponentObs() {
@@ -46,24 +48,27 @@ public abstract class AbstractPRoot implements PRoot {
 		}
 	};
 	private final PLayoutObs layoutObs = new PLayoutObs() {
-		public void layoutInvalidated(PLayout layout) {
+		public void layoutInvalidated(PReadOnlyLayout layout) {
 			needReLayout = true;
 		}
-		public void childRemoved(PLayout layout, PComponent child, Object constraint) {
+		public void childRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
 			child.removeObs(childObs);
 			needReLayout = true;
 		}
-		public void childAdded(PLayout layout, PComponent child, Object constraint) {
+		public void childAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
 			child.addObs(childObs);
 			needReLayout = true;
 		}
 	};
 	private final Set<PTimer> timerSet = new HashSet<>();
+	private final Set<PTimer> timersToAdd = new HashSet<>();
+	private final Set<PTimer> timersToRemove = new HashSet<>();
 	private final List<PComponentObs> compObsList = new CopyOnWriteArrayList<>();
 	private final List<PFocusObs> focusObsList = new CopyOnWriteArrayList<>();
 	private PComponent focusOwner;
 	private String id;
 	private boolean needReLayout = true;
+	private boolean timerIterationInProgress;
 	
 	public AbstractPRoot() {
 		layout = new PRootLayout(this);
@@ -92,9 +97,15 @@ public abstract class AbstractPRoot implements PRoot {
 	}
 	
 	protected void tickAllTimers() {
+		timerIterationInProgress = true;
 		for (PTimer timer : timerSet) {
 			timer.tick();
 		}
+		timerIterationInProgress = false;
+		timerSet.removeAll(timersToRemove);
+		timersToRemove.clear();
+		timerSet.addAll(timersToAdd);
+		timersToAdd.clear();
 	}
 	
 	protected void updateComponents() {
@@ -104,7 +115,7 @@ public abstract class AbstractPRoot implements PRoot {
 			PComponent comp = stack.pop();
 			comp.update();
 			
-			PLayout layout = comp.getLayout();
+			PReadOnlyLayout layout = comp.getLayout();
 			if (layout != null) {
 				for (PComponent child : layout.getChildren()) {
 					stack.addFirst(child);
@@ -123,6 +134,9 @@ public abstract class AbstractPRoot implements PRoot {
 	
 	public void setFocusOwner(PComponent component) {
 		PComponent oldOwner = getFocusOwner();
+		if (component == oldOwner) {
+			return;
+		}
 		if (oldOwner != null) {
 			fireFocusLostEvent(oldOwner);
 		}
@@ -166,8 +180,21 @@ public abstract class AbstractPRoot implements PRoot {
 		return keyboard;
 	}
 	
+	public PClipboard getClipboard() {
+		return clipboard;
+	}
+	
 	public PRootOverlay getOverlay() {
 		return getLayout().getOverlay();
+	}
+	
+	public void setBody(PComponent component) {
+		if (getBody() != null) {
+			getLayout().removeChild(Constraint.BODY);
+		}
+		if (component != null) {
+			getLayout().addChild(component, Constraint.BODY);
+		}
 	}
 	
 	public PComponent getBody() {
@@ -186,8 +213,10 @@ public abstract class AbstractPRoot implements PRoot {
 		if (timer == null) {
 			throw new NullPointerException("timer="+timer);
 		}
-		if (!timerSet.add(timer)) {
-			throw new IllegalArgumentException(timer+" was already registered.");
+		if (timerIterationInProgress) {
+			timersToAdd.add(timer);
+		} else {
+			timerSet.add(timer);
 		}
 	}
 	
@@ -195,8 +224,10 @@ public abstract class AbstractPRoot implements PRoot {
 		if (timer == null) {
 			throw new NullPointerException("timer="+timer);
 		}
-		if (!timerSet.remove(timer)) {
-			throw new IllegalArgumentException(timer+" was not registered.");
+		if (timerIterationInProgress) {
+			timersToRemove.add(timer);
+		} else {
+			timerSet.remove(timer);
 		}
 	}
 	

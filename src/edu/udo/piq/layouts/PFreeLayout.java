@@ -7,7 +7,7 @@ import java.util.List;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PLayout;
+import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractPLayout;
@@ -27,10 +27,10 @@ public class PFreeLayout extends AbstractPLayout {
 	public PFreeLayout(PComponent owner) {
 		super(owner);
 		addObs(new PLayoutObs() {
-			public void childRemoved(PLayout layout, PComponent child, Object constraint) {
+			public void childRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
 				sortedChildren.remove(child);
 			}
-			public void childAdded(PLayout layout, PComponent child, Object constraint) {
+			public void childAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
 				addChildSorted(child, (FreeConstraint) constraint);
 			}
 		});
@@ -117,8 +117,14 @@ public class PFreeLayout extends AbstractPLayout {
 	public PComponent getChildAt(int x, int y) {
 		for (int i = sortedChildren.size() - 1; i >= 0; i--) {
 			PComponent child = sortedChildren.get(i);
-			PBounds childBounds = getChildBounds(child);
-			if (childBounds.contains(x, y)) {
+			if (child.isElusive()) {
+				if (child.getLayout() != null) {
+					PComponent grandChild = child.getLayout().getChildAt(x, y);
+					if (grandChild != null) {
+						return grandChild;
+					}
+				}
+			} else if (getChildBounds(child).contains(x, y)) {
 				return child;
 			}
 		}
@@ -133,13 +139,13 @@ public class PFreeLayout extends AbstractPLayout {
 		return (FreeConstraint) super.getChildConstraint(child);
 	}
 	
-	public void updateConstraint(PComponent child, int x, int y, int width, int height, int z) {
+	public void updateConstraint(PComponent child, FreeConstraint newConstraint) {
 		FreeConstraint con = getChildConstraint(child);
-		con.x = x;
-		con.y = y;
-		con.w = width;
-		con.h = height;
-		con.z = z;
+		con.x = newConstraint.getX();
+		con.y = newConstraint.getY();
+		con.w = newConstraint.getWidth();
+		con.h = newConstraint.getHeight();
+		con.z = newConstraint.getZ();
 		sortedChildren.remove(child);
 		addChildSorted(child, con);
 //		System.out.println("PFreeLayout.updateConstraint("+child+") => "+sortedChildren);

@@ -124,7 +124,7 @@ public class SwingPRenderer implements PRenderer {
 		yCoords[1] = (int) y2;
 		yCoords[2] = (int) y3;
 		yCoords[3] = (int) y4;
-		graphics.fillPolygon(xCoords, xCoords, number);
+		graphics.fillPolygon(xCoords, yCoords, 3);
 	}
 	
 	public void drawPolygon(float[] xCoords, float[] yCoords) {

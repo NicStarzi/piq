@@ -13,7 +13,7 @@ import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PKeyboard.Modifier;
 import edu.udo.piq.PKeyboardObs;
-import edu.udo.piq.PLayout;
+import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouseObs;
@@ -24,6 +24,12 @@ import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.util.PCompUtil;
 
 public class AbstractPComponent implements PComponent {
+	
+	/**
+	 * The value returned by {@link #isElusive()} if the user does not 
+	 * call the {@link #setElusive(boolean)} method is false.<br>
+	 */
+	public static final boolean DEFAULT_IS_ELUSIVE = false;
 	
 	/**
 	 * Holds the parent of this component in the GUI tree.<br>
@@ -78,7 +84,7 @@ public class AbstractPComponent implements PComponent {
 	 * flag needReLayout to true.
 	 */
 	protected final PLayoutObs parentLayoutObs = new PLayoutObs() {
-		public void childLaidOut(PLayout layout, PComponent child, Object constraint) {
+		public void childLaidOut(PReadOnlyLayout layout, PComponent child, Object constraint) {
 			if (child == AbstractPComponent.this) {
 				needReLayout = true;
 				fireReRenderEvent();
@@ -177,6 +183,10 @@ public class AbstractPComponent implements PComponent {
 	private boolean keyObsRegistered;
 	private PMouse currentMouse;
 	private boolean mouseObsRegistered;
+	/**
+	 * Used by the {@link #isElusive()} method
+	 */
+	private boolean elusive = DEFAULT_IS_ELUSIVE;
 	
 	/**
 	 * The root is being cached by the {@link AbstractPComponent}.<br>
@@ -296,9 +306,9 @@ public class AbstractPComponent implements PComponent {
 	
 	/**
 	 * Returns null.<br>
-	 * Subclasses should overwrite this method to return a {@link PLayout}.<br>
+	 * Subclasses should overwrite this method to return a {@link PReadOnlyLayout}.<br>
 	 */
-	public PLayout getLayout() {
+	public PReadOnlyLayout getLayout() {
 		return null;
 	}
 	
@@ -360,6 +370,30 @@ public class AbstractPComponent implements PComponent {
 	 */
 	public boolean isFocusable() {
 		return false;
+	}
+	
+	/**
+	 * Sets the value that will be returned by the {@link #isElusive()} method 
+	 * hereafter.<br>
+	 * 
+	 * @param isElusive whether this component is elusive or not
+	 * @see #DEFAULT_IS_ELUSIVE
+	 * @see #isElusive()
+	 */
+	public void setElusive(boolean isElusive) {
+		elusive = isElusive;
+	}
+	
+	/**
+	 * The behavior of this method can be changed with the {@link #setElusive(boolean)} 
+	 * method.<br>
+	 * 
+	 * @return whether this component is currently elusive or not
+	 * @see #DEFAULT_IS_ELUSIVE
+	 * @see #setElusive(boolean)
+	 */
+	public boolean isElusive() {
+		return elusive;
 	}
 	
 	public void addObs(PComponentObs obs) throws NullPointerException {

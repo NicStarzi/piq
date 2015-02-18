@@ -9,6 +9,21 @@ public class DefaultPListModel extends AbstractPListModel {
 	
 	protected final List<Object> elements = new ArrayList<>();
 	
+	public DefaultPListModel() {
+	}
+	
+	public DefaultPListModel(Object[] initialElements) {
+		for (int i = 0; i < initialElements.length; i++) {
+			addElement(initialElements[i]);
+		}
+	}
+	
+	public DefaultPListModel(Iterable<?> initialElements) {
+		for (Object obj : initialElements) {
+			addElement(obj);
+		}
+	}
+	
 	public int getElementCount() {
 		return elements.size();
 	}
@@ -17,7 +32,7 @@ public class DefaultPListModel extends AbstractPListModel {
 		return elements.get(index);
 	}
 	
-	public int getIndexOfElement(Object element) {
+	public int getElementIndex(Object element) {
 		return elements.indexOf(element);
 	}
 	
@@ -42,7 +57,7 @@ public class DefaultPListModel extends AbstractPListModel {
 			throw new IllegalArgumentException();
 		}
 		Object element = elements.remove(index);
-		fireRemovedEvent(element, Integer.valueOf(index));
+		fireRemovedEvent(element, index);
 	}
 	
 	public void fireChangedEvent(Object element) {

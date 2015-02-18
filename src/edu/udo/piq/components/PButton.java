@@ -18,8 +18,7 @@ import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.components.defaults.DefaultPButtonModel;
 import edu.udo.piq.layouts.PCentricLayout;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
-import edu.udo.piq.tools.ImmutablePSize;
-import edu.udo.piq.util.PRenderUtil;
+import edu.udo.piq.tools.ImmutablePInsets;
 
 public class PButton extends AbstractPLayoutOwner {
 	
@@ -37,7 +36,7 @@ public class PButton extends AbstractPLayoutOwner {
 			if (!hasFocus()) {
 				return;
 			}
-			if (key == Key.ENTER) {
+			if (key == Key.ENTER && model.isPressed()) {
 				model.setPressed(false);
 				fireClickEvent();
 			}
@@ -45,14 +44,15 @@ public class PButton extends AbstractPLayoutOwner {
 	};
 	private final PMouseObs mouseObs = new PMouseObs() {
 		public void buttonTriggered(PMouse mouse, MouseButton btn) {
-			if (btn == MouseButton.LEFT && isMouseWithinClippedBounds()) {
+			if (btn == MouseButton.LEFT && isMouseOverThisOrChild()) {
 				model.setPressed(true);
 			}
 		}
 		public void buttonReleased(PMouse mouse, MouseButton btn) {
 			if (btn == MouseButton.LEFT) {
+				boolean oldPressed = model.isPressed();
 				model.setPressed(false);
-				if (isMouseWithinClippedBounds()) {
+				if (oldPressed && isMouseOverThisOrChild()) {
 					takeFocus();
 					fireClickEvent();
 				}
@@ -64,25 +64,32 @@ public class PButton extends AbstractPLayoutOwner {
 			fireReRenderEvent();
 		}
 	};
-	protected PButtonModel model = new DefaultPButtonModel();
+	protected PButtonModel model;
 	
 	public PButton() {
-		setLayout(new PCentricLayout(this));
-		setModel(model);
+		super();
+		PCentricLayout defaultLayout = new PCentricLayout(this);
+		defaultLayout.setInsets(new ImmutablePInsets(8));
+		setLayout(defaultLayout);
+		setModel(new DefaultPButtonModel());
 		addObs(keyObs);
 		addObs(mouseObs);
 	}
 	
 	public void setContent(PComponent component) {
-		getLayout().clearChildren();
-		getLayout().addChild(component, null);
+		getLayoutInternal().clearChildren();
+		getLayoutInternal().addChild(component, null);
 	}
 	
 	public PComponent getContent() {
-		return getLayout().getContent();
+		return getLayoutInternal().getContent();
 	}
 	
-	public PCentricLayout getLayout() {
+//	public PCentricLayout getLayout() {
+//		return (PCentricLayout) super.getLayout();
+//	}
+	
+	protected PCentricLayout getLayoutInternal() {
 		return (PCentricLayout) super.getLayout();
 	}
 	
@@ -118,35 +125,32 @@ public class PButton extends AbstractPLayoutOwner {
 		
 		if (isPressed()) {
 			renderer.setColor(PColor.GREY25);
-			PRenderUtil.strokeQuad(renderer, x, y, fx, fy);
+			renderer.strokeQuad(x, y, fx, fy);
 			renderer.setColor(PColor.GREY75);
 			renderer.drawQuad(x + 1, y + 1, fx - 1, fy - 1);
 		} else {
 			renderer.setColor(PColor.BLACK);
-			PRenderUtil.strokeBottom(renderer, x, y, fx, fy);
-			PRenderUtil.strokeRight(renderer, x, y, fx, fy);
+			renderer.strokeBottom(x, y, fx, fy);
+			renderer.strokeRight(x, y, fx, fy);
 			renderer.setColor(PColor.WHITE);
-			PRenderUtil.strokeTop(renderer, x, y, fx, fy);
-			PRenderUtil.strokeLeft(renderer, x, y, fx, fy);
+			renderer.strokeTop(x, y, fx, fy);
+			renderer.strokeLeft(x, y, fx, fy);
 			renderer.setColor(PColor.GREY75);
 			renderer.drawQuad(x + 1, y + 1, fx - 1, fy - 1);
 		}
 		if (hasFocus()) {
-			PInsets insets = getLayout().getInsets();
+			PInsets insets = getLayoutInternal().getInsets();
 			int innerX = x + insets.getFromLeft();
 			int innerY = y + insets.getFromTop();
 			int innerFx = fx - insets.getFromRight();
 			int innerFy = fy - insets.getFromBottom();
 			renderer.setColor(PColor.GREY50);
-			PRenderUtil.strokeQuad(renderer, innerX, innerY, innerFx, innerFy);
+			renderer.strokeQuad(innerX, innerY, innerFx, innerFy);
 		}
 	}
 	
 	public PSize getDefaultPreferredSize() {
-		PSize layoutSize = getLayout().getPreferredSize();
-		int w = layoutSize.getWidth() + 8;
-		int h = layoutSize.getHeight() + 8;
-		return new ImmutablePSize(w, h);
+		return getLayout().getPreferredSize();
 	}
 	
 	public boolean isFocusable() {

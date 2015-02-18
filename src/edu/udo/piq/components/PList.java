@@ -1,11 +1,13 @@
 package edu.udo.piq.components;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import edu.udo.piq.PBounds;
+import edu.udo.piq.PClipboard;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PDnDSupport;
@@ -20,7 +22,7 @@ import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.components.defaults.DefaultPListCellFactory;
 import edu.udo.piq.components.defaults.DefaultPListDnDSupport;
 import edu.udo.piq.components.defaults.DefaultPListModel;
-import edu.udo.piq.components.defaults.DefaultPListSelection;
+import edu.udo.piq.components.defaults.PListSelectionSingleRow;
 import edu.udo.piq.layouts.PListLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
@@ -35,11 +37,53 @@ public class PList extends AbstractPLayoutOwner {
 				return;
 			}
 			if (key == Key.COPY) {
-				System.out.println("Copy from PList");
+				List<Object> selectedElements = getSelection().getSelection();
+				PClipboard clipBrd = getRoot().getClipboard();
+				clipBrd.store(selectedElements);
 			} else if (key == Key.PASTE) {
-				System.out.println("Paste into PList");
+				PListModel model = getModel();
+				
+				List<Integer> selectedIndices = getSelectedIndices();
+				int index;
+				if (selectedIndices.isEmpty()) {
+					index = model.getElementCount();
+				} else {
+					index = Collections.max(getSelectedIndices()) + 1;
+				}
+				
+				PClipboard clipBrd = getRoot().getClipboard();
+				Iterable<?> elements = clipBrd.load(Iterable.class);
+				for (Object element : elements) {
+					if (!model.canAddElement(index, element)) {
+						return;
+					}
+				}
+				for (Object element : elements) {
+					model.addElement(index++, element);
+				}
 			} else if (key == Key.CUT) {
-				System.out.println("Cut from PList");
+				PListModel model = getModel();
+				
+				List<Object> selectedElements = new ArrayList<>(getSelection().getSelection());
+				for (Object element : selectedElements) {
+					if (!model.canRemoveElement(model.getElementIndex(element))) {
+						return;
+					}
+				}
+				
+				PClipboard clipBrd = getRoot().getClipboard();
+				clipBrd.store(selectedElements);
+				for (Object element : selectedElements) {
+					model.removeElement(model.getElementIndex(element));
+				}
+			} else if (key == Key.UNDO) {
+				if (getModel().getHistory() != null && getModel().getHistory().canUndo()) {
+					getModel().getHistory().undo();
+				}
+			} else if (key == Key.REDO) {
+				if (getModel().getHistory() != null && getModel().getHistory().canUndo()) {
+					getModel().getHistory().redo();
+				}
 			}
 		}
 		public void keyPressed(PKeyboard keyboard, Key key) {
@@ -47,24 +91,25 @@ public class PList extends AbstractPLayoutOwner {
 				return;
 			}
 			PListSelection selection = getSelection();
-			Set<Integer> allSelected = selection.getSelection();
-			if (allSelected.isEmpty()) {
+			List<Object> selectedElements = selection.getSelection();
+			if (selectedElements.isEmpty()) {
 				return;
 			}
+			PListModel model = getModel();
+			int index = -1;
+			List<Integer> selectedIndices = getSelectedIndices();
 			if (key == Key.UP || key == Key.LEFT) {
-				int index = Collections.min(allSelected) - 1;
-				if (keyboard != null && keyboard.isPressed(Key.SHIFT)) {
-					rangeSelection(index);
-				} else {
-					setSelection(index);
-				}
+				index = Collections.min(selectedIndices) - 1;
 			} else if (key == Key.DOWN || key == Key.RIGHT) {
-				int index = Collections.max(allSelected) + 1;
-				if (keyboard != null && keyboard.isPressed(Key.SHIFT)) {
-					rangeSelection(index);
-				} else {
-					setSelection(index);
-				}
+				index = Collections.max(selectedIndices) + 1;
+			}
+			if (index < 0 || index >= model.getElementCount()) {
+				return;
+			}
+			if (keyboard != null && keyboard.isPressed(Key.SHIFT)) {
+				rangeSelection(model.getElement(index));
+			} else {
+				setSelection(model.getElement(index));
 			}
 		}
 	};
@@ -77,23 +122,24 @@ public class PList extends AbstractPLayoutOwner {
 			if (getModel() == null || getSelection() == null) {
 				return;
 			}
-			PKeyboard keyboard = getKeyboard();
-			int mx = mouse.getX();
-			int my = mouse.getY();
-			if (getClippedBounds().contains(mx, my)) {
+			if (isMouseOverThisOrChild()) {
+				PKeyboard keyboard = getKeyboard();
+				int mx = mouse.getX();
+				int my = mouse.getY();
 				PComponent selected = getLayout().getChildAt(mx, my);
 				if (selected != null) {
 					lastMouseX = mx;
 					lastMouseY = my;
 					isSelected = true;
 					
-					Integer index = Integer.valueOf(getLayout().getChildIndex(selected));
+					Integer index = Integer.valueOf(getLayoutInternal().getChildIndex(selected));
+					Object element = getModel().getElement(index.intValue());
 					if (keyboard != null && keyboard.isModifierToggled(Modifier.CTRL)) {
-						toggleSelection(index);
+						toggleSelection(element);
 					} else if (keyboard != null && keyboard.isPressed(Key.SHIFT)) {
-						rangeSelection(index);
-					} else {
-						setSelection(index);
+						rangeSelection(element);
+					} else { //if (!getSelection().isSelected(element)) 
+						setSelection(element);
 					}
 					if (!hasFocus()) {
 						takeFocus();
@@ -108,7 +154,7 @@ public class PList extends AbstractPLayoutOwner {
 		}
 		public void mouseMoved(PMouse mouse) {
 			PDnDSupport dndSup = getDragAndDropSupport();
-			if (isSelected && mouse.isPressed(MouseButton.LEFT) && dndSup != null) {
+			if (dndSup != null && isSelected && mouse.isPressed(MouseButton.LEFT)) {
 				int mx = mouse.getX();
 				int my = mouse.getY();
 				int disX = Math.abs(lastMouseX - mx);
@@ -124,21 +170,21 @@ public class PList extends AbstractPLayoutOwner {
 	};
 	private final PListModelObs modelObs = new PListModelObs() {
 		public void elementAdded(PListModel model, Object element, int index) {
-			PList.this.elementAdded(index);
+			PList.this.elementAdded(element);
 		}
 		public void elementRemoved(PListModel model, Object element, int index) {
 			PList.this.elementRemoved(element);
 		}
 		public void elementChanged(PListModel model, Object element, int index) {
-			PList.this.elementChanged(index);
+			PList.this.elementChanged(element);
 		}
 	};
 	private final PListSelectionObs selectionObs = new PListSelectionObs() {
-		public void selectionRemoved(PListSelection selection, int index) {
-			PList.this.selectionChanged(index, false);
+		public void selectionAdded(PListSelection selection, Object element) {
+			PList.this.selectionChanged(element, true);
 		}
-		public void selectionAdded(PListSelection selection, int index) {
-			PList.this.selectionChanged(index, true);
+		public void selectionRemoved(PListSelection selection, Object element) {
+			PList.this.selectionChanged(element, false);
 		}
 	};
 	private final Map<Object, PListCellComponent> elementToCompMap = new HashMap<>();
@@ -146,19 +192,36 @@ public class PList extends AbstractPLayoutOwner {
 	private PListSelection selection;
 	private PListModel model;
 	private PListCellFactory cellFac;
+	private boolean dropHighlight = false;
 	
 	public PList() {
+		this(new DefaultPListModel());
+	}
+	
+	public PList(PListModel model) {
+		super();
 		setLayout(new PListLayout(this, ListAlignment.FROM_TOP, 1));
 		setDragAndDropSupport(new DefaultPListDnDSupport());
-		setModel(new DefaultPListModel());
-		setSelection(new DefaultPListSelection());
+		setSelection(new PListSelectionSingleRow());
 		setCellFactory(new DefaultPListCellFactory());
+		setModel(model);
 		addObs(keyObs);
 		addObs(mouseObs);
 	}
 	
-	public PListLayout getLayout() {
+	protected PListLayout getLayoutInternal() {
 		return (PListLayout) super.getLayout();
+	}
+	
+	public void setDropHighlighted(boolean isHighlighted) {
+		if (dropHighlight != isHighlighted) {
+			dropHighlight = isHighlighted;
+			fireReRenderEvent();
+		}
+	}
+	
+	public boolean isDropHighlighted() {
+		return dropHighlight;
 	}
 	
 	public void setDragAndDropSupport(PDnDSupport support) {
@@ -196,6 +259,7 @@ public class PList extends AbstractPLayoutOwner {
 			getModel().removeObs(modelObs);
 		}
 		this.model = model;
+		getSelection().setModel(getModel());
 		if (getModel() != null) {
 			getModel().addObs(modelObs);
 		}
@@ -211,7 +275,7 @@ public class PList extends AbstractPLayoutOwner {
 		if (cellComp == null) {
 			return -1;
 		}
-		return getLayout().getChildIndex(cellComp);
+		return getLayoutInternal().getChildIndex(cellComp);
 	}
 	
 	public PListCellComponent getCellComponentAt(int x, int y) {
@@ -227,93 +291,119 @@ public class PList extends AbstractPLayoutOwner {
 		
 		renderer.setColor(PColor.WHITE);
 		renderer.drawQuad(x + 0, y + 0, fx - 0, fy - 0);
+		
+		if (isDropHighlighted()) {
+			renderer.setColor(PColor.BLUE);
+			
+			PListModel model = getModel();
+			int highestIndex = model.getElementCount() - 1;
+			if (highestIndex == -1) {
+				renderer.drawQuad(x, y, fx, y + 2);
+			} else {
+				PListCellComponent cellComp = (PListCellComponent) getLayoutInternal().getChild(highestIndex);
+				PBounds cellBounds = cellComp.getBounds();
+				int cx = cellBounds.getX();
+				int cy = cellBounds.getFinalY();
+				int cfx = cellBounds.getFinalX();
+				int cfy = cy + 2;
+				
+				renderer.drawQuad(cx, cy, cfx, cfy);
+			}
+		}
 	}
 	
 	public boolean isFocusable() {
 		return true;
 	}
 	
-	private void rangeSelection(Integer index) {
+	protected void rangeSelection(Object element) {
+		PListModel model = getModel();
+		int index = model.getElementIndex(element);
 		PListSelection selection = getSelection();
-		for (int i = index.intValue(); i >= 0; i--) {
-			if (selection.isSelected(Integer.valueOf(i))) {
-				for (; i <= index.intValue(); i++) {
-					selection.addSelection(Integer.valueOf(i));
+		for (int i = index; i >= 0; i--) {
+			Object elem = model.getElement(i);
+			if (selection.isSelected(elem)) {
+				for (; i <= index; i++) {
+					selection.addSelection(model.getElement(i));
 				}
 				return;
 			}
 		}
-		int elemCount = getModel().getElementCount();
-		for (int i = index.intValue(); i < elemCount; i++) {
-			if (selection.isSelected(Integer.valueOf(i))) {
-				for (; i >= index.intValue(); i--) {
-					selection.addSelection(Integer.valueOf(i));
+		int elemCount = model.getElementCount();
+		for (int i = index; i < elemCount; i++) {
+			Object elem = model.getElement(i);
+			if (selection.isSelected(elem)) {
+				for (; i >= index; i--) {
+					selection.addSelection(model.getElement(i));
 				}
 				return;
 			}
 		}
-		selection.addSelection(index);
+		selection.addSelection(element);
 	}
 	
-	private void toggleSelection(Integer index) {
-		if (selection.isSelected(index)) {
-			selection.removeSelection(index);
+	protected void toggleSelection(Object element) {
+		if (selection.isSelected(element)) {
+			selection.removeSelection(element);
 		} else {
-			selection.addSelection(index);
+			selection.addSelection(element);
 		}
 	}
 	
-	private void setSelection(Integer index) {
+	protected void setSelection(Object element) {
 		selection.clearSelection();
-		selection.addSelection(index);
+		selection.addSelection(element);
 	}
 	
 	private void modelChanged() {
-		getLayout().clearChildren();
+		getLayoutInternal().clearChildren();
 		elementToCompMap.clear();
 		
-		for (int i = 0; i < getModel().getElementCount(); i++) {
-			elementAdded(i);
+		PListModel model = getModel();
+		for (int i = 0; i < model.getElementCount(); i++) {
+			elementAdded(model.getElement(i));
 		}
 	}
 	
-	private void elementAdded(int index) {
-		if (getSelection() != null) {
-			getSelection().clearSelection();
-		}
-		Object element = getModel().getElement(Integer.valueOf(index));
-		PListCellComponent cellComp = getCellFactory().getCellComponentFor(getModel(), index);
+	protected void elementAdded(Object element) {
+		int index = getModel().getElementIndex(element);
+		PListCellComponent cellComp = getCellFactory().getCellComponentFor(getModel(), element);
 		elementToCompMap.put(element, cellComp);
-		getLayout().addChild(cellComp, Integer.valueOf(index));
+		getLayoutInternal().addChild(cellComp, Integer.valueOf(index));
 	}
 	
-	private void elementRemoved(Object element) {
+	protected void elementRemoved(Object element) {
 		if (getSelection() != null) {
-			getSelection().clearSelection();
+			getSelection().removeSelection(element);
 		}
 		PComponent cellComp = elementToCompMap.get(element);
-		getLayout().removeChild(cellComp);
+		getLayoutInternal().removeChild(cellComp);
 		elementToCompMap.remove(element);
 	}
 	
-	private void elementChanged(int index) {
-		Object elem = getModel().getElement(index);
-		PListCellComponent comp = elementToCompMap.get(elem);
+	protected void elementChanged(Object element) {
+		PListCellComponent comp = elementToCompMap.get(element);
 		if (comp != null) {
-			comp.elementChanged(getModel(), index);
+			comp.setElement(getModel(), element);
 		}
 	}
 	
-	private void selectionChanged(int index, boolean value) {
-		if (index >= getModel().getElementCount()) {
-			return;
-		}
-		Object elem = getModel().getElement(index);
-		PListCellComponent comp = elementToCompMap.get(elem);
-		if (comp != null && comp.isSelected() != value) {
+	protected void selectionChanged(Object element, boolean value) {
+		PListCellComponent comp = elementToCompMap.get(element);
+		if (comp.isSelected() != value) { 
 			comp.setSelected(value);
 		}
-//		System.out.println(getSelection().getSelection());
+	}
+	
+	protected List<Integer> getSelectedIndices() {
+		PListSelection selection = getSelection();
+		List<Object> selectedElements = selection.getSelection();
+		PListModel model = getModel();
+		List<Integer> selectedIndices = new ArrayList<>();
+		for (Object element : selectedElements) {
+			selectedIndices.add(model.getElementIndex(element));
+		}
+		return selectedIndices;
 	}
 	
 }

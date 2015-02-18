@@ -11,6 +11,8 @@ import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PButtonObs;
 import edu.udo.piq.components.PCheckBox;
 import edu.udo.piq.components.PCheckBoxObs;
+import edu.udo.piq.components.PCheckBoxTuple;
+import edu.udo.piq.components.PDropDownList;
 import edu.udo.piq.components.PLabel;
 import edu.udo.piq.components.PList;
 import edu.udo.piq.components.PPanel;
@@ -23,6 +25,8 @@ import edu.udo.piq.components.PSliderModel;
 import edu.udo.piq.components.PSliderModelObs;
 import edu.udo.piq.components.PSplitPanel;
 import edu.udo.piq.components.PTextArea;
+import edu.udo.piq.components.PToolTip;
+import edu.udo.piq.components.defaults.DefaultPListModel;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
@@ -66,12 +70,16 @@ public class SwingPTest {
 		updateTimer.setRepeats(true);
 		updateTimer.start();
 		
+		PPanel bodyPnl = new PPanel();
+		bodyPnl.setLayout(new PBorderLayout(bodyPnl));
+		root.setBody(bodyPnl);
+		
 		PSplitPanel splitV = new PSplitPanel();
-		splitV.getLayout().setOrientation(Orientation.VERTICAL);
-		root.getBody().getLayout().addChild(splitV, PBorderLayout.Constraint.CENTER);
+		splitV.setOrientation(Orientation.VERTICAL);
+		bodyPnl.addChild(splitV, PBorderLayout.Constraint.CENTER);
 		
 		PSplitPanel splitH = new PSplitPanel();
-		splitH.getLayout().setOrientation(Orientation.HORIZONTAL);
+		splitH.setOrientation(Orientation.HORIZONTAL);
 		splitV.setFirstComponent(splitH);
 		
 		PPicture pic = new PPicture();
@@ -79,21 +87,26 @@ public class SwingPTest {
 		pic.setStretchToSize(true);
 		splitH.setFirstComponent(pic);
 		
-		PList list = new PList();
-		String[] items = new String[] {
-			"A",
-			"B",
-			"C",
-			"D",
-			"E",
-			"F",
-			"G",
-			"H",
-		};
-		for (int i = 0; i < items.length; i++) {
-			list.getModel().addElement(i, items[i]);
-		}
+		PList list = new PList(new DefaultPListModel(new String[] {
+			"A", "B", "C", "D",
+			"E", "F", "G", "H",
+		}));
 		splitH.setSecondComponent(list);
+		
+		PToolTip tipList = new PToolTip(new DefaultPTextModel("This is a nice list!"));
+		tipList.setTooltipComponent(list);
+		
+		PToolTip tipPic = new PToolTip();
+		tipPic.setShowDelay(120);
+		tipPic.setTooltipComponent(pic);
+		PButton tipPicBtn = new PButton();
+		tipPicBtn.setContent(new PLabel(new DefaultPTextModel("Tooltip Button")));
+		tipPicBtn.addObs(new PButtonObs() {
+			public void onClick(PButton button) {
+				System.out.println("You clicked a button inside a tooltip!");
+			}
+		});
+		tipPic.setContent(tipPicBtn);
 		
 //		final DefaultPTableModel tableModel = new DefaultPTableModel(new Object[][] {
 //				{"John", "Smith", "001"},
@@ -116,7 +129,7 @@ public class SwingPTest {
 		PPanel btnPnl = new PPanel();
 		btnPnl.setLayout(new PWrapLayout(btnPnl, ListAlignment.FROM_LEFT));
 //		btnPnl.setLayout(new PListLayout(btnPnl, ListAlignment.FROM_LEFT));
-		root.getBody().getLayout().addChild(btnPnl, PBorderLayout.Constraint.BOTTOM);
+		bodyPnl.addChild(btnPnl, PBorderLayout.Constraint.BOTTOM);
 		
 		final PButton btnChange = new PButton();
 		btnChange.setContent(new PSlider());
@@ -127,11 +140,9 @@ public class SwingPTest {
 		prgBar.getModel().setMaximum(17);
 		btnPnl.addChild(prgBar, null);
 		
-		final PCheckBox chkBx = new PCheckBox();
-		btnPnl.addChild(chkBx, null);
-		
 		final PLabel lblChkBx = new PLabel();
-		btnPnl.addChild(lblChkBx, null);
+		final PCheckBoxTuple chkBxTpl = new PCheckBoxTuple(lblChkBx);
+		btnPnl.addChild(chkBxTpl, null);
 		
 		final PSlider sld = new PSlider();
 		sld.getModel().setMinValue(13);
@@ -140,6 +151,16 @@ public class SwingPTest {
 		
 		final PLabel lblSld = new PLabel();
 		btnPnl.addChild(lblSld, null);
+		
+		final PLabel lblDd = new PLabel();
+		lblDd.getModel().setValue("Drop Down");
+		
+		PDropDownList ddl = new PDropDownList();
+		String[] elems = new String[] {"one", "two", "three", "four"};
+		for (String s : elems) {
+			ddl.getList().getModel().addElement(ddl.getList().getModel().getElementCount(), s);
+		}
+		btnPnl.addChild(ddl, null);
 		
 		btnChange.addObs(new PButtonObs() {
 			boolean increment = true;
@@ -152,7 +173,7 @@ public class SwingPTest {
 				}
 			}
 		});
-		chkBx.addObs(new PCheckBoxObs() {
+		chkBxTpl.getCheckBox().addObs(new PCheckBoxObs() {
 			public void clicked(PCheckBox checkBox) {
 				lblChkBx.getModel().setValue(null);
 				lblSld.getModel().setValue(null);
@@ -174,7 +195,7 @@ public class SwingPTest {
 				return null;
 			}
 			public String getText() {
-				if (chkBx.isChecked()) {
+				if (chkBxTpl.isChecked()) {
 					return "Relative";
 				}
 				return "Absolute";
@@ -188,7 +209,7 @@ public class SwingPTest {
 				return null;
 			}
 			public String getText() {
-				if (chkBx.isChecked()) {
+				if (chkBxTpl.isChecked()) {
 					double percent = sld.getModel().getValuePercent();
 					double val = ((int) (10000 * percent)) / 100.0;
 					return val+"%";

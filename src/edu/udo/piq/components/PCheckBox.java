@@ -5,51 +5,24 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
-import edu.udo.piq.PKeyboard;
-import edu.udo.piq.PKeyboardObs;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
-import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.components.defaults.DefaultPCheckBoxModel;
 import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.ImmutablePSize;
-import edu.udo.piq.util.PRenderUtil;
 
 public class PCheckBox extends AbstractPComponent {
 	
 	private static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(12, 12);
 	
 	private final List<PCheckBoxObs> obsList = new CopyOnWriteArrayList<>();
-	private final PKeyboardObs keyObs = new PKeyboardObs() {
-		public void keyTriggered(PKeyboard keyboard, Key key) {
-			if (!hasFocus()) {
-				return;
-			}
-			if (key == Key.ENTER) {
-				getModel().setChecked(!getModel().isChecked());
-			}
-			if (keyboard.isPressed(Key.CTRL)) {
-				if (key == Key.Z) {
-					if (getModel().getHistory() != null && getModel().getHistory().canUndo()) {
-						getModel().getHistory().undo();
-					}
-				}
-				if (key == Key.Y) {
-					if (getModel().getHistory() != null && getModel().getHistory().canRedo()) {
-						getModel().getHistory().redo();
-					}
-				}
-			}
-		}
-	};
 	private final PMouseObs mouseObs = new PMouseObs() {
 		public void buttonTriggered(PMouse mouse, MouseButton btn) {
-			if (btn == MouseButton.LEFT && isMouseWithinClippedBounds()) {
-				getModel().setChecked(!getModel().isChecked());
-				takeFocus();
+			if (btn == MouseButton.LEFT && isMouseOver()) {
+				toggleModel();
 				fireClickEvent();
 			}
 		}
@@ -63,8 +36,8 @@ public class PCheckBox extends AbstractPComponent {
 	protected PCheckBoxModel model;
 	
 	public PCheckBox() {
+		super();
 		setModel(new DefaultPCheckBoxModel());
-		addObs(keyObs);
 		addObs(mouseObs);
 	}
 	
@@ -89,6 +62,12 @@ public class PCheckBox extends AbstractPComponent {
 		return getModel().isChecked();
 	}
 	
+	protected void toggleModel() {
+		if (getModel() != null) {
+			getModel().setChecked(!getModel().isChecked());
+		}
+	}
+	
 	public void defaultRender(PRenderer renderer) {
 		PBounds bnds = getBounds();
 		int x = bnds.getX();
@@ -97,7 +76,7 @@ public class PCheckBox extends AbstractPComponent {
 		int fy = bnds.getFinalY();
 		
 		renderer.setColor(PColor.BLACK);
-		PRenderUtil.strokeQuad(renderer, x, y, fx, fy, 1);
+		renderer.strokeQuad(x, y, fx, fy, 1);
 		renderer.setColor(PColor.WHITE);
 		renderer.drawQuad(x + 1, y + 1, fx - 1, fy - 1);
 		
@@ -114,9 +93,9 @@ public class PCheckBox extends AbstractPComponent {
 		return DEFAULT_PREFERRED_SIZE;
 	}
 	
-	public boolean isFocusable() {
-		return true;
-	}
+//	public boolean isFocusable() {
+//		return true;
+//	}
 	
 	public void addObs(PCheckBoxObs obs) {
 		obsList.add(obs);

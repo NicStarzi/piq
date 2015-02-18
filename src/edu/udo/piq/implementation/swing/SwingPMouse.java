@@ -16,9 +16,9 @@ import edu.udo.piq.PMouseObs;
 public class SwingPMouse implements PMouse {
 	
 	private final List<PMouseObs> obsList = new CopyOnWriteArrayList<>();
-	private boolean[] btnPressed;
-	private boolean[] btnReleased;
-	private boolean[] btnTriggered;
+	private final boolean[] btnPressed;
+	private final boolean[] btnReleased;
+	private final boolean[] btnTriggered;
 	private int x, y, dx, dy;
 	
 	public SwingPMouse(JComponent base) {

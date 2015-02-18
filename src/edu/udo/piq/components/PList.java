@@ -234,6 +234,7 @@ public class PList extends AbstractPLayoutOwner {
 	
 	public void setCellFactory(PListCellFactory factory) {
 		cellFac = factory;
+		modelChanged();
 	}
 	
 	public PListCellFactory getCellFactory() {
@@ -360,8 +361,10 @@ public class PList extends AbstractPLayoutOwner {
 		elementToCompMap.clear();
 		
 		PListModel model = getModel();
-		for (int i = 0; i < model.getElementCount(); i++) {
-			elementAdded(model.getElement(i));
+		if (model != null) {
+			for (int i = 0; i < model.getElementCount(); i++) {
+				elementAdded(model.getElement(i));
+			}
 		}
 	}
 	

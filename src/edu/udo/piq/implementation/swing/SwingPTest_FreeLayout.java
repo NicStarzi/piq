@@ -7,6 +7,12 @@ import java.awt.event.ActionListener;
 import javax.swing.JFrame;
 import javax.swing.Timer;
 
+import edu.udo.piq.PBounds;
+import edu.udo.piq.PColor;
+import edu.udo.piq.PComponent;
+import edu.udo.piq.PDesign;
+import edu.udo.piq.PDesignSheet;
+import edu.udo.piq.PRenderer;
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PCheckBoxTuple;
 import edu.udo.piq.components.PDropDown;
@@ -17,6 +23,7 @@ import edu.udo.piq.components.PSlider;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.layouts.PFreeLayout;
 import edu.udo.piq.layouts.PWrapLayout;
+import edu.udo.piq.tools.AbstractPDesignSheet;
 
 public class SwingPTest_FreeLayout {
 	public static void main(String[] args) {
@@ -59,6 +66,28 @@ public class SwingPTest_FreeLayout {
 		
 		Person p = new Person("Max", "Mustermann");
 		
+		PDesignSheet sheet = new AbstractPDesignSheet() {
+			protected PDesign getDesignInternally(PComponent component) {
+				if (component.getClass() == PButton.class) {
+					return new PDesign() {
+						public void render(PRenderer renderer, PComponent component) {
+							PBounds bnds = component.getBounds();
+							PButton btn = (PButton) component;
+							
+							if (btn.isPressed()) {
+								renderer.setColor(PColor.RED);
+							} else {
+								renderer.setColor(PColor.BLUE);
+							}
+							renderer.drawQuad(bnds);
+						}
+					};
+				}
+				return super.getDesignInternally(component);
+			}
+		};
+		root.setDesignSheet(sheet);
+		
 		PButton btn = new PButton();
 		btn.setContent(new PLabel(new DefaultPTextModel(p) {
 			public String getText() {
@@ -66,6 +95,7 @@ public class SwingPTest_FreeLayout {
 				return p.firstName + ": " + p.lastName;
 			}
 		}));
+//		btn.setDesign();
 		bodyPnl.getLayout().addChild(btn, new PFreeLayout.FreeConstraint(36, 53));
 		
 		p.firstName = "Frederick";

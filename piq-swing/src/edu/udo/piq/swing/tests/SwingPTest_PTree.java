@@ -11,7 +11,9 @@ import javax.swing.Timer;
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PButtonObs;
 import edu.udo.piq.components.PLabel;
+import edu.udo.piq.components.PList;
 import edu.udo.piq.components.PPanel;
+import edu.udo.piq.components.PSplitPanel;
 import edu.udo.piq.components.PTree;
 import edu.udo.piq.components.PTreePosition;
 import edu.udo.piq.components.PTreeSelection;
@@ -61,12 +63,21 @@ public class SwingPTest_PTree {
 		bodyPnl.setLayout(new PBorderLayout(bodyPnl));
 		root.setBody(bodyPnl);
 		
+		PSplitPanel splitPnl = new PSplitPanel();
+		bodyPnl.addChild(splitPnl, PBorderLayout.Constraint.CENTER);
+		
 		PTree tree = new PTree();
 		tree.getModel().setRoot("Root");
 		tree.getModel().addChild("Root", "A", 0);
 		tree.getModel().addChild("Root", "B", 1);
 		tree.getModel().addChild("Root", "C", 2);
-		bodyPnl.addChild(tree, PBorderLayout.Constraint.CENTER);
+		splitPnl.setFirstComponent(tree);
+		
+		PList list = new PList();
+		list.getModel().addElement(0, "Anna");
+		list.getModel().addElement(1, "Ben");
+		list.getModel().addElement(2, "Chloe");
+		splitPnl.setSecondComponent(list);
 		
 		PPanel btnPnl = new PPanel();
 		btnPnl.setLayout(new PWrapLayout(btnPnl, ListAlignment.FROM_LEFT));

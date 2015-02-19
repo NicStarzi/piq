@@ -532,9 +532,10 @@ public interface PComponent {
 		if (mouse == null) {
 			return false;
 		}
-		int mx = mouse.getX();
-		int my = mouse.getY();
-		PComponent compAtMouse = PCompUtil.getComponentAt(getRoot(), mx, my);
+//		int mx = mouse.getX();
+//		int my = mouse.getY();
+//		PComponent compAtMouse = PCompUtil.getComponentAt(getRoot(), mx, my);
+		PComponent compAtMouse = mouse.getComponentAtMouse();
 		return compAtMouse == this;
 	}
 	
@@ -554,9 +555,10 @@ public interface PComponent {
 		if (mouse == null) {
 			return false;
 		}
-		int mx = mouse.getX();
-		int my = mouse.getY();
-		PComponent compAtMouse = PCompUtil.getComponentAt(getRoot(), mx, my);
+//		int mx = mouse.getX();
+//		int my = mouse.getY();
+//		PComponent compAtMouse = PCompUtil.getComponentAt(getRoot(), mx, my);
+		PComponent compAtMouse = mouse.getComponentAtMouse();
 		return compAtMouse == this || isAncestorOf(compAtMouse);
 	}
 	

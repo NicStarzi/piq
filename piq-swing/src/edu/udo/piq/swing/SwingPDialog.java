@@ -35,7 +35,7 @@ public class SwingPDialog extends AbstractPDialog implements PDialog {
 		}
 	};
 	private final SwingPRenderer renderer = new SwingPRenderer();
-	private final SwingPMouse mouse = new SwingPMouse(panel);
+	private final SwingPMouse mouse = new SwingPMouse(null);
 	private final SwingPKeyboard keyboard = new SwingPKeyboard(panel);
 	private final JPanelPBounds bounds = new JPanelPBounds(panel);
 	

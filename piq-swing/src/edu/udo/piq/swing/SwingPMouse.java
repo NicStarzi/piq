@@ -10,18 +10,25 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 
+import edu.udo.piq.PComponent;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouseObs;
+import edu.udo.piq.PRoot;
+import edu.udo.piq.util.PCompUtil;
 
 public class SwingPMouse implements PMouse {
 	
+	private final PRoot root;
 	private final List<PMouseObs> obsList = new CopyOnWriteArrayList<>();
 	private final boolean[] btnPressed;
 	private final boolean[] btnReleased;
 	private final boolean[] btnTriggered;
 	private int x, y, dx, dy;
+	private boolean compAtMouseCacheValid;
+	private PComponent compAtMouseCache;
 	
-	public SwingPMouse(JComponent base) {
+	public SwingPMouse(PRoot root, JComponent base) {
+		this.root = root;
 		btnPressed = new boolean[MouseButton.values().length];
 		btnReleased = new boolean[MouseButton.values().length];
 		btnTriggered = new boolean[MouseButton.values().length];
@@ -49,9 +56,11 @@ public class SwingPMouse implements PMouse {
 		base.addMouseMotionListener(new MouseMotionListener() {
 			public void mouseMoved(MouseEvent e) {
 				setPosition(e.getX(), e.getY());
+				invalidateCompAtMouseCache();
 			}
 			public void mouseDragged(MouseEvent e) {
 				setPosition(e.getX(), e.getY());
+				invalidateCompAtMouseCache();
 			}
 		});
 	}
@@ -61,6 +70,12 @@ public class SwingPMouse implements PMouse {
 		Arrays.fill(btnTriggered, false);
 		dx = 0;
 		dy = 0;
+		invalidateCompAtMouseCache();
+	}
+	
+	private void invalidateCompAtMouseCache() {
+		compAtMouseCacheValid = false;
+		compAtMouseCache = null;
 	}
 	
 	private void onPress(MouseButton btn) {
@@ -138,6 +153,14 @@ public class SwingPMouse implements PMouse {
 	
 	public boolean isTriggered(MouseButton btn) {
 		return btnTriggered[btn.ordinal()];
+	}
+	
+	public PComponent getComponentAtMouse() {
+		if (!compAtMouseCacheValid) {
+			compAtMouseCache = PCompUtil.getComponentAt(root, getX(), getY());
+			compAtMouseCacheValid = true;
+		}
+		return compAtMouseCache;
 	}
 	
 	public void addObs(PMouseObs obs) {

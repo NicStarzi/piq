@@ -1,5 +1,7 @@
 package edu.udo.piq;
 
+import edu.udo.piq.util.PCompUtil;
+
 public interface PMouse {
 	
 	/**
@@ -63,6 +65,19 @@ public interface PMouse {
 	 * @throws NullPointerException if btn is null
 	 */
 	public boolean isTriggered(MouseButton btn) throws NullPointerException;
+	
+	/**
+	 * Returns the topmost component that is directly underneath the mouse.<br>
+	 * This component may be cached by the mouse to improve performance.<br>
+	 * The returned component may be null if the mouse is outside of the 
+	 * {@link PRoot PRoots} bounds.<br>
+	 * 
+	 * @return the {@link PComponent} that is positioned at this {@link PMouse PMouses} x- and y-coordinates or null
+	 * @see PComponent#getClippedBounds()
+	 * @see PCompUtil#getComponentAt(PComponent, int, int)
+	 * @see PLayout#getChildAt(int, int)
+	 */
+	public PComponent getComponentAtMouse();
 	
 	public void addObs(PMouseObs obs);
 	

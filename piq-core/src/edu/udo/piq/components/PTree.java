@@ -22,6 +22,7 @@ import edu.udo.piq.components.defaults.DefaultPTreeModel;
 import edu.udo.piq.components.defaults.PTreeSelectionArbitraryNodes;
 import edu.udo.piq.layouts.PTreeLayout;
 import edu.udo.piq.layouts.PTreeLayout.Constraint;
+import edu.udo.piq.layouts.PTreeLayout.PTreeLayoutPosition;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
 
 public class PTree extends AbstractPLayoutOwner {
@@ -51,7 +52,7 @@ public class PTree extends AbstractPLayoutOwner {
 					if (keyboard != null && keyboard.isModifierToggled(Modifier.CTRL)) {
 						toggleSelection(node);
 					} else if (keyboard != null && keyboard.isPressed(Key.SHIFT)) {
-						rangeSelection(node);
+//						rangeSelection(node);
 					} else {
 						setSelection(node);
 					}
@@ -101,7 +102,7 @@ public class PTree extends AbstractPLayoutOwner {
 			PTree.this.selectionChanged(node, false);
 		}
 	};
-	private final Map<Object, PTreeCellComponent> elementToCompMap = new HashMap<>();
+	private final Map<Object, PTreeCellComponent> nodeToCompMap = new HashMap<>();
 	private PDnDSupport dndSup;
 	private PTreeSelection selection;
 	private PTreeModel model;
@@ -186,15 +187,33 @@ public class PTree extends AbstractPLayoutOwner {
 	}
 	
 	public PTreePosition getPositionAt(int x, int y) {
-		PTreeCellComponent cellComp = getCellComponentAt(x, y);
-		if (cellComp == null) {
+		PTreeLayoutPosition pos = getLayoutInternal().getPositionAt(x, y);
+		if (pos == null) {
 			return null;
 		}
-		return new PTreePosition(getModel(), cellComp.getNode());
+		PTreeCellComponent parent = (PTreeCellComponent) pos.getParentComponent();
+		if (parent == null) {
+			return null;
+		}
+//		PTreeCellComponent child = (PTreeCellComponent) pos.getChildComponent();
+		int index = pos.getIndex();
+		return new PTreePosition(getModel(), parent.getNode(), index);
 	}
 	
 	public PTreeCellComponent getCellComponentAt(int x, int y) {
 		return (PTreeCellComponent) getLayoutInternal().getComponentAt(x, y);
+	}
+	
+	public PTreeCellComponent getCellComponentAt(PTreePosition position) {
+//		System.out.println("getAt="+position);
+		Object parent = position.getParent();
+//		int index = position.getIndex();
+		PComponent parentCmp = nodeToCompMap.get(parent);
+		return (PTreeCellComponent) parentCmp;
+//		Constraint cnstr = new Constraint(parentCmp, index);
+//		System.out.println("cnstr="+cnstr);
+//		System.out.println("comp="+getLayoutInternal().getChildForConstraint(cnstr));
+//		return (PTreeCellComponent) getLayoutInternal().getChildForConstraint(cnstr);
 	}
 	
 	public void defaultRender(PRenderer renderer) {
@@ -246,7 +265,7 @@ public class PTree extends AbstractPLayoutOwner {
 	
 	private void modelChanged() {
 		getLayoutInternal().clearChildren();
-		elementToCompMap.clear();
+		nodeToCompMap.clear();
 		
 		PTreeModel model = getModel();
 		if (model.getRoot() != null) {
@@ -263,43 +282,17 @@ public class PTree extends AbstractPLayoutOwner {
 		}
 	}
 	
-	protected void rangeSelection(Object element) {
-//		PListModel model = getModel();
-//		int index = model.getIndexOfElement(element);
-//		PListSelection selection = getSelection();
-//		for (int i = index; i >= 0; i--) {
-//			Object elem = model.getElement(i);
-//			if (selection.isSelected(elem)) {
-//				for (; i <= index; i++) {
-//					selection.addSelection(model.getElement(i));
-//				}
-//				return;
-//			}
-//		}
-//		int elemCount = model.getElementCount();
-//		for (int i = index; i < elemCount; i++) {
-//			Object elem = model.getElement(i);
-//			if (selection.isSelected(elem)) {
-//				for (; i >= index; i--) {
-//					selection.addSelection(model.getElement(i));
-//				}
-//				return;
-//			}
-//		}
-//		selection.addSelection(element);
-	}
-	
-	protected void toggleSelection(Object element) {
-		if (selection.isSelected(element)) {
-			selection.removeSelection(element);
+	protected void toggleSelection(Object node) {
+		if (selection.isSelected(node)) {
+			selection.removeSelection(node);
 		} else {
-			selection.addSelection(element);
+			selection.addSelection(node);
 		}
 	}
 	
-	protected void setSelection(Object element) {
+	protected void setSelection(Object node) {
 		selection.clearSelection();
-		selection.addSelection(element);
+		selection.addSelection(node);
 	}
 	
 	protected void nodeAdded(Object node) {
@@ -308,9 +301,9 @@ public class PTree extends AbstractPLayoutOwner {
 		int index = model.getChildIndex(parent, node);
 		
 		PTreeCellComponent cellComp = getCellFactory().getCellComponentFor(model, parent, index);
-		elementToCompMap.put(node, cellComp);
+		nodeToCompMap.put(node, cellComp);
 		
-		PTreeCellComponent parentComp = elementToCompMap.get(parent);
+		PTreeCellComponent parentComp = nodeToCompMap.get(parent);
 		if (node == model.getRoot()) {
 			getLayoutInternal().setRootComponent(cellComp);
 		} else {
@@ -318,17 +311,18 @@ public class PTree extends AbstractPLayoutOwner {
 		}
 	}
 	
-	protected void nodeRemoved(Object element) {
+	protected void nodeRemoved(Object node) {
 		if (getSelection() != null) {
-			getSelection().removeSelection(element);
+			getSelection().removeSelection(node);
 		}
-		PComponent cellComp = elementToCompMap.get(element);
-		getLayoutInternal().removeChild(cellComp);
-		elementToCompMap.remove(element);
+		PComponent cellComp = nodeToCompMap.remove(node);
+		if (cellComp != null) {
+			getLayoutInternal().removeChild(cellComp);
+		}
 	}
 	
 	protected void nodeChanged(Object node) {
-		PTreeCellComponent comp = elementToCompMap.get(node);
+		PTreeCellComponent comp = nodeToCompMap.get(node);
 		if (comp != null) {
 			PTreeModel model = getModel();
 			Object parent = model.getParentOf(node);
@@ -337,8 +331,8 @@ public class PTree extends AbstractPLayoutOwner {
 		}
 	}
 	
-	protected void selectionChanged(Object element, boolean value) {
-		PTreeCellComponent comp = elementToCompMap.get(element);
+	protected void selectionChanged(Object node, boolean value) {
+		PTreeCellComponent comp = nodeToCompMap.get(node);
 		if (comp.isSelected() != value) { 
 			comp.setSelected(value);
 		}

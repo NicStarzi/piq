@@ -46,10 +46,6 @@ public class DefaultPTreeModel extends AbstractPTreeModel implements PTreeModel 
 		return root;
 	}
 	
-	public boolean isLeaf(Object node) {
-		return getChildCount(node) == 0;
-	}
-	
 	public Object getParentOf(Object child) {
 		return parentMap.get(child);
 	}
@@ -76,6 +72,7 @@ public class DefaultPTreeModel extends AbstractPTreeModel implements PTreeModel 
 			children = new ArrayList<>();
 			childMap.put(parent, children);
 		}
+		System.out.println("index="+index);
 		children.add(index, child);
 		parentMap.put(child, parent);
 		fireAddedEventForBranch(parent, child, index);
@@ -91,17 +88,32 @@ public class DefaultPTreeModel extends AbstractPTreeModel implements PTreeModel 
 			setRoot(null);
 			return;
 		}
-		List<Object> children = childMap.get(parent);
-		Object child = children.remove(index);
-		parentMap.remove(child);
-		if (children.isEmpty()) {
-			childMap.remove(parent);
-		}
-		fireRemovedEventForBranch(parent, child, index);
+		removeBranch(parent, getChild(parent, index), index);
+		
+//		List<Object> children = childMap.get(parent);
+//		Object child = children.remove(index);
+//		
+//		recursiveRemove(child);
+//		
+//		parentMap.remove(child);
+//		if (children.isEmpty()) {
+//			childMap.remove(parent);
+//		}
+//		fireRemovedEventForBranch(parent, child, index);
 	}
 	
 	public PModelHistory getHistory() {
 		return null;
+	}
+	
+	protected void removeBranch(Object grandParent, Object parent, int index) {
+		for (int i = 0; i < getChildCount(parent); i++) {
+			Object child = getChild(parent, i);
+			removeBranch(parent, child, index);
+			parentMap.remove(child);
+		}
+		childMap.get(parent);
+		fireRemovedEvent(grandParent, parent, index);
 	}
 	
 }

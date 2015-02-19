@@ -135,37 +135,71 @@ public class PTreeLayout extends AbstractPLayout implements PReadOnlyLayout {
 		return Collections.unmodifiableList(children);
 	}
 	
-	public int getIndexAt(int x, int y) {
-		return -1;
+	public PTreeLayoutPosition getPositionAt(int x, int y) {
+		if (!getOwner().getBounds().contains(x, y)) {
+			return null;
+		} if (getRootComponent() == null) {
+			return null;
+		}
+		Deque<StackInfo> stack = new LinkedList<>();
+		stack.push(new StackInfo(null, getRootComponent(), 0));
+		while (!stack.isEmpty()) {
+			StackInfo info = stack.pop();
+			PComponent current = info.child;
+			
+			PBounds cmpBnds = getChildBounds(current);
+			int compFy = cmpBnds.getFinalY();
+			
+			if (y <= compFy) {
+				int compY = cmpBnds.getY();
+				if (y >= compY) {
+					int index = getChildrenOf(current).size();
+					return new PTreeLayoutPosition(current, null, index);
+				}
+				PComponent parent = info.parent;
+				int index = getChildrenOf(parent).indexOf(current);
+				return new PTreeLayoutPosition(parent, current, index);
+			}
+			
+			for (PComponent child : getChildrenOf(current)) {
+				stack.push(new StackInfo(current, child, info.lvl + 1));
+			}
+		}
+		return null;
 	}
 	
 	public PComponent getComponentAt(int x, int y) {
 		if (!getOwner().getBounds().contains(x, y)) {
 			return null;
+		} if (getRootComponent() == null) {
+			return null;
 		}
 		
 		Deque<StackInfo> stack = new LinkedList<>();
-		stack.push(new StackInfo(getRootComponent(), 0));
-		PComponent before = null;
+		stack.push(new StackInfo(null, getRootComponent(), 0));
 		while (!stack.isEmpty()) {
 			StackInfo info = stack.pop();
-			PComponent current = info.comp;
-			PBounds cmpBnds = getChildBounds(current);
-			int compY = cmpBnds.getY();
-			int compFy = cmpBnds.getFinalY();
+			PComponent current = info.child;
 			
-			if (y >= compY && y <= compFy) {
-				return info.comp;
-			} else if (y <= compFy) {
-				return before;
+			PReadOnlyLayout childLayout = current.getLayout();
+			if (childLayout != null) {
+				PComponent grandChild = childLayout.getChildAt(x, y);
+				if (grandChild != null) {
+					return grandChild;
+				}
+			}
+			if (current.isElusive()) {
+				continue;
+			}
+			PBounds cmpBnds = getChildBounds(current);
+			if (cmpBnds.contains(x, y)) {
+				return current;
 			}
 			
 			for (PComponent child : getChildrenOf(current)) {
-				stack.push(new StackInfo(child, info.lvl + 1));
+				stack.push(new StackInfo(current, child, info.lvl + 1));
 			}
-			before = info.comp;
 		}
-		
 		return null;
 	}
 	
@@ -179,10 +213,10 @@ public class PTreeLayout extends AbstractPLayout implements PReadOnlyLayout {
 		int gap = getGap();
 		
 		Deque<StackInfo> stack = new LinkedList<>();
-		stack.push(new StackInfo(getRootComponent(), 0));
+		stack.push(new StackInfo(null, getRootComponent(), 0));
 		while (!stack.isEmpty()) {
 			StackInfo info = stack.pop();
-			PComponent current = info.comp;
+			PComponent current = info.child;
 			PSize compPrefSize = getPreferredSizeOf(current);
 			int compX = x + info.lvl * indentSize;
 			int compY = y;
@@ -194,7 +228,7 @@ public class PTreeLayout extends AbstractPLayout implements PReadOnlyLayout {
 			y += compH + gap;
 			
 			for (PComponent child : getChildrenOf(current)) {
-				stack.push(new StackInfo(child, info.lvl + 1));
+				stack.push(new StackInfo(current, child, info.lvl + 1));
 			}
 		}
 	}
@@ -209,10 +243,10 @@ public class PTreeLayout extends AbstractPLayout implements PReadOnlyLayout {
 		int gap = getGap();
 		
 		Deque<StackInfo> stack = new LinkedList<>();
-		stack.push(new StackInfo(getRootComponent(), 0));
+		stack.push(new StackInfo(null, getRootComponent(), 0));
 		while (!stack.isEmpty()) {
 			StackInfo info = stack.pop();
-			PComponent current = info.comp;
+			PComponent current = info.child;
 			PSize compPrefSize = getPreferredSizeOf(current);
 			int compX = info.lvl * indentSize;
 			int compW = compPrefSize.getWidth();
@@ -227,7 +261,7 @@ public class PTreeLayout extends AbstractPLayout implements PReadOnlyLayout {
 			}
 			
 			for (PComponent child : getChildrenOf(current)) {
-				stack.push(new StackInfo(child, info.lvl + 1));
+				stack.push(new StackInfo(current, child, info.lvl + 1));
 			}
 		}
 		
@@ -254,16 +288,73 @@ public class PTreeLayout extends AbstractPLayout implements PReadOnlyLayout {
 			return index;
 		}
 		
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + index;
+			result = prime * result
+					+ ((parent == null) ? 0 : parent.hashCode());
+			return result;
+		}
+		
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			} if (obj == null || !(obj instanceof Constraint)) {
+				return false;
+			}
+			Constraint other = (Constraint) obj;
+			return index == other.index && parent == other.parent;
+		}
+		
+		public String toString() {
+			StringBuilder builder = new StringBuilder();
+			builder.append("Constraint [parent=");
+			builder.append(parent);
+			builder.append(", index=");
+			builder.append(index);
+			builder.append("]");
+			return builder.toString();
+		}
+		
 	}
 	
 	protected static class StackInfo {
-		public final PComponent comp;
+		public final PComponent parent;
+		public final PComponent child;
 		public final int lvl;
 		
-		public StackInfo(PComponent component, int level) {
-			comp = component;
+		public StackInfo(PComponent parent, PComponent child, int level) {
+			this.parent = parent;
+			this.child = child;
 			lvl = level;
 		}
+	}
+	
+	public static class PTreeLayoutPosition {
+		
+		final PComponent parentComp;
+		final PComponent childComp;
+		final int index;
+		
+		public PTreeLayoutPosition(PComponent parentComp, PComponent childComp, int index) {
+			this.parentComp = parentComp;
+			this.childComp = childComp;
+			this.index = index;
+		}
+		
+		public PComponent getParentComponent() {
+			return parentComp;
+		}
+		
+		public PComponent getChildComponent() {
+			return childComp;
+		}
+		
+		public int getIndex() {
+			return index;
+		}
+		
 	}
 	
 }

@@ -157,4 +157,14 @@ public class PTreePosition {
 				&& getIndex() == other.getIndex();
 	}
 	
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("(parent=");
+		builder.append(parent);
+		builder.append(", index=");
+		builder.append(index);
+		builder.append(")");
+		return builder.toString();
+	}
+	
 }

@@ -8,8 +8,6 @@ public interface PTreeModel {
 	
 	public Object getRoot();
 	
-	public boolean isLeaf(Object node);
-	
 	public Object getParentOf(Object child);
 	
 	public int getChildCount(Object parent);

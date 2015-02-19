@@ -14,6 +14,7 @@ import edu.udo.piq.components.PTreeCellComponent;
 import edu.udo.piq.components.PTreeModel;
 import edu.udo.piq.components.PTreePosition;
 import edu.udo.piq.components.PTreeSelection;
+import edu.udo.piq.components.PTreeCellComponent.DropHighlightType;
 import edu.udo.piq.tools.ImmutablePDnDTransfer;
 
 public class DefaultPTreeDnDSupport implements PDnDSupport {
@@ -54,17 +55,29 @@ public class DefaultPTreeDnDSupport implements PDnDSupport {
 					// For the moment the issue is simply ignored and a standard model is assumed.
 					if (!model.canAddChild(parent, node, index)) {
 						return false;
+					} if (isAncestor(model, node, parent)) {
+						return false;
 					}
 				}
 				return true;
 			} else {
-				return model.canAddChild(parent, data, index);
+				return model.canAddChild(parent, data, index) && !isAncestor(model, data, parent);
 			}
 		} catch (Exception e) {
 			// Just in case
 			e.printStackTrace();
 			return false;
 		}
+	}
+	
+	private boolean isAncestor(PTreeModel model, Object maybeAncestor, Object node) {
+		while (node != null) {
+			if (node == maybeAncestor) {
+				return true;
+			}
+			node = model.getParentOf(node);
+		}
+		return false;
 	}
 	
 	public void drop(PComponent target, PDnDTransfer transfer, int x, int y) {
@@ -218,16 +231,21 @@ public class DefaultPTreeDnDSupport implements PDnDSupport {
 		}
 		try {
 			if (highlightedCellComp != null) {
-				highlightedCellComp.setDropHighlighted(false);
+				highlightedCellComp.setDropHighlightType(null);
 				highlightedCellComp = null;
 			}
 			
 			PTree tree = (PTree) source;
-			
-			highlightedCellComp = tree.getCellComponentAt(x, y);
+			PTreePosition pos = tree.getPositionAt(x, y);
+			if (pos != null) {
+				highlightedCellComp = tree.getCellComponentAt(pos);
+//				System.out.println("highlightedCellComp="+highlightedCellComp);
+			} else {
+				highlightedCellComp = null;
+			}
 //			tree.setDropHighlighted(highlightedCellComp == null);
 			if (highlightedCellComp != null) {
-				highlightedCellComp.setDropHighlighted(true);
+				highlightedCellComp.setDropHighlightType(DropHighlightType.INSIDE);
 			}
 		} catch (Exception e) {
 			// Just in case
@@ -248,7 +266,7 @@ public class DefaultPTreeDnDSupport implements PDnDSupport {
 //			PTree tree = (PTree) source;
 //			tree.setDropHighlighted(false);
 			if (highlightedCellComp != null) {
-				highlightedCellComp.setDropHighlighted(false);
+				highlightedCellComp.setDropHighlightType(null);
 				highlightedCellComp = null;
 			}
 		} catch (Exception e) {

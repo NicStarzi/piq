@@ -11,10 +11,10 @@ public class DefaultPTreeCellComponent extends PLabel implements PTreeCellCompon
 	
 	protected static final PColor DEFAULT_TEXT_SELECTED_COLOR = PColor.WHITE;
 	protected static final PColor DEFAULT_BACKGROUND_SELECTED_COLOR = PColor.BLUE;
-	protected static final PColor DEFAULT_DROP_HIGHLIGHT_COLOR = PColor.BLUE;
+	protected static final PColor DEFAULT_DROP_HIGHLIGHT_COLOR = PColor.RED;
 	
 	protected boolean selected;
-	protected boolean dropHighlight;
+	protected DropHighlightType dropHighlight;
 	
 	public void setSelected(boolean isSelected) {
 		selected = isSelected;
@@ -25,12 +25,12 @@ public class DefaultPTreeCellComponent extends PLabel implements PTreeCellCompon
 		return selected;
 	}
 	
-	public void setDropHighlighted(boolean isHighlighted) {
-		dropHighlight = isHighlighted;
+	public void setDropHighlightType(DropHighlightType type) {
+		dropHighlight = type;
 		fireReRenderEvent();
 	}
 	
-	public boolean isDropHighlighted() {
+	public DropHighlightType getDropHighlightType() {
 		return dropHighlight;
 	}
 	
@@ -64,15 +64,44 @@ public class DefaultPTreeCellComponent extends PLabel implements PTreeCellCompon
 			renderer.setColor(DEFAULT_BACKGROUND_SELECTED_COLOR);
 			renderer.drawQuad(x, y, fx, fy);
 		}
-		if (isDropHighlighted()) {
-			PBounds bounds = getBounds();
-			int x = bounds.getX();
-			int y = bounds.getY();
-			int fx = bounds.getFinalX();
-			int fy = y + 2;
-			
-			renderer.setColor(DEFAULT_DROP_HIGHLIGHT_COLOR);
-			renderer.drawQuad(x, y, fx, fy);
+		DropHighlightType dhType = getDropHighlightType();
+		if (dhType != null) {
+			renderer.setColor(PColor.YELLOW);
+			renderer.drawQuad(getBounds());
+//			PBounds bounds = getBounds();
+//			int x = 0;
+//			int y = 0;
+//			int fx = 0;
+//			int fy = 0;
+//			
+//			switch (dhType) {
+//			case BEFORE:
+//				System.out.println("before");
+//				x = bounds.getX();
+//				y = bounds.getY();
+//				fx = bounds.getFinalX();
+//				fy = y + 2;
+//				break;
+//			case BEHIND:
+//				System.out.println("behind");
+//				x = bounds.getX();
+//				y = bounds.getFinalY();
+//				fx = bounds.getFinalX();
+//				fy = y + 2;
+//				break;
+//			case INSIDE:
+//				System.out.println("inside");
+//				x = bounds.getFinalX();
+//				y = bounds.getY();
+//				fx = x + 2;
+//				fy = bounds.getFinalY();
+//				break;
+//			default:
+//				break;
+//			}
+//			renderer.setColor(DEFAULT_DROP_HIGHLIGHT_COLOR);
+//			System.out.println("x="+x+", y="+y+", fx="+fx+", fy="+fy);
+//			renderer.drawQuad(x, y, fx, fy);
 		}
 		
 		super.defaultRender(renderer);

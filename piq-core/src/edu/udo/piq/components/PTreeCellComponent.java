@@ -8,12 +8,19 @@ public interface PTreeCellComponent extends PComponent {
 	
 	public boolean isSelected();
 	
-	public void setDropHighlighted(boolean isHighlighted);
+	public void setDropHighlightType(DropHighlightType highlightType);
 	
-	public boolean isDropHighlighted();
+	public DropHighlightType getDropHighlightType();
 	
 	public void setNode(PTreeModel model, Object parent, int index);
 	
 	public Object getNode();
+	
+	public static enum DropHighlightType {
+		BEFORE,
+		BEHIND,
+		INSIDE,
+		;
+	}
 	
 }

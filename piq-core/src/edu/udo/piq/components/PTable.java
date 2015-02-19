@@ -125,8 +125,6 @@ public class PTable extends AbstractPLayoutOwner {
 		}
 	}
 	
-	private void doNothing() {}
-	
 //	protected void onUpdate() {
 //		if (getModel() == null || getSelection() == null) {
 //			return;
@@ -155,22 +153,22 @@ public class PTable extends AbstractPLayoutOwner {
 //		}
 //	}
 	
-	private void toggleSelection(PTableCell cell) {
-		if (selection.isSelected(cell)) {
-			selection.removeSelection(cell);
-		} else {
-			selection.addSelection(cell);
-		}
-	}
-	
-	private void rangeSelection(PTableCell cell) {
-		
-	}
-	
-	private void setSelection(PTableCell cell) {
-		selection.clearSelection();
-		selection.addSelection(cell);
-	}
+//	private void toggleSelection(PTableCell cell) {
+//		if (selection.isSelected(cell)) {
+//			selection.removeSelection(cell);
+//		} else {
+//			selection.addSelection(cell);
+//		}
+//	}
+//	
+//	private void rangeSelection(PTableCell cell) {
+//		
+//	}
+//	
+//	private void setSelection(PTableCell cell) {
+//		selection.clearSelection();
+//		selection.addSelection(cell);
+//	}
 	
 	private void modelChanged() {
 		int colCount = getModel().getColumnCount();

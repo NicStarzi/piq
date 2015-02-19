@@ -82,10 +82,15 @@ public class DefaultPTreeModel extends AbstractPTreeModel implements PTreeModel 
 	}
 	
 	public boolean canRemoveChild(Object parent, int index) {
-		return parent != null && index >= 0 && getChildCount(parent) >= index;
+		return (parent == null && index == -1 && getRoot() != null) 
+				|| (parent != null && index >= 0 && getChildCount(parent) >= index);
 	}
 	
 	public void removeChild(Object parent, int index) {
+		if (parent == null && index == -1) {
+			setRoot(null);
+			return;
+		}
 		List<Object> children = childMap.get(parent);
 		Object child = children.remove(index);
 		parentMap.remove(child);

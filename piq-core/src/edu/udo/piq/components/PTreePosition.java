@@ -8,6 +8,7 @@ public class PTreePosition {
 	private final PTreeModel model;
 	private final Object parent;
 	private final int index;
+	private final boolean isRoot;
 	
 	public PTreePosition(PTreeModel model, Object parent, int index) {
 		if (model == null) {
@@ -17,6 +18,7 @@ public class PTreePosition {
 		} if (index < 0) {
 			throw new IllegalArgumentException("index="+index);
 		}
+		isRoot = parent == null && index == -1;
 		this.model = model;
 		this.parent = parent;
 		this.index = index;
@@ -28,9 +30,15 @@ public class PTreePosition {
 		} if (node == null) {
 			throw new NullPointerException("node="+node);
 		}
+		isRoot = node == model.getRoot();
 		this.model = model;
-		this.parent = model.getParentOf(node);
-		this.index = model.getChildIndex(parent, node);
+		if (isRoot) {
+			parent = null;
+			index = -1;
+		} else {
+			parent = model.getParentOf(node);
+			index = model.getChildIndex(parent, node);
+		}
 	}
 	
 	public PTreeModel getModel() {
@@ -46,6 +54,9 @@ public class PTreePosition {
 	}
 	
 	public Object getNode() {
+		if (isRoot) {
+			return getModel().getRoot();
+		}
 		return getModel().getChild(getParent(), getIndex());
 	}
 	
@@ -57,13 +68,19 @@ public class PTreePosition {
 		getModel().addChild(getParent(), node, getIndex());
 	}
 	
+	public boolean canBeAddedAsChild(Object node) {
+		Object parent = getNode();
+		int index = getModel().getChildCount(parent);
+		return getModel().canAddChild(parent, node, index);
+	}
+	
 	public void addAsChild(Object node) {
 		Object parent = getNode();
 		int index = getModel().getChildCount(parent);
 		getModel().addChild(parent, node, index);
 	}
 	
-	public boolean canBeRemoved(Object node) {
+	public boolean canBeRemoved() {
 		return getModel().canRemoveChild(getParent(), getIndex());
 	}
 	

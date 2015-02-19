@@ -19,7 +19,7 @@ import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.components.defaults.DefaultPTreeCellFactory;
 import edu.udo.piq.components.defaults.DefaultPTreeDnDSupport;
 import edu.udo.piq.components.defaults.DefaultPTreeModel;
-import edu.udo.piq.components.defaults.PTreeSelectionSingleNode;
+import edu.udo.piq.components.defaults.PTreeSelectionArbitraryNodes;
 import edu.udo.piq.layouts.PTreeLayout;
 import edu.udo.piq.layouts.PTreeLayout.Constraint;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
@@ -116,7 +116,7 @@ public class PTree extends AbstractPLayoutOwner {
 		super();
 		setLayout(new PTreeLayout(this));
 		setDragAndDropSupport(new DefaultPTreeDnDSupport());
-		setSelection(new PTreeSelectionSingleNode());
+		setSelection(new PTreeSelectionArbitraryNodes());
 		setCellFactory(new DefaultPTreeCellFactory());
 		setModel(model);
 //		addObs(keyObs);
@@ -157,6 +157,7 @@ public class PTree extends AbstractPLayoutOwner {
 	public void setSelection(PTreeSelection selection) {
 		if (getSelection() != null) {
 			getSelection().removeObs(selectionObs);
+			getSelection().clearSelection();
 		}
 		this.selection = selection;
 		if (getSelection() != null) {
@@ -210,7 +211,11 @@ public class PTree extends AbstractPLayoutOwner {
 		
 		PTreeLayout layout = getLayoutInternal();
 		Deque<PTreeCellComponent> stack = new LinkedList<>();
-		stack.push((PTreeCellComponent) layout.getRootComponent());
+		PComponent root = layout.getRootComponent();
+		if (root == null) {
+			return;
+		}
+		stack.push((PTreeCellComponent) root);
 		while (!stack.isEmpty()) {
 			PTreeCellComponent current = stack.pop();
 			PBounds parentBnds = current.getBounds();
@@ -306,7 +311,11 @@ public class PTree extends AbstractPLayoutOwner {
 		elementToCompMap.put(node, cellComp);
 		
 		PTreeCellComponent parentComp = elementToCompMap.get(parent);
-		getLayoutInternal().addChild(cellComp, new Constraint(parentComp, index));
+		if (node == model.getRoot()) {
+			getLayoutInternal().setRootComponent(cellComp);
+		} else {
+			getLayoutInternal().addChild(cellComp, new Constraint(parentComp, index));
+		}
 	}
 	
 	protected void nodeRemoved(Object element) {

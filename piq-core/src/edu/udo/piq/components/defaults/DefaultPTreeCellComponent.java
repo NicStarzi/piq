@@ -35,7 +35,11 @@ public class DefaultPTreeCellComponent extends PLabel implements PTreeCellCompon
 	}
 	
 	public void setNode(PTreeModel model, Object parent, int index) {
-		getModel().setValue(model.getChild(parent, index));
+		if (parent == null && index == -1) {
+			getModel().setValue(model.getRoot());
+		} else {
+			getModel().setValue(model.getChild(parent, index));
+		}
 	}
 	
 	public Object getNode() {

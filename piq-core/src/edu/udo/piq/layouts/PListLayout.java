@@ -111,17 +111,21 @@ public class PListLayout extends AbstractPLayout {
 		for (int i = 0; i < compList.size(); i++) {
 			PComponent child = compList.get(i);
 			PBounds bnds = getChildBounds(child);
-			int cfy = bnds.getFinalY();
-			if (cfy >= y) {
-				int cx = bnds.getX();
-				int cy = bnds.getY();
-				int cfx = bnds.getFinalX();
-				if (cy <= y && cfx >= x && cx <= x) {
-					return child;
-				} else {
-					return null;
-				}
+			if (bnds.contains(x, y)) {
+				return child;
 			}
+			// This optimization only works for ListAlignment.FROM_TOP...
+//			int cfy = bnds.getFinalY();
+//			if (cfy >= y) {
+//				int cx = bnds.getX();
+//				int cy = bnds.getY();
+//				int cfx = bnds.getFinalX();
+//				if (cy <= y && cfx >= x && cx <= x) {
+//					return child;
+//				} else {
+//					return null;
+//				}
+//			}
 		}
 		return null;
 	}

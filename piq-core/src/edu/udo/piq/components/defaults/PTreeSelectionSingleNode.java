@@ -32,6 +32,9 @@ public class PTreeSelectionSingleNode extends AbstractPTreeSelection implements 
 	}
 	
 	public List<Object> getSelection() {
+		if (getNode() == null) {
+			return Collections.emptyList();
+		}
 		return Collections.unmodifiableList(oneElemList);
 	}
 	

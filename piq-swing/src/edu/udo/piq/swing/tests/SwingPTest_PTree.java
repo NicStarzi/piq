@@ -86,19 +86,35 @@ public class SwingPTest_PTree {
 		
 		btnInsert.addObs(new PButtonObs() {
 			public void onClick(PButton button) {
-				PTreeSelection sel = tree.getSelection();
-				List<PTreePosition> posses = sel.getSelectedPositions();
-				for (PTreePosition pos : posses) {
-					pos.addAsChild(Integer.valueOf(counter++));
+				if (tree.getModel().getRoot() == null) {
+					counter = 0;
+					tree.getModel().setRoot(Integer.valueOf(counter++));
+				} else {
+					PTreeSelection sel = tree.getSelection();
+					List<PTreePosition> posses = sel.getSelectedPositions();
+					for (PTreePosition pos : posses) {
+						Object node = Integer.valueOf(counter++);
+						if (pos.canBeAddedAsChild(node)) {
+							pos.addAsChild(node);
+						}
+					}
 				}
 			}
 		});
 		btnAdd.addObs(new PButtonObs() {
 			public void onClick(PButton button) {
-				PTreeSelection sel = tree.getSelection();
-				List<PTreePosition> posses = sel.getSelectedPositions();
-				for (PTreePosition pos : posses) {
-					pos.add(Integer.valueOf(counter++));
+				if (tree.getModel().getRoot() == null) {
+					counter = 0;
+					tree.getModel().setRoot(Integer.valueOf(counter++));
+				} else {
+					PTreeSelection sel = tree.getSelection();
+					List<PTreePosition> posses = sel.getSelectedPositions();
+					for (PTreePosition pos : posses) {
+						Object node = Integer.valueOf(counter++);
+						if (pos.canBeAdded(node)) {
+							pos.add(node);
+						}
+					}
 				}
 			}
 		});
@@ -107,7 +123,9 @@ public class SwingPTest_PTree {
 				PTreeSelection sel = tree.getSelection();
 				List<PTreePosition> posses = sel.getSelectedPositions();
 				for (PTreePosition pos : posses) {
-					pos.remove();
+					if (pos.canBeRemoved()) {
+						pos.remove();
+					}
 				}
 			}
 		});

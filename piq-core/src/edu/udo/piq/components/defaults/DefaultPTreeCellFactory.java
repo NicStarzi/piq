@@ -9,9 +9,9 @@ public class DefaultPTreeCellFactory implements PTreeCellFactory {
 	public PTreeCellComponent getCellComponentFor(PTreeModel model, Object parent, int index) {
 		if (model == null) {
 			throw new NullPointerException("model="+model);
-		} if (parent == null) {
+		} if (parent == null && index != -1) {
 			throw new NullPointerException("parent="+parent);
-		} if (index < 0 || index >= model.getChildCount(parent)) {
+		} if ((parent != null && index < 0) || index >= model.getChildCount(parent)) {
 			throw new IllegalArgumentException("index="+index);
 		}
 		DefaultPTreeCellComponent label = new DefaultPTreeCellComponent();

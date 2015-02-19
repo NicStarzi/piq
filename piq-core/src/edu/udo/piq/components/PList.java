@@ -29,6 +29,8 @@ import edu.udo.piq.tools.AbstractPLayoutOwner;
 
 public class PList extends AbstractPLayoutOwner {
 	
+	private static final PColor BACKGROUND_COLOR = PColor.WHITE;
+	private static final PColor DROP_HIGHLIGHT_COLOR = PColor.RED;
 	private static final int DRAG_AND_DROP_DISTANCE = 16;
 	
 	private final PKeyboardObs keyObs = new PKeyboardObs() {
@@ -295,11 +297,11 @@ public class PList extends AbstractPLayoutOwner {
 		int fx = bounds.getFinalX();
 		int fy = bounds.getFinalY();
 		
-		renderer.setColor(PColor.WHITE);
+		renderer.setColor(BACKGROUND_COLOR);
 		renderer.drawQuad(x + 0, y + 0, fx - 0, fy - 0);
 		
 		if (isDropHighlighted()) {
-			renderer.setColor(PColor.BLUE);
+			renderer.setColor(DROP_HIGHLIGHT_COLOR);
 			
 			PListModel model = getModel();
 			int highestIndex = model.getElementCount() - 1;

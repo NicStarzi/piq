@@ -101,7 +101,6 @@ public class PButton extends AbstractPLayoutOwner {
 		if (getModel() != null) {
 			getModel().addObs(modelObs);
 		}
-		firePreferredSizeChangedEvent();
 		fireReRenderEvent();
 	}
 	

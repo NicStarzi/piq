@@ -37,11 +37,9 @@ public abstract class AbstractPLayout implements PLayout {
 	public void addChild(PComponent component, Object constraint) throws NullPointerException, IllegalArgumentException, IllegalStateException {
 		if (component == null) {
 			throw new NullPointerException("component="+component);
-		}
-		if (!canAdd(component, constraint)) {
+		} if (!canAdd(component, constraint)) {
 			throw new IllegalArgumentException("constraint="+constraint);
-		}
-		if (containsChild(component)) {
+		} if (containsChild(component)) {
 			throw new IllegalStateException(this+".contains "+component);
 		}
 		PCompInfo info = new PCompInfo(component, constraint);
@@ -54,8 +52,7 @@ public abstract class AbstractPLayout implements PLayout {
 	public void removeChild(PComponent child) throws NullPointerException, IllegalArgumentException {
 		if (child == null) {
 			throw new NullPointerException("component="+child);
-		}
-		if (!containsChild(child)) {
+		} if (!containsChild(child)) {
 			throw new IllegalStateException(this+".contains not "+child);
 		}
 		Object constraint = compMap.get(child).constr;

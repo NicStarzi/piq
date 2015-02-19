@@ -6,8 +6,8 @@ import java.util.List;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
-import edu.udo.piq.PLayout;
 import edu.udo.piq.PLayoutObs;
+import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.PPanel;
 import edu.udo.piq.tools.AbstractPLayout;
@@ -24,11 +24,11 @@ public class PDockLayout extends AbstractPLayout {
 	public PDockLayout(PComponent component) {
 		super(component);
 		addObs(new PLayoutObs() {
-			public void childAdded(PLayout layout, PComponent child, Object constraint) {
+			public void childAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
 				Constraint constr = (Constraint) constraint;
 				addToRow(child, constr);
 			}
-			public void childRemoved(PLayout layout, PComponent child, Object constraint) {
+			public void childRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
 				Constraint constr = (Constraint) constraint;
 				removeFromRow(child, constr);
 			}
@@ -86,8 +86,8 @@ public class PDockLayout extends AbstractPLayout {
 		int gap = getGap();
 		int ox = ob.getX() + insets.getFromLeft();
 		int oy = ob.getY() + insets.getFromRight();
-		int ow = ob.getWidth() - insets.getHorizontal();
-		int oh = ob.getHeight() - insets.getVertical();
+//		int ow = ob.getWidth() - insets.getHorizontal();
+//		int oh = ob.getHeight() - insets.getVertical();
 		
 		int cx;
 		int cy = oy;

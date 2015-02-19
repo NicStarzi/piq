@@ -11,7 +11,7 @@ public class DefaultPListCellComponent extends PLabel implements PListCellCompon
 	
 	protected static final PColor DEFAULT_TEXT_SELECTED_COLOR = PColor.WHITE;
 	protected static final PColor DEFAULT_BACKGROUND_SELECTED_COLOR = PColor.BLUE;
-	protected static final PColor DEFAULT_DROP_HIGHLIGHT_COLOR = PColor.BLUE;
+	protected static final PColor DEFAULT_DROP_HIGHLIGHT_COLOR = PColor.RED;
 	
 	protected boolean selected;
 	protected boolean dropHighlight;

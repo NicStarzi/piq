@@ -56,7 +56,7 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 	private final Map<FontInfo, AwtPFontResource> fontMap = new HashMap<>();
 	private final Map<String, BufferedPImageResource> imgMap = new HashMap<>();
 	private final SwingPRenderer renderer = new SwingPRenderer();
-	private final SwingPMouse mouse = new SwingPMouse(this);
+	private final SwingPMouse mouse = new SwingPMouse(this, panel);
 	private final SwingPKeyboard keyboard = new SwingPKeyboard(panel);
 	private final SwingPClipboard clipboard = new SwingPClipboard();
 	private final PDnDManager dndManager = new PDnDManager(this);

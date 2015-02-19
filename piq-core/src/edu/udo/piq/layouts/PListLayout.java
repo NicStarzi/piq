@@ -107,6 +107,36 @@ public class PListLayout extends AbstractPLayout {
 		return compList.get(index);
 	}
 	
+	public PComponent getChildAt(int x, int y) {
+		for (int i = 0; i < compList.size(); i++) {
+			PComponent child = compList.get(i);
+			PBounds bnds = getChildBounds(child);
+			int cfy = bnds.getFinalY();
+			if (cfy >= y) {
+				int cx = bnds.getX();
+				int cy = bnds.getY();
+				int cfx = bnds.getFinalX();
+				if (cy <= y && cfx >= x && cx <= x) {
+					return child;
+				} else {
+					return null;
+				}
+			}
+		}
+		return null;
+	}
+	
+	public int getIndexAt(int x, int y) {
+		for (int i = 0; i < compList.size(); i++) {
+			PComponent child = compList.get(i);
+			PBounds bnds = getChildBounds(child);
+			if (bnds.getFinalY() >= y) {
+				return i;
+			}
+		}
+		return compList.size();
+	}
+	
 	public int getChildIndex(PComponent child) {
 		if (child == null) {
 			throw new NullPointerException();
@@ -115,10 +145,7 @@ public class PListLayout extends AbstractPLayout {
 	}
 	
 	public Object getChildConstraint(PComponent child) throws NullPointerException {
-		if (child == null) {
-			throw new NullPointerException();
-		}
-		return compList.indexOf(child);
+		return Integer.valueOf(getChildIndex(child));
 	}
 	
 	public PComponent getChildForConstraint(Object constraint) {

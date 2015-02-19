@@ -12,7 +12,7 @@ public interface PTreeCellComponent extends PComponent {
 	
 	public boolean isDropHighlighted();
 	
-	public void setNode(PTreeModel model, Object node);
+	public void setNode(PTreeModel model, Object parent, int index);
 	
 	public Object getNode();
 	

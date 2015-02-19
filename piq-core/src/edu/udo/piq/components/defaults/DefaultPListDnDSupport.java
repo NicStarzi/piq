@@ -34,11 +34,8 @@ public class DefaultPListDnDSupport implements PDnDSupport {
 			if (model == null) {
 				return false;
 			}
-			// Index might be -1, in that case use element count of model for index
+			// Index is always above or equal to 0
 			int index = list.getIndexAt(x, y);
-			if (index == -1) {
-				index = model.getElementCount();
-			}
 			
 			Object data = transfer.getData();
 			// We might get a transfer from a different kind of component.
@@ -74,11 +71,8 @@ public class DefaultPListDnDSupport implements PDnDSupport {
 			PList list = (PList) target;
 			// We know the model is not null since the canDrop method returned true
 			PListModel model = list.getModel();
-			// If index is -1 we append at the end of the list
+			// Index is always above or equal to 0
 			int index = list.getIndexAt(x, y);
-			if (index == -1) {
-				index = model.getElementCount();
-			}
 			
 			Object data = transfer.getData();
 			// We might get a transfer from a different kind of component.
@@ -218,8 +212,12 @@ public class DefaultPListDnDSupport implements PDnDSupport {
 			}
 			
 			PList list = (PList) source;
-			
-			highlightedCellComp = list.getCellComponentAt(x, y);
+			int index = list.getIndexAt(x, y);
+			if (index == list.getModel().getElementCount()) {
+				highlightedCellComp = null;
+			} else {
+				highlightedCellComp = list.getCellComponent(index);
+			}
 			list.setDropHighlighted(highlightedCellComp == null);
 			if (highlightedCellComp != null) {
 				highlightedCellComp.setDropHighlighted(true);

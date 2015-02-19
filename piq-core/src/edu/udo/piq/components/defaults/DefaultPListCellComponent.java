@@ -34,8 +34,8 @@ public class DefaultPListCellComponent extends PLabel implements PListCellCompon
 		return dropHighlight;
 	}
 	
-	public void setElement(PListModel model, Object element) {
-		getModel().setValue(element);
+	public void setElement(PListModel model, int index) {
+		getModel().setValue(model.getElement(index));
 	}
 	
 	public Object getElement() {

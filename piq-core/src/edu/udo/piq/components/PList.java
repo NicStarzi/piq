@@ -272,11 +272,16 @@ public class PList extends AbstractPLayoutOwner {
 	}
 	
 	public int getIndexAt(int x, int y) {
-		PComponent cellComp = getLayout().getChildAt(x, y);
-		if (cellComp == null) {
-			return -1;
-		}
-		return getLayoutInternal().getChildIndex(cellComp);
+//		PComponent cellComp = getLayout().getChildAt(x, y);
+//		if (cellComp == null) {
+//			return -1;
+//		}
+//		return getLayoutInternal().getChildIndex(cellComp);
+		return getLayoutInternal().getIndexAt(x, y);
+	}
+	
+	public PListCellComponent getCellComponent(int index) {
+		return (PListCellComponent) getLayoutInternal().getChild(index);
 	}
 	
 	public PListCellComponent getCellComponentAt(int x, int y) {
@@ -370,7 +375,7 @@ public class PList extends AbstractPLayoutOwner {
 	
 	protected void elementAdded(Object element) {
 		int index = getModel().getElementIndex(element);
-		PListCellComponent cellComp = getCellFactory().getCellComponentFor(getModel(), element);
+		PListCellComponent cellComp = getCellFactory().getCellComponentFor(getModel(), index);
 		elementToCompMap.put(element, cellComp);
 		getLayoutInternal().addChild(cellComp, Integer.valueOf(index));
 	}
@@ -387,7 +392,8 @@ public class PList extends AbstractPLayoutOwner {
 	protected void elementChanged(Object element) {
 		PListCellComponent comp = elementToCompMap.get(element);
 		if (comp != null) {
-			comp.setElement(getModel(), element);
+			int index = getModel().getElementIndex(element);
+			comp.setElement(getModel(), index);
 		}
 	}
 	

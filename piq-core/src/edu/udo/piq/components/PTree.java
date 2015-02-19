@@ -298,13 +298,14 @@ public class PTree extends AbstractPLayoutOwner {
 	}
 	
 	protected void nodeAdded(Object node) {
-		PTreeCellComponent cellComp = getCellFactory().getCellComponentFor(getModel(), node);
+		PTreeModel model = getModel();
+		Object parent = model.getParentOf(node);
+		int index = model.getChildIndex(parent, node);
+		
+		PTreeCellComponent cellComp = getCellFactory().getCellComponentFor(model, parent, index);
 		elementToCompMap.put(node, cellComp);
 		
-		Object parent = getModel().getParentOf(node);
-		int index = getModel().getChildIndex(parent, node);
 		PTreeCellComponent parentComp = elementToCompMap.get(parent);
-		
 		getLayoutInternal().addChild(cellComp, new Constraint(parentComp, index));
 	}
 	
@@ -317,10 +318,13 @@ public class PTree extends AbstractPLayoutOwner {
 		elementToCompMap.remove(element);
 	}
 	
-	protected void nodeChanged(Object element) {
-		PTreeCellComponent comp = elementToCompMap.get(element);
+	protected void nodeChanged(Object node) {
+		PTreeCellComponent comp = elementToCompMap.get(node);
 		if (comp != null) {
-			comp.setNode(getModel(), element);
+			PTreeModel model = getModel();
+			Object parent = model.getParentOf(node);
+			int index = model.getChildIndex(parent, node);
+			comp.setNode(model, parent, index);
 		}
 	}
 	

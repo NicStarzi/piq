@@ -34,8 +34,8 @@ public class DefaultPTreeCellComponent extends PLabel implements PTreeCellCompon
 		return dropHighlight;
 	}
 	
-	public void setNode(PTreeModel model, Object element) {
-		getModel().setValue(element);
+	public void setNode(PTreeModel model, Object parent, int index) {
+		getModel().setValue(model.getChild(parent, index));
 	}
 	
 	public Object getNode() {

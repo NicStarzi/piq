@@ -6,14 +6,16 @@ import edu.udo.piq.components.PTreeModel;
 
 public class DefaultPTreeCellFactory implements PTreeCellFactory {
 	
-	public PTreeCellComponent getCellComponentFor(PTreeModel model, Object node) {
+	public PTreeCellComponent getCellComponentFor(PTreeModel model, Object parent, int index) {
 		if (model == null) {
 			throw new NullPointerException("model="+model);
-		} if (node == null) {
-			throw new NullPointerException("node="+node);
+		} if (parent == null) {
+			throw new NullPointerException("parent="+parent);
+		} if (index < 0 || index >= model.getChildCount(parent)) {
+			throw new IllegalArgumentException("index="+index);
 		}
 		DefaultPTreeCellComponent label = new DefaultPTreeCellComponent();
-		label.setNode(model, node);
+		label.setNode(model, parent, index);
 		return label;
 	}
 	

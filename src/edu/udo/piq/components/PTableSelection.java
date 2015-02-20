@@ -1,6 +1,6 @@
 package edu.udo.piq.components;
 
-public interface PTableSelection extends PSelection<PTableCell> {
+public interface PTableSelection extends PSelection<PTablePosition> {
 	
 	public static final SelectionMode DEFAULT_SELECTION_MODE = SelectionMode.SINGLE_ROW;
 	

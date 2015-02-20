@@ -7,7 +7,7 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PSize;
-import edu.udo.piq.components.PTableCell;
+import edu.udo.piq.components.PTablePosition;
 import edu.udo.piq.tools.AbstractPLayout;
 import edu.udo.piq.tools.MutablePSize;
 
@@ -17,12 +17,6 @@ public class PTableLayout extends AbstractPLayout {
 	protected static final int DEFAULT_ROW_SIZE = 20;
 	protected static final int DEFAULT_GAP = 1;
 	
-	/**
-	 * To save memory the preferred size of the layout 
-	 * is an instance of MutablePSize which is updated 
-	 * and returned by the {@link #getPreferredSize()} 
-	 * method.<br>
-	 */
 	protected final MutablePSize prefSize;
 	private PComponent[] content;
 	private int[] colSizes;
@@ -46,11 +40,11 @@ public class PTableLayout extends AbstractPLayout {
 		
 		addObs(new PLayoutObs() {
 			public void childAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
-				PTableCell cell = (PTableCell) constraint;
+				PTablePosition cell = (PTablePosition) constraint;
 				setContent(cell, child);
 			}
 			public void childRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
-				PTableCell cell = (PTableCell) constraint;
+				PTablePosition cell = (PTablePosition) constraint;
 				setContent(cell, null);
 			}
 		});
@@ -81,7 +75,7 @@ public class PTableLayout extends AbstractPLayout {
 		}
 	}
 	
-	private void setContent(PTableCell cell, PComponent comp) {
+	private void setContent(PTablePosition cell, PComponent comp) {
 		int col = cell.getColumnIndex();
 		int row = cell.getRowIndex();
 		int id = col + row * getColumnCount();
@@ -146,7 +140,7 @@ public class PTableLayout extends AbstractPLayout {
 		return rowSizes[rowIndex];
 	}
 	
-	public boolean isValid(PTableCell cell) {
+	public boolean isValid(PTablePosition cell) {
 		return isValid(cell.getColumnIndex(), cell.getRowIndex());
 	}
 	
@@ -156,8 +150,8 @@ public class PTableLayout extends AbstractPLayout {
 	}
 	
 	protected boolean canAdd(PComponent component, Object constraint) {
-		return constraint != null && constraint instanceof PTableCell
-				&& isValid((PTableCell) constraint);
+		return constraint != null && constraint instanceof PTablePosition
+				&& isValid((PTablePosition) constraint);
 	}
 	
 	public void layOut() {

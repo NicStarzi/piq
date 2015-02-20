@@ -5,15 +5,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import edu.udo.piq.components.PTableCell;
+import edu.udo.piq.components.PTablePosition;
 import edu.udo.piq.components.PTableSelection;
 import edu.udo.piq.tools.AbstractPTableSelection;
 
 public class DefaultPTableSelection extends AbstractPTableSelection implements PTableSelection {
 	
-	private final Set<PTableCell> selection = new HashSet<>();
+	private final Set<PTablePosition> selection = new HashSet<>();
 	
-	public void addSelection(PTableCell cell) {
+	public void addSelection(PTablePosition cell) {
 		switch (getSelectionMode()) {
 		case SINGLE_COLUMN:
 			clearSelection();
@@ -42,27 +42,27 @@ public class DefaultPTableSelection extends AbstractPTableSelection implements P
 		}
 	}
 	
-	private void addColumn(PTableCell cell) {
+	private void addColumn(PTablePosition cell) {
 		int col = cell.getColumnIndex();
 		for (int row = 0; row < getModel().getRowCount(); row++) {
-			addCell(new PTableCell(col, row));
+			addCell(new PTablePosition(col, row));
 		}
 	}
 	
-	private void addRow(PTableCell cell) {
+	private void addRow(PTablePosition cell) {
 		int row = cell.getRowIndex();
 		for (int col = 0; col < getModel().getColumnCount(); col++) {
-			addCell(new PTableCell(col, row));
+			addCell(new PTablePosition(col, row));
 		}
 	}
 	
-	private void addCell(PTableCell cell) {
+	private void addCell(PTablePosition cell) {
 		if (selection.add(cell)) {
 			fireSelectionAddedEvent(cell);
 		}
 	}
 	
-	public void removeSelection(PTableCell cell) {
+	public void removeSelection(PTablePosition cell) {
 		switch (getSelectionMode()) {
 		case SINGLE_COLUMN:
 		case MULTIPLE_COLUMN:
@@ -82,21 +82,21 @@ public class DefaultPTableSelection extends AbstractPTableSelection implements P
 		}
 	}
 	
-	private void removeColumn(PTableCell cell) {
+	private void removeColumn(PTablePosition cell) {
 		int col = cell.getColumnIndex();
 		for (int row = 0; row < getModel().getRowCount(); row++) {
-			removeCell(new PTableCell(col, row));
+			removeCell(new PTablePosition(col, row));
 		}
 	}
 	
-	private void removeRow(PTableCell cell) {
+	private void removeRow(PTablePosition cell) {
 		int row = cell.getRowIndex();
 		for (int col = 0; col < getModel().getColumnCount(); col++) {
-			removeCell(new PTableCell(col, row));
+			removeCell(new PTablePosition(col, row));
 		}
 	}
 	
-	private void removeCell(PTableCell cell) {
+	private void removeCell(PTablePosition cell) {
 		if (selection.remove(cell)) {
 			fireSelectionRemovedEvent(cell);
 		}
@@ -104,32 +104,32 @@ public class DefaultPTableSelection extends AbstractPTableSelection implements P
 	
 	public void clearSelection() {
 		if (!selection.isEmpty()) {
-			List<PTableCell> copy = new ArrayList<>(selection);
+			List<PTablePosition> copy = new ArrayList<>(selection);
 			selection.clear();
-			for (PTableCell cell : copy) {
+			for (PTablePosition cell : copy) {
 				fireSelectionRemovedEvent(cell);
 			}
 		}
 	}
 	
-	public List<PTableCell> getSelection() {
+	public List<PTablePosition> getSelection() {
 		return null;
 //		return Collections.unmodifiableSet(selection);
 	}
 	
-	public boolean isSelected(PTableCell cell) {
+	public boolean isSelected(PTablePosition cell) {
 		return selection.contains(cell);
 	}
 	
 	public void setSelectionMode(SelectionMode selectionMode) {
-		List<PTableCell> oldSelection = null;
+		List<PTablePosition> oldSelection = null;
 		if (!selection.isEmpty()) {
 			oldSelection = new ArrayList<>(selection);
 			selection.clear();
 		}
 		super.setSelectionMode(selectionMode);
 		if (oldSelection != null) {
-			for (PTableCell cell : oldSelection) {
+			for (PTablePosition cell : oldSelection) {
 				addSelection(cell);
 			}
 		}

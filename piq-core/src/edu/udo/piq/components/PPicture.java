@@ -1,5 +1,8 @@
 package edu.udo.piq.components;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PImageResource;
 import edu.udo.piq.PRenderer;
@@ -10,6 +13,7 @@ import edu.udo.piq.tools.AbstractPComponent;
 
 public class PPicture extends AbstractPComponent {
 	
+	private final List<PPictureModelObs> modelObsList = new CopyOnWriteArrayList<>();
 	private final PPictureModelObs modelObs = new PPictureModelObs() {
 		public void imagePathChanged(PPictureModel model) {
 			firePreferredSizeChangedEvent();
@@ -25,12 +29,19 @@ public class PPicture extends AbstractPComponent {
 	}
 	
 	public void setModel(PPictureModel model) {
-		if (getModel() != null) {
-			getModel().removeObs(modelObs);
+		PPictureModel oldModel = getModel();
+		if (oldModel != null) {
+			oldModel.removeObs(modelObs);
+			for (PPictureModelObs obs : modelObsList) {
+				oldModel.removeObs(obs);
+			}
 		}
 		this.model = model;
-		if (getModel() != null) {
-			getModel().addObs(modelObs);
+		if (model != null) {
+			model.addObs(modelObs);
+			for (PPictureModelObs obs : modelObsList) {
+				model.addObs(obs);
+			}
 		}
 		firePreferredSizeChangedEvent();
 		fireReRenderEvent();
@@ -91,6 +102,14 @@ public class PPicture extends AbstractPComponent {
 			return null;
 		}
 		return root.fetchImageResource(model.getImagePath());
+	}
+	
+	public void addObs(PPictureModelObs obs) {
+		modelObsList.add(obs);
+	}
+	
+	public void removeObs(PPictureModelObs obs) {
+		modelObsList.remove(obs);
 	}
 	
 }

@@ -1,5 +1,8 @@
 package edu.udo.piq.components;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PFontResource;
@@ -23,6 +26,7 @@ public class PProgressBar extends AbstractPComponent {
 	protected static final PColor DEFAULT_BORDER_COLOR = PColor.BLACK;
 	protected static final PColor DEFAULT_PROGRESS_COLOR = PColor.BLUE;
 	
+	private final List<PProgressBarModelObs> modelObsList = new CopyOnWriteArrayList<>();
 	private final PProgressBarModelObs modelObs = new PProgressBarModelObs() {
 		public void valueChanged(PProgressBarModel model) {
 			fireReRenderEvent();
@@ -40,12 +44,19 @@ public class PProgressBar extends AbstractPComponent {
 	}
 	
 	public void setModel(PProgressBarModel model) {
-		if (getModel() != null) {
-			getModel().removeObs(modelObs);
+		PProgressBarModel oldModel = getModel();
+		if (oldModel != null) {
+			oldModel.removeObs(modelObs);
+			for (PProgressBarModelObs obs : modelObsList) {
+				oldModel.removeObs(obs);
+			}
 		}
 		this.model = model;
-		if (getModel() != null) {
-			getModel().addObs(modelObs);
+		if (model != null) {
+			model.addObs(modelObs);
+			for (PProgressBarModelObs obs : modelObsList) {
+				model.addObs(obs);
+			}
 		}
 		fireReRenderEvent();
 	}
@@ -139,6 +150,14 @@ public class PProgressBar extends AbstractPComponent {
 			return null;
 		}
 		return root.fetchFontResource(DEFAULT_FONT_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_STYLE);
+	}
+	
+	public void addObs(PProgressBarModelObs obs) {
+		modelObsList.add(obs);
+	}
+	
+	public void removeObs(PProgressBarModelObs obs) {
+		modelObsList.remove(obs);
 	}
 	
 }

@@ -107,7 +107,6 @@ public class PDropDown extends AbstractPLayoutOwner {
 		if (getModel() != null) {
 			getModel().addObs(modelObs);
 		}
-		firePreferredSizeChangedEvent();
 		fireReRenderEvent();
 	}
 	
@@ -174,14 +173,6 @@ public class PDropDown extends AbstractPLayoutOwner {
 		return getLayout().getPreferredSize();
 	}
 	
-	public void addObs(PDropDownObs obs) {
-		obsList.add(obs);
-	}
-	
-	public void removeObs(PDropDownObs obs) {
-		obsList.remove(obs);
-	}
-	
 	private void showDropDown() {
 		if (getBody() != null) {
 			FreeConstraint constraint = new FreeConstraint(0, 0);
@@ -224,6 +215,14 @@ public class PDropDown extends AbstractPLayoutOwner {
 		PFreeLayout overlayLayout = overlay.getLayout();
 		FreeConstraint constr = new FreeConstraint(ownX, ownY);
 		overlayLayout.updateConstraint(dropDownContainer, constr);
+	}
+	
+	public void addObs(PDropDownObs obs) {
+		obsList.add(obs);
+	}
+	
+	public void removeObs(PDropDownObs obs) {
+		obsList.remove(obs);
 	}
 	
 	protected void fireShowEvent() {

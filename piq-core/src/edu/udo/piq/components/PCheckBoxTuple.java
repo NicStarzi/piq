@@ -156,4 +156,20 @@ public class PCheckBoxTuple extends AbstractPLayoutOwner {
 		return false;
 	}
 	
+	public void addObs(PCheckBoxObs obs) {
+		getCheckBox().addObs(obs);
+	}
+	
+	public void removeObs(PCheckBoxObs obs) {
+		getCheckBox().removeObs(obs);
+	} 
+	
+	public void addObs(PCheckBoxModelObs obs) {
+		getCheckBox().addObs(obs);
+	}
+	
+	public void removeObs(PCheckBoxModelObs obs) {
+		getCheckBox().removeObs(obs);
+	}
+	
 }

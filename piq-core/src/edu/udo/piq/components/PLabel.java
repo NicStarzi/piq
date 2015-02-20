@@ -1,5 +1,8 @@
 package edu.udo.piq.components;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PFontResource;
@@ -17,6 +20,7 @@ public class PLabel extends AbstractPComponent {
 	protected static final Style DEFAULT_FONT_STYLE = Style.PLAIN;
 	protected static final PColor DEFAULT_TEXT_COLOR = PColor.BLACK;
 	
+	private final List<PTextModelObs> modelObsList = new CopyOnWriteArrayList<>();
 	private final PTextModelObs modelObs = new PTextModelObs() {
 		public void textChanged(PTextModel model) {
 			firePreferredSizeChangedEvent();
@@ -35,12 +39,19 @@ public class PLabel extends AbstractPComponent {
 	}
 	
 	public void setModel(PTextModel model) {
-		if (getModel() != null) {
-			getModel().removeObs(modelObs);
+		PTextModel oldModel = getModel();
+		if (oldModel != null) {
+			oldModel.removeObs(modelObs);
+			for (PTextModelObs obs : modelObsList) {
+				oldModel.removeObs(obs);
+			}
 		}
 		this.model = model;
-		if (getModel() != null) {
-			getModel().addObs(modelObs);
+		if (model != null) {
+			model.addObs(modelObs);
+			for (PTextModelObs obs : modelObsList) {
+				model.addObs(obs);
+			}
 		}
 		firePreferredSizeChangedEvent();
 		fireReRenderEvent();

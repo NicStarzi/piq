@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PClipboard;
@@ -33,6 +34,7 @@ public class PList extends AbstractPLayoutOwner {
 	private static final PColor DROP_HIGHLIGHT_COLOR = PColor.RED;
 	private static final int DRAG_AND_DROP_DISTANCE = 16;
 	
+	private final List<PListModelObs> modelObsList = new CopyOnWriteArrayList<>();
 	private final PKeyboardObs keyObs = new PKeyboardObs() {
 		public void keyTriggered(PKeyboard keyboard, Key key) {
 			if (!hasFocus() || getSelection() == null) {
@@ -258,13 +260,20 @@ public class PList extends AbstractPLayoutOwner {
 	}
 	
 	public void setModel(PListModel model) {
-		if (getModel() != null) {
-			getModel().removeObs(modelObs);
+		PListModel oldModel = getModel();
+		if (oldModel != null) {
+			oldModel.removeObs(modelObs);
+			for (PListModelObs obs : modelObsList) {
+				oldModel.removeObs(obs);
+			}
 		}
 		this.model = model;
 		getSelection().setModel(getModel());
-		if (getModel() != null) {
-			getModel().addObs(modelObs);
+		if (model != null) {
+			model.addObs(modelObs);
+			for (PListModelObs obs : modelObsList) {
+				model.addObs(obs);
+			}
 		}
 		modelChanged();
 	}
@@ -274,11 +283,6 @@ public class PList extends AbstractPLayoutOwner {
 	}
 	
 	public int getIndexAt(int x, int y) {
-//		PComponent cellComp = getLayout().getChildAt(x, y);
-//		if (cellComp == null) {
-//			return -1;
-//		}
-//		return getLayoutInternal().getChildIndex(cellComp);
 		return getLayoutInternal().getIndexAt(x, y);
 	}
 	
@@ -415,6 +419,14 @@ public class PList extends AbstractPLayoutOwner {
 			selectedIndices.add(model.getElementIndex(element));
 		}
 		return selectedIndices;
+	}
+	
+	public void addObs(PListModelObs obs) {
+		modelObsList.add(obs);
+	}
+	
+	public void removeObs(PListModelObs obs) {
+		modelObsList.remove(obs);
 	}
 	
 }

@@ -22,6 +22,7 @@ import edu.udo.piq.tools.ImmutablePInsets;
 
 public class PButton extends AbstractPLayoutOwner {
 	
+	protected final List<PButtonModelObs> modelObsList = new CopyOnWriteArrayList<>();
 	protected final List<PButtonObs> obsList = new CopyOnWriteArrayList<>();
 	private final PKeyboardObs keyObs = new PKeyboardObs() {
 		public void keyTriggered(PKeyboard keyboard, Key key) {
@@ -76,6 +77,10 @@ public class PButton extends AbstractPLayoutOwner {
 		addObs(mouseObs);
 	}
 	
+	protected PCentricLayout getLayoutInternal() {
+		return (PCentricLayout) super.getLayout();
+	}
+	
 	public void setContent(PComponent component) {
 		getLayoutInternal().clearChildren();
 		getLayoutInternal().addChild(component, null);
@@ -85,21 +90,20 @@ public class PButton extends AbstractPLayoutOwner {
 		return getLayoutInternal().getContent();
 	}
 	
-//	public PCentricLayout getLayout() {
-//		return (PCentricLayout) super.getLayout();
-//	}
-	
-	protected PCentricLayout getLayoutInternal() {
-		return (PCentricLayout) super.getLayout();
-	}
-	
 	public void setModel(PButtonModel model) {
-		if (getModel() != null) {
-			getModel().removeObs(modelObs);
+		PButtonModel oldModel = getModel();
+		if (oldModel != null) {
+			oldModel.removeObs(modelObs);
+			for (PButtonModelObs obs : modelObsList) {
+				oldModel.removeObs(obs);
+			}
 		}
 		this.model = model;
-		if (getModel() != null) {
-			getModel().addObs(modelObs);
+		if (model != null) {
+			model.addObs(modelObs);
+			for (PButtonModelObs obs : modelObsList) {
+				model.addObs(obs);
+			}
 		}
 		fireReRenderEvent();
 	}
@@ -162,6 +166,14 @@ public class PButton extends AbstractPLayoutOwner {
 	
 	public void removeObs(PButtonObs obs) {
 		obsList.remove(obs);
+	}
+	
+	public void addObs(PButtonModelObs obs) {
+		modelObsList.add(obs);
+	}
+	
+	public void removeObs(PButtonModelObs obs) {
+		modelObsList.remove(obs);
 	}
 	
 	protected void fireClickEvent() {

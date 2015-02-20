@@ -18,6 +18,7 @@ public class PCheckBox extends AbstractPComponent {
 	
 	private static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(12, 12);
 	
+	private final List<PCheckBoxModelObs> modelObsList = new CopyOnWriteArrayList<>();
 	private final List<PCheckBoxObs> obsList = new CopyOnWriteArrayList<>();
 	private final PMouseObs mouseObs = new PMouseObs() {
 		public void buttonTriggered(PMouse mouse, MouseButton btn) {
@@ -42,13 +43,21 @@ public class PCheckBox extends AbstractPComponent {
 	}
 	
 	public void setModel(PCheckBoxModel model) {
-		if (getModel() != null) {
-			getModel().removeObs(modelObs);
+		PCheckBoxModel oldModel = getModel();
+		if (oldModel != null) {
+			oldModel.removeObs(modelObs);
+			for (PCheckBoxModelObs obs : modelObsList) {
+				oldModel.removeObs(obs);
+			}
 		}
 		this.model = model;
-		if (getModel() != null) {
-			getModel().addObs(modelObs);
+		if (model != null) {
+			model.addObs(modelObs);
+			for (PCheckBoxModelObs obs : modelObsList) {
+				model.addObs(obs);
+			}
 		}
+		fireReRenderEvent();
 	}
 	
 	public PCheckBoxModel getModel() {
@@ -93,16 +102,20 @@ public class PCheckBox extends AbstractPComponent {
 		return DEFAULT_PREFERRED_SIZE;
 	}
 	
-//	public boolean isFocusable() {
-//		return true;
-//	}
-	
 	public void addObs(PCheckBoxObs obs) {
 		obsList.add(obs);
 	}
 	
 	public void removeObs(PCheckBoxObs obs) {
 		obsList.remove(obs);
+	} 
+	
+	public void addObs(PCheckBoxModelObs obs) {
+		modelObsList.add(obs);
+	}
+	
+	public void removeObs(PCheckBoxModelObs obs) {
+		modelObsList.remove(obs);
 	}
 	
 	protected void fireClickEvent() {

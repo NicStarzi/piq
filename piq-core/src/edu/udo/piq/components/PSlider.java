@@ -1,5 +1,8 @@
 package edu.udo.piq.components;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PKeyboard;
@@ -71,6 +74,7 @@ public class PSlider extends AbstractPComponent {
 			}
 		}
 	};
+	private final List<PSliderModelObs> modelObsList = new CopyOnWriteArrayList<>();
 	protected final PSliderModelObs modelObs = new PSliderModelObs() {
 		public void rangeChanged(PSliderModel model) {
 			fireReRenderEvent();
@@ -89,12 +93,19 @@ public class PSlider extends AbstractPComponent {
 	}
 	
 	public void setModel(PSliderModel model) {
-		if (getModel() != null) {
-			getModel().removeObs(modelObs);
+		PSliderModel oldModel = getModel();
+		if (oldModel != null) {
+			oldModel.removeObs(modelObs);
+			for (PSliderModelObs obs : modelObsList) {
+				oldModel.removeObs(obs);
+			}
 		}
 		this.model = model;
-		if (getModel() != null) {
-			getModel().addObs(modelObs);
+		if (model != null) {
+			model.addObs(modelObs);
+			for (PSliderModelObs obs : modelObsList) {
+				model.addObs(obs);
+			}
 		}
 		fireReRenderEvent();
 	}
@@ -149,6 +160,14 @@ public class PSlider extends AbstractPComponent {
 	
 	public boolean isFocusable() {
 		return true;
+	}
+	
+	public void addObs(PSliderModelObs obs) {
+		modelObsList.add(obs);
+	}
+	
+	public void removeObs(PSliderModelObs obs) {
+		modelObsList.remove(obs);
 	}
 	
 }

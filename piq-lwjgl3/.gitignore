@@ -1,0 +1,6 @@
+/bin
+/native
+/doc
+.class
+lwjgl.jar
+lwjglSrc.zip

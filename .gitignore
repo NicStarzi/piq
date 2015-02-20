@@ -42,8 +42,7 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-/core/bin
+/piq-core/bin
+/piq-swing/bin
 /bin
 .class
-.classpath
-.project

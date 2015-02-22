@@ -87,6 +87,7 @@ public class AbstractPComponent implements PComponent {
 		public void childLaidOut(PReadOnlyLayout layout, PComponent child, Object constraint) {
 			if (child == AbstractPComponent.this) {
 				needReLayout = true;
+				fireReLayOutEvent();
 				fireReRenderEvent();
 			}
 		}
@@ -151,8 +152,7 @@ public class AbstractPComponent implements PComponent {
 		}
 	};
 	/**
-	 * This field is true if the layout of this component needs to be laid out 
-	 * with the next update cycle.<br>
+	 * This field is true if the layout of this component needs to be laid out again.<br>
 	 * After the layout has been laid out this variable should be set to false.<br>
 	 */
 	protected boolean needReLayout = true;
@@ -351,9 +351,9 @@ public class AbstractPComponent implements PComponent {
 	
 	/**
 	 * Refreshes the layout as needed.<br>
-	 * This method calls the onUpdate() method to delegate updates to subclasses.<br>
+	 * May fire a {@link #firePreferredSizeChangedEvent()} as necessary.<br>
 	 */
-	public final void update() {
+	public void reLayOut() {
 		if (needReLayout && getLayout() != null) {
 			getLayout().layOut();
 			needReLayout = false;
@@ -482,6 +482,13 @@ public class AbstractPComponent implements PComponent {
 		PRoot root = getRoot();
 		if (root != null) {
 			root.reRender(this);
+		}
+	}
+	
+	protected void fireReLayOutEvent() {
+		PRoot root = getRoot();
+		if (root != null) {
+			root.reLayOut(this);
 		}
 	}
 	

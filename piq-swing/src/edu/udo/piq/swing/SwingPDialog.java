@@ -76,9 +76,10 @@ public class SwingPDialog extends AbstractPDialog implements PDialog {
 	}
 	
 	public void update() {
-		tickAllTimers();
-		updateRootLayout();
-		updateComponents();
+		super.update();
+//		tickAllTimers();
+//		updateRootLayout();
+//		updateComponents();
 	}
 	
 	public void show() throws IllegalStateException {

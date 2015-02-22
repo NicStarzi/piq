@@ -1,10 +1,10 @@
 package edu.udo.piq.tools;
 
-import java.util.Deque;
+import java.util.Comparator;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import edu.udo.piq.PComponent;
@@ -42,27 +42,46 @@ public abstract class AbstractPRoot implements PRoot {
 	protected PClipboard clipboard;
 	protected PDnDManager dndManager;
 	
-	private final PComponentObs childObs = new PComponentObs() {
-		public void preferredSizeChanged(PComponent component) {
-			needReLayout = true;
-		}
-	};
+//	private final PComponentObs childObs = new PComponentObs() {
+//		public void preferredSizeChanged(PComponent component) {
+//			needReLayout = true;
+//			reLayOut(AbstractPRoot.this);
+//		}
+//	};
 	private final PLayoutObs layoutObs = new PLayoutObs() {
 		public void layoutInvalidated(PReadOnlyLayout layout) {
 			needReLayout = true;
+			reLayOut(AbstractPRoot.this);
 		}
 		public void childRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
-			child.removeObs(childObs);
+//			child.removeObs(childObs);
 			needReLayout = true;
+			reLayOut(AbstractPRoot.this);
 		}
 		public void childAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
-			child.addObs(childObs);
+//			child.addObs(childObs);
 			needReLayout = true;
+			reLayOut(AbstractPRoot.this);
+		}
+	};
+	private final Comparator<PComponent> componentComparator = new Comparator<PComponent>() {
+		public int compare(PComponent o1, PComponent o2) {
+			if (o1.equals(o2)) {
+				return 0;
+			}
+			int depth1 = o1.getDepth();
+			int depth2 = o2.getDepth();
+			if (depth1 == depth2) {
+				return -1;
+			}
+			return depth1 - depth2;
 		}
 	};
 	private final Set<PTimer> timerSet = new HashSet<>();
 	private final Set<PTimer> timersToAdd = new HashSet<>();
 	private final Set<PTimer> timersToRemove = new HashSet<>();
+	private Set<PComponent> reLayOutCompsFront = new TreeSet<>(componentComparator);
+	private Set<PComponent> reLayOutCompsBack = new TreeSet<>(componentComparator);
 	private final List<PComponentObs> compObsList = new CopyOnWriteArrayList<>();
 	private final List<PFocusObs> focusObsList = new CopyOnWriteArrayList<>();
 	private PComponent focusOwner;
@@ -85,15 +104,19 @@ public abstract class AbstractPRoot implements PRoot {
 	
 	public void update() {
 		tickAllTimers();
-		updateRootLayout();
-		updateComponents();
+		reLayOutAll();
 	}
 	
-	protected void updateRootLayout() {
+	public void reLayOut() {
 		if (needReLayout) {
 			getLayout().layOut();
 			needReLayout = false;
 		}
+	}
+	
+	public void reLayOut(PComponent component) {
+//		System.out.println("reLayOut "+component);
+		reLayOutCompsFront.add(component);
 	}
 	
 	protected void tickAllTimers() {
@@ -108,19 +131,21 @@ public abstract class AbstractPRoot implements PRoot {
 		timersToAdd.clear();
 	}
 	
-	protected void updateComponents() {
-		Deque<PComponent> stack = new LinkedList<>();
-		stack.addAll(getLayout().getChildren());
-		while (!stack.isEmpty()) {
-			PComponent comp = stack.pop();
-			comp.update();
+	protected void reLayOutAll() {
+		if (!reLayOutCompsFront.isEmpty()) {
+//			System.out.println();
+//			System.out.println("reLayOutAll");
 			
-			PReadOnlyLayout layout = comp.getLayout();
-			if (layout != null) {
-				for (PComponent child : layout.getChildren()) {
-					stack.addFirst(child);
-				}
+			Set<PComponent> temp = reLayOutCompsBack;
+			reLayOutCompsBack = reLayOutCompsFront;
+			reLayOutCompsFront = temp;
+			for (PComponent comp : reLayOutCompsBack) {
+//				System.out.println("LayOut="+comp);
+				comp.reLayOut();
 			}
+			reLayOutCompsBack.clear();
+//			System.out.println("##############################");
+//			System.out.println();
 		}
 	}
 	
@@ -145,18 +170,6 @@ public abstract class AbstractPRoot implements PRoot {
 			fireFocusGainedEvent(oldOwner);
 		}
 	}
-	
-//	public void setLayout(PLayout layout) {
-//		if (getLayout() != null) {
-//			getLayout().removeObs(layoutObs);
-//		}
-//		this.layout = layout;
-//		if (getLayout() != null) {
-//			getLayout().addObs(layoutObs);
-//		}
-//		needReLayout = true;
-//		reRender(this);
-//	}
 	
 	public PRootLayout getLayout() {
 		return layout;
@@ -302,6 +315,7 @@ public abstract class AbstractPRoot implements PRoot {
 	protected void fireSizeChanged() {
 		reRender(this);
 		needReLayout = true;
+		reLayOut(this);
 		for (PComponentObs obs : compObsList) {
 			obs.preferredSizeChanged(this);
 		}
@@ -325,6 +339,10 @@ public abstract class AbstractPRoot implements PRoot {
 	
 	public PRoot getRoot() {
 		return this;
+	}
+	
+	public int getDepth() {
+		return 0;
 	}
 	
 	public PComponent getParent() {

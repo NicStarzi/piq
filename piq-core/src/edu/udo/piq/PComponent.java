@@ -213,10 +213,17 @@ public interface PComponent {
 	public PDnDSupport getDragAndDropSupport();
 	
 	/**
-	 * Called by the {@link PRoot} of this GUI-tree to update 
-	 * the behavior of this component.<br>
+	 * Calls the {@link PLayout#layOut()} method on the {@link PLayout} of this 
+	 * {@link PComponent} if it exists. Otherwise nothing happens.<br>
+	 * If this {@link PComponent PComponents} preferred size, as returned by 
+	 * {@link PCompUtil#getPreferredSizeOf(PComponent)} changes as a result of 
+	 * the layouting this component will call the {@link PRoot#reLayOut(PComponent)} 
+	 * method of its {@link PRoot}.<br>
+	 * 
+	 * @see #getRoot()
+	 * @see PRoot#reLayOut(PComponent)
 	 */
-	public void update();
+	public void reLayOut();
 	
 	/**
 	 * Adds an observer to this {@link PComponent}.<br>
@@ -317,6 +324,31 @@ public interface PComponent {
 			return (PRoot) comp;
 		}
 		return null;
+	}
+	
+	/**
+	 * Returns the number of times one has to call the {@link #getParent()} method 
+	 * recursively until one reaches the {@link PRoot} of this {@link PComponent}.<br> 
+	 * If this {@link PComponent} is a {@link PRoot} this method returns 0.<br>
+	 * If this {@link PComponent} is not part of a GUI and thus does not have a 
+	 * {@link PRoot} this method returns -1;
+	 * 
+	 * @return the number of steps to the root or -1
+	 * @see #getRoot()
+	 * @see #getParent()
+	 */
+	public default int getDepth() {
+		int depth = 0;
+		PRoot root = getRoot();
+		PComponent current = this;
+		while (current.getParent() != null) {
+			current = current.getParent();
+			depth++;
+		}
+		if (current == root) {
+			return depth;
+		}
+		return -1;
 	}
 	
 	/**

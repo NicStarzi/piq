@@ -12,22 +12,29 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 		public void childRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
 			child.removeObs(childObs);
 			needReLayout = true;
+			fireReLayOutEvent();
 			checkForPreferredSizeChange();
+			fireReRenderEvent();
 		}
 		public void childAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
 			child.addObs(childObs);
 			needReLayout = true;
+			fireReLayOutEvent();
 			checkForPreferredSizeChange();
+			fireReRenderEvent();
 		}
 		public void childLaidOut(PReadOnlyLayout layout, PComponent child, Object constraint) {
+			fireReRenderEvent();
 		}
 		public void layoutInvalidated(PReadOnlyLayout layout) {
 			needReLayout = true;
+			fireReLayOutEvent();
 		}
 	};
 	protected final PComponentObs childObs = new PComponentObs() {
 		public void preferredSizeChanged(PComponent component) {
 			needReLayout = true;
+			fireReLayOutEvent();
 			checkForPreferredSizeChange();
 		}
 	};

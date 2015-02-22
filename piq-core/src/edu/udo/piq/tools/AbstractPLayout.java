@@ -144,11 +144,13 @@ public abstract class AbstractPLayout implements PLayout {
 		}
 		PCompInfo info = compMap.get(child);
 		MutablePBounds bnds = info.bounds;
-		bnds.setX(x);
-		bnds.setY(y);
-		bnds.setWidth(width);
-		bnds.setHeight(height);
-		fireLaidOutEvent(child, getChildConstraint(child));
+		if (bnds.x != x || bnds.y != y || bnds.w != width || bnds.h != height) {
+			bnds.setX(x);
+			bnds.setY(y);
+			bnds.setWidth(width);
+			bnds.setHeight(height);
+			fireLaidOutEvent(child, getChildConstraint(child));
+		}
 	}
 	
 	public PComponent getChildForConstraint(Object constraint) {

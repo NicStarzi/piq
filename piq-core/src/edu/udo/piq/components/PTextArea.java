@@ -199,7 +199,7 @@ public class PTextArea extends AbstractPComponent {
 			if (btn == MouseButton.LEFT) {
 				int mx = mouse.getX();
 				int my = mouse.getY();
-				if (getClippedBounds().contains(mx, my)) {
+				if (isMouseOver()) {
 					pressedIndex = getTextIndexAt(mx, my);
 					selection.setSelection(pressedIndex, pressedIndex);
 					takeFocus();

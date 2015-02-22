@@ -75,18 +75,22 @@ public class SwingPTest {
 		root.setDesignSheet(new CoolBluePDesignSheet());
 		
 		PPanel bodyPnl = new PPanel();
+		bodyPnl.setID("Body Panel");
 		bodyPnl.setLayout(new PBorderLayout(bodyPnl));
 		root.setBody(bodyPnl);
 		
 		PSplitPanel splitV = new PSplitPanel();
+		splitV.setID("SplitPanel Vertical");
 		splitV.setOrientation(Orientation.VERTICAL);
 		bodyPnl.addChild(splitV, PBorderLayout.Constraint.CENTER);
 		
 		PSplitPanel splitH = new PSplitPanel();
+		splitH.setID("SplitPanel Horizontal");
 		splitH.setOrientation(Orientation.HORIZONTAL);
 		splitV.setFirstComponent(splitH);
 		
 		PPicture pic = new PPicture();
+		pic.setID("Picture");
 		pic.getModel().setImagePath("Tex.png");
 		pic.setStretchToSize(true);
 		splitH.setFirstComponent(pic);
@@ -95,12 +99,15 @@ public class SwingPTest {
 				"A", "B", "C", "D",
 				"E", "F", "G", "H",
 			}));
+		list.setID("List");
 		splitH.setSecondComponent(list);
 		
 		PToolTip tipList = new PToolTip(new DefaultPTextModel("This is a nice list!"));
+		tipList.setID("Tooltip - List");
 		tipList.setTooltipComponent(list);
 		
 		PToolTip tipPic = new PToolTip();
+		tipPic.setID("Tooltip - Picture");
 		tipPic.setShowDelay(120);
 		tipPic.setTooltipComponent(pic);
 		PButton tipPicBtn = new PButton();
@@ -127,39 +134,49 @@ public class SwingPTest {
 		PTextArea txtAr = new PTextArea(new DefaultPTextModel(
 			"This is \n a simple test \nto see whether the PTextArea class \nworks as intended."
 		));
+		txtAr.setID("TextArea");
 		txtAr.setEditable(true);
 		splitV.setSecondComponent(txtAr);
 		
 		PPanel btnPnl = new PPanel();
+		btnPnl.setID("Button Panel");
 		btnPnl.setLayout(new PWrapLayout(btnPnl, ListAlignment.FROM_LEFT));
 //		btnPnl.setLayout(new PListLayout(btnPnl, ListAlignment.FROM_LEFT));
 		bodyPnl.addChild(btnPnl, PBorderLayout.Constraint.BOTTOM);
 		
 		final PButton btnChange = new PButton();
+		btnChange.setID("Change Button");
 		btnChange.setContent(new PSlider());
 //		btnChange.setContent(new PLabel(new DefaultPTextModel("Change")));
 		btnPnl.addChild(btnChange, null);
 		
 		final PProgressBar prgBar = new PProgressBar();
+		prgBar.setID("ProgressBar");
 		prgBar.getModel().setMaximum(17);
 		btnPnl.addChild(prgBar, null);
 		
 		final PLabel lblChkBx = new PLabel();
+		lblChkBx.setID("CheckBox Label");
 		final PCheckBoxTuple chkBxTpl = new PCheckBoxTuple(lblChkBx);
+		chkBxTpl.setID("CheckBoxTuple");
 		btnPnl.addChild(chkBxTpl, null);
 		
 		final PSlider sld = new PSlider();
+		sld.setID("Absolute/Relative Slider");
 		sld.getModel().setMinValue(13);
 		sld.getModel().setMaxValue(77);
 		btnPnl.addChild(sld, null);
 		
 		final PLabel lblSld = new PLabel();
+		lblSld.setID("Slider Label");
 		btnPnl.addChild(lblSld, null);
 		
 		final PLabel lblDd = new PLabel();
+		lblDd.setID("DropDownList - Preview Label");
 		lblDd.getModel().setValue("Drop Down");
 		
 		PDropDownList ddl = new PDropDownList();
+		ddl.setID("DropDownList");
 		String[] elems = new String[] {"one", "two", "three", "four"};
 		for (String s : elems) {
 			ddl.getList().getModel().addElement(ddl.getList().getModel().getElementCount(), s);

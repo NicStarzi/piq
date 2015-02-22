@@ -1,12 +1,15 @@
 package edu.udo.piq.swing;
 
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.Window;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -21,7 +24,6 @@ import javax.imageio.ImageIO;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import javax.swing.Timer;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
@@ -35,18 +37,36 @@ import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.PImageResource;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.tools.AbstractPRoot;
+import edu.udo.piq.tools.ReRenderSet;
 
 public class JCompPRoot extends AbstractPRoot implements PRoot {
 	
+	private Window wnd;
+	private final WindowListener wndListener = new WindowAdapter() {
+		public void windowIconified(WindowEvent e) {
+			reRender(JCompPRoot.this);
+		}
+		public void windowDeiconified(WindowEvent e) {
+			reRender(JCompPRoot.this);
+		}
+	};
 	private final JPanel panel = new JPanel() {
 		private static final long serialVersionUID = 1L;
 		public void addNotify() {
 			super.addNotify();
-			timerUpdate.start();
+			Component awtRoot = SwingUtilities.getRoot(panel);
+			if (awtRoot != null && awtRoot instanceof Window) {
+				wnd = (Window) awtRoot;
+				wnd.addWindowListener(wndListener);
+			}
+//			timerUpdate.start();
 		}
 		public void removeNotify() {
 			super.removeNotify();
-			timerUpdate.stop();
+			if (wnd != null) {
+				wnd.removeWindowListener(wndListener);
+			}
+//			timerUpdate.stop();
 		}
 		public void paintComponent(Graphics g) {
 			render((Graphics2D) g);
@@ -61,13 +81,23 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 	private final SwingPClipboard clipboard = new SwingPClipboard();
 	private final PDnDManager dndManager = new PDnDManager(this);
 	private final JPanelPBounds bounds = new JPanelPBounds(panel);
-	private final Timer timerUpdate = new Timer(1, new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			timersNeedUpdate = true;
-		}
-	});
+//	private final Timer timerUpdate = new Timer(1, new ActionListener() {
+//		public void actionPerformed(ActionEvent e) {
+//			timersNeedUpdate = true;
+//		}
+//	});
 //	private Set<PComponent> reRenderSet = new HashSet<>();
-	private volatile boolean timersNeedUpdate = false;
+//	private volatile boolean timersNeedUpdate = false;
+//	private final Set<PComponent> reRenderSet = new HashSet<>();
+	private final ReRenderSet reRenderSet = new ReRenderSet(this);
+//	private final Comparator<PComponent> componentReRenderComparator = new Comparator<PComponent>() {
+//		public int compare(PComponent o1, PComponent o2) {
+//			int depth1 = o1.getDepth();
+//			int depth2 = o2.getDepth();
+//			return depth1 - depth2;
+//		}
+//	};
+//	private boolean reRenderAll = false;
 	
 	public JCompPRoot() {
 		super();
@@ -75,12 +105,12 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 		panel.requestFocus();
 		panel.addComponentListener(new ComponentAdapter() {
 			public void componentShown(ComponentEvent e) {
-				fireSizeChanged();
 				reRender(JCompPRoot.this);
+				fireSizeChanged();
 			}
 			public void componentResized(ComponentEvent e) {
-				fireSizeChanged();
 				reRender(JCompPRoot.this);
+				fireSizeChanged();
 			}
 		});
 		super.mouse = mouse;
@@ -88,8 +118,8 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 		super.clipboard = clipboard;
 		super.dndManager = dndManager;
 		
-		timerUpdate.setRepeats(true);
-		timerUpdate.setCoalesce(true);
+//		timerUpdate.setRepeats(true);
+//		timerUpdate.setCoalesce(true);
 	}
 	
 	public JPanel getPanel() {
@@ -102,34 +132,18 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 			if (dlg.isDisposed()) {
 				openedDialogs.remove(dlg);
 			} else {
-				dlg.update();
-				mouse.update();
+//				dlg.update();
+//				mouse.update();
 				return;
 			}
 		}
-		if (timersNeedUpdate) {
-			tickAllTimers();
-			timersNeedUpdate = false;
-		}
-		updateRootLayout();
-		updateComponents();
+		super.update();
+//		if (timersNeedUpdate) {
+//			tickAllTimers();
+//			timersNeedUpdate = false;
+//		}
 		
 		mouse.update();
-	}
-	
-	public void reRender(PComponent component) {
-		if (panel != null) {
-//			PComponent current = component;
-//			while (!PCompUtil.isOpaque(current)) {
-//				current = current.getParent();
-//			}
-//			if (current == this) {
-//				reRenderSet.addAll(getLayout().getChildren());
-//			} else {
-//				reRenderSet.add(current);
-//			}
-			panel.repaint();
-		}
 	}
 	
 	public PDialog createDialog() {
@@ -204,18 +218,30 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 		return bounds;
 	}
 	
+	public void reRender(PComponent component) {
+		if (panel != null) {
+			reRenderSet.add(component);
+//			System.out.println("reRender="+component);
+			panel.repaint();
+		}
+	}
+	
 	private void render(Graphics2D g) {
-//		Set<PComponent> toBeRendered = reRenderSet;
-//		reRenderSet = new HashSet<>();
+//		System.out.println("RENDER ALL");
+//		System.out.println();
 		
 		renderer.setGraphics(g);
 		
+//		PComponent[] compsToRender = reRenderSet.toArray();
+//		reRenderSet.clear();
+//		Arrays.sort(compsToRender, componentReRenderComparator);
+		
 		class StackInfo {
-			PComponent child;
-			int clipX;
-			int clipY;
-			int clipFx;
-			int clipFy;
+			final PComponent child;
+			final int clipX;
+			final int clipY;
+			final int clipFx;
+			final int clipFy;
 			
 			public StackInfo(PComponent child, int clipX, int clipY, int clipFx, int clipFy) {
 				this.child = child;
@@ -227,13 +253,17 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 		}
 		
 		Deque<StackInfo> stack = new LinkedList<>();
-		for (PComponent child : getLayout().getChildren()) {
-//		for (PComponent child : toBeRendered) {
+		Iterable<PComponent> compsToRender = reRenderSet.containsRoot() ? getLayout().getChildren() : reRenderSet;
+//		for (PComponent child : getLayout().getChildren()) {
+		for (PComponent child : compsToRender) {
 			stack.add(new StackInfo(child, 0, 0, getBounds().getWidth(), getBounds().getHeight()));
 		}
 		while (!stack.isEmpty()) {
 			StackInfo info = stack.pop();
 			PComponent comp = info.child;
+			if (comp.getRoot() == null) {
+				continue;
+			}
 			PBounds compBounds = comp.getBounds();
 			int clipX = Math.max(compBounds.getX(), info.clipX);
 			int clipY = Math.max(compBounds.getY(), info.clipY);
@@ -248,6 +278,7 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 			
 			PDesign design = comp.getDesign();
 			design.render(renderer, comp);
+//			System.out.println("render="+comp);
 			
 			PReadOnlyLayout layout = comp.getLayout();
 			if (layout != null) {
@@ -256,6 +287,9 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 				}
 			}
 		}
+		reRenderSet.clear();
+//		System.out.println("###############################");
+//		System.out.println();
 	}
 	
 }

@@ -122,10 +122,10 @@ public interface PRoot extends PComponent {
 	 */
 	public PDesignSheet getDesignSheet();
 	
-	/**
-	 * Updates all {@link PComponent}s in this GUI tree.
-	 */
-	public void update();
+//	/**
+//	 * Updates all {@link PComponent}s in this GUI tree.
+//	 */
+//	public void update();
 	
 	/**
 	 * This method should be called if a {@link PComponent} needs to 
@@ -133,6 +133,15 @@ public interface PRoot extends PComponent {
 	 * @param component the component that needs re-rendering
 	 */
 	public void reRender(PComponent component);
+	
+	/**
+	 * Registers that a {@link PComponent} needs a refresh for its {@link PLayout} in the near future.<br>
+	 * The refresh should happen soon but not necessarily immediately to have the possibility of combining 
+	 * several re-layouting operations into one.<br>
+	 * 
+	 * @param component
+	 */
+	public void reLayOut(PComponent component);
 	
 	/**
 	 * Creates a new instance of {@link PDialog} and returns it.<br>

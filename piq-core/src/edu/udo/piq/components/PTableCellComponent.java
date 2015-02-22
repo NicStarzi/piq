@@ -8,6 +8,6 @@ public interface PTableCellComponent extends PComponent {
 	
 	public boolean isSelected();
 	
-	public void cellChanged(PTableModel model, PTableCell cell);
+	public void cellChanged(PTableModel model, PTablePosition cell);
 	
 }

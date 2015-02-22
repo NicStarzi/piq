@@ -4,7 +4,7 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.components.PLabel;
-import edu.udo.piq.components.PTableCell;
+import edu.udo.piq.components.PTablePosition;
 import edu.udo.piq.components.PTableCellComponent;
 import edu.udo.piq.components.PTableModel;
 
@@ -24,7 +24,7 @@ public class DefaultPTableCellComponent extends PLabel implements PTableCellComp
 		return selected;
 	}
 	
-	public void cellChanged(PTableModel model, PTableCell cell) {
+	public void cellChanged(PTableModel model, PTablePosition cell) {
 		Object obj = model.getCell(cell.getColumnIndex(), cell.getRowIndex());
 		getModel().setValue(obj.toString());
 	}

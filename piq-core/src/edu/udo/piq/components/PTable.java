@@ -1,6 +1,7 @@
 package edu.udo.piq.components;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import edu.udo.piq.PBounds;
@@ -15,23 +16,27 @@ import edu.udo.piq.tools.AbstractPLayoutOwner;
 public class PTable extends AbstractPLayoutOwner {
 	
 	private final PTableModelObs modelObs = new PTableModelObs() {
+		public void columnAdded(PTableModel model, int columnIndex) {
+		}
+		public void columnRemoved(PTableModel model, int columnIndex) {
+		}
 		public void rowRemoved(PTableModel model, int rowIndex) {
 		}
 		public void rowAdded(PTableModel model, int rowIndex) {
 		}
 		public void cellChanged(PTableModel model, Object cell, int columnIndex, int rowIndex) {
-			PTable.this.cellChanged(new PTableCell(columnIndex, rowIndex));
+//			PTable.this.cellChanged(new PTablePosition(columnIndex, rowIndex));
 		}
 	};
 	private final PTableSelectionObs selectionObs = new PTableSelectionObs() {
-		public void selectionRemoved(PTableSelection selection, PTableCell cell) {
+		public void selectionRemoved(PTableSelection selection, PTablePosition cell) {
 			PTable.this.selectionChanged(cell, false);
 		}
-		public void selectionAdded(PTableSelection selection, PTableCell cell) {
+		public void selectionAdded(PTableSelection selection, PTablePosition cell) {
 			PTable.this.selectionChanged(cell, true);
 		}
 	};
-	private final Map<PTableCell, PTableCellComponent> cellToCompMap = new HashMap<>();
+	private final Map<PTablePosition, PTableCellComponent> cellToCompMap = new HashMap<>();
 	private PTableSelection selection;
 	private PTableModel model;
 	private PTableCellFactory cellFac;
@@ -153,6 +158,24 @@ public class PTable extends AbstractPLayoutOwner {
 //		}
 //	}
 	
+<<<<<<< HEAD:src/edu/udo/piq/components/PTable.java
+	private void toggleSelection(PTablePosition cell) {
+		if (selection.isSelected(cell)) {
+			selection.removeSelection(cell);
+		} else {
+			selection.addSelection(cell);
+		}
+	}
+	
+	private void rangeSelection(PTablePosition cell) {
+		
+	}
+	
+	private void setSelection(PTablePosition cell) {
+		selection.clearSelection();
+		selection.addSelection(cell);
+	}
+=======
 //	private void toggleSelection(PTableCell cell) {
 //		if (selection.isSelected(cell)) {
 //			selection.removeSelection(cell);
@@ -169,6 +192,7 @@ public class PTable extends AbstractPLayoutOwner {
 //		selection.clearSelection();
 //		selection.addSelection(cell);
 //	}
+>>>>>>> 6ab83a3bd2f4be8ab58b4445c5733872f87ca2f0:piq-core/src/edu/udo/piq/components/PTable.java
 	
 	private void modelChanged() {
 		int colCount = getModel().getColumnCount();
@@ -185,20 +209,20 @@ public class PTable extends AbstractPLayoutOwner {
 	}
 	
 	private void cellAdded(int col, int row) {
-		PTableCell cell = new PTableCell(col, row);
+		PTablePosition cell = new PTablePosition(col, row);
 		PTableCellComponent cellComp = getCellFactory().getCellComponentFor(getModel(), cell);
 		cellToCompMap.put(cell, cellComp);
 		getLayout().addChild(cellComp, cell);
 	}
 	
-	private void cellChanged(PTableCell cell) {
+	private void cellChanged(PTablePosition cell) {
 		PTableCellComponent comp = cellToCompMap.get(cell);
 		if (comp != null) {
 			comp.cellChanged(getModel(), cell);
 		}
 	}
 	
-	private void selectionChanged(PTableCell cell, boolean value) {
+	private void selectionChanged(PTablePosition cell, boolean value) {
 		PTableCellComponent comp = cellToCompMap.get(cell);
 		if (comp != null) {
 			comp.setSelected(value);

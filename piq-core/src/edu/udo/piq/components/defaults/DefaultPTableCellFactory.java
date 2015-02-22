@@ -1,13 +1,13 @@
 package edu.udo.piq.components.defaults;
 
-import edu.udo.piq.components.PTableCell;
+import edu.udo.piq.components.PTablePosition;
 import edu.udo.piq.components.PTableCellComponent;
 import edu.udo.piq.components.PTableCellFactory;
 import edu.udo.piq.components.PTableModel;
 
 public class DefaultPTableCellFactory implements PTableCellFactory {
 	
-	public PTableCellComponent getCellComponentFor(PTableModel tableModel, PTableCell cell) {
+	public PTableCellComponent getCellComponentFor(PTableModel tableModel, PTablePosition cell) {
 		int col = cell.getColumnIndex();
 		int row = cell.getRowIndex();
 		Object element = tableModel.getCell(col, row);

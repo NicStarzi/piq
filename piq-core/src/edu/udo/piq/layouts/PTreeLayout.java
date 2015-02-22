@@ -6,6 +6,7 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 import edu.udo.piq.PBounds;
@@ -227,7 +228,10 @@ public class PTreeLayout extends AbstractPLayout implements PReadOnlyLayout {
 			
 			y += compH + gap;
 			
-			for (PComponent child : getChildrenOf(current)) {
+			List<PComponent> children = getChildrenOf(current);
+			ListIterator<PComponent> iter = children.listIterator(children.size());
+			while (iter.hasPrevious()) {
+				PComponent child = iter.previous();
 				stack.push(new StackInfo(current, child, info.lvl + 1));
 			}
 		}

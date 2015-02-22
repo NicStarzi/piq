@@ -232,38 +232,23 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 		
 		renderer.setGraphics(g);
 		
-//		PComponent[] compsToRender = reRenderSet.toArray();
-//		reRenderSet.clear();
-//		Arrays.sort(compsToRender, componentReRenderComparator);
-		
-		class StackInfo {
-			final PComponent child;
-			final int clipX;
-			final int clipY;
-			final int clipFx;
-			final int clipFy;
-			
-			public StackInfo(PComponent child, int clipX, int clipY, int clipFx, int clipFy) {
-				this.child = child;
-				this.clipX = clipX;
-				this.clipY = clipY;
-				this.clipFx = clipFx;
-				this.clipFy = clipFy;
-			}
-		}
+		PBounds bnds = getBounds();
+		int w = bnds.getWidth();
+		int h = bnds.getHeight();
 		
 		Deque<StackInfo> stack = new LinkedList<>();
 		Iterable<PComponent> compsToRender = reRenderSet.containsRoot() ? getLayout().getChildren() : reRenderSet;
-//		for (PComponent child : getLayout().getChildren()) {
 		for (PComponent child : compsToRender) {
-			stack.add(new StackInfo(child, 0, 0, getBounds().getWidth(), getBounds().getHeight()));
+			if (child.getRoot() == this) {
+				stack.add(new StackInfo(child, 0, 0, w, h));
+			}
+		}
+		if (!reRenderSet.containsRoot() && getLayout().getOverlay() != null) {
+			stack.add(new StackInfo((PComponent) getLayout().getOverlay(), 0, 0, w, h));
 		}
 		while (!stack.isEmpty()) {
 			StackInfo info = stack.pop();
 			PComponent comp = info.child;
-			if (comp.getRoot() == null) {
-				continue;
-			}
 			PBounds compBounds = comp.getBounds();
 			int clipX = Math.max(compBounds.getX(), info.clipX);
 			int clipY = Math.max(compBounds.getY(), info.clipY);
@@ -272,6 +257,7 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 			int clipW = clipFx - clipX;
 			int clipH = clipFy - clipY;
 			if (clipW < 0 || clipH < 0) {
+//				System.out.println("ignore="+comp);
 				continue;
 			}
 			renderer.setClipBounds(clipX, clipY, clipW, clipH);
@@ -290,6 +276,22 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 		reRenderSet.clear();
 //		System.out.println("###############################");
 //		System.out.println();
+	}
+	
+	protected static class StackInfo {
+		public final PComponent child;
+		public final int clipX;
+		public final int clipY;
+		public final int clipFx;
+		public final int clipFy;
+		
+		public StackInfo(PComponent child, int clipX, int clipY, int clipFx, int clipFy) {
+			this.child = child;
+			this.clipX = clipX;
+			this.clipY = clipY;
+			this.clipFx = clipFx;
+			this.clipFy = clipFy;
+		}
 	}
 	
 }

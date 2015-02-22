@@ -140,11 +140,13 @@ public class PScrollBarLayout extends AbstractPLayout implements PLayout {
 			if (horizontal) {
 				thumbW = (int) (w * size);
 				thumbH = h;
+				w -= thumbW;
 				thumbX = x + (int) (w * scroll);
 				thumbY = y;
 			} else {
 				thumbW = w;
 				thumbH = (int) (h * size);
+				h -= thumbH;
 				thumbX = x;
 				thumbY = y + (int) (h * scroll);
 			}
@@ -166,11 +168,13 @@ public class PScrollBarLayout extends AbstractPLayout implements PLayout {
 				compY = y;
 				compW = thumbX - compX;
 				compH = h;
+				w -= compW;
 			} else {
 				compX = x;
 				compY = y;
 				compW = w;
 				compH = thumbY - compY;
+				h -= compH;
 			}
 			setChildBounds(bg1, compX, compY, compW, compH);
 		}
@@ -183,13 +187,13 @@ public class PScrollBarLayout extends AbstractPLayout implements PLayout {
 			if (horizontal) {
 				compX = thumbX + thumbW;
 				compY = y;
-				compW = w - thumbW;
+				compW = w;
 				compH = h;
 			} else {
 				compX = x;
 				compY = thumbY + thumbH;
 				compW = w;
-				compH = h - thumbH;
+				compH = h;
 			}
 			setChildBounds(bg2, compX, compY, compW, compH);
 		}

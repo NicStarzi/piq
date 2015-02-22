@@ -72,48 +72,52 @@ public class DefaultPTreeModel extends AbstractPTreeModel implements PTreeModel 
 			children = new ArrayList<>();
 			childMap.put(parent, children);
 		}
-		System.out.println("index="+index);
 		children.add(index, child);
 		parentMap.put(child, parent);
-		fireAddedEventForBranch(parent, child, index);
+		fireAddedEvent(parent, child, index);
 	}
 	
 	public boolean canRemoveChild(Object parent, int index) {
-		return (parent == null && index == -1 && getRoot() != null) 
-				|| (parent != null && index >= 0 && getChildCount(parent) >= index);
+		return (parent != null && index >= 0 && getChildCount(parent) >= index);
 	}
 	
 	public void removeChild(Object parent, int index) {
-		if (parent == null && index == -1) {
-			setRoot(null);
-			return;
+		Object child = getChild(parent, index);
+		List<Object> grandChildren = getChildrenOf(child);
+//		for (int i = 0; i < getChildCount(child); i++) {
+		for (Object grandChild : grandChildren) {
+			removeChild(child, getChildIndex(child, grandChild));
 		}
-		removeBranch(parent, getChild(parent, index), index);
+		List<Object> children = childMap.get(parent);
+		children.remove(child);
+		if (children.isEmpty()) {
+			childMap.remove(parent);
+		}
+		parentMap.remove(child);
 		
-//		List<Object> children = childMap.get(parent);
-//		Object child = children.remove(index);
-//		
-//		recursiveRemove(child);
-//		
-//		parentMap.remove(child);
-//		if (children.isEmpty()) {
-//			childMap.remove(parent);
-//		}
-//		fireRemovedEventForBranch(parent, child, index);
+		System.out.println("removedEvent="+child);
+		fireRemovedEvent(parent, child, index);
 	}
 	
 	public PModelHistory getHistory() {
 		return null;
 	}
 	
-	protected void removeBranch(Object grandParent, Object parent, int index) {
-		for (int i = 0; i < getChildCount(parent); i++) {
-			Object child = getChild(parent, i);
-			removeBranch(parent, child, index);
-			parentMap.remove(child);
+	public void test() {
+		StringBuilder sb = new StringBuilder();
+		p(sb, getRoot(), 0);
+		System.out.println(sb.toString());
+	}
+	
+	void p(StringBuilder sb, Object node, int level) {
+		sb.append('\n');
+		for (int i = 0; i < level; i++) {
+			sb.append('\t');
 		}
-		childMap.get(parent);
-		fireRemovedEvent(grandParent, parent, index);
+		sb.append(node);
+		for (Object child : getChildrenOf(node)) {
+			p(sb, child, level + 1);
+		}
 	}
 	
 }

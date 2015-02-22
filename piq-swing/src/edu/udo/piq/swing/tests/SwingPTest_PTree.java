@@ -18,6 +18,7 @@ import edu.udo.piq.components.PTree;
 import edu.udo.piq.components.PTreePosition;
 import edu.udo.piq.components.PTreeSelection;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
+import edu.udo.piq.components.defaults.DefaultPTreeModel;
 import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PWrapLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
@@ -110,6 +111,7 @@ public class SwingPTest_PTree {
 						}
 					}
 				}
+				((DefaultPTreeModel) tree.getModel()).test();
 			}
 		});
 		btnAdd.addObs(new PButtonObs() {
@@ -127,6 +129,7 @@ public class SwingPTest_PTree {
 						}
 					}
 				}
+				((DefaultPTreeModel) tree.getModel()).test();
 			}
 		});
 		btnRemove.addObs(new PButtonObs() {
@@ -138,6 +141,7 @@ public class SwingPTest_PTree {
 						pos.remove();
 					}
 				}
+				((DefaultPTreeModel) tree.getModel()).test();
 			}
 		});
 	}

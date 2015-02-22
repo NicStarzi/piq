@@ -158,24 +158,6 @@ public class PTable extends AbstractPLayoutOwner {
 //		}
 //	}
 	
-<<<<<<< HEAD:src/edu/udo/piq/components/PTable.java
-	private void toggleSelection(PTablePosition cell) {
-		if (selection.isSelected(cell)) {
-			selection.removeSelection(cell);
-		} else {
-			selection.addSelection(cell);
-		}
-	}
-	
-	private void rangeSelection(PTablePosition cell) {
-		
-	}
-	
-	private void setSelection(PTablePosition cell) {
-		selection.clearSelection();
-		selection.addSelection(cell);
-	}
-=======
 //	private void toggleSelection(PTableCell cell) {
 //		if (selection.isSelected(cell)) {
 //			selection.removeSelection(cell);
@@ -192,7 +174,6 @@ public class PTable extends AbstractPLayoutOwner {
 //		selection.clearSelection();
 //		selection.addSelection(cell);
 //	}
->>>>>>> 6ab83a3bd2f4be8ab58b4445c5733872f87ca2f0:piq-core/src/edu/udo/piq/components/PTable.java
 	
 	private void modelChanged() {
 		int colCount = getModel().getColumnCount();

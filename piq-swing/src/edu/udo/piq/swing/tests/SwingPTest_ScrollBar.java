@@ -53,6 +53,9 @@ public class SwingPTest_ScrollBar {
 		
 		PScrollPanel scrlPnl = new PScrollPanel();
 		bodyPnl.addChild(scrlPnl, new PFreeLayout.FreeConstraint(31, 46, 256, 256));
+		
+		PPanel content = new PPanel();
+		scrlPnl.setBody(content);
 	}
 	
 }

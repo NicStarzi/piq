@@ -28,7 +28,6 @@ import edu.udo.piq.components.PTextArea;
 import edu.udo.piq.components.PToolTip;
 import edu.udo.piq.components.defaults.DefaultPListModel;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
-import edu.udo.piq.designs.coolblue.CoolBluePDesignSheet;
 import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
 import edu.udo.piq.layouts.PSplitLayout.Orientation;
@@ -72,7 +71,7 @@ public class SwingPTest {
 		updateTimer.setRepeats(true);
 		updateTimer.start();
 		
-		root.setDesignSheet(new CoolBluePDesignSheet());
+//		root.setDesignSheet(new CoolBluePDesignSheet());
 		
 		PPanel bodyPnl = new PPanel();
 		bodyPnl.setID("Body Panel");

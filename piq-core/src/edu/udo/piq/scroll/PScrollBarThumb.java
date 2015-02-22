@@ -43,11 +43,11 @@ public class PScrollBarThumb extends AbstractPComponent {
 	}
 	
 	public double getScroll() {
-		return 0.25;
+		return 0.75;
 	}
 	
 	public double getSize() {
-		return 0.5;
+		return 0.1;
 	}
 	
 	protected void setModel(PButtonModel model) {

@@ -11,17 +11,7 @@ import edu.udo.piq.components.PTableSelectionObs;
 public abstract class AbstractPTableSelection implements PTableSelection {
 	
 	private final List<PTableSelectionObs> obsList = new CopyOnWriteArrayList<>();
-	private SelectionMode mode = DEFAULT_SELECTION_MODE;
 	private PTableModel model;
-	
-	public void setSelectionMode(SelectionMode selectionMode) {
-		clearSelection();
-		mode = selectionMode;
-	}
-	
-	public SelectionMode getSelectionMode() {
-		return mode;
-	}
 	
 	public void setModel(PTableModel model) {
 		clearSelection();

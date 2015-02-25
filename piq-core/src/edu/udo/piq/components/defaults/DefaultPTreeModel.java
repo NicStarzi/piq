@@ -82,42 +82,55 @@ public class DefaultPTreeModel extends AbstractPTreeModel implements PTreeModel 
 	}
 	
 	public void removeChild(Object parent, int index) {
-		Object child = getChild(parent, index);
-		List<Object> grandChildren = getChildrenOf(child);
-//		for (int i = 0; i < getChildCount(child); i++) {
-		for (Object grandChild : grandChildren) {
-			removeChild(child, getChildIndex(child, grandChild));
-		}
 		List<Object> children = childMap.get(parent);
-		children.remove(child);
+		if (children == null || children.isEmpty()) {
+			return;
+		}
+		Object child = children.get(index);
+		removeAllChildren(child);
+		children.remove(index);
 		if (children.isEmpty()) {
 			childMap.remove(parent);
 		}
 		parentMap.remove(child);
-		
-		System.out.println("removedEvent="+child);
 		fireRemovedEvent(parent, child, index);
+	}
+	
+	private void removeAllChildren(Object parent) {
+		List<Object> children = childMap.get(parent);
+		if (children != null) {
+			for (Object child : children) {
+				removeAllChildren(child);
+			}
+			childMap.remove(parent);
+			for (int index = 0; index < children.size(); index++) {
+				Object child = children.get(index);
+				parentMap.remove(child);
+				fireRemovedEvent(parent, child, index);
+			}
+			children.clear();
+		}
 	}
 	
 	public PModelHistory getHistory() {
 		return null;
 	}
 	
-	public void test() {
-		StringBuilder sb = new StringBuilder();
-		p(sb, getRoot(), 0);
-		System.out.println(sb.toString());
-	}
-	
-	void p(StringBuilder sb, Object node, int level) {
-		sb.append('\n');
-		for (int i = 0; i < level; i++) {
-			sb.append('\t');
-		}
-		sb.append(node);
-		for (Object child : getChildrenOf(node)) {
-			p(sb, child, level + 1);
-		}
-	}
+//	public void test() {
+//		StringBuilder sb = new StringBuilder();
+//		p(sb, getRoot(), 0);
+//		System.out.println(sb.toString());
+//	}
+//	
+//	void p(StringBuilder sb, Object node, int level) {
+//		sb.append('\n');
+//		for (int i = 0; i < level; i++) {
+//			sb.append('\t');
+//		}
+//		sb.append(node);
+//		for (Object child : getChildrenOf(node)) {
+//			p(sb, child, level + 1);
+//		}
+//	}
 	
 }

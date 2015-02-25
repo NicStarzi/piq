@@ -531,9 +531,20 @@ public class AbstractPComponent implements PComponent {
 		} else {
 			builder.append(getID());
 		}
-		builder.append(" [bounds=");
-		builder.append(getBounds());
-		builder.append("]");
 		return builder.toString();
+	}
+	
+	public String getDebugInfo() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("[class=");
+		sb.append(getClass().getSimpleName());
+		sb.append(", id=");
+		sb.append(getID());
+		sb.append(", bounds=");
+		sb.append(getBounds());
+		sb.append(", layout=");
+		sb.append(getLayout());
+		sb.append("]");
+		return sb.toString();
 	}
 }

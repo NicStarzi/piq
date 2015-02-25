@@ -389,6 +389,20 @@ public abstract class AbstractPRoot implements PRoot {
 		return builder.toString();
 	}
 	
+	public String getDebugInfo() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("[class=");
+		sb.append(getClass().getSimpleName());
+		sb.append(", id=");
+		sb.append(getID());
+		sb.append(", bounds=");
+		sb.append(getBounds());
+		sb.append(", layout=");
+		sb.append(getLayout());
+		sb.append("]");
+		return sb.toString();
+	}
+	
 	/*
 	 * Unsupported inherited methods
 	 */

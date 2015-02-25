@@ -285,23 +285,35 @@ public interface PComponent {
 	 * 
 	 * @param value the new id for this component
 	 * @see #getID()
+	 * @see PCompUtil#getDescendantByID(PComponent, String)
 	 * @see PGuiUtil#componentToString(PComponent)
 	 * @see PGuiUtil#guiTreeToString(PComponent)
 	 */
 	public void setID(String value);
 	
 	/**
-	 * This id of a {@link PComponent} should only be used for debugging purposes and 
+	 * The id of a {@link PComponent} should only be used for debugging purposes and 
 	 * has no meaning to the end user whatsoever.<br>
 	 * The id might be null in which case it should be treated as if it was equal to 
 	 * the simple name of the components class.<br>
 	 * 
 	 * @return the id use for debugging purposes
 	 * @see #setID(String)
+	 * @see PCompUtil#getDescendantByID(PComponent, String)
 	 * @see PGuiUtil#componentToString(PComponent)
 	 * @see PGuiUtil#guiTreeToString(PComponent)
 	 */
 	public String getID();
+	
+	/**
+	 * Returns a detailed representation of this {@link PComponent PComponents} inner 
+	 * state. The returned String should at least contain the components class, id, 
+	 * if these exists the bounds and the layout.<br>
+	 * A component implementation is free to provide any other useful information.<br>
+	 * 
+	 * @return a String representing all important information for this component
+	 */
+	public String getDebugInfo();
 	
 	/*
 	 * Default convenience methods

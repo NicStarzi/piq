@@ -44,7 +44,7 @@ public class PTable extends AbstractPLayoutOwner {
 	public PTable() {
 		super();
 		setLayout(new PTableLayout(this));
-		setModel(new DefaultPTableModel(new Object[0][0]));
+		setModel(new DefaultPTableModel(0, 0));
 		setSelection(new DefaultPTableSelection());
 		setCellFactory(new DefaultPTableCellFactory());
 	}
@@ -190,10 +190,10 @@ public class PTable extends AbstractPLayoutOwner {
 	}
 	
 	private void cellAdded(int col, int row) {
-		PTablePosition cell = new PTablePosition(col, row);
-		PTableCellComponent cellComp = getCellFactory().getCellComponentFor(getModel(), cell);
-		cellToCompMap.put(cell, cellComp);
-		getLayout().addChild(cellComp, cell);
+//		PTablePosition cell = new PTablePosition(col, row);
+//		PTableCellComponent cellComp = getCellFactory().getCellComponentFor(getModel(), cell);
+//		cellToCompMap.put(cell, cellComp);
+//		getLayout().addChild(cellComp, cell);
 	}
 	
 	private void cellChanged(PTablePosition cell) {

@@ -35,8 +35,10 @@ public class DefaultPTableModel extends AbstractPTableModel implements PTableMod
 	public void addColumn(int columnIndex) {
 		colCount += 1;
 		int afterIndex = columnIndex + 1;
-		for (Object[] row : rows) {
+		for (int i = 0; i < rows.size(); i++) {
+			Object[] row = rows.get(i);
 			Object[] newRow = new Object[colCount];
+			rows.set(i, newRow);
 			System.out.println("row="+Arrays.toString(row));
 			System.arraycopy(row, 0, newRow, 0, columnIndex);
 			System.arraycopy(row, columnIndex, newRow, afterIndex, colCount - afterIndex);
@@ -47,12 +49,14 @@ public class DefaultPTableModel extends AbstractPTableModel implements PTableMod
 	
 	public void removeColumn(int columnIndex) {
 		colCount -= 1;
-		int beforeIndex = columnIndex - 1;
-		for (Object[] row : rows) {
+//		int beforeIndex = columnIndex - 1;
+		for (int i = 0; i < rows.size(); i++) {
+			Object[] row = rows.get(i);
 			Object[] newRow = new Object[colCount];
+			rows.set(i, newRow);
 			System.out.println("row="+Arrays.toString(row));
 			System.arraycopy(row, 0, newRow, 0, columnIndex);
-			System.arraycopy(row, columnIndex, newRow, beforeIndex, colCount - columnIndex);
+			System.arraycopy(row, columnIndex + 1, newRow, columnIndex, colCount - columnIndex);
 			System.out.println("newRow="+Arrays.toString(newRow));
 		}
 		fireColumnRemovedEvent(columnIndex);
@@ -132,6 +136,19 @@ public class DefaultPTableModel extends AbstractPTableModel implements PTableMod
 	
 	public PModelHistory getHistory() {
 		return null;
+	}
+	
+	public String getDebugInfo() {
+		StringBuilder sb = new StringBuilder();
+		for (int r = 0; r < getRowCount(); r++) {
+			Object[] row = rows.get(r);
+			for (int c = 0; c < colCount; c++) {
+				sb.append(row[c]);
+				sb.append(", ");
+			}
+			sb.append("\n");
+		}
+		return sb.toString();
 	}
 	
 }

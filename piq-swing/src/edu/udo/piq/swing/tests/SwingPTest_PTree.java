@@ -14,9 +14,12 @@ import edu.udo.piq.components.PLabel;
 import edu.udo.piq.components.PList;
 import edu.udo.piq.components.PPanel;
 import edu.udo.piq.components.PSplitPanel;
+import edu.udo.piq.components.PTableModel;
+import edu.udo.piq.components.PTableModelObs;
 import edu.udo.piq.components.PTree;
 import edu.udo.piq.components.PTreePosition;
 import edu.udo.piq.components.PTreeSelection;
+import edu.udo.piq.components.defaults.DefaultPTableModel;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PWrapLayout;
@@ -58,6 +61,55 @@ public class SwingPTest_PTree {
 		updateTimer.setCoalesce(true);
 		updateTimer.setRepeats(true);
 		updateTimer.start();
+		
+		DefaultPTableModel tm = new DefaultPTableModel(3, 1);
+		tm.addObs(new PTableModelObs() {
+			public void rowRemoved(PTableModel model, int rowIndex) {
+				System.out.println("rowRemoved="+rowIndex);
+			}
+			public void rowAdded(PTableModel model, int rowIndex) {
+				System.out.println("rowAdded="+rowIndex);
+			}
+			public void columnRemoved(PTableModel model, int columnIndex) {
+				System.out.println("columnRemoved="+columnIndex);
+			}
+			public void columnAdded(PTableModel model, int columnIndex) {
+				System.out.println("columnAdded="+columnIndex);
+			}
+			public void cellChanged(PTableModel model, Object cell, int columnIndex, int rowIndex) {
+				System.out.println("cellChanged="+columnIndex+", "+rowIndex+" => "+cell);
+			}
+		});
+		System.out.println(tm.getDebugInfo());
+		tm.add("a1", 0, 0);
+		tm.add("b1", 1, 0);
+		tm.add("c1", 2, 0);
+		System.out.println(tm.getDebugInfo());
+		tm.addRow(1);
+		System.out.println(tm.getDebugInfo());
+		tm.add("a2", 0, 1);
+		tm.add("b2", 1, 1);
+		tm.add("c2", 2, 1);
+		System.out.println(tm.getDebugInfo());
+		tm.addRow(2);
+		System.out.println(tm.getDebugInfo());
+		tm.add("a3", 0, 2);
+		tm.add("b3", 1, 2);
+		tm.add("c3", 2, 2);
+		System.out.println(tm.getDebugInfo());
+		tm.removeRow(1);
+		System.out.println(tm.getDebugInfo());
+		tm.addColumn(3);
+		System.out.println(tm.getDebugInfo());
+		tm.add("d1", 3, 0);
+		tm.add("d3", 3, 1);
+		System.out.println(tm.getDebugInfo());
+		tm.removeColumn(1);
+		System.out.println(tm.getDebugInfo());
+		tm.removeColumn(2);
+		System.out.println(tm.getDebugInfo());
+		tm.removeColumn(0);
+		System.out.println(tm.getDebugInfo());
 		
 		PPanel bodyPnl = new PPanel();
 		bodyPnl.setLayout(new PBorderLayout(bodyPnl));

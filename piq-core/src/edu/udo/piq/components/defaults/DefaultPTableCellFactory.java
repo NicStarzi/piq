@@ -11,7 +11,7 @@ public class DefaultPTableCellFactory implements PTableCellFactory {
 		int col = cell.getColumnIndex();
 		int row = cell.getRowIndex();
 		Object element = tableModel.getCell(col, row);
-		String text = element.toString();
+		String text = element == null ? "null" : element.toString();
 		
 		DefaultPTableCellComponent label = new DefaultPTableCellComponent();
 		label.getModel().setValue(text);

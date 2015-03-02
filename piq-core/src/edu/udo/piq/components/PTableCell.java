@@ -32,8 +32,7 @@ public class PTableCell {
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
-		}
-		if (obj == null || !(obj instanceof PTableCell)) {
+		} if (obj == null || !(obj instanceof PTableCell)) {
 			return false;
 		}
 		PTableCell other = (PTableCell) obj;

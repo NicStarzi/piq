@@ -27,7 +27,10 @@ public class DefaultPTableSelection extends AbstractPTableSelection implements P
 	}
 	
 	public void clearSelection() {
-		removeSelection(getSelectedPosition());
+		PTablePosition selected = getSelectedPosition();
+		if (selected != null) {
+			removeSelection(getSelectedPosition());
+		}
 	}
 	
 	public List<PTablePosition> getSelection() {

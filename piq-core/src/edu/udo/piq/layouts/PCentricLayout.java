@@ -85,7 +85,7 @@ public class PCentricLayout extends AbstractPLayout {
 				compX = x + w / 2 - prefW / 2;
 				compW = prefW;
 			}
-			if (prefW > w) {
+			if (prefH > h) {
 				compY = y;
 				compH = h;
 			} else {

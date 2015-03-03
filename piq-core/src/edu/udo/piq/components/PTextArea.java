@@ -194,6 +194,9 @@ public class PTextArea extends AbstractPComponent {
 				takeFocus();
 				fireReRenderEvent();
 			}
+//			if (isMouseOver()) {
+//				mouse.setCursor(PCursorType.TEXT);
+//			}
 		}
 		public void buttonTriggered(PMouse mouse, MouseButton btn) {
 			if (btn == MouseButton.LEFT) {

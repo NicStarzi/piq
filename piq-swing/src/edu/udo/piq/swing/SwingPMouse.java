@@ -185,8 +185,10 @@ public class SwingPMouse implements PMouse {
 		if (cursor == null) {
 			throw new IllegalArgumentException("cursor="+cursor);
 		}
-		currentCursor = (AwtPCursor) cursor;
-		currentCursor.applyTo(base);
+		if (currentCursor != cursor) {
+			currentCursor = (AwtPCursor) cursor;
+			currentCursor.applyTo(base);
+		}
 	}
 	
 	public void setCursor(PCursorType cursorType) {

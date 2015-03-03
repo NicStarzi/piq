@@ -55,6 +55,9 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 		}
 		this.layout = layout;
 		if (this.layout != null) {
+			if (this.layout.getOwner() != this) {
+				throw new IllegalArgumentException("getLayout().getOwner() != this");
+			}
 			this.layout.addObs(layoutObs);
 		}
 	}

@@ -25,7 +25,7 @@ public interface PDesign {
 	 * The default, pass-through design.<br>
 	 * This design works for every {@link PComponent} by delegating its methods 
 	 * to the passed component.<br>
-	 * If there is no better design available this design should be used for 
+	 * If there is no better design available this design could be used for 
 	 * a component.<br>
 	 */
 	public static final PDesign PASS_THROUGH_DESIGN = new PDesign() {};
@@ -35,7 +35,7 @@ public interface PDesign {
 	 * by this {@link PDesign} to display the component correctly.<br>
 	 * The preferred size should usually be as small as possible but as big as 
 	 * needed.<br>
-	 * This method might take the {@link PReadOnlyLayout layout} of the component into
+	 * This method might take the {@link PReadOnlyLayout} of the component into
 	 * consideration but is not forced to.<br>
 	 * This method will never return null.<br> 
 	 * 
@@ -57,7 +57,7 @@ public interface PDesign {
 	/**
 	 * Renders the given {@link PComponent} at the given {@link PRenderer}.<br>
 	 * This method should honor the {@link PBounds} of the component as it is 
-	 * returned by the components parents {@link PReadOnlyLayout layout}.<br>
+	 * returned by the components parents layout.<br>
 	 * 
 	 * @param renderer
 	 * @param component

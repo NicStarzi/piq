@@ -22,11 +22,13 @@ public class PScrollPanelLayout extends AbstractPLayout implements PLayout {
 	
 	public void setBody(PComponent component) {
 		PComponent oldBody = getBody();
-		if (oldBody != null) {
-			removeChild(oldBody);
-		}
-		if (component != null) {
-			addChild(component, Constraint.BODY);
+		if (component != oldBody) {
+			if (oldBody != null) {
+				removeChild(oldBody);
+			}
+			if (component != null) {
+				addChild(component, Constraint.BODY);
+			}
 		}
 	}
 	
@@ -43,7 +45,7 @@ public class PScrollPanelLayout extends AbstractPLayout implements PLayout {
 	}
 	
 	public void layOut() {
-		PComponent body = getChildForConstraint(Constraint.BODY);
+		PComponent body = getBody();
 		if (body != null) {
 			PBounds ob = getOwner().getBounds();
 			int x = ob.getX();
@@ -70,7 +72,11 @@ public class PScrollPanelLayout extends AbstractPLayout implements PLayout {
 			if (barV != null) {
 				offsetY = (int) (h * barV.getModel().getScroll());
 			}
-			setChildBounds(body, x - offsetX, y - offsetY, w - barPrefW, h - barPrefH);
+			x -= offsetX;
+			y -= offsetY;
+			w += offsetX;
+			h += offsetY;
+			setChildBounds(body, x, y, w, h);
 		}
 	}
 	

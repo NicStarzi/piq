@@ -39,6 +39,10 @@ public class PScrollBarLayout extends AbstractPLayout implements PLayout {
 		});
 	}
 	
+	public PScrollBar getOwner() {
+		return (PScrollBar) super.getOwner();
+	}
+	
 	public void setOrientation(Orientation orientation) {
 		ori = orientation;
 		fireInvalidateEvent();
@@ -135,8 +139,9 @@ public class PScrollBarLayout extends AbstractPLayout implements PLayout {
 		int thumbW;
 		int thumbH;
 		if (thumb != null) {
-			double scroll = thumb.getScroll();
-			double size = thumb.getSize();
+			double scroll = getOwner().getModel().getScroll();
+			System.out.println("layout.scroll="+scroll);
+			double size = getThumbSize();
 			if (horizontal) {
 				thumbW = (int) (w * size);
 				thumbH = h;
@@ -197,6 +202,20 @@ public class PScrollBarLayout extends AbstractPLayout implements PLayout {
 			}
 			setChildBounds(bg2, compX, compY, compW, compH);
 		}
+	}
+	
+	private double getThumbSize() {
+		PScrollBarModel model = getOwner().getModel();
+		int prefSize = model.getPreferredSize();
+		if (prefSize == 0) {
+			return 0;
+		}
+		int size = model.getSize();
+		if (size >= prefSize) {
+			return 0;
+		}
+		System.out.println("layout.thumbSize="+((double) size / (double) prefSize));
+		return (double) size / (double) prefSize;
 	}
 	
 	public PSize getPreferredSize() {

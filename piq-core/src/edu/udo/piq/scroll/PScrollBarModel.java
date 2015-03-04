@@ -6,6 +6,14 @@ public interface PScrollBarModel {
 	
 	public double getScroll();
 	
+	public void addSmallStep();
+	
+	public void addBigStep();
+	
+	public void subSmallStep();
+	
+	public void subBigStep();
+	
 	public void setPreferredSize(int value);
 	
 	public int getPreferredSize();

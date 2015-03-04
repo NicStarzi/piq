@@ -17,12 +17,16 @@ public class PScrollPanel extends AbstractPLayoutOwner {
 	
 	private final PScrollBarModelObs modelObs = new PScrollBarModelObs() {
 		public void sizeChanged(PScrollBarModel model, int oldValue, int newValue) {
+			System.out.println("scrollPanel.sizeChanged="+newValue);
+			getLayoutInternal().layOut();
 		}
 		public void scrollChanged(PScrollBarModel model, double oldValue, double newValue) {
-			firePreferredSizeChangedEvent();
-			fireReRenderEvent();
+			System.out.println("scrollPanel.scrollChanged="+newValue);
+			getLayoutInternal().layOut();
 		}
 		public void preferredSizeChanged(PScrollBarModel model, int oldValue, int newValue) {
+			System.out.println("scrollPanel.preferredSizeChanged="+newValue);
+			getLayoutInternal().layOut();
 		}
 	};
 	private final PComponentObs bodyObs = new PComponentObs() {
@@ -54,7 +58,7 @@ public class PScrollPanel extends AbstractPLayoutOwner {
 		setVerticalScrollBar(new PScrollBar());
 	}
 	
-	protected void setLayout(PScrollBarLayout layout) {
+	protected void setLayout(PScrollPanelLayout layout) {
 		if (getLayout() != null) {
 			getLayout().removeObs(layoutObs);
 		}
@@ -76,6 +80,8 @@ public class PScrollPanel extends AbstractPLayoutOwner {
 		if (getBody() != null) {
 			getBody().addObs(bodyObs);
 		}
+		refreshPrefSize();
+		refreshSize();
 	}
 	
 	public PComponent getBody() {
@@ -150,9 +156,14 @@ public class PScrollPanel extends AbstractPLayoutOwner {
 			w = 0;
 			h = 0;
 		} else {
-			PSize size = body.getBounds();
-			w = size.getWidth();
-			h = size.getHeight();
+			PSize size = body.getClippedBounds();
+			if (size == null) {
+				w = 0;
+				h = 0;
+			} else {
+				w = size.getWidth();
+				h = size.getHeight();
+			}
 		}
 		PScrollBar barH = getHorizontalScrollBar();
 		if (barH != null && barH.getModel() != null) {

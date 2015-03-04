@@ -1,11 +1,16 @@
 package edu.udo.piq.scroll;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
+import edu.udo.piq.PTimer;
+import edu.udo.piq.PTimerCallback;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.components.PButtonModel;
 import edu.udo.piq.components.PButtonModelObs;
@@ -16,16 +21,29 @@ import edu.udo.piq.tools.ImmutablePSize;
 public class PScrollBarBackground extends AbstractPComponent {
 	
 	private static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(12, 12);
+	private static final int CLICK_REPEAT_TIMER_INITIAL_DELAY = 40;
+	private static final int CLICK_REPEAT_TIMER_REPEAT_DELAY = 4;
 	
+	private final List<PScrollBarBackgroundObs> obsList = new CopyOnWriteArrayList<>();
+	private final PTimer clickRepeatTimer = new PTimer(this, new PTimerCallback() {
+		public void action() {
+			clickRepeatTimer.setDelay(CLICK_REPEAT_TIMER_REPEAT_DELAY);
+			fireClickEvent();
+		}
+	});
 	private final PMouseObs mouseObs = new PMouseObs() {
 		public void buttonTriggered(PMouse mouse, MouseButton btn) {
 			if (btn == MouseButton.LEFT && isMouseOver()) {
-				model.setPressed(true);
+				getModel().setPressed(true);
+				clickRepeatTimer.setDelay(CLICK_REPEAT_TIMER_INITIAL_DELAY);
+				clickRepeatTimer.start();
+				fireClickEvent();
 			}
 		}
 		public void buttonReleased(PMouse mouse, MouseButton btn) {
 			if (btn == MouseButton.LEFT) {
-				model.setPressed(false);
+				clickRepeatTimer.stop();
+				getModel().setPressed(false);
 			}
 		}
 	};
@@ -38,6 +56,7 @@ public class PScrollBarBackground extends AbstractPComponent {
 	
 	public PScrollBarBackground() {
 		super();
+		clickRepeatTimer.setRepeating(true);
 		setModel(new DefaultPButtonModel());
 		addObs(mouseObs);
 	}
@@ -80,6 +99,20 @@ public class PScrollBarBackground extends AbstractPComponent {
 	
 	public boolean defaultFillsAllPixels() {
 		return true;
+	}
+	
+	public void addObs(PScrollBarBackgroundObs obs) {
+		obsList.add(obs);
+	}
+	
+	public void removeObs(PScrollBarBackgroundObs obs) {
+		obsList.remove(obs);
+	}
+	
+	protected void fireClickEvent() {
+		for (PScrollBarBackgroundObs obs : obsList) {
+			obs.onClick(this);
+		}
 	}
 	
 }

@@ -20,12 +20,12 @@ public class PScrollBarThumb extends AbstractPComponent {
 	private final PMouseObs mouseObs = new PMouseObs() {
 		public void buttonTriggered(PMouse mouse, MouseButton btn) {
 			if (btn == MouseButton.LEFT && isMouseOver()) {
-				model.setPressed(true);
+				getModel().setPressed(true);
 			}
 		}
 		public void buttonReleased(PMouse mouse, MouseButton btn) {
 			if (btn == MouseButton.LEFT) {
-				model.setPressed(false);
+				getModel().setPressed(false);
 			}
 		}
 	};
@@ -42,13 +42,13 @@ public class PScrollBarThumb extends AbstractPComponent {
 		addObs(mouseObs);
 	}
 	
-	public double getScroll() {
-		return 0.75;
-	}
-	
-	public double getSize() {
-		return 0.1;
-	}
+//	public double getScroll() {
+//		return 0.75;
+//	}
+//	
+//	public double getSize() {
+//		return 0.1;
+//	}
 	
 	protected void setModel(PButtonModel model) {
 		if (getModel() != null) {

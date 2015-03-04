@@ -7,15 +7,52 @@ import edu.udo.piq.scroll.PScrollBarLayout.Orientation;
 
 public class PScrollBar extends AbstractPLayoutOwner {
 	
+	private final PScrollBarModelObs modelObs = new PScrollBarModelObs() {
+		public void sizeChanged(PScrollBarModel model, int oldValue, int newValue) {
+			getLayoutInternal().layOut();
+		}
+		public void scrollChanged(PScrollBarModel model, double oldValue, double newValue) {
+			getLayoutInternal().layOut();
+		}
+		public void preferredSizeChanged(PScrollBarModel model, int oldValue, int newValue) {
+			getLayoutInternal().layOut();
+		}
+	};
 	private PScrollBarModel model;
 	
 	public PScrollBar() {
 		super();
+		
+		PScrollBarButton btn1 = new PScrollBarButton();
+		btn1.addObs(new PScrollBarButtonObs() {
+			public void onClick(PScrollBarButton button) {
+				getModel().subSmallStep();
+			}
+		});
+		PScrollBarButton btn2 = new PScrollBarButton();
+		btn2.addObs(new PScrollBarButtonObs() {
+			public void onClick(PScrollBarButton button) {
+				getModel().addSmallStep();
+			}
+		});
+		PScrollBarBackground bckGrnd1 = new PScrollBarBackground();
+		bckGrnd1.addObs(new PScrollBarBackgroundObs() {
+			public void onClick(PScrollBarBackground background) {
+				getModel().subBigStep();
+			}
+		});
+		PScrollBarBackground bckGrnd2 = new PScrollBarBackground();
+		bckGrnd2.addObs(new PScrollBarBackgroundObs() {
+			public void onClick(PScrollBarBackground background) {
+				getModel().addBigStep();
+			}
+		});
+		
 		setLayout(new PScrollBarLayout(this));
-		getLayoutInternal().addChild(new PScrollBarButton(), Constraint.BTN1);
-		getLayoutInternal().addChild(new PScrollBarButton(), Constraint.BTN2);
-		getLayoutInternal().addChild(new PScrollBarBackground(), Constraint.BG1);
-		getLayoutInternal().addChild(new PScrollBarBackground(), Constraint.BG2);
+		getLayoutInternal().addChild(btn1, Constraint.BTN1);
+		getLayoutInternal().addChild(btn2, Constraint.BTN2);
+		getLayoutInternal().addChild(bckGrnd1, Constraint.BG1);
+		getLayoutInternal().addChild(bckGrnd2, Constraint.BG2);
 		getLayoutInternal().addChild(new PScrollBarThumb(), Constraint.THUMB);
 		setOrientation(getOrientation());
 		
@@ -45,7 +82,13 @@ public class PScrollBar extends AbstractPLayoutOwner {
 	}
 	
 	public void setModel(PScrollBarModel model) {
+		if (getModel() != null) {
+			getModel().removeObs(modelObs);
+		}
 		this.model = model;
+		if (getModel() != null) {
+			getModel().addObs(modelObs);
+		}
 		firePreferredSizeChangedEvent();
 		fireReRenderEvent();
 	}

@@ -52,6 +52,14 @@ public class PDropDownList extends PDropDown {
 		
 		label = new PLabel(new DefaultPTextModel());
 		setPreview(label);
+		
+		addObs(new PDropDownObs() {
+			public void bodyShown(PDropDown dropDown) {
+				getBody().takeFocus();
+			}
+			public void bodyHidden(PDropDown dropDown) {
+			}
+		});
 	}
 	
 	public PList getList() {

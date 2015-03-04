@@ -179,6 +179,7 @@ public class PDropDown extends AbstractPLayoutOwner {
 			getRoot().getOverlay().getLayout().addChild(dropDownContainer, constraint);
 			bodyShown = true;
 			repositionDropDownContainer();
+			getRoot().setFocusOwner(null);
 			fireShowEvent();
 		}
 	}

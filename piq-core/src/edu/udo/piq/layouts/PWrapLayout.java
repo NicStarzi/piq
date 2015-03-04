@@ -79,19 +79,25 @@ public class PWrapLayout extends PListLayout {
 			PSize compPrefSize = compPrefSizes[i];
 			int compPrefW = compPrefSize.getWidth();
 			int compPrefH = compPrefSize.getHeight();
-			setChildBounds(comp, x, y, compPrefW, compPrefH);
+//			setChildBounds(comp, x, y, compPrefW, compPrefH);
 			
 			if (isHorizontal) {
 				if (lineSize < compPrefH) {
 					lineSize = compPrefH;
 				}
-				int newX = x + compPrefW + gap;
-				if (newX > maxX) {
+//				int newX = x + compPrefW + gap;
+//				if (newX > maxX) {
+				if (x + compPrefW > maxX) {
 					x = originX;
 					y += lineSize + gap;
-					lineSize = 0;
+//					lineSize = 0;
+					setChildBounds(comp, x, y, compPrefW, compPrefH);
+					x += compPrefW;
+					lineSize = compPrefH;
 				} else {
-					x = newX;
+					setChildBounds(comp, x, y, compPrefW, compPrefH);
+//					x = newX;
+					x = x + compPrefW + gap;
 				}
 			} else {
 				if (lineSize < compPrefW) {
@@ -106,6 +112,7 @@ public class PWrapLayout extends PListLayout {
 					y = newY;
 				}
 			}
+//			setChildBounds(comp, x, y, compPrefW, compPrefH);
 		}
 	}
 	

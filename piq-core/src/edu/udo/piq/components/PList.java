@@ -88,6 +88,17 @@ public class PList extends AbstractPLayoutOwner {
 				if (getModel().getHistory() != null && getModel().getHistory().canUndo()) {
 					getModel().getHistory().redo();
 				}
+			} else if (key == Key.DEL) {
+				PListModel model = getModel();
+				List<Object> selectedElements = new ArrayList<>(getSelection().getSelection());
+				for (Object element : selectedElements) {
+					if (!model.canRemoveElement(model.getElementIndex(element))) {
+						return;
+					}
+				}
+				for (Object element : selectedElements) {
+					model.removeElement(model.getElementIndex(element));
+				}
 			}
 		}
 		public void keyPressed(PKeyboard keyboard, Key key) {

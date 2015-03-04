@@ -1,16 +1,22 @@
 package edu.udo.piq.swing;
 
+import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 
 import edu.udo.piq.PComponent;
+import edu.udo.piq.PCursor;
+import edu.udo.piq.PCursor.PCursorType;
+import edu.udo.piq.PImageResource;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRoot;
@@ -18,17 +24,29 @@ import edu.udo.piq.util.PCompUtil;
 
 public class SwingPMouse implements PMouse {
 	
+	private static final Map<PCursorType, AwtPCursor> DEFAULT_CURSOR_MAP = new EnumMap<>(PCursorType.class);
+	static {
+		for (PCursorType type : PCursorType.values()) {
+			if (type != PCursorType.CUSTOM) {
+				DEFAULT_CURSOR_MAP.put(type, new AwtPCursor(type));
+			}
+		}
+	}
+	
 	private final PRoot root;
+	private final JComponent base;
 	private final List<PMouseObs> obsList = new CopyOnWriteArrayList<>();
 	private final boolean[] btnPressed;
 	private final boolean[] btnReleased;
 	private final boolean[] btnTriggered;
+	private AwtPCursor currentCursor = DEFAULT_CURSOR_MAP.get(PCursorType.NORMAL);
 	private int x, y, dx, dy;
 	private boolean compAtMouseCacheValid;
 	private PComponent compAtMouseCache;
 	
 	public SwingPMouse(PRoot root, JComponent base) {
 		this.root = root;
+		this.base = base;
 		btnPressed = new boolean[MouseButton.values().length];
 		btnReleased = new boolean[MouseButton.values().length];
 		btnTriggered = new boolean[MouseButton.values().length];
@@ -161,6 +179,32 @@ public class SwingPMouse implements PMouse {
 			compAtMouseCacheValid = true;
 		}
 		return compAtMouseCache;
+	}
+	
+	public void setCursor(PCursor cursor) {
+		if (cursor == null) {
+			throw new IllegalArgumentException("cursor="+cursor);
+		}
+		if (currentCursor != cursor) {
+			currentCursor = (AwtPCursor) cursor;
+			currentCursor.applyTo(base);
+		}
+	}
+	
+	public void setCursor(PCursorType cursorType) {
+		if (cursorType == null || cursorType == PCursorType.CUSTOM) {
+			throw new IllegalArgumentException("cursorType="+cursorType);
+		}
+		setCursor(DEFAULT_CURSOR_MAP.get(cursorType));
+	}
+	
+	public PCursor getCursor() {
+		return currentCursor;
+	}
+	
+	public PCursor getCustomCursor(PImageResource image, int offsetX, int offsetY) {
+		Image bufferedImg = ((BufferedPImageResource) image).getBufferedImage();
+		return new AwtPCursor(bufferedImg, offsetX, offsetY);
 	}
 	
 	public void addObs(PMouseObs obs) {

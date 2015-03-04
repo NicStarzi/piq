@@ -1,5 +1,8 @@
 package edu.udo.piq;
 
+import com.sun.javafx.cursor.CursorType;
+
+import edu.udo.piq.PCursor.PCursorType;
 import edu.udo.piq.util.PCompUtil;
 
 public interface PMouse {
@@ -78,6 +81,57 @@ public interface PMouse {
 	 * @see PLayout#getChildAt(int, int)
 	 */
 	public PComponent getComponentAtMouse();
+	
+	/**
+	 * Sets the cursor graphic that is displayed for the mouse.<br>
+	 * If the cursor graphic can not be displayed because the implementation 
+	 * does not allow it nothing will happen.<br>
+	 * 
+	 * @param cursor a non-null instance of {@link PCursor}
+	 * @throws IllegalArgumentException if cursor is null
+	 * @see #setCursor(PCursorType)
+	 * @see #getCustomCursor(PImageResource, int, int)
+	 */
+	public void setCursor(PCursor cursor) throws IllegalArgumentException;
+	
+	/**
+	 * Sets the cursor graphic that is displayed for the mouse. This method will 
+	 * use a default implementation for the given {@link CursorType} if available. 
+	 * If a default implementation for the type does not exist or if the 
+	 * implementation does not allow changing cursors nothing will happen.<br>
+	 * 
+	 * @param cursorType the type of the displayed cursor
+	 * @throws IllegalArgumentException if cursorType is null or {@link PCursorType#CUSTOM}
+	 * @see #setCursor(PCursor)
+	 * @see #getCustomCursor(PImageResource, int, int)
+	 */
+	public void setCursor(PCursorType cursorType) throws IllegalArgumentException;
+	
+	/**
+	 * Returns the currently used {@link PCursor}.<br>
+	 * This method never returns null, even if cursors are not supported by the 
+	 * implementation.<br>
+	 * 
+	 * @return the {@link PCursor} that is currently being used
+	 * @see #setCursor(PCursor)
+	 * @see #setCursor(PCursorType)
+	 */
+	public PCursor getCursor();
+	
+	/**
+	 * Constructs and returns an instance of {@link PCursor} that uses the given 
+	 * image as its graphic. The offset is a translation of the image relative to 
+	 * the mouse location.<br>
+	 * 
+	 * @param image		an {@link PImageResource image resource} to be used for the cursors graphic
+	 * @param offsetX	a translation on the X-axis in pixels relative to the mouse location, negative values go to the left
+	 * @param offsetY	a translation on the Y-axis in pixels relative to the mouse location, negative values go to the left
+	 * @return a newly constructed custom {@link PCursor}
+	 * @throws IllegalArgumentException if image is null
+	 * @see #setCursor(PCursor)
+	 * @see PRoot#fetchImageResource(String)
+	 */
+	public PCursor getCustomCursor(PImageResource image, int offsetX, int offsetY) throws IllegalArgumentException;
 	
 	public void addObs(PMouseObs obs);
 	

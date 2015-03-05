@@ -33,7 +33,7 @@ public interface PDesignSheet {
 	 * the factories {@link PDesignFactory#getDesignFor(PComponent)} method.<br>
 	 * This method never returns null.<br>
 	 * 
-	 * @param component the component for which the design is queried
+	 * @param component the component for which the design is returned
 	 * @return the design for the given component
 	 * @throws NullPointerException if component is null
 	 * @see PDesign
@@ -46,6 +46,29 @@ public interface PDesignSheet {
 			throws NullPointerException 
 	{
 		return PDesign.PASS_THROUGH_DESIGN;
+	}
+	
+	/**
+	 * Returns the {@link PLayoutDesign} associated with the given {@link PReadOnlyLayout layout}.<br>
+	 * If there is a {@link PDesignFactory} registered and the design factory 
+	 * covers the class of the layout then the returned design is retrieved from 
+	 * the factories {@link PDesignFactory#getDesignFor(PReadOnlyLayout)} method.<br>
+	 * This method never returns null.<br>
+	 * 
+	 * @param layout the layout for which the design is returned
+	 * @return the design for the given layout
+	 * @throws NullPointerException if layout is null
+	 * @see PDesign
+	 * @see PDesignFactory
+	 * @see PReadOnlyLayout#getDesign()
+	 * @see PReadOnlyLayout#setDesign(PLayoutDesign)
+	 * @see #registerDesignFactory(Class, PDesignFactory)
+	 * @see #unregisterDesignFactory(Class)
+	 */
+	public default PLayoutDesign getDesignFor(PReadOnlyLayout layout) 
+			throws NullPointerException 
+	{
+		return PLayoutDesign.NULL_ATTRIBUTE_DESIGN;
 	}
 	
 	/**

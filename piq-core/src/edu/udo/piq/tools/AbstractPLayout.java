@@ -11,7 +11,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PLayout;
+import edu.udo.piq.PLayoutDesign;
 import edu.udo.piq.PLayoutObs;
+import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
 import edu.udo.piq.util.PCompUtil;
 
@@ -20,6 +22,7 @@ public abstract class AbstractPLayout implements PLayout {
 	private final List<PLayoutObs> obsList = new CopyOnWriteArrayList<>();
 	private final Map<PComponent, PCompInfo> compMap = new HashMap<>();
 	private final PComponent owner;
+	private PLayoutDesign design;
 	
 	protected AbstractPLayout(PComponent component) {
 		if (component == null) {
@@ -173,6 +176,22 @@ public abstract class AbstractPLayout implements PLayout {
 		builder.append(getChildren());
 		builder.append("]");
 		return builder.toString();
+	}
+	
+	public void setDesign(PLayoutDesign design) {
+		this.design = design;
+		fireInvalidateEvent();
+	}
+	
+	public PLayoutDesign getDesign() {
+		if (design != null) {
+			return design;
+		}
+		PRoot root = getOwner().getRoot();
+		if (root != null) {
+			return root.getDesignSheet().getDesignFor(this);
+		}
+		return null;
 	}
 	
 	/*

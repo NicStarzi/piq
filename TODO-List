@@ -1,5 +1,4 @@
 TODO:
- - PSelection change to polymorphism instead of switch-case for selection modes
  - PTree drag and drop support + copy, cut, paste support
  - PTextArea drag and drop support + copy, cut, paste support
  - PTable overhaul + drag and drop support

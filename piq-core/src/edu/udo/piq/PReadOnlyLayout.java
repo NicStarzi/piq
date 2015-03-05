@@ -29,6 +29,9 @@ import edu.udo.piq.util.PCompUtil;
  */
 public interface PReadOnlyLayout {
 	
+	public static final String ATTRIBUTE_KEY_INSETS = "insets";
+	public static final String ATTRIBUTE_KEY_GAP = "gap";
+	
 	/**
 	 * Returns the owner of this layout.<br>
 	 * The owner is the {@link PComponent} that uses this layout to 
@@ -165,6 +168,10 @@ public interface PReadOnlyLayout {
 	 * @see PCompUtil#getPreferredSizeOf(PComponent)
 	 */
 	public PSize getPreferredSize();
+	
+	public void setDesign(PLayoutDesign design);
+	
+	public PLayoutDesign getDesign();
 	
 	/**
 	 * Adds the layout observer to this layout.<br>

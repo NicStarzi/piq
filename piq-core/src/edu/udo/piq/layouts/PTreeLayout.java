@@ -12,6 +12,7 @@ import java.util.Map;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
+import edu.udo.piq.PLayoutDesign;
 import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PSize;
@@ -91,6 +92,14 @@ public class PTreeLayout extends AbstractPLayout implements PReadOnlyLayout {
 	}
 	
 	public PInsets getInsets() {
+		PLayoutDesign design = getDesign();
+		if (design == null) {
+			return insets;
+		}
+		Object maybeInsets = getDesign().getAttribute(ATTRIBUTE_KEY_INSETS);
+		if (maybeInsets != null && maybeInsets instanceof PInsets) {
+			return (PInsets) maybeInsets;
+		}
 		return insets;
 	}
 	

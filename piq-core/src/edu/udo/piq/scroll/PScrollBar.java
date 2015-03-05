@@ -9,13 +9,13 @@ public class PScrollBar extends AbstractPLayoutOwner {
 	
 	private final PScrollBarModelObs modelObs = new PScrollBarModelObs() {
 		public void sizeChanged(PScrollBarModel model, int oldValue, int newValue) {
-			getLayoutInternal().layOut();
+			fireReLayOutEvent();
 		}
 		public void scrollChanged(PScrollBarModel model, double oldValue, double newValue) {
-			getLayoutInternal().layOut();
+			fireReLayOutEvent();
 		}
 		public void preferredSizeChanged(PScrollBarModel model, int oldValue, int newValue) {
-			getLayoutInternal().layOut();
+			fireReLayOutEvent();
 		}
 	};
 	private PScrollBarModel model;

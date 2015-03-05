@@ -86,7 +86,7 @@ public class AbstractPComponent implements PComponent {
 	protected final PLayoutObs parentLayoutObs = new PLayoutObs() {
 		public void childLaidOut(PReadOnlyLayout layout, PComponent child, Object constraint) {
 			if (child == AbstractPComponent.this) {
-				needReLayout = true;
+//				needReLayout = true;
 				fireReLayOutEvent();
 				fireReRenderEvent();
 			}
@@ -486,6 +486,7 @@ public class AbstractPComponent implements PComponent {
 	}
 	
 	protected void fireReLayOutEvent() {
+		needReLayout = true;
 		PRoot root = getRoot();
 		if (root != null) {
 			root.reLayOut(this);

@@ -45,6 +45,7 @@ public class PScrollPanelLayout extends AbstractPLayout implements PLayout {
 	}
 	
 	public void layOut() {
+		System.out.println("PScrollPanelLayout.layOut");
 		PComponent body = getBody();
 		if (body != null) {
 			PBounds ob = getOwner().getBounds();

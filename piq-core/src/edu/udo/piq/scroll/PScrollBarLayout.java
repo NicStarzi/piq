@@ -75,6 +75,7 @@ public class PScrollBarLayout extends AbstractPLayout implements PLayout {
 	}
 	
 	public void layOut() {
+		System.out.println("PScrollBarLayout.layOut");
 		PBounds ob = getOwner().getBounds();
 		int x = ob.getX();
 		int y = ob.getY();

@@ -66,8 +66,8 @@ public class PWrapLayout extends PListLayout {
 		case FROM_TOP:
 		default:
 		}
-		int maxX = ob.getFinalX() - insets.getHorizontal();
-		int maxY = ob.getFinalY() - insets.getVertical();
+		int maxX = ob.getFinalX() - insets.getFromRight();
+		int maxY = ob.getFinalY() - insets.getFromBottom();
 		int originX = Math.max(alignedX, minX);
 		int originY = Math.max(alignedY, minY);
 		int x = originX;
@@ -79,50 +79,44 @@ public class PWrapLayout extends PListLayout {
 			PSize compPrefSize = compPrefSizes[i];
 			int compPrefW = compPrefSize.getWidth();
 			int compPrefH = compPrefSize.getHeight();
-//			setChildBounds(comp, x, y, compPrefW, compPrefH);
 			
 			if (isHorizontal) {
 				if (lineSize < compPrefH) {
 					lineSize = compPrefH;
 				}
-//				int newX = x + compPrefW + gap;
-//				if (newX > maxX) {
 				if (x + compPrefW > maxX) {
 					x = originX;
 					y += lineSize + gap;
-//					lineSize = 0;
 					setChildBounds(comp, x, y, compPrefW, compPrefH);
-					x += compPrefW;
+					x += compPrefW + gap;
 					lineSize = compPrefH;
 				} else {
 					setChildBounds(comp, x, y, compPrefW, compPrefH);
-//					x = newX;
-					x = x + compPrefW + gap;
+					x += compPrefW + gap;
 				}
 			} else {
 				if (lineSize < compPrefW) {
 					lineSize = compPrefW;
 				}
-				int newY = y + compPrefH + gap;
-				if (newY > maxY) {
+				if (y + compPrefH > maxY) {
 					y = originY;
 					x += lineSize + gap;
-					lineSize = 0;
+					setChildBounds(comp, x, y, compPrefW, compPrefH);
+					y += compPrefH + gap;
+					lineSize = compPrefW;
 				} else {
-					y = newY;
+					setChildBounds(comp, x, y, compPrefW, compPrefH);
+					y += compPrefH + gap;
 				}
 			}
-//			setChildBounds(comp, x, y, compPrefW, compPrefH);
 		}
 	}
 	
 	public PSize getPreferredSize() {
 		PInsets insets = getInsets();
 		PBounds bnds = getOwner().getBounds();
-		int bndsW = bnds == null ? 0 : bnds.getWidth();
-		int bndsH = bnds == null ? 0 : bnds.getHeight();
-		int w = bndsW - insets.getHorizontal();
-		int h = bndsH - insets.getVertical();
+		int bndsW = bnds == null ? 0 : bnds.getWidth() - insets.getHorizontal();
+		int bndsH = bnds == null ? 0 : bnds.getHeight() - insets.getVertical();
 		
 		int prefW = 0;
 		int prefH = 0;
@@ -130,7 +124,7 @@ public class PWrapLayout extends PListLayout {
 		int curPrefW = 0;
 		int curPrefH = 0;
 		
-		boolean isHorizontal = getAlignment().isHorizontal();
+		final boolean isHorizontal = getAlignment().isHorizontal();
 		for (int i = 0; i < compList.size(); i++) {
 			PComponent comp = compList.get(i);
 			PSize compPrefSize = getPreferredSizeOf(comp);
@@ -138,30 +132,32 @@ public class PWrapLayout extends PListLayout {
 			int compPrefH = compPrefSize.getHeight();
 			
 			if (isHorizontal) {
-				if (curPrefW + compPrefW > w) {
+				if (curPrefW + compPrefW > bndsW) {
 					if (prefW < curPrefW) {
 						prefW = curPrefW;
 					}
 					prefH += curPrefH + gap;
-					curPrefW = 0;
-					curPrefH = 0;
-				}
-				curPrefW += compPrefW + gap;
-				if (curPrefH < compPrefH) {
+					curPrefW = compPrefW + gap;
 					curPrefH = compPrefH;
+				} else {
+					curPrefW += compPrefW + gap;
+					if (curPrefH < compPrefH) {
+						curPrefH = compPrefH;
+					}
 				}
 			} else {
-				if (curPrefH + compPrefH > h) {
+				if (curPrefH + compPrefH > bndsH) {
 					if (prefH < curPrefH) {
 						prefH = curPrefH;
 					}
 					prefW += curPrefW + gap;
-					curPrefW = 0;
-					curPrefH = 0;
-				}
-				curPrefH += compPrefH + gap;
-				if (curPrefW < compPrefW) {
 					curPrefW = compPrefW;
+					curPrefH = compPrefH + gap;
+				} else {
+					curPrefH += compPrefH + gap;
+					if (curPrefW < compPrefW) {
+						curPrefW = compPrefW;
+					}
 				}
 			}
 		}

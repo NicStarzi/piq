@@ -17,6 +17,7 @@ import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PCheckBoxTuple;
 import edu.udo.piq.components.PDropDown;
 import edu.udo.piq.components.PDropDownList;
+import edu.udo.piq.components.PDropDownObs;
 import edu.udo.piq.components.PLabel;
 import edu.udo.piq.components.PPanel;
 import edu.udo.piq.components.PSlider;
@@ -102,6 +103,7 @@ public class SwingPTest_FreeLayout {
 		p.firstName = "Frederick";
 		
 		PPanel pnlDd = new PPanel();
+		pnlDd.setID("Test");
 		pnlDd.setLayout(new PWrapLayout(pnlDd));
 		
 		PButton pnlDdBtn1 = new PButton();
@@ -120,6 +122,17 @@ public class SwingPTest_FreeLayout {
 		PDropDown dd = new PDropDown();
 		dd.setPreview(new PLabel(new DefaultPTextModel("Click Me!")));
 		dd.setBody(pnlDd);
+		dd.addObs(new PDropDownObs() {
+			public void bodyShown(PDropDown dropDown) {
+				System.out.println();
+				System.out.println(dropDown.getBody().getDebugInfo());
+				for (PComponent child : dropDown.getBody().getChildren()) {
+					System.out.println(child.getDebugInfo());
+				}
+			}
+			public void bodyHidden(PDropDown dropDown) {
+			}
+		});
 		bodyPnl.getLayout().addChild(dd, new PFreeLayout.FreeConstraint(285, 64));
 		
 		PDropDownList ddl = new PDropDownList();

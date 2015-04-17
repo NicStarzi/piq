@@ -86,7 +86,7 @@ public class AbstractPComponent implements PComponent {
 	protected final PLayoutObs parentLayoutObs = new PLayoutObs() {
 		public void childLaidOut(PReadOnlyLayout layout, PComponent child, Object constraint) {
 			if (child == AbstractPComponent.this) {
-//				needReLayout = true;
+				needReLayout = true;
 				fireReLayOutEvent();
 				fireReRenderEvent();
 			}
@@ -543,6 +543,8 @@ public class AbstractPComponent implements PComponent {
 		sb.append(getID());
 		sb.append(", bounds=");
 		sb.append(getBounds());
+		sb.append(", prefSize=");
+		sb.append(PCompUtil.getPreferredSizeOf(this));
 		sb.append(", layout=");
 		sb.append(getLayout());
 		sb.append("]");

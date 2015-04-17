@@ -214,7 +214,7 @@ public class PDropDown extends AbstractPLayoutOwner {
 			}
 		}
 		PFreeLayout overlayLayout = overlay.getLayout();
-		FreeConstraint constr = new FreeConstraint(ownX, ownY);
+		FreeConstraint constr = new FreeConstraint(ownX, ownY);//, ownW, ownH
 		overlayLayout.updateConstraint(dropDownContainer, constr);
 	}
 	

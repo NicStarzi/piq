@@ -103,8 +103,7 @@ public class SwingPTest_DragAndDrop {
 				return false;
 			}
 			
-			public void addElement(int index, Object element)
-					throws IllegalArgumentException {
+			public void addElement(int index, Object element) throws IllegalArgumentException {
 				list.add(index, (Person) element);
 				fireAddedEvent(element, index);
 			}

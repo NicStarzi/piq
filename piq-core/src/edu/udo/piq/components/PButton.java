@@ -170,10 +170,16 @@ public class PButton extends AbstractPLayoutOwner {
 	
 	public void addObs(PButtonModelObs obs) {
 		modelObsList.add(obs);
+		if (getModel() != null) {
+			getModel().addObs(obs);
+		}
 	}
 	
 	public void removeObs(PButtonModelObs obs) {
 		modelObsList.remove(obs);
+		if (getModel() != null) {
+			getModel().removeObs(obs);
+		}
 	}
 	
 	protected void fireClickEvent() {

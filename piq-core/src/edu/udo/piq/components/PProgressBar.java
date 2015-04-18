@@ -154,10 +154,16 @@ public class PProgressBar extends AbstractPComponent {
 	
 	public void addObs(PProgressBarModelObs obs) {
 		modelObsList.add(obs);
+		if (getModel() != null) {
+			getModel().addObs(obs);
+		}
 	}
 	
 	public void removeObs(PProgressBarModelObs obs) {
 		modelObsList.remove(obs);
+		if (getModel() != null) {
+			getModel().removeObs(obs);
+		}
 	}
 	
 }

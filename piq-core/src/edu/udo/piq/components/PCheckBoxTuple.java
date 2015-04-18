@@ -27,7 +27,7 @@ public class PCheckBoxTuple extends AbstractPLayoutOwner {
 			}
 			PCheckBoxModel model = getCheckBox().getModel();
 			if (key == Key.ENTER) {
-				model.setChecked(!model.isChecked());
+				getCheckBox().toggleChecked();
 			} else if (key == Key.UNDO) {
 				PModelHistory history = model.getHistory();
 				if (history != null && history.canUndo()) {
@@ -46,17 +46,17 @@ public class PCheckBoxTuple extends AbstractPLayoutOwner {
 			PComponent scndCmp = getSecondComponent();
 			if (scndCmp != null && scndCmp.isMouseOver()) {
 				if (!scndCmp.isFocusable()) {
-					getCheckBox().toggleModel();
+					getCheckBox().toggleChecked();
 					takeFocus();
 				}
 			} else if (isMouseOver()) {
-				getCheckBox().toggleModel();
+				getCheckBox().toggleChecked();
 				takeFocus();
 			}
 		}
 	};
 	private final PCheckBoxObs chkBxObs = new PCheckBoxObs() {
-		public void clicked(PCheckBox checkBox) {
+		public void onClick(PCheckBox checkBox) {
 			takeFocus();
 		}
 	};

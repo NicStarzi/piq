@@ -194,7 +194,7 @@ public class SwingPTest {
 			}
 		});
 		chkBxTpl.getCheckBox().addObs(new PCheckBoxObs() {
-			public void clicked(PCheckBox checkBox) {
+			public void onClick(PCheckBox checkBox) {
 				lblChkBx.getModel().setValue(null);
 				lblSld.getModel().setValue(null);
 			}

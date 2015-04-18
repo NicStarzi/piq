@@ -1,6 +1,5 @@
 package edu.udo.piq.tools;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -126,8 +125,7 @@ public abstract class AbstractPLayout implements PLayout {
 	}
 	
 	public Collection<PComponent> getChildren() {
-		List<PComponent> children = new ArrayList<>(compMap.keySet());
-		return Collections.unmodifiableList(children);
+		return Collections.unmodifiableSet(compMap.keySet());
 	}
 	
 	/*

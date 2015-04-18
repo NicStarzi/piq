@@ -164,10 +164,16 @@ public class PSlider extends AbstractPComponent {
 	
 	public void addObs(PSliderModelObs obs) {
 		modelObsList.add(obs);
+		if (getModel() != null) {
+			getModel().addObs(obs);
+		}
 	}
 	
 	public void removeObs(PSliderModelObs obs) {
 		modelObsList.remove(obs);
+		if (getModel() != null) {
+			getModel().removeObs(obs);
+		}
 	}
 	
 }

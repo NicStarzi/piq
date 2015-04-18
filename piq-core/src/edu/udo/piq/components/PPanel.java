@@ -9,7 +9,7 @@ import edu.udo.piq.tools.ImmutablePSize;
 
 public class PPanel extends AbstractPContainer {
 	
-	private static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(20, 20);
+	protected static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(20, 20);
 	
 	public void defaultRender(PRenderer renderer) {
 		PBounds bnds = getBounds();

@@ -434,10 +434,16 @@ public class PList extends AbstractPLayoutOwner {
 	
 	public void addObs(PListModelObs obs) {
 		modelObsList.add(obs);
+		if (getModel() != null) {
+			getModel().addObs(obs);
+		}
 	}
 	
 	public void removeObs(PListModelObs obs) {
 		modelObsList.remove(obs);
+		if (getModel() != null) {
+			getModel().removeObs(obs);
+		}
 	}
 	
 }

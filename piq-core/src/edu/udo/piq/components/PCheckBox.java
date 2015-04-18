@@ -23,7 +23,7 @@ public class PCheckBox extends AbstractPComponent {
 	private final PMouseObs mouseObs = new PMouseObs() {
 		public void buttonTriggered(PMouse mouse, MouseButton btn) {
 			if (btn == MouseButton.LEFT && isMouseOver()) {
-				toggleModel();
+				toggleChecked();
 				fireClickEvent();
 			}
 		}
@@ -71,7 +71,7 @@ public class PCheckBox extends AbstractPComponent {
 		return getModel().isChecked();
 	}
 	
-	protected void toggleModel() {
+	protected void toggleChecked() {
 		if (getModel() != null) {
 			getModel().setChecked(!getModel().isChecked());
 		}
@@ -112,15 +112,21 @@ public class PCheckBox extends AbstractPComponent {
 	
 	public void addObs(PCheckBoxModelObs obs) {
 		modelObsList.add(obs);
+		if (getModel() != null) {
+			getModel().addObs(obs);
+		}
 	}
 	
 	public void removeObs(PCheckBoxModelObs obs) {
 		modelObsList.remove(obs);
+		if (getModel() != null) {
+			getModel().removeObs(obs);
+		}
 	}
 	
 	protected void fireClickEvent() {
 		for (PCheckBoxObs obs : obsList) {
-			obs.clicked(this);
+			obs.onClick(this);
 		}
 	}
 	

@@ -5,7 +5,7 @@ import java.util.Map;
 
 import edu.udo.piq.components.util.PDictionary;
 
-public class HashMapPPDictionary implements PDictionary {
+public class HashMapPDictionary implements PDictionary {
 	
 	private final Map<Object, String> transMap = new HashMap<>();
 	

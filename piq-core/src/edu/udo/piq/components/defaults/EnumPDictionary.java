@@ -5,12 +5,12 @@ import java.util.Map;
 
 import edu.udo.piq.components.util.PDictionary;
 
-public class EnumPPDictionary<E extends Enum<E>> implements PDictionary {
+public class EnumPDictionary<E extends Enum<E>> implements PDictionary {
 	
 	private final Class<E> enumClass;
 	private final Map<E, String> transMap;
 	
-	public EnumPPDictionary(Class<E> enumClass) {
+	public EnumPDictionary(Class<E> enumClass) {
 		this.enumClass = enumClass;
 		transMap = new EnumMap<>(enumClass);
 	}

@@ -33,6 +33,10 @@ public class PLabel extends AbstractPComponent {
 		this(new DefaultPTextModel());
 	}
 	
+	public PLabel(Object defaultModelValue) {
+		this(new DefaultPTextModel(defaultModelValue));
+	}
+	
 	public PLabel(PTextModel model) {
 		super();
 		setModel(model);

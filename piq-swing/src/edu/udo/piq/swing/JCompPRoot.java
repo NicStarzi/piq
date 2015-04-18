@@ -13,10 +13,10 @@ import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -40,6 +40,8 @@ import edu.udo.piq.tools.AbstractPRoot;
 import edu.udo.piq.tools.ReRenderSet;
 
 public class JCompPRoot extends AbstractPRoot implements PRoot {
+	
+	private static final boolean SMART_RE_RENDER = true;
 	
 	private Window wnd;
 	private final WindowListener wndListener = new WindowAdapter() {
@@ -220,7 +222,11 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 	
 	public void reRender(PComponent component) {
 		if (panel != null) {
-			reRenderSet.add(component);
+			if (SMART_RE_RENDER) {
+				reRenderSet.add(component);
+			} else {
+				reRenderSet.add(this);
+			}
 //			System.out.println("reRender="+component);
 			panel.repaint();
 		}
@@ -236,15 +242,18 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 		int w = bnds.getWidth();
 		int h = bnds.getHeight();
 		
-		Deque<StackInfo> stack = new LinkedList<>();
-		Iterable<PComponent> compsToRender = reRenderSet.containsRoot() ? getLayout().getChildren() : reRenderSet;
-		for (PComponent child : compsToRender) {
+		Deque<StackInfo> stack = new ArrayDeque<>();
+//		Iterable<PComponent> compsToRender = reRenderSet.containsRoot() ? getLayout().getChildren() : reRenderSet;
+//		for (PComponent child : compsToRender) {
+		for (PComponent child : getLayout().getChildren()) {
+			// We check to see whether the component is still part of this GUI tree
 			if (child.getRoot() == this) {
-				stack.add(new StackInfo(child, 0, 0, w, h));
+				// We do addFirst here for consistency with the while-loop
+				stack.addFirst(new StackInfo(child, true, 0, 0, w, h));
 			}
 		}
 		if (!reRenderSet.containsRoot() && getLayout().getOverlay() != null) {
-			stack.add(new StackInfo((PComponent) getLayout().getOverlay(), 0, 0, w, h));
+			stack.addLast(new StackInfo((PComponent) getLayout().getOverlay(), true, 0, 0, w, h));
 		}
 		while (!stack.isEmpty()) {
 			StackInfo info = stack.pop();
@@ -260,16 +269,30 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 //				System.out.println("ignore="+comp);
 				continue;
 			}
-			renderer.setClipBounds(clipX, clipY, clipW, clipH);
-			
-			PDesign design = comp.getDesign();
-			design.render(renderer, comp);
-//			System.out.println("render="+comp);
+			/*
+			 * We might not need to render this component.
+			 * Only render component if component fired a reRenderEvent or if an 
+			 * ancestor of component was rendered.
+			 */
+			boolean render = info.needRender || reRenderSet.contains(comp);
+			if (render) {
+				renderer.setClipBounds(clipX, clipY, clipW, clipH);
+//				System.out.println("clip="+clipX+", "+clipY+", "+clipW+", "+clipH);
+				
+				PDesign design = comp.getDesign();
+				design.render(renderer, comp);
+//				System.out.println("render="+comp);
+			}
 			
 			PReadOnlyLayout layout = comp.getLayout();
 			if (layout != null) {
 				for (PComponent child : layout.getChildren()) {
-					stack.addFirst(new StackInfo(child, clipX, clipY, clipFx, clipFy));
+					/*
+					 * We need to addFirst to make sure children are rendered after 
+					 * their parents and before any siblings of the parent will be rendered.
+					 * Do NOT change to addLast!
+					 */
+					stack.addFirst(new StackInfo(child, render, clipX, clipY, clipFx, clipFy));
 				}
 			}
 		}
@@ -280,13 +303,16 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 	
 	protected static class StackInfo {
 		public final PComponent child;
+		public final boolean needRender;
 		public final int clipX;
 		public final int clipY;
 		public final int clipFx;
 		public final int clipFy;
 		
-		public StackInfo(PComponent child, int clipX, int clipY, int clipFx, int clipFy) {
+		public StackInfo(PComponent child, boolean needRender, 
+				int clipX, int clipY, int clipFx, int clipFy) {
 			this.child = child;
+			this.needRender = needRender;
 			this.clipX = clipX;
 			this.clipY = clipY;
 			this.clipFx = clipFx;

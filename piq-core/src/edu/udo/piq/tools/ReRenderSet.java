@@ -66,6 +66,10 @@ public class ReRenderSet implements Iterable<PComponent> {
 		containsRoot = false;
 	}
 	
+	public boolean contains(PComponent component) {
+		return buffer.contains(component);
+	}
+	
 	public boolean containsRoot() {
 		return containsRoot;
 	}

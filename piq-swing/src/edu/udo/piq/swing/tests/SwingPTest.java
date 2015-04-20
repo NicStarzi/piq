@@ -60,6 +60,16 @@ public class SwingPTest {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		root = new JCompPRoot();
+//		root.addObs(new PKeyboardObs() {
+//			public void keyTriggered(PKeyboard keyboard, Key key) {
+//				if (key == Key.TAB) {
+//					root.getFocusTraversal().focusNext();
+//					System.out.println("###############################################");
+//					System.out.println("# FocusOwner="+root.getFocusOwner()+" #");
+//					System.out.println("###############################################");
+//				}
+//			}
+//		});
 		frame.setContentPane(root.getPanel());
 		
 		Timer updateTimer = new Timer(10, new ActionListener() {

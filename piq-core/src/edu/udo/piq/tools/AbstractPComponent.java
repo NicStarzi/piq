@@ -65,11 +65,13 @@ public class AbstractPComponent implements PComponent {
 		public void focusLost(PComponent oldOwner) {
 			if (oldOwner == AbstractPComponent.this) {
 				fireFocusLostEvent();
+				fireReRenderEvent();
 			}
 		}
 		public void focusGained(PComponent oldOwner, PComponent newOwner) {
 			if (newOwner == AbstractPComponent.this) {
 				fireFocusGainedEvent(oldOwner);
+				fireReRenderEvent();
 			}
 		}
 	};

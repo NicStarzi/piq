@@ -1,15 +1,9 @@
 package edu.udo.piq.components.util;
 
-import edu.udo.piq.PComponent;
-
 public interface PFocusTraversal {
 	
-	public PComponent getNext(PComponent currentFocusOwner);
+	public void focusNext();
 	
-	public PComponent getPrevious(PComponent currentFocusOwner);
-	
-	public PComponent getInitial();
-	
-	public PComponent getDefault();
+	public void focusPrevious();
 	
 }

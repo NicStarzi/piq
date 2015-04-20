@@ -15,6 +15,8 @@ import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.components.PGlassPanel;
 import edu.udo.piq.components.PPanel;
+import edu.udo.piq.components.util.DefaultPFocusTraversal;
+import edu.udo.piq.components.util.PFocusTraversal;
 import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PRootLayout;
 import edu.udo.piq.layouts.PRootLayout.Constraint;
@@ -84,6 +86,7 @@ public abstract class AbstractPRoot implements PRoot {
 	private Set<PComponent> reLayOutCompsBack = new TreeSet<>(componentComparator);
 	private final List<PComponentObs> compObsList = new CopyOnWriteArrayList<>();
 	private final List<PFocusObs> focusObsList = new CopyOnWriteArrayList<>();
+	private PFocusTraversal focusTrav = new DefaultPFocusTraversal(this);
 	private PComponent focusOwner;
 	private String id;
 	private boolean needReLayout = true;
@@ -339,6 +342,14 @@ public abstract class AbstractPRoot implements PRoot {
 	
 	public PRoot getRoot() {
 		return this;
+	}
+	
+	public void setFocusTraversal(PFocusTraversal focusTraversal) {
+		focusTrav = focusTraversal;
+	}
+	
+	public PFocusTraversal getFocusTraversal() {
+		return focusTrav;
 	}
 	
 	public int getDepth() {

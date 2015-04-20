@@ -29,6 +29,7 @@ public class SwingPKeyboard implements PKeyboard {
 		ctrlMetaMap.put(Key.Z, Key.UNDO);
 		ctrlMetaMap.put(Key.Y, Key.REDO);
 		
+		base.setFocusTraversalKeysEnabled(false);
 		base.addKeyListener(new KeyListener() {
 			public void keyTyped(KeyEvent e) {
 				char c = e.getKeyChar();

@@ -6,9 +6,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
+import edu.udo.piq.PInputComponent;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PKeyboard;
-import edu.udo.piq.PKeyboardObs;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
@@ -16,35 +16,71 @@ import edu.udo.piq.PSize;
 import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.components.defaults.DefaultPButtonModel;
+import edu.udo.piq.components.util.PInput;
+import edu.udo.piq.components.util.PInputMap;
 import edu.udo.piq.layouts.PCentricLayout;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.tools.ImmutablePInsets;
 
-public class PButton extends AbstractPLayoutOwner {
+public class PButton extends AbstractPLayoutOwner implements PInputComponent {
 	
-	protected final List<PButtonModelObs> modelObsList = new CopyOnWriteArrayList<>();
-	protected final List<PButtonObs> obsList = new CopyOnWriteArrayList<>();
-	private final PKeyboardObs keyObs = new PKeyboardObs() {
-		public void keyTriggered(PKeyboard keyboard, Key key) {
-			if (!hasFocus()) {
-				return;
-			}
-			if (key == Key.ENTER && getModel() != null) {
-//				setPressed(true);
-				getModel().setPressed(true);
-			}
+	protected final PInput pressEnterInput = new PInput() {
+		public Key getTriggerKey() {
+			return Key.ENTER;
 		}
-		public void keyReleased(PKeyboard keyboard, Key key) {
-			if (!hasFocus()) {
-				return;
-			}
-			if (key == Key.ENTER && getModel() != null && isPressed()) {
-//				setPressed(false);
+		public KeyInputType getKeyInputType() {
+			return KeyInputType.TRIGGER;
+		}
+		public boolean canBeTriggered(PKeyboard keyboard) {
+			return isEnabled() && getModel() != null;
+		}
+	};
+	protected final Runnable pressEnterReaction = new Runnable() {
+		public void run() {
+			getModel().setPressed(true);
+		}
+	};
+	protected final PInput releaseEnterInput = new PInput() {
+		public Key getTriggerKey() {
+			return Key.ENTER;
+		}
+		public KeyInputType getKeyInputType() {
+			return KeyInputType.RELEASE;
+		}
+		public boolean canBeTriggered(PKeyboard keyboard) {
+			return isEnabled() && getModel() != null;
+		}
+	};
+	protected final Runnable releaseEnterReaction = new Runnable() {
+		public void run() {
+			if (isPressed()) {
 				getModel().setPressed(false);
 				fireClickEvent();
 			}
 		}
 	};
+	
+	protected final List<PButtonModelObs> modelObsList = new CopyOnWriteArrayList<>();
+	protected final List<PButtonObs> obsList = new CopyOnWriteArrayList<>();
+//	private final PKeyboardObs keyObs = new PKeyboardObs() {
+//		public void keyTriggered(PKeyboard keyboard, Key key) {
+//			if (!hasFocus()) {
+//				return;
+//			}
+//			if (key == Key.ENTER && getModel() != null) {
+//				getModel().setPressed(true);
+//			}
+//		}
+//		public void keyReleased(PKeyboard keyboard, Key key) {
+//			if (!hasFocus()) {
+//				return;
+//			}
+//			if (key == Key.ENTER && getModel() != null && isPressed()) {
+//				getModel().setPressed(false);
+//				fireClickEvent();
+//			}
+//		}
+//	};
 	private final PMouseObs mouseObs = new PMouseObs() {
 //		public void mouseMoved(PMouse mouse) {
 //			setMouseOver(isMouseOverThisOrChild());
@@ -52,14 +88,12 @@ public class PButton extends AbstractPLayoutOwner {
 		public void buttonTriggered(PMouse mouse, MouseButton btn) {
 			if (btn == MouseButton.LEFT && getModel() != null && isMouseOverThisOrChild()) {
 				getModel().setPressed(true);
-//				setPressed(true);
 			}
 		}
 		public void buttonReleased(PMouse mouse, MouseButton btn) {
 			if (btn == MouseButton.LEFT && getModel() != null) {
 				boolean oldPressed = isPressed();
 				getModel().setPressed(false);
-//				setPressed(false);
 				if (oldPressed && isMouseOverThisOrChild()) {
 					takeFocus();
 					fireClickEvent();
@@ -72,9 +106,10 @@ public class PButton extends AbstractPLayoutOwner {
 			fireReRenderEvent();
 		}
 	};
+	protected final PInputMap inputMap = new PInputMap(this);
 	protected PButtonModel model;
+	protected boolean enabled = true;
 //	protected boolean mouseOver;
-//	protected boolean pressed;
 	
 	public PButton() {
 		super();
@@ -82,8 +117,13 @@ public class PButton extends AbstractPLayoutOwner {
 		defaultLayout.setInsets(new ImmutablePInsets(8));
 		setLayout(defaultLayout);
 		setModel(new DefaultPButtonModel());
-		addObs(keyObs);
+//		addObs(keyObs);
 		addObs(mouseObs);
+		
+		defineInput(pressEnterInput.getDefaultIdentifier(), 
+				pressEnterInput, pressEnterReaction);
+		defineInput(releaseEnterInput.getDefaultIdentifier(), 
+				releaseEnterInput, releaseEnterReaction);
 	}
 	
 	protected PCentricLayout getLayoutInternal() {
@@ -130,17 +170,11 @@ public class PButton extends AbstractPLayoutOwner {
 //		return mouseOver;
 //	}
 	
-//	public void setPressed(boolean value) {
-//		pressed = value;
-//		fireReRenderEvent();
-//	}
-	
 	public boolean isPressed() {
 		if (getModel() == null) {
 			return false;
 		}
-		return getModel().isPressed();
-//		return pressed;
+		return isEnabled() && getModel().isPressed();
 	}
 	
 	public void defaultRender(PRenderer renderer) {
@@ -184,6 +218,25 @@ public class PButton extends AbstractPLayoutOwner {
 		return true;
 	}
 	
+	public void defineInput(Object identifier, PInput input, Runnable reaction) {
+		inputMap.defineInput(identifier, input, reaction);
+	}
+	
+	public void undefine(Object identifier) {
+		inputMap.undefine(identifier);
+	}
+	
+	public void setEnabled(boolean isEnabled) {
+		if (enabled != isEnabled) {
+			enabled = isEnabled;
+			fireReRenderEvent();
+		}
+	}
+	
+	public boolean isEnabled() {
+		return enabled;
+	}
+	
 	public void addObs(PButtonObs obs) {
 		obsList.add(obs);
 	}
@@ -192,19 +245,19 @@ public class PButton extends AbstractPLayoutOwner {
 		obsList.remove(obs);
 	}
 	
-//	public void addObs(PButtonModelObs obs) {
-//		modelObsList.add(obs);
-//		if (getModel() != null) {
-//			getModel().addObs(obs);
-//		}
-//	}
-//	
-//	public void removeObs(PButtonModelObs obs) {
-//		modelObsList.remove(obs);
-//		if (getModel() != null) {
-//			getModel().removeObs(obs);
-//		}
-//	}
+	public void addObs(PButtonModelObs obs) {
+		modelObsList.add(obs);
+		if (getModel() != null) {
+			getModel().addObs(obs);
+		}
+	}
+	
+	public void removeObs(PButtonModelObs obs) {
+		modelObsList.remove(obs);
+		if (getModel() != null) {
+			getModel().removeObs(obs);
+		}
+	}
 	
 	protected void fireClickEvent() {
 		for (PButtonObs obs : obsList) {

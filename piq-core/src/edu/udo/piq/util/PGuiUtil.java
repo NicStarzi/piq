@@ -1,8 +1,9 @@
 package edu.udo.piq.util;
 
+import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Deque;
-import java.util.LinkedList;
+import java.util.Iterator;
 
 import edu.udo.piq.PComponent;
 
@@ -35,7 +36,7 @@ public class PGuiUtil {
 			}
 		}
 		
-		Deque<PrintInfo> stack = new LinkedList<>();
+		Deque<PrintInfo> stack = new ArrayDeque<>();
 		stack.push(new PrintInfo(root, 0));
 		while (!stack.isEmpty()) {
 			PrintInfo current = stack.pop();
@@ -52,6 +53,16 @@ public class PGuiUtil {
 			sb.append('\n');
 		}
 		return sb.toString();
+	}
+	
+	/**
+	 * Returns an iterator that will traverse all components within a GUI tree.<br>
+	 * @param root						component used as root to the GUI tree
+	 * @return							a non-null instance of {@link PGuiTreeIterator}
+	 * @throws NullPointerException		if root is null
+	 */
+	public static Iterator<PComponent> guiTreeIterator(PComponent root) {
+		return new PGuiTreeIterator(root);
 	}
 	
 }

@@ -83,7 +83,7 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 	}
 	
 	public boolean isFocusable() {
-		return true;
+		return false;
 	}
 	
 	protected PSplitLayout getLayoutInternal() {

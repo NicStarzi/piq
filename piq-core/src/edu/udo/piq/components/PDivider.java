@@ -30,4 +30,8 @@ public class PDivider extends AbstractPComponent {
 		return DEFAULT_PREFERRED_SIZE;
 	}
 	
+	public boolean isFocusable() {
+		return false;
+	}
+	
 }

@@ -14,7 +14,6 @@ import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRootOverlay;
 import edu.udo.piq.PSize;
 import edu.udo.piq.PMouse.MouseButton;
-import edu.udo.piq.components.defaults.DefaultPButtonModel;
 import edu.udo.piq.layouts.PCentricLayout;
 import edu.udo.piq.layouts.PFreeLayout;
 import edu.udo.piq.layouts.PFreeLayout.FreeConstraint;
@@ -29,14 +28,16 @@ public class PDropDown extends AbstractPLayoutOwner {
 	private final List<PDropDownObs> obsList = new CopyOnWriteArrayList<>();
 	private final PMouseObs mouseObs = new PMouseObs() {
 		public void buttonTriggered(PMouse mouse, MouseButton btn) {
-			if (btn == MouseButton.LEFT && isMouseOverThisOrChild()) {
-				model.setPressed(true);
+			if (btn == MouseButton.LEFT && getModel() != null && isMouseOverThisOrChild()) {
+				getModel().setPressed(true);
+//				setPressed(true);
 			}
 		}
 		public void buttonReleased(PMouse mouse, MouseButton btn) {
-			if (btn == MouseButton.LEFT) {
-				boolean oldPressed = model.isPressed();
-				model.setPressed(false);
+			if (btn == MouseButton.LEFT && getModel() != null) {
+				boolean oldPressed = isPressed();
+//				setPressed(false);
+				getModel().setPressed(false);
 				if (oldPressed && isMouseOverThisOrChild()) {
 					if (bodyShown) {
 						hideDropDown();
@@ -61,6 +62,7 @@ public class PDropDown extends AbstractPLayoutOwner {
 	};
 	private final PDropDownContainer dropDownContainer;
 	private PButtonModel model;
+//	protected boolean pressed = false;
 	private boolean bodyShown = false;
 	
 	public PDropDown() {
@@ -70,7 +72,7 @@ public class PDropDown extends AbstractPLayoutOwner {
 		
 		setLayout(new PCentricLayout(this));
 		getLayoutInternal().setInsets(new ImmutablePInsets(4, 4, 4, TRIANGLE_MIN_W + 2 + 2 + 4));
-		setModel(new DefaultPButtonModel());
+//		setModel(new DefaultPButtonModel());
 		
 		addObs(mouseObs);
 	}
@@ -114,7 +116,13 @@ public class PDropDown extends AbstractPLayoutOwner {
 		return model;
 	}
 	
+//	public void setPressed(boolean value) {
+//		pressed = value;
+//		fireReRenderEvent();
+//	}
+	
 	public boolean isPressed() {
+//		return pressed;
 		if (getModel() == null) {
 			return false;
 		}

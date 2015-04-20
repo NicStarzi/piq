@@ -6,6 +6,7 @@ import java.util.ConcurrentModificationException;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import edu.udo.piq.components.PGlassPanel;
+import edu.udo.piq.components.util.PFocusTraversal;
 import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.ImmutablePBounds;
 import edu.udo.piq.util.PCompUtil;
@@ -185,6 +186,23 @@ public interface PComponent {
 	 * @see #hasFocus()
 	 */
 	public boolean isFocusable();
+	
+	/**
+	 * Returns the {@link PFocusTraversal} for this component or null if this 
+	 * component is not part of a GUI tree.<br>
+	 * <br>
+	 * If this component does not have its own focus traversal the focus traversal 
+	 * of the parent component will be returned. A PRoot does always have a focus 
+	 * traversal.<br> 
+	 * 
+	 * @return an instance of {@link PFocusTraversal} or null
+	 */
+	public default PFocusTraversal getFocusTraversal() {
+		if (getParent() != null) {
+			return getParent().getFocusTraversal();
+		}
+		return null;
+	}
 	
 	/**
 	 * Returns true if this {@link PComponent} should not be returned by the 

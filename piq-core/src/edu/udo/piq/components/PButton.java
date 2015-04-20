@@ -29,30 +29,37 @@ public class PButton extends AbstractPLayoutOwner {
 			if (!hasFocus()) {
 				return;
 			}
-			if (key == Key.ENTER) {
-				model.setPressed(true);
+			if (key == Key.ENTER && getModel() != null) {
+//				setPressed(true);
+				getModel().setPressed(true);
 			}
 		}
 		public void keyReleased(PKeyboard keyboard, Key key) {
 			if (!hasFocus()) {
 				return;
 			}
-			if (key == Key.ENTER && model.isPressed()) {
-				model.setPressed(false);
+			if (key == Key.ENTER && getModel() != null && isPressed()) {
+//				setPressed(false);
+				getModel().setPressed(false);
 				fireClickEvent();
 			}
 		}
 	};
 	private final PMouseObs mouseObs = new PMouseObs() {
+//		public void mouseMoved(PMouse mouse) {
+//			setMouseOver(isMouseOverThisOrChild());
+//		}
 		public void buttonTriggered(PMouse mouse, MouseButton btn) {
-			if (btn == MouseButton.LEFT && isMouseOverThisOrChild()) {
-				model.setPressed(true);
+			if (btn == MouseButton.LEFT && getModel() != null && isMouseOverThisOrChild()) {
+				getModel().setPressed(true);
+//				setPressed(true);
 			}
 		}
 		public void buttonReleased(PMouse mouse, MouseButton btn) {
-			if (btn == MouseButton.LEFT) {
-				boolean oldPressed = model.isPressed();
-				model.setPressed(false);
+			if (btn == MouseButton.LEFT && getModel() != null) {
+				boolean oldPressed = isPressed();
+				getModel().setPressed(false);
+//				setPressed(false);
 				if (oldPressed && isMouseOverThisOrChild()) {
 					takeFocus();
 					fireClickEvent();
@@ -66,6 +73,8 @@ public class PButton extends AbstractPLayoutOwner {
 		}
 	};
 	protected PButtonModel model;
+//	protected boolean mouseOver;
+//	protected boolean pressed;
 	
 	public PButton() {
 		super();
@@ -112,11 +121,26 @@ public class PButton extends AbstractPLayoutOwner {
 		return model;
 	}
 	
+//	public void setMouseOver(boolean value) {
+//		mouseOver = value;
+//		fireReRenderEvent();
+//	}
+//	
+//	public boolean isMouseOver() {
+//		return mouseOver;
+//	}
+	
+//	public void setPressed(boolean value) {
+//		pressed = value;
+//		fireReRenderEvent();
+//	}
+	
 	public boolean isPressed() {
 		if (getModel() == null) {
 			return false;
 		}
 		return getModel().isPressed();
+//		return pressed;
 	}
 	
 	public void defaultRender(PRenderer renderer) {
@@ -168,19 +192,19 @@ public class PButton extends AbstractPLayoutOwner {
 		obsList.remove(obs);
 	}
 	
-	public void addObs(PButtonModelObs obs) {
-		modelObsList.add(obs);
-		if (getModel() != null) {
-			getModel().addObs(obs);
-		}
-	}
-	
-	public void removeObs(PButtonModelObs obs) {
-		modelObsList.remove(obs);
-		if (getModel() != null) {
-			getModel().removeObs(obs);
-		}
-	}
+//	public void addObs(PButtonModelObs obs) {
+//		modelObsList.add(obs);
+//		if (getModel() != null) {
+//			getModel().addObs(obs);
+//		}
+//	}
+//	
+//	public void removeObs(PButtonModelObs obs) {
+//		modelObsList.remove(obs);
+//		if (getModel() != null) {
+//			getModel().removeObs(obs);
+//		}
+//	}
 	
 	protected void fireClickEvent() {
 		for (PButtonObs obs : obsList) {

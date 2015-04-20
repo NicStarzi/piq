@@ -14,6 +14,7 @@ import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRootOverlay;
 import edu.udo.piq.PSize;
 import edu.udo.piq.PMouse.MouseButton;
+import edu.udo.piq.components.defaults.DefaultPButtonModel;
 import edu.udo.piq.layouts.PCentricLayout;
 import edu.udo.piq.layouts.PFreeLayout;
 import edu.udo.piq.layouts.PFreeLayout.FreeConstraint;
@@ -62,7 +63,6 @@ public class PDropDown extends AbstractPLayoutOwner {
 	};
 	private final PDropDownContainer dropDownContainer;
 	private PButtonModel model;
-//	protected boolean pressed = false;
 	private boolean bodyShown = false;
 	
 	public PDropDown() {
@@ -72,7 +72,7 @@ public class PDropDown extends AbstractPLayoutOwner {
 		
 		setLayout(new PCentricLayout(this));
 		getLayoutInternal().setInsets(new ImmutablePInsets(4, 4, 4, TRIANGLE_MIN_W + 2 + 2 + 4));
-//		setModel(new DefaultPButtonModel());
+		setModel(new DefaultPButtonModel());
 		
 		addObs(mouseObs);
 	}
@@ -116,13 +116,7 @@ public class PDropDown extends AbstractPLayoutOwner {
 		return model;
 	}
 	
-//	public void setPressed(boolean value) {
-//		pressed = value;
-//		fireReRenderEvent();
-//	}
-	
 	public boolean isPressed() {
-//		return pressed;
 		if (getModel() == null) {
 			return false;
 		}

@@ -124,13 +124,21 @@ public class SwingPTest_FreeLayout {
 		dd.setBody(pnlDd);
 		dd.addObs(new PDropDownObs() {
 			public void bodyShown(PDropDown dropDown) {
-				System.out.println();
-				System.out.println(dropDown.getBody().getDebugInfo());
-				for (PComponent child : dropDown.getBody().getChildren()) {
-					System.out.println(child.getDebugInfo());
-				}
+//				System.out.println();
+//				System.out.println("bodyShown");
+//				System.out.println(dropDown.getBody().getDebugInfo());
+//				System.out.println(((PComponent) root.getOverlay()).getDebugInfo());
+//				System.out.println(root.getDebugInfo());
+//				for (PComponent child : dropDown.getBody().getChildren()) {
+//					System.out.println(child.getDebugInfo());
+//				}
 			}
 			public void bodyHidden(PDropDown dropDown) {
+//				System.out.println();
+//				System.out.println("bodyHidden");
+//				System.out.println(dropDown.getBody().getDebugInfo());
+//				System.out.println(((PComponent) root.getOverlay()).getDebugInfo());
+//				System.out.println(root.getDebugInfo());
 			}
 		});
 		bodyPnl.getLayout().addChild(dd, new PFreeLayout.FreeConstraint(285, 64));

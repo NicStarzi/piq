@@ -250,13 +250,16 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 			if (child.getRoot() == this) {
 				// We do addFirst here for consistency with the while-loop
 				stack.addFirst(new StackInfo(child, true, 0, 0, w, h));
+//				stack.addLast(new StackInfo(child, true, 0, 0, w, h));
 			}
 		}
-		if (!reRenderSet.containsRoot() && getLayout().getOverlay() != null) {
-			stack.addLast(new StackInfo((PComponent) getLayout().getOverlay(), true, 0, 0, w, h));
-		}
+//		if (!reRenderSet.containsRoot() && getLayout().getOverlay() != null) {
+//			System.out.println("add overlay to render set");
+//			stack.addLast(new StackInfo((PComponent) getLayout().getOverlay(), true, 0, 0, w, h));
+//		}
 		while (!stack.isEmpty()) {
-			StackInfo info = stack.pop();
+			StackInfo info = stack.pollLast();
+//			StackInfo info = stack.pop();
 			PComponent comp = info.child;
 			PBounds compBounds = comp.getBounds();
 			int clipX = Math.max(compBounds.getX(), info.clipX);
@@ -292,7 +295,8 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 					 * their parents and before any siblings of the parent will be rendered.
 					 * Do NOT change to addLast!
 					 */
-					stack.addFirst(new StackInfo(child, render, clipX, clipY, clipFx, clipFy));
+//					stack.addFirst(new StackInfo(child, render, clipX, clipY, clipFx, clipFy));
+					stack.addLast(new StackInfo(child, render, clipX, clipY, clipFx, clipFy));
 				}
 			}
 		}

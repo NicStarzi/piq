@@ -6,7 +6,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PInputComponent;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PMouse;
@@ -17,12 +16,11 @@ import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.components.defaults.DefaultPButtonModel;
 import edu.udo.piq.components.util.PInput;
-import edu.udo.piq.components.util.PInputMap;
 import edu.udo.piq.layouts.PCentricLayout;
-import edu.udo.piq.tools.AbstractPLayoutOwner;
+import edu.udo.piq.tools.AbstractPInputLayoutOwner;
 import edu.udo.piq.tools.ImmutablePInsets;
 
-public class PButton extends AbstractPLayoutOwner implements PInputComponent {
+public class PButton extends AbstractPInputLayoutOwner {
 	
 	protected final PInput pressEnterInput = new PInput() {
 		public Key getTriggerKey() {
@@ -86,7 +84,7 @@ public class PButton extends AbstractPLayoutOwner implements PInputComponent {
 //			setMouseOver(isMouseOverThisOrChild());
 //		}
 		public void buttonTriggered(PMouse mouse, MouseButton btn) {
-			if (btn == MouseButton.LEFT && getModel() != null && isMouseOverThisOrChild()) {
+			if (isEnabled() && btn == MouseButton.LEFT && getModel() != null && isMouseOverThisOrChild()) {
 				getModel().setPressed(true);
 			}
 		}
@@ -94,7 +92,7 @@ public class PButton extends AbstractPLayoutOwner implements PInputComponent {
 			if (btn == MouseButton.LEFT && getModel() != null) {
 				boolean oldPressed = isPressed();
 				getModel().setPressed(false);
-				if (oldPressed && isMouseOverThisOrChild()) {
+				if (oldPressed && isEnabled() && isMouseOverThisOrChild()) {
 					takeFocus();
 					fireClickEvent();
 				}
@@ -106,9 +104,7 @@ public class PButton extends AbstractPLayoutOwner implements PInputComponent {
 			fireReRenderEvent();
 		}
 	};
-	protected final PInputMap inputMap = new PInputMap(this);
 	protected PButtonModel model;
-	protected boolean enabled = true;
 //	protected boolean mouseOver;
 	
 	public PButton() {
@@ -216,25 +212,6 @@ public class PButton extends AbstractPLayoutOwner implements PInputComponent {
 	
 	public boolean isFocusable() {
 		return true;
-	}
-	
-	public void defineInput(Object identifier, PInput input, Runnable reaction) {
-		inputMap.defineInput(identifier, input, reaction);
-	}
-	
-	public void undefine(Object identifier) {
-		inputMap.undefine(identifier);
-	}
-	
-	public void setEnabled(boolean isEnabled) {
-		if (enabled != isEnabled) {
-			enabled = isEnabled;
-			fireReRenderEvent();
-		}
-	}
-	
-	public boolean isEnabled() {
-		return enabled;
 	}
 	
 	public void addObs(PButtonObs obs) {

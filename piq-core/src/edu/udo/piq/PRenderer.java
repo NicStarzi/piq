@@ -229,6 +229,8 @@ public interface PRenderer {
 	
 	public void drawString(PFontResource font, String text, float x, float y);
 	
+	public void drawEllipse(int x, int y, int width, int height);
+	
 	public default void strokeQuad(PBounds bounds) {
 		int x = bounds.getX();
 		int y = bounds.getY();

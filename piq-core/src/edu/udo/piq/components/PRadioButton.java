@@ -81,20 +81,22 @@ public class PRadioButton extends AbstractPComponent {
 		PBounds bnds = getBounds();
 		int x = bnds.getX();
 		int y = bnds.getY();
-		int fx = bnds.getFinalX();
-		int fy = bnds.getFinalY();
+		int w = bnds.getWidth();
+		int h = bnds.getHeight();
+//		int fx = bnds.getFinalX();
+//		int fy = bnds.getFinalY();
 		
 		renderer.setColor(PColor.BLACK);
-		renderer.strokeQuad(x, y, fx, fy, 1);
+		renderer.drawEllipse(x, y, w, h);
 		renderer.setColor(PColor.WHITE);
-		renderer.drawQuad(x + 1, y + 1, fx - 1, fy - 1);
+		renderer.drawEllipse(x + 1, y + 1, w - 2, h - 2);
 		
 		if (isSelected()) {
 			int gapW = bnds.getWidth() / 4;
 			int gapH = bnds.getHeight() / 4;
 			
 			renderer.setColor(PColor.BLACK);
-			renderer.drawQuad(x + gapW, y + gapH, fx - gapW, fy - gapH);
+			renderer.drawEllipse(x + gapW, y + gapH, w - gapW * 2, h - gapH * 2);
 		}
 	}
 	

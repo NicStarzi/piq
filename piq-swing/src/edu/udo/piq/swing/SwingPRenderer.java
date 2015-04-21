@@ -152,4 +152,8 @@ public class SwingPRenderer implements PRenderer {
 		graphics.drawString(text, x, y);
 	}
 	
+	public void drawEllipse(int x, int y, int width, int height) {
+		graphics.fillOval(x, y, width, height);
+	}
+	
 }

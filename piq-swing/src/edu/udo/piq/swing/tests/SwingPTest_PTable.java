@@ -7,9 +7,9 @@ import java.awt.event.ActionListener;
 import javax.swing.JFrame;
 import javax.swing.Timer;
 
-import edu.udo.piq.components.PPanel;
-import edu.udo.piq.components.PTable;
-import edu.udo.piq.components.defaults.DefaultPTableModel;
+import edu.udo.piq.comps.PPanel;
+import edu.udo.piq.comps.PTable;
+import edu.udo.piq.comps.defaults.DefaultPTableModel;
 import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PBorderLayout.Constraint;
 import edu.udo.piq.swing.JCompPRoot;

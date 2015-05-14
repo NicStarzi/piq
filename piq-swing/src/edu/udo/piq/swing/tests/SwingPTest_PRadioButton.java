@@ -3,16 +3,18 @@ package edu.udo.piq.swing.tests;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
 import javax.swing.Timer;
 
-import edu.udo.piq.components.PLabel;
-import edu.udo.piq.components.PPanel;
-import edu.udo.piq.components.PRadioButton;
-import edu.udo.piq.components.PRadioButtonGroup;
-import edu.udo.piq.components.PRadioButtonTuple;
-import edu.udo.piq.components.defaults.DefaultPTextModel;
+import edu.udo.piq.comps.PLabel;
+import edu.udo.piq.comps.PPanel;
+import edu.udo.piq.comps.PRadioButton;
+import edu.udo.piq.comps.PRadioButtonGroup;
+import edu.udo.piq.comps.PRadioButtonTuple;
+import edu.udo.piq.comps.defaults.DefaultPTextModel;
 import edu.udo.piq.layouts.PFreeLayout;
 import edu.udo.piq.swing.JCompPRoot;
 
@@ -37,12 +39,12 @@ public class SwingPTest_PRadioButton {
 		frame = new JFrame();
 		frame.setSize(640, 480);
 		frame.setLocationRelativeTo(null);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
 		root = new JCompPRoot();
 		frame.setContentPane(root.getPanel());
 		
-		Timer updateTimer = new Timer(10, new ActionListener() {
+		final Timer updateTimer = new Timer(10, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				root.update();
 			}
@@ -50,6 +52,11 @@ public class SwingPTest_PRadioButton {
 		updateTimer.setCoalesce(true);
 		updateTimer.setRepeats(true);
 		updateTimer.start();
+		frame.addWindowListener(new WindowAdapter() {
+			public void windowClosed(WindowEvent e) {
+				updateTimer.stop();
+			}
+		});
 		
 		PPanel bodyPnl = new PPanel();
 		bodyPnl.setLayout(new PFreeLayout(bodyPnl));

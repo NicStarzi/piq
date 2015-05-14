@@ -7,12 +7,12 @@ import java.awt.event.ActionListener;
 import javax.swing.JFrame;
 import javax.swing.Timer;
 
-import edu.udo.piq.components.PButton;
-import edu.udo.piq.components.PButtonObs;
-import edu.udo.piq.components.PLabel;
-import edu.udo.piq.components.PPanel;
-import edu.udo.piq.components.PTabPanel;
-import edu.udo.piq.components.defaults.DefaultPTextModel;
+import edu.udo.piq.comps.PButton;
+import edu.udo.piq.comps.PButtonObs;
+import edu.udo.piq.comps.PLabel;
+import edu.udo.piq.comps.PPanel;
+import edu.udo.piq.comps.PTabPanel;
+import edu.udo.piq.comps.defaults.DefaultPTextModel;
 import edu.udo.piq.layouts.PFreeLayout;
 import edu.udo.piq.layouts.PFreeLayout.FreeConstraint;
 import edu.udo.piq.swing.JCompPRoot;

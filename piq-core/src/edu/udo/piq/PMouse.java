@@ -3,6 +3,7 @@ package edu.udo.piq;
 import com.sun.javafx.cursor.CursorType;
 
 import edu.udo.piq.PCursor.PCursorType;
+import edu.udo.piq.comps.selectcomps.PSelectionComponent;
 import edu.udo.piq.util.PCompUtil;
 
 public interface PMouse {
@@ -161,6 +162,12 @@ public interface PMouse {
 		 * Standard components do not use this button.<br>
 		 */
 		MIDDLE,
+		/**
+		 * This mouse button is used for dragging data from one 
+		 * {@link PSelectionComponent} to another via a 
+		 * drag-and-drop motion.
+		 */
+		DRAG_AND_DROP,
 		;
 	}
 	

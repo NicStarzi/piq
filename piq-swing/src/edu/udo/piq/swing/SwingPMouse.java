@@ -47,9 +47,9 @@ public class SwingPMouse implements PMouse {
 	public SwingPMouse(PRoot root, JComponent base) {
 		this.root = root;
 		this.base = base;
-		btnPressed = new boolean[MouseButton.values().length];
-		btnReleased = new boolean[MouseButton.values().length];
-		btnTriggered = new boolean[MouseButton.values().length];
+		btnPressed = new boolean[3];
+		btnReleased = new boolean[3];
+		btnTriggered = new boolean[3];
 		x = 0;
 		y = 0;
 		dx = 0;
@@ -100,7 +100,7 @@ public class SwingPMouse implements PMouse {
 		if (btn == null) {
 			return;
 		}
-		int index = btn.ordinal();
+		int index = getMouseButtonID(btn);
 		if (!btnPressed[index]) {
 			btnPressed[index] = true;
 			btnTriggered[index] = true;
@@ -114,7 +114,7 @@ public class SwingPMouse implements PMouse {
 		if (btn == null) {
 			return;
 		}
-		int index = btn.ordinal();
+		int index = getMouseButtonID(btn);
 		if (!btnReleased[index]) {
 			btnReleased[index] = true;
 			btnPressed[index] = false;
@@ -133,6 +133,20 @@ public class SwingPMouse implements PMouse {
 			return MouseButton.MIDDLE;
 		}
 		return null;
+	}
+	
+	private int getMouseButtonID(MouseButton btn) {
+		switch (btn) {
+		case LEFT:
+		case DRAG_AND_DROP:
+			return 0;
+		case RIGHT:
+			return 1;
+		case MIDDLE:
+			return 2;
+		default:
+			throw new IllegalArgumentException("Mouse button not supported: "+btn);
+		}
 	}
 	
 	private void setPosition(int mx, int my) {
@@ -162,15 +176,15 @@ public class SwingPMouse implements PMouse {
 	}
 	
 	public boolean isPressed(MouseButton btn) {
-		return btnPressed[btn.ordinal()];
+		return btnPressed[getMouseButtonID(btn)];
 	}
 	
 	public boolean isReleased(MouseButton btn) {
-		return btnReleased[btn.ordinal()];
+		return btnReleased[getMouseButtonID(btn)];
 	}
 	
 	public boolean isTriggered(MouseButton btn) {
-		return btnTriggered[btn.ordinal()];
+		return btnTriggered[getMouseButtonID(btn)];
 	}
 	
 	public PComponent getComponentAtMouse() {

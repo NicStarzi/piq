@@ -8,6 +8,21 @@ public class DefaultPListModel extends AbstractPModel implements PListModel {
 	
 	private final List<Object> list = new ArrayList<>();
 	
+	public DefaultPListModel() {
+	}
+	
+	public DefaultPListModel(Iterable<Object> contents) {
+		for (Object o : contents) {
+			add(getSize(), o);
+		}
+	}
+	
+	public DefaultPListModel(Object[] contents) {
+		for (Object o : contents) {
+			add(getSize(), o);
+		}
+	}
+	
 	public int getSize() {
 		return list.size();
 	}
@@ -20,8 +35,8 @@ public class DefaultPListModel extends AbstractPModel implements PListModel {
 		return get(indexVal);
 	}
 	
-	public Object get(int index) {
-		return list.get(index);
+	public Object get(int indexVal) {
+		return list.get(indexVal);
 	}
 	
 	public boolean contains(PModelIndex index) {
@@ -84,11 +99,11 @@ public class DefaultPListModel extends AbstractPModel implements PListModel {
 		return list.iterator();
 	}
 	
-	private boolean withinBounds(int indexVal, int sizeOffset) {
+	protected boolean withinBounds(int indexVal, int sizeOffset) {
 		return indexVal >= 0 && indexVal < getSize() + sizeOffset;
 	}
 	
-	private int asListIndex(PModelIndex index) {
+	protected int asListIndex(PModelIndex index) {
 		if (index == null) {
 			throw new NullPointerException("index == null");
 		}
@@ -96,6 +111,13 @@ public class DefaultPListModel extends AbstractPModel implements PListModel {
 			return ((PListIndex) index).getIndexValue();
 		}
 		throw new WrongIndexType(index, PListIndex.class);
+	}
+	
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(getClass().getSimpleName());
+		sb.append(list.toString());
+		return sb.toString();
 	}
 	
 }

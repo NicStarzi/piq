@@ -24,4 +24,17 @@ public class PListIndex implements PModelIndex {
 		return sb.toString();
 	}
 	
+	public int hashCode() {
+		return index;
+	}
+	
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj != null && obj instanceof PListIndex) {
+			return index == ((PListIndex) obj).index;
+		}
+		return false;
+	}
+	
 }

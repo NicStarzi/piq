@@ -1,10 +1,15 @@
 package edu.udo.piq.comps.selectcomps;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
+import edu.udo.piq.PKeyboard;
+import edu.udo.piq.PKeyboard.Modifier;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
@@ -31,11 +36,12 @@ public class PList extends AbstractPLayoutOwner
 	};
 	private final PModelObs modelObs = new PModelObs() {
 		public void onContentAdded(PModel model, PModelIndex index, Object newContent) {
+			getSelection().clearSelection();
 			contentAdded((PListIndex) index, newContent);
 		}
 		public void onContentRemoved(PModel model, PModelIndex index, Object oldContent) {
-			selectionRemoved((PListIndex) index);
 			contentRemoved((PListIndex) index, oldContent);
+			getSelection().removeSelection(index);
 		}
 		public void onContentChanged(PModel model, PModelIndex index, Object oldContent) {
 			contentChanged((PListIndex) index, oldContent);
@@ -46,23 +52,34 @@ public class PList extends AbstractPLayoutOwner
 	private PCellFactory cellFactory;
 	
 	public PList() {
+		this(new DefaultPListModel());
+	}
+	
+	public PList(PListModel model) {
 		super();
 		setLayout(new PListLayout(this, ListAlignment.FROM_TOP, 1));
-		setModel(new DefaultPListModel());
 		setSelection(new PListMultiSelection());
 		setCellFactory(new DefaultPCellFactory());
+		setModel(model);
 		
 		addObs(new PMouseObs() {
 			public void buttonTriggered(PMouse mouse, MouseButton btn) {
-				if (btn == MouseButton.LEFT && isMouseOverThisOrChild()) {
-					PListIndex index = getIndexAt(mouse.getX(), mouse.getY());
-					if (index != null) {
-						getSelection().clearSelection();
-						getSelection().addSelection(index);
-					}
-				}
+				PList.this.onMouseButtonTriggred(mouse, btn);
 			}
 		});
+	}
+	
+	protected void onMouseButtonTriggred(PMouse mouse, MouseButton btn) {
+		if (btn == MouseButton.LEFT && isMouseOverThisOrChild()) {
+			PListIndex index = getIndexAt(mouse.getX(), mouse.getY());
+			if (index != null) {
+				PKeyboard keyBoard = getKeyboard();
+				if (keyBoard == null || !keyBoard.isModifierToggled(Modifier.CTRL)) {
+					getSelection().clearSelection();
+				}
+				getSelection().addSelection(index);
+			}
+		}
 	}
 	
 	protected PListLayout getLayoutInternal() {
@@ -91,10 +108,30 @@ public class PList extends AbstractPLayoutOwner
 		if (getModel() != null) {
 			getModel().addObs(modelObs);
 		}
+		getLayoutInternal().clearChildren();
+		if (model != null) {
+			for (int i = 0; i < model.getSize(); i++) {
+				contentAdded(new PListIndex(i), model.get(i));
+			}
+		}
 	}
 	
 	public PListModel getModel() {
 		return model;
+	}
+	
+	public List<Object> getAllSelectedContent() {
+		PSelection select = getSelection();
+		PModel model = getModel();
+		List<PModelIndex> indices = select.getAllSelected();
+		if (indices.isEmpty()) {
+			return Collections.emptyList();
+		}
+		List<Object> result = new ArrayList<>(indices.size());
+		for (PModelIndex index : indices) {
+			result.add(model.get(index));
+		}
+		return result;
 	}
 	
 	public void setCellFactory(PCellFactory listCellFactory) {
@@ -117,28 +154,36 @@ public class PList extends AbstractPLayoutOwner
 		return null;
 	}
 	
-	private void contentAdded(PListIndex index, Object newContent) {
+	protected void contentAdded(PListIndex index, Object newContent) {
 		PCellComponent cell = getCellFactory().makeCellComponent(getModel(), index);
 		getLayoutInternal().addChild(cell, Integer.valueOf(index.getIndexValue()));
 	}
 	
-	private void contentRemoved(PListIndex index, Object oldContent) {
+	protected void contentRemoved(PListIndex index, Object oldContent) {
 		getLayoutInternal().removeChild(getCellComponent(index));
 	}
 	
-	private void contentChanged(PListIndex index, Object oldContent) {
+	protected void contentChanged(PListIndex index, Object oldContent) {
 		getCellComponent(index).setElement(getModel(), index);
 	}
 	
-	private void selectionAdded(PListIndex index) {
-		getCellComponent(index).setSelected(true);
+	protected void selectionAdded(PListIndex index) {
+		PCellComponent cellComp = getCellComponent(index);
+		if (cellComp != null) {
+			System.out.println("select :: "+index+"; was="+cellComp.isSelected());
+			cellComp.setSelected(true);
+		}
 	}
 	
-	private void selectionRemoved(PListIndex index) {
-		getCellComponent(index).setSelected(false);
+	protected void selectionRemoved(PListIndex index) {
+		PCellComponent cellComp = getCellComponent(index);
+		if (cellComp != null) {
+			System.out.println("unselect :: "+index+"; was="+cellComp.isSelected());
+			cellComp.setSelected(false);
+		}
 	}
 	
-	private PCellComponent getCellComponent(PListIndex index) {
+	protected PCellComponent getCellComponent(PListIndex index) {
 		return (PCellComponent) getLayoutInternal().
 				getChild(index.getIndexValue());
 	}

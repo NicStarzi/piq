@@ -17,9 +17,42 @@ public class PListMultiSelection extends AbstractPSelection implements PListSele
 		}
 	}
 	
+	@SuppressWarnings("null")
 	public void removeSelection(PModelIndex index) {
 		if (indices.remove(index)) {
-			fireSelectionRemoved(index);
+			int indexVal = ((PListIndex) index).getIndexValue();
+			
+			List<PListIndex> indicesToRemove = null;
+			List<PListIndex> indicesToAdd = null;
+			
+			for (PModelIndex otherIndex : indices) {
+				PListIndex listIndex = (PListIndex) otherIndex;
+				int listIndexVal = listIndex.getIndexValue();
+				
+				if (indexVal < listIndexVal) {
+					if (indicesToRemove == null) {
+						indicesToRemove = new ArrayList<>();
+						indicesToAdd = new ArrayList<>();
+					}
+					indicesToRemove.add(listIndex);
+					indicesToAdd.add(new PListIndex(listIndexVal - 1));
+				}
+			}
+			if (indicesToRemove != null) {
+				List<PListIndex> indicesToRemove2 = new ArrayList<>(indicesToRemove);
+				indicesToRemove.removeAll(indicesToAdd);
+				indicesToAdd.removeAll(indicesToRemove2);
+				for (PListIndex indexToRemove : indicesToRemove) {
+					indices.remove(indexToRemove);
+					fireSelectionRemoved(indexToRemove);
+				}
+				for (PListIndex indexToAdd : indicesToAdd) {
+					indices.add(indexToAdd);
+					fireSelectionAdded(indexToAdd);
+				}
+			} else {
+				fireSelectionRemoved(index);
+			}
 		}
 	}
 	
@@ -38,6 +71,16 @@ public class PListMultiSelection extends AbstractPSelection implements PListSele
 	
 	public boolean isSelected(PModelIndex index) {
 		return indices.contains(index);
+	}
+	
+	protected int asListIndex(PModelIndex index) {
+		if (index == null) {
+			throw new NullPointerException("index == null");
+		}
+		if (index instanceof PListIndex) {
+			return ((PListIndex) index).getIndexValue();
+		}
+		throw new WrongIndexType(index, PListIndex.class);
 	}
 	
 }

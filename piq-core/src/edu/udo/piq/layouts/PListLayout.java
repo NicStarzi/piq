@@ -113,6 +113,9 @@ public class PListLayout extends AbstractPLayout {
 	}
 	
 	public PComponent getChild(int index) {
+		if (index < 0 || index >= compList.size()) {
+			return null;
+		}
 		return compList.get(index);
 	}
 	

@@ -14,9 +14,12 @@ import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PButtonObs;
 import edu.udo.piq.components.PLabel;
 import edu.udo.piq.components.PPanel;
+import edu.udo.piq.comps.selectcomps.DefaultPListModel;
 import edu.udo.piq.comps.selectcomps.PList;
 import edu.udo.piq.comps.selectcomps.PListIndex;
+import edu.udo.piq.comps.selectcomps.PModel;
 import edu.udo.piq.comps.selectcomps.PModelIndex;
+import edu.udo.piq.comps.selectcomps.PSelection;
 import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
 import edu.udo.piq.layouts.PWrapLayout;
@@ -61,7 +64,7 @@ public class SwingPTest_PList2 {
 		bodyPnl.setLayout(new PBorderLayout(bodyPnl));
 		root.setBody(bodyPnl);
 		
-		final PList list = new PList();
+		final PList list = new PList(new DefaultPListModel(new Object[] {"Hallo", "Welt"}));
 		bodyPnl.addChild(list, PBorderLayout.Constraint.CENTER);
 		
 		PPanel btnPnl = new PPanel();
@@ -90,10 +93,14 @@ public class SwingPTest_PList2 {
 		});
 		btnRemove.addObs(new PButtonObs() {
 			public void onClick(PButton button) {
-				List<PModelIndex> indices = list.getSelection().getAllSelected();
-				for (PModelIndex index : indices) {
-					names.add((String) index.get(list.getModel()));
-					list.getModel().remove(index);
+				PModel model = list.getModel();
+				PSelection select = list.getSelection();
+				List<PModelIndex> indices = select.getAllSelected();
+				while (!indices.isEmpty()) {
+					PModelIndex index = indices.get(0);
+					if (model.canRemove(index)) {
+						model.remove(index);
+					}
 				}
 			}
 		});

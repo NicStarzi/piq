@@ -170,7 +170,6 @@ public class PList extends AbstractPLayoutOwner
 	protected void selectionAdded(PListIndex index) {
 		PCellComponent cellComp = getCellComponent(index);
 		if (cellComp != null) {
-			System.out.println("select :: "+index+"; was="+cellComp.isSelected());
 			cellComp.setSelected(true);
 		}
 	}
@@ -178,7 +177,6 @@ public class PList extends AbstractPLayoutOwner
 	protected void selectionRemoved(PListIndex index) {
 		PCellComponent cellComp = getCellComponent(index);
 		if (cellComp != null) {
-			System.out.println("unselect :: "+index+"; was="+cellComp.isSelected());
 			cellComp.setSelected(false);
 		}
 	}

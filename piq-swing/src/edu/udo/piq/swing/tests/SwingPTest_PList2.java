@@ -17,6 +17,7 @@ import edu.udo.piq.components.PPanel;
 import edu.udo.piq.comps.selectcomps.DefaultPListModel;
 import edu.udo.piq.comps.selectcomps.PList;
 import edu.udo.piq.comps.selectcomps.PListIndex;
+import edu.udo.piq.comps.selectcomps.PListSingleSelection;
 import edu.udo.piq.comps.selectcomps.PModel;
 import edu.udo.piq.comps.selectcomps.PModelIndex;
 import edu.udo.piq.comps.selectcomps.PSelection;
@@ -65,6 +66,7 @@ public class SwingPTest_PList2 {
 		root.setBody(bodyPnl);
 		
 		final PList list = new PList(new DefaultPListModel(new Object[] {"Hallo", "Welt"}));
+		list.setSelection(new PListSingleSelection());
 		bodyPnl.addChild(list, PBorderLayout.Constraint.CENTER);
 		
 		PPanel btnPnl = new PPanel();

@@ -73,14 +73,4 @@ public class PListMultiSelection extends AbstractPSelection implements PListSele
 		return indices.contains(index);
 	}
 	
-	protected int asListIndex(PModelIndex index) {
-		if (index == null) {
-			throw new NullPointerException("index == null");
-		}
-		if (index instanceof PListIndex) {
-			return ((PListIndex) index).getIndexValue();
-		}
-		throw new WrongIndexType(index, PListIndex.class);
-	}
-	
 }

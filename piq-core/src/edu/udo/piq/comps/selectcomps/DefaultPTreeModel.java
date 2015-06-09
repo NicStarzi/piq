@@ -132,6 +132,9 @@ public class DefaultPTreeModel extends AbstractPModel implements PTreeModel {
 	}
 	
 	protected PTreeIndex asTreeIndex(PModelIndex index) {
+		if (index == null) {
+			throw new NullPointerException("index == null");
+		}
 		if (index instanceof PTreeIndex) {
 			return (PTreeIndex) index;
 		}

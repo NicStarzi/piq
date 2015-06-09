@@ -1,5 +1,7 @@
 package edu.udo.piq.comps.selectcomps;
 
+import java.util.ConcurrentModificationException;
+
 import edu.udo.piq.components.util.PModelHistory;
 
 public interface PModel extends Iterable<Object> {
@@ -49,11 +51,11 @@ public interface PModel extends Iterable<Object> {
 	/**
 	 * Returns true if content can be added to this model at index, 
 	 * otherwise false is returned. The reasons for why content can 
-	 * not be added can included but do not need to be limited to:<br> 
+	 * not be added may included but is not limited to:<br> 
 	 *  - the index being out of bounds<br>
 	 *  - content being null and the model not allowing null entries<br>
 	 *  - content being of a wrong type<br>
-	 *  <br>
+	 * <br>
 	 * If this method returns true then a call to 
 	 * {@link #add(PModelIndex, Object)} with the same arguments will 
 	 * succeed.<br>
@@ -75,7 +77,7 @@ public interface PModel extends Iterable<Object> {
 	 * index changed as a result of this call, for example, any 
 	 * contents previously stored at index will now be moved to a 
 	 * different index.<br>
-	 * If adding content at index is not possible for some reasons 
+	 * If adding content at index is not possible for some reason 
 	 * an {@link AddImpossible} exception is being thrown. Use the 
 	 * {@link #canAdd(PModelIndex, Object)} method to check whether 
 	 * adding is possible before calling this method.<br>
@@ -90,9 +92,39 @@ public interface PModel extends Iterable<Object> {
 	public void add(PModelIndex index, Object content) 
 			throws WrongIndexType, NullPointerException, AddImpossible;
 	
+	/**
+	 * Returns true if any content can be removed from this model at index, 
+	 * otherwise false is returned. The reason for why content can not be 
+	 * removed may vary but might be that index is out of bounds.<br> 
+	 * <br>
+	 * If this method returns true then a call to 
+	 * {@link #remove(PModelIndex)} with the same argument will succeed.<br>
+	 * 
+	 * @param index				the index at which content should be removed
+	 * @return					true if removing at index is possible
+	 * @throws WrongIndexType	if index has the wrong type
+	 * @throws NullPointerException		if index is null
+	 * @see #remove(PModelIndex)
+	 */
 	public boolean canRemove(PModelIndex index) 
 			throws WrongIndexType, NullPointerException;
 	
+	/**
+	 * Tries to remove content from this model at the given index. If 
+	 * removing is possible the content at index will be removed and 
+	 * other content within this model might have their index changed 
+	 * as a result of this call.<br>
+	 * If removing content at index is not possible for some reason 
+	 * a {@link RemoveImpossible} exception is being thrown. Use the 
+	 * {@link #canRemove(PModelIndex)} method to check whether 
+	 * removing is possible before calling this method.<br>
+	 * 
+	 * @param index						the index at which content should be removed
+	 * @throws WrongIndexType			if index has the wrong type
+	 * @throws NullPointerException		if index is null
+	 * @throws RemoveImpossible			if removing is not possible for any reason
+	 * @see #canRemove(PModelIndex)
+	 */
 	public void remove(PModelIndex index) 
 			throws WrongIndexType, NullPointerException, RemoveImpossible;
 	
@@ -113,9 +145,26 @@ public interface PModel extends Iterable<Object> {
 	public void addObs(PModelObs obs) 
 			throws NullPointerException;
 	
+	/**
+	 * Removes the {@link PModelObs observer} from this model if it 
+	 * was added previously. If the observer was not added before 
+	 * this method will do nothing.<br>
+	 * After a call to this method the observer will no longer 
+	 * receive any notifications. If the observer is removed during 
+	 * a notification there will be <b>no</b> 
+	 * {@link ConcurrentModificationException}.<br>
+	 * 
+	 * @param obs						a non-null observer
+	 * @throws NullPointerException		if obs is null
+	 */
 	public void removeObs(PModelObs obs) 
 			throws NullPointerException;
 	
+	/**
+	 * Returns the {@link PModelHistory} for this model or null if 
+	 * this model does not support undo- and redo functionality.<br>
+	 * @return		a model history or null
+	 */
 	public PModelHistory getHistory();
 	
 }

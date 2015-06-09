@@ -89,6 +89,9 @@ public class DefaultPListModel extends AbstractPModel implements PListModel {
 	}
 	
 	private int asListIndex(PModelIndex index) {
+		if (index == null) {
+			throw new NullPointerException("index == null");
+		}
 		if (index instanceof PListIndex) {
 			return ((PListIndex) index).getIndexValue();
 		}

@@ -1,5 +1,7 @@
 package edu.udo.piq.comps.selectcomps;
 
+import java.util.List;
+
 public interface PSelectionComponent {
 	
 	public PSelection getSelection();
@@ -7,6 +9,8 @@ public interface PSelectionComponent {
 	public PModel getModel();
 	
 	public PModelIndex getIndexAt(int x, int y);
+	
+	public List<Object> getAllSelectedContent();
 	
 	public void addObs(PModelObs obs);
 	

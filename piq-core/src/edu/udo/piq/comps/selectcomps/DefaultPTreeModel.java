@@ -18,6 +18,11 @@ public class DefaultPTreeModel extends AbstractPModel implements PTreeModel {
 		return rootNode.getContent();
 	}
 	
+	public int getChildCount(PTreeIndex index) {
+		DefaultPTreeNode parentNode = getNode(index);
+		return parentNode == null ? 0 : parentNode.getChildCount();
+	}
+	
 	public Object get(PModelIndex index) {
 		DefaultPTreeNode node = getNode(index);
 		if (node == null) {
@@ -93,7 +98,7 @@ public class DefaultPTreeModel extends AbstractPModel implements PTreeModel {
 		fireRemoveEvent(index, childNode.getContent());
 	}
 	
-	public Iterator<Object> iterator() {
+	public Iterator<PModelIndex> iterator() {
 		return new DefaultPTreeModelIterator(rootNode);
 	}
 	
@@ -122,7 +127,7 @@ public class DefaultPTreeModel extends AbstractPModel implements PTreeModel {
 		DefaultPTreeNode current = rootNode;
 		for (int lvl = 0; lvl < depth; lvl++) {
 			int childIndex = treeIndex.getChildIndex(lvl);
-			if (current.getChildCount() < childIndex) {
+			if (current.getChildCount() <= childIndex) {
 				return null;
 			} else {
 				current = current.getChild(childIndex);
@@ -208,6 +213,18 @@ public class DefaultPTreeModel extends AbstractPModel implements PTreeModel {
 			return Collections.unmodifiableList(children);
 		}
 		
+		public PTreeIndex createTreeIndex() {
+			Deque<Integer> indexStack = new ArrayDeque<>();
+			DefaultPTreeNode current = parent;
+			DefaultPTreeNode currentChild = this;
+			while (current != null) {
+				indexStack.addFirst(current.children.indexOf(currentChild));
+				currentChild = current;
+				current = current.parent;
+			}
+			return new PTreeIndex(indexStack);
+		}
+		
 		public void addChild(int index, DefaultPTreeNode node) {
 			if (node.parent != null) {
 				throw new IllegalStateException("node.parent != null");
@@ -226,24 +243,26 @@ public class DefaultPTreeModel extends AbstractPModel implements PTreeModel {
 		
 	}
 	
-	protected static class DefaultPTreeModelIterator implements Iterator<Object> {
+	protected static class DefaultPTreeModelIterator implements Iterator<PModelIndex> {
 		
 		private final Deque<DefaultPTreeNode> stack = new ArrayDeque<>();
 		
 		public DefaultPTreeModelIterator(DefaultPTreeNode root) {
-			stack.push(root);
+			if (root != null) {
+				stack.push(root);
+			}
 		}
 		
 		public boolean hasNext() {
 			return !stack.isEmpty();
 		}
 		
-		public Object next() {
+		public PModelIndex next() {
 			DefaultPTreeNode node = stack.pop();
 			for (int i = 0; i < node.getChildCount(); i++) {
-				stack.push(node.getChild(i));
+				stack.addLast(node.getChild(i));
 			}
-			return node.getContent();
+			return node.createTreeIndex();
 		}
 		
 	}

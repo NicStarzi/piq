@@ -201,7 +201,7 @@ public class PTree extends AbstractPLayoutOwner {
 	}
 	
 	public PTreeCellComponent getCellComponentAt(int x, int y) {
-		return (PTreeCellComponent) getLayoutInternal().getComponentAt(x, y);
+		return (PTreeCellComponent) getLayoutInternal().getChildAt(x, y);
 	}
 	
 	public PTreeCellComponent getCellComponentAt(PTreePosition position) {

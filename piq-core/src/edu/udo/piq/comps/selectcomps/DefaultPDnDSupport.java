@@ -141,7 +141,7 @@ public class DefaultPDnDSupport implements PDnDSupport {
 		PModel model = dragComp.getModel();
 		List<PModelIndex> dragIndices = dragComp.getDragIndices();
 		while (!dragIndices.isEmpty()) {
-			PModelIndex dragIndex = dragIndices.get(0);
+			PModelIndex dragIndex = dragIndices.remove(0);
 			model.remove(dragIndex);
 		}
 	}

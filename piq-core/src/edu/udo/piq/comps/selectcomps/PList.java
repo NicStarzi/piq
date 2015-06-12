@@ -4,35 +4,86 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PDnDSupport;
+import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PKeyboard;
+import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PKeyboard.Modifier;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
+import edu.udo.piq.components.util.PInput;
 import edu.udo.piq.layouts.PListLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
-import edu.udo.piq.tools.AbstractPLayoutOwner;
+import edu.udo.piq.tools.AbstractPInputLayoutOwner;
 
-public class PList extends AbstractPLayoutOwner 
+public class PList extends AbstractPInputLayoutOwner 
 	implements PDropComponent 
 {
 	
 	protected static final PColor BACKGROUND_COLOR = PColor.WHITE;
+	protected static final PColor FOCUS_COLOR = PColor.GREY25;
 	protected static final PColor DROP_HIGHLIGHT_COLOR = PColor.RED;
-	protected static final int DRAG_AND_DROP_DISTANCE = 16;
+	protected static final int DRAG_AND_DROP_DISTANCE = 20;
 	
+	private final PInput moveUpInput = new PInput() {
+		public Key getTriggerKey() {
+			return Key.UP;
+		}
+		public KeyInputType getKeyInputType() {
+			return KeyInputType.PRESS;
+		}
+		public boolean canBeTriggered(PKeyboard keyboard) {
+			return isEnabled() && getModel() != null 
+					&& getSelection() != null 
+					&& getSelection().getLastSelected() != null;
+		}
+	};
+	private final Runnable moveUpReaction = new Runnable() {
+		public void run() {
+			onUpKeyTriggered();
+		}
+	};
+	private final PInput moveDownInput = new PInput() {
+		public Key getTriggerKey() {
+			return Key.DOWN;
+		}
+		public KeyInputType getKeyInputType() {
+			return KeyInputType.PRESS;
+		}
+		public boolean canBeTriggered(PKeyboard keyboard) {
+			return isEnabled() && getModel() != null 
+					&& getSelection() != null 
+					&& getSelection().getLastSelected() != null;
+		}
+	};
+	private final Runnable moveDownReaction = new Runnable() {
+		public void run() {
+			onDownKeyTriggered();
+		}
+	};
+	
+	private final List<PModelObs> modelObsList = new CopyOnWriteArrayList<>();
+	private final List<PSelectionObs> selectionObsList = new CopyOnWriteArrayList<>();
 	private final PSelectionObs selectionObs = new PSelectionObs() {
 		public void onSelectionAdded(PSelection selection, PModelIndex index) {
 			selectionAdded((PListIndex) index);
 		}
 		public void onSelectionRemoved(PSelection selection, PModelIndex index) {
 			selectionRemoved((PListIndex) index);
+		}
+		public void onLastSelectedChanged(PSelection selection,
+				PModelIndex prevLastSelected, PModelIndex newLastSelected) 
+		{
+			if (hasFocus()) {
+				fireReRenderEvent();
+			}
 		}
 	};
 	private final PModelObs modelObs = new PModelObs() {
@@ -54,6 +105,7 @@ public class PList extends AbstractPLayoutOwner
 	private PDnDSupport dndSup;
 	private PModelIndex currentDnDHighlightIndex;
 	private PCellComponent currentDnDHighlightComponent;
+	private int lastDragX = -1;
 	private int lastDragY = -1;
 	private boolean isDragTagged = false;
 	
@@ -64,6 +116,7 @@ public class PList extends AbstractPLayoutOwner
 	public PList(PListModel model) {
 		super();
 		setLayout(new PListLayout(this, ListAlignment.FROM_TOP, 1));
+		setDragAndDropSupport(new DefaultPDnDSupport());
 		setSelection(new PListMultiSelection());
 		setCellFactory(new DefaultPCellFactory());
 		setModel(model);
@@ -79,6 +132,21 @@ public class PList extends AbstractPLayoutOwner
 				PList.this.onMouseMoved(mouse);
 			}
 		});
+		addObs(new PFocusObs() {
+			public void focusGained(PComponent oldOwner, PComponent newOwner) {
+				if (newOwner == PList.this && getSelection() != null) {
+					fireReRenderEvent();
+				}
+			}
+			public void focusLost(PComponent oldOwner) {
+				if (oldOwner == PList.this && getSelection() != null) {
+					fireReRenderEvent();
+				}
+			}
+		});
+		
+		defineInput(moveUpInput.getDefaultIdentifier(), moveUpInput, moveUpReaction);
+		defineInput(moveDownInput.getDefaultIdentifier(), moveDownInput, moveDownReaction);
 	}
 	
 	protected void onMouseButtonTriggred(PMouse mouse, MouseButton btn) {
@@ -86,6 +154,7 @@ public class PList extends AbstractPLayoutOwner
 			PListIndex index = getIndexAt(mouse.getX(), mouse.getY());
 			if (index != null) {
 				if (mouse.isPressed(MouseButton.DRAG_AND_DROP)) {
+					lastDragX = mouse.getX();
 					lastDragY = mouse.getY();
 					isDragTagged = true;
 				}
@@ -95,12 +164,13 @@ public class PList extends AbstractPLayoutOwner
 					getSelection().clearSelection();
 				}
 				getSelection().addSelection(index);
+				takeFocus();
 			}
 		}
 	}
 	
 	protected void onMouseReleased(PMouse mouse, MouseButton btn) {
-		if (isDragTagged && btn == MouseButton.DRAG_AND_DROP) {
+		if (isDragTagged && mouse.isReleased(MouseButton.DRAG_AND_DROP)) {
 			isDragTagged = false;
 		}
 	}
@@ -112,14 +182,37 @@ public class PList extends AbstractPLayoutOwner
 		{
 			int mx = mouse.getX();
 			int my = mouse.getY();
+			int disX = Math.abs(lastDragX - mx);
 			int disY = Math.abs(lastDragY - my);
-			if (disY >= DRAG_AND_DROP_DISTANCE) {
+			int dis = Math.max(disX, disY);
+			if (dis >= DRAG_AND_DROP_DISTANCE) {
 				if (dndSup.canDrag(this, mx, my)) {
 					dndSup.startDrag(this, mx, my);
 				}
-			} else {
-//				dndSup.abortDrag(this, getDragAndDropManager().getActiveTransfer());
 			}
+		}
+	}
+	
+	protected void onUpKeyTriggered() {
+		onMoveSelection(-1);
+	}
+	
+	protected void onDownKeyTriggered() {
+		onMoveSelection(1);
+	}
+	
+	protected void onMoveSelection(int moveOffset) {
+		PListIndex lastSelected = getSelection().getLastSelected();
+		int nextSelectedVal = lastSelected.getIndexValue() + moveOffset;
+		if (nextSelectedVal >= 0 && nextSelectedVal < getModel().getSize()) {
+			PListIndex nextSelected = new PListIndex(nextSelectedVal);
+			
+			PKeyboard keyBoard = getKeyboard();
+			if (keyBoard == null || !keyBoard.isModifierToggled(Modifier.CTRL)) {
+				getSelection().clearSelection();
+			}
+			
+			getSelection().addSelection(nextSelected);
 		}
 	}
 	
@@ -130,10 +223,16 @@ public class PList extends AbstractPLayoutOwner
 	public void setSelection(PListSelection listSelection) {
 		if (getSelection() != null) {
 			getSelection().removeObs(selectionObs);
+			for (PSelectionObs obs : selectionObsList) {
+				getSelection().removeObs(obs);
+			}
 		}
 		selection = listSelection;
 		if (getSelection() != null) {
 			getSelection().addObs(selectionObs);
+			for (PSelectionObs obs : selectionObsList) {
+				getSelection().addObs(obs);
+			}
 		}
 	}
 	
@@ -144,15 +243,21 @@ public class PList extends AbstractPLayoutOwner
 	public void setModel(PListModel listModel) {
 		if (getModel() != null) {
 			getModel().removeObs(modelObs);
+			for (PModelObs obs : modelObsList) {
+				getModel().removeObs(obs);
+			}
 		}
 		model = listModel;
-		if (getModel() != null) {
-			getModel().addObs(modelObs);
-		}
 		getLayoutInternal().clearChildren();
-		if (model != null) {
-			for (int i = 0; i < model.getSize(); i++) {
-				contentAdded(new PListIndex(i), model.get(i));
+		if (getModel() != null) {
+			PListModel model = getModel();
+			
+			model.addObs(modelObs);
+			for (PModelObs obs : modelObsList) {
+				model.addObs(obs);
+			}
+			for (PModelIndex index : model) {
+				contentAdded((PListIndex) index, model.get(index));
 			}
 		}
 	}
@@ -177,6 +282,14 @@ public class PList extends AbstractPLayoutOwner
 	
 	public void setCellFactory(PCellFactory listCellFactory) {
 		cellFactory = listCellFactory;
+		getLayoutInternal().clearChildren();
+		
+		PListModel model = getModel();
+		if (model != null) {
+			for (int i = 0; i < model.getSize(); i++) {
+				contentAdded(new PListIndex(i), model.get(i));
+			}
+		}
 	}
 	
 	public PCellFactory getCellFactory() {
@@ -261,7 +374,7 @@ public class PList extends AbstractPLayoutOwner
 		}
 	}
 	
-	protected PCellComponent getCellComponent(PListIndex index) {
+	public PCellComponent getCellComponent(PListIndex index) {
 		return (PCellComponent) getLayoutInternal().
 				getChild(index.getIndexValue());
 	}
@@ -298,6 +411,20 @@ public class PList extends AbstractPLayoutOwner
 				renderer.drawQuad(cx, cy, cfx, cfy);
 			}
 		}
+		if (hasFocus() && getSelection() != null) {
+			PListIndex lastSelectedIndex = getSelection().getLastSelected();
+			if (lastSelectedIndex != null) {
+				PCellComponent cellComp = getCellComponent(lastSelectedIndex);
+				PBounds cellBounds = cellComp.getBounds();
+				int cx = cellBounds.getX() - 1;
+				int cy = cellBounds.getY() - 1;
+				int cfx = cellBounds.getFinalX() + 1;
+				int cfy = cellBounds.getFinalY() + 1;
+				
+				renderer.setColor(FOCUS_COLOR);
+				renderer.drawQuad(cx, cy, cfx, cfy);
+			}
+		}
 	}
 	
 	public boolean isFocusable() {
@@ -305,15 +432,31 @@ public class PList extends AbstractPLayoutOwner
 	}
 	
 	public void addObs(PModelObs obs) {
+		modelObsList.add(obs);
+		if (getModel() != null) {
+			getModel().addObs(obs);
+		}
 	}
 	
 	public void removeObs(PModelObs obs) {
+		modelObsList.remove(obs);
+		if (getModel() != null) {
+			getModel().removeObs(obs);
+		}
 	}
 	
 	public void addObs(PSelectionObs obs) {
+		selectionObsList.add(obs);
+		if (getSelection() != null) {
+			getSelection().addObs(obs);
+		}
 	}
 	
 	public void removeObs(PSelectionObs obs) {
+		selectionObsList.remove(obs);
+		if (getSelection() != null) {
+			getSelection().removeObs(obs);
+		}
 	}
 	
 }

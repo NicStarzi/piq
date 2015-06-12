@@ -11,14 +11,12 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 	protected final PLayoutObs layoutObs = new PLayoutObs() {
 		public void childRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
 			child.removeObs(childObs);
-			needReLayout = true;
 			fireReLayOutEvent();
 			checkForPreferredSizeChange();
 			fireReRenderEvent();
 		}
 		public void childAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
 			child.addObs(childObs);
-			needReLayout = true;
 			fireReLayOutEvent();
 			checkForPreferredSizeChange();
 			fireReRenderEvent();
@@ -27,13 +25,11 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 			fireReRenderEvent();
 		}
 		public void layoutInvalidated(PReadOnlyLayout layout) {
-			needReLayout = true;
 			fireReLayOutEvent();
 		}
 	};
 	protected final PComponentObs childObs = new PComponentObs() {
 		public void preferredSizeChanged(PComponent component) {
-			needReLayout = true;
 			fireReLayOutEvent();
 			checkForPreferredSizeChange();
 		}
@@ -49,16 +45,16 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 	 * @param layout
 	 */
 	protected void setLayout(PLayout layout) {
-		if (this.layout != null) {
-			this.layout.removeObs(layoutObs);
+		if (getLayout() != null) {
+			getLayout().removeObs(layoutObs);
 			this.layout.clearChildren();
 		}
 		this.layout = layout;
-		if (this.layout != null) {
-			if (this.layout.getOwner() != this) {
+		if (getLayout() != null) {
+			if (getLayout().getOwner() != this) {
 				throw new IllegalArgumentException("getLayout().getOwner() != this");
 			}
-			this.layout.addObs(layoutObs);
+			getLayout().addObs(layoutObs);
 		}
 	}
 	

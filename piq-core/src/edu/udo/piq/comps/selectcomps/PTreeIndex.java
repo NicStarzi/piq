@@ -24,14 +24,15 @@ public class PTreeIndex implements PModelIndex {
 		this(ROOT_ARR, 0);
 	}
 	
-	public PTreeIndex(int[] childIndices) {
+	public PTreeIndex(int ... childIndices) {
 		indices = Arrays.copyOf(childIndices, childIndices.length);
 		depth = childIndices.length;
 	}
 	
 	protected PTreeIndex(int[] childIndices, int depth) {
-		indices = childIndices;
-		this.depth = depth;
+		indices = Arrays.copyOf(childIndices, depth);
+		this.depth = indices.length;
+//		this.depth = depth;
 	}
 	
 	public int getDepth() {
@@ -45,8 +46,21 @@ public class PTreeIndex implements PModelIndex {
 		return indices[level];
 	}
 	
+	public int getLastIndex() {
+		if (getDepth() == 0) {
+			return -1;
+		}
+		return indices[depth - 1];
+	}
+	
 	public PTreeIndex makeParentIndex() {
 		return new PTreeIndex(indices, depth - 1);
+	}
+	
+	public PTreeIndex replaceIndex(int indexAt, int newValue) {
+		int[] childIndices = Arrays.copyOf(indices, depth);
+		childIndices[indexAt] = newValue;
+		return new PTreeIndex(childIndices);
 	}
 	
 	public PTreeIndex append(int childIndex) {
@@ -70,6 +84,19 @@ public class PTreeIndex implements PModelIndex {
 		sb.append(getClass().getSimpleName());
 		sb.append(Arrays.toString(indices));
 		return sb.toString();
+	}
+	
+	public int hashCode() {
+		return Arrays.hashCode(indices);
+	}
+	
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null || !(obj instanceof PTreeIndex))
+			return false;
+		PTreeIndex other = (PTreeIndex) obj;
+		return Arrays.equals(indices, other.indices);
 	}
 	
 }

@@ -8,11 +8,11 @@ public class AbstractPInputLayoutOwner extends AbstractPLayoutOwner {
 	protected final PInputMap inputMap = new PInputMap(this);
 	protected boolean enabled = true;
 	
-	protected void defineInput(Object identifier, PInput input, Runnable reaction) {
+	public void defineInput(Object identifier, PInput input, Runnable reaction) {
 		inputMap.defineInput(identifier, input, reaction);
 	}
 	
-	protected void undefine(Object identifier) {
+	public void undefine(Object identifier) {
 		inputMap.undefine(identifier);
 	}
 	

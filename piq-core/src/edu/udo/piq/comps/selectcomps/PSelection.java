@@ -13,6 +13,8 @@ public interface PSelection {
 	
 	public List<PModelIndex> getAllSelected();
 	
+	public PModelIndex getLastSelected();
+	
 	public default List<PModelIndex> copyAllSelected() {
 		return new ArrayList<>(getAllSelected());
 	}

@@ -7,6 +7,8 @@ import java.awt.event.ActionListener;
 import javax.swing.JFrame;
 import javax.swing.Timer;
 
+import edu.udo.piq.PColor;
+import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PButtonObs;
 import edu.udo.piq.components.PCheckBox;
@@ -28,6 +30,7 @@ import edu.udo.piq.components.PTextArea;
 import edu.udo.piq.components.PToolTip;
 import edu.udo.piq.components.defaults.DefaultPListModel;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
+import edu.udo.piq.designs.standard.PStandardDesignSheet;
 import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
 import edu.udo.piq.layouts.PSplitLayout.Orientation;
@@ -52,6 +55,7 @@ public class SwingPTest {
 	
 	private final JFrame frame;
 	private final JCompPRoot root;
+	private final PStandardDesignSheet sDs = new PStandardDesignSheet();
 	
 	public SwingPTest() {
 		frame = new JFrame();
@@ -60,6 +64,7 @@ public class SwingPTest {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		root = new JCompPRoot();
+		root.setDesignSheet(sDs);
 //		root.addObs(new PKeyboardObs() {
 //			public void keyTriggered(PKeyboard keyboard, Key key) {
 //				if (key == Key.TAB) {
@@ -72,6 +77,7 @@ public class SwingPTest {
 //		});
 		frame.setContentPane(root.getPanel());
 		
+		
 		Timer updateTimer = new Timer(10, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				root.update();
@@ -80,8 +86,6 @@ public class SwingPTest {
 		updateTimer.setCoalesce(true);
 		updateTimer.setRepeats(true);
 		updateTimer.start();
-		
-//		root.setDesignSheet(new CoolBluePDesignSheet());
 		
 		PPanel bodyPnl = new PPanel();
 		bodyPnl.setID("Body Panel");
@@ -194,6 +198,15 @@ public class SwingPTest {
 		
 		btnChange.addObs(new PButtonObs() {
 			boolean increment = true;
+			
+			PColor[] fontColors = new PColor[] {
+					PColor.BLACK, PColor.RED, PColor.GREY25, 
+					PColor.BLUE, PColor.MAGENTA, PColor.YELLOW, 
+					PColor.GREEN, PColor.TEAL, PColor.GREY50, 
+					PColor.GREY75, };
+			int currentStyle = 0;
+			int currentColor = 0;
+			
 			public void onClick(PButton button) {
 				int val = prgBar.getModel().getValue();
 				val = increment ? val + 1 : val - 1;
@@ -201,6 +214,16 @@ public class SwingPTest {
 				if (prgBar.getModel().getValue() == prgBar.getModel().getMaxValue() || prgBar.getModel().getValue() == 0) {
 					increment = !increment;
 				}
+				
+				Style style = Style.values()[(++currentStyle) % Style.values().length];
+				int size = sDs.getLabelDesign().getFontSize() + 1;
+				int colorID = (++currentColor) % fontColors.length;
+				PColor fontColor = fontColors[colorID];
+				PColor backColor = fontColors[fontColors.length - 1 - colorID];
+				sDs.getLabelDesign().setFontColor(fontColor);
+				sDs.getLabelDesign().setBackgroundColor(backColor);
+				sDs.getLabelDesign().setFontSize(size);
+				sDs.getLabelDesign().setFontStyle(style);
 			}
 		});
 		chkBxTpl.getCheckBox().addObs(new PCheckBoxObs() {
@@ -256,7 +279,6 @@ public class SwingPTest {
 			}
 		});
 	}
-	
 //	public static class MyLittleDialog {
 //		
 //		public MyLittleDialog(final PDialog dlg) {

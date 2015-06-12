@@ -69,7 +69,7 @@ public class PLabel extends AbstractPComponent {
 		if (getModel() == null) {
 			return "";
 		}
-		Object text = model.getText();
+		Object text = getModel().getText();
 		if (text == null) {
 			return "";
 		}

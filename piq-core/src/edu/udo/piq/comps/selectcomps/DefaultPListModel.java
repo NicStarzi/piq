@@ -3,6 +3,7 @@ package edu.udo.piq.comps.selectcomps;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public class DefaultPListModel extends AbstractPModel implements PListModel {
 	
@@ -17,7 +18,7 @@ public class DefaultPListModel extends AbstractPModel implements PListModel {
 		}
 	}
 	
-	public DefaultPListModel(Object[] contents) {
+	public DefaultPListModel(Object ... contents) {
 		for (Object o : contents) {
 			add(getSize(), o);
 		}
@@ -56,7 +57,7 @@ public class DefaultPListModel extends AbstractPModel implements PListModel {
 	}
 	
 	public boolean canAdd(PModelIndex index, Object content) {
-		return content != null && withinBounds(asListIndex(index), 1);
+		return canAdd(asListIndex(index), content);
 	}
 	
 	public boolean canAdd(int index, Object content) {
@@ -95,8 +96,8 @@ public class DefaultPListModel extends AbstractPModel implements PListModel {
 		remove(new PListIndex(index));
 	}
 	
-	public Iterator<Object> iterator() {
-		return list.iterator();
+	public Iterator<PModelIndex> iterator() {
+		return new PListModelIterator(this);
 	}
 	
 	protected boolean withinBounds(int indexVal, int sizeOffset) {
@@ -118,6 +119,28 @@ public class DefaultPListModel extends AbstractPModel implements PListModel {
 		sb.append(getClass().getSimpleName());
 		sb.append(list.toString());
 		return sb.toString();
+	}
+	
+	public static class PListModelIterator implements Iterator<PModelIndex> {
+		
+		private final PListModel model;
+		private int pos = 0;
+		
+		public PListModelIterator(PListModel model) {
+			this.model = model;
+		}
+		
+		public boolean hasNext() {
+			return pos < model.getSize();
+		}
+		
+		public PListIndex next() {
+			if (!hasNext()) {
+				throw new NoSuchElementException();
+			}
+			return new PListIndex(pos++);
+		}
+		
 	}
 	
 }

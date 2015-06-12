@@ -4,6 +4,7 @@ import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.components.PGlassPanel;
 import edu.udo.piq.components.PPanel;
 import edu.udo.piq.layouts.PRootLayout;
+import edu.udo.piq.util.PGuiTreeIterator;
 
 /**
  * The root of a GUI tree. Such a root is also a {@link PComponent}.<br>
@@ -122,14 +123,10 @@ public interface PRoot extends PComponent {
 	 */
 	public PDesignSheet getDesignSheet();
 	
-//	/**
-//	 * Updates all {@link PComponent}s in this GUI tree.
-//	 */
-//	public void update();
-	
 	/**
 	 * This method should be called if a {@link PComponent} needs to 
 	 * be re-rendered.<br>
+	 * 
 	 * @param component the component that needs re-rendering
 	 */
 	public void reRender(PComponent component);
@@ -139,9 +136,22 @@ public interface PRoot extends PComponent {
 	 * The refresh should happen soon but not necessarily immediately to have the possibility of combining 
 	 * several re-layouting operations into one.<br>
 	 * 
-	 * @param component
+	 * @param component a non-null component
 	 */
 	public void reLayOut(PComponent component);
+	
+	/**
+	 * Immediately lays out all components within this GUI. This method is costly and should only be used 
+	 * when the entire GUI needs a refresh, for example when the {@link PDesignSheet} was changed.<br>
+	 */
+	public default void reLayOutTheEntireGui() {
+		//TODO: Not a very nice solution but it works.
+		for (PComponent comp : new PGuiTreeIterator(this)) {
+			if (comp.getLayout() != null) {
+				comp.getLayout().layOut();
+			}
+		}
+	}
 	
 	/**
 	 * Creates a new instance of {@link PDialog} and returns it.<br>

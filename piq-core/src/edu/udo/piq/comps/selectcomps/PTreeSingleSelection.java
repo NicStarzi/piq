@@ -1,10 +1,11 @@
 package edu.udo.piq.comps.selectcomps;
 
-import java.util.AbstractList;
 import java.util.Collections;
 import java.util.List;
 
-public class PListSingleSelection extends AbstractPSelection implements PListSelection {
+import edu.udo.piq.comps.selectcomps.PListSingleSelection.SingletonList;
+
+public class PTreeSingleSelection extends AbstractPSelection implements PTreeSelection {
 	
 	protected final List<PModelIndex> indices = new SingletonList<PModelIndex>();
 	
@@ -38,8 +39,8 @@ public class PListSingleSelection extends AbstractPSelection implements PListSel
 		return Collections.unmodifiableList(indices);
 	}
 	
-	public PListIndex getLastSelected() {
-		return (PListIndex) super.getLastSelected();
+	public PTreeIndex getLastSelected() {
+		return (PTreeIndex) super.getLastSelected();
 	}
 	
 	public boolean isSelected(PModelIndex index) {
@@ -50,32 +51,6 @@ public class PListSingleSelection extends AbstractPSelection implements PListSel
 		if (indices.get(0) != null) {
 			fireSelectionRemoved(indices.get(0));
 		}
-	}
-	
-	protected static class SingletonList<K> extends AbstractList<K> {
-		
-		private K content = null;
-		
-		public K set(int index, K element) {
-			if (index != 0) {
-				throw new IndexOutOfBoundsException();
-			}
-			K oldContent = content;
-			content = element;
-			return oldContent;
-		}
-		
-		public K get(int index) {
-			if (index != 0) {
-				throw new IndexOutOfBoundsException();
-			}
-			return content;
-		}
-		
-		public int size() {
-			return content == null ? 0 : 1;
-		}
-		
 	}
 	
 }

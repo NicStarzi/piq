@@ -6,4 +6,7 @@ public interface PSelectionObs {
 	
 	public void onSelectionRemoved(PSelection selection, PModelIndex index);
 	
+	public void onLastSelectedChanged(PSelection selection, 
+			PModelIndex prevLastSelected, PModelIndex newLastSelected);
+	
 }

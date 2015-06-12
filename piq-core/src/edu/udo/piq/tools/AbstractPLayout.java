@@ -154,6 +154,14 @@ public abstract class AbstractPLayout implements PLayout {
 		}
 	}
 	
+	protected void setChildConstraint(PComponent child, Object constraint) {
+		PCompInfo info = compMap.get(child);
+		if (info == null) {
+			throw new IllegalArgumentException("component is not a child of this layout: "+child);
+		}
+		info.constr = constraint;
+	}
+	
 	public PComponent getChildForConstraint(Object constraint) {
 		for (PCompInfo info : compMap.values()) {
 			if ((info.constr == null && constraint == null) 
@@ -241,8 +249,8 @@ public abstract class AbstractPLayout implements PLayout {
 	protected static class PCompInfo {
 		
 		protected final PComponent comp;
-		protected final Object constr;
 		protected final MutablePBounds bounds;
+		protected Object constr;
 		
 		public PCompInfo(PComponent component, Object constraint) {
 			comp = component;

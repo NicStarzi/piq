@@ -9,6 +9,7 @@ public class PListMultiSelection extends AbstractPSelection implements PListSele
 	protected final List<PModelIndex> indices = new ArrayList<>();
 	
 	public void addSelection(PModelIndex index) {
+		setLastSelected(index);
 		if (indices.contains(index)) {
 			return;
 		}
@@ -20,6 +21,9 @@ public class PListMultiSelection extends AbstractPSelection implements PListSele
 	@SuppressWarnings("null")
 	public void removeSelection(PModelIndex index) {
 		if (indices.remove(index)) {
+			if (index == getLastSelected()) {
+				setLastSelected(null);
+			}
 			int indexVal = ((PListIndex) index).getIndexValue();
 			
 			List<PListIndex> indicesToRemove = null;
@@ -67,6 +71,10 @@ public class PListMultiSelection extends AbstractPSelection implements PListSele
 	
 	public List<PModelIndex> getAllSelected() {
 		return Collections.unmodifiableList(indices);
+	}
+	
+	public PListIndex getLastSelected() {
+		return (PListIndex) super.getLastSelected();
 	}
 	
 	public boolean isSelected(PModelIndex index) {

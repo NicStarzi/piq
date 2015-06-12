@@ -52,17 +52,14 @@ public abstract class AbstractPRoot implements PRoot {
 //	};
 	private final PLayoutObs layoutObs = new PLayoutObs() {
 		public void layoutInvalidated(PReadOnlyLayout layout) {
-			needReLayout = true;
 			reLayOut(AbstractPRoot.this);
 		}
 		public void childRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
 //			child.removeObs(childObs);
-			needReLayout = true;
 			reLayOut(AbstractPRoot.this);
 		}
 		public void childAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
 //			child.addObs(childObs);
-			needReLayout = true;
 			reLayOut(AbstractPRoot.this);
 		}
 	};
@@ -120,6 +117,9 @@ public abstract class AbstractPRoot implements PRoot {
 	public void reLayOut(PComponent component) {
 //		System.out.println("reLayOut "+component);
 		reLayOutCompsFront.add(component);
+		if (component == this) {
+			needReLayout = true;
+		}
 	}
 	
 	protected void tickAllTimers() {
@@ -181,6 +181,7 @@ public abstract class AbstractPRoot implements PRoot {
 	protected void setDesignSheet(PDesignSheet designSheet) {
 		this.designSheet = designSheet;
 		needReLayout = true;
+		reLayOut(this);
 		reRender(this);
 	}
 	
@@ -317,7 +318,6 @@ public abstract class AbstractPRoot implements PRoot {
 	
 	protected void fireSizeChanged() {
 		reRender(this);
-		needReLayout = true;
 		reLayOut(this);
 		for (PComponentObs obs : compObsList) {
 			obs.preferredSizeChanged(this);

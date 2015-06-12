@@ -4,7 +4,7 @@ import java.util.ConcurrentModificationException;
 
 import edu.udo.piq.components.util.PModelHistory;
 
-public interface PModel extends Iterable<Object> {
+public interface PModel extends Iterable<PModelIndex> {
 	
 	/**
 	 * Returns the object that is stored within this model at the 

@@ -1,5 +1,6 @@
 package edu.udo.piq.comps.selectcomps;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public interface PDropComponent extends PSelectionComponent {
@@ -41,7 +42,7 @@ public interface PDropComponent extends PSelectionComponent {
 		if (selection == null) {
 			return null;
 		}
-		return getSelection().getAllSelected();
+		return new ArrayList<>(getSelection().getAllSelected());
 	}
 	
 }

@@ -2,6 +2,8 @@ package edu.udo.piq.comps.selectcomps;
 
 public interface PTreeSelection extends PSelection {
 	
+	public PTreeIndex getLastSelected();
+	
 	public default PTreeIndex asTreeIndex(PModelIndex index) {
 		if (index == null) {
 			throw new NullPointerException("index == null");

@@ -2,6 +2,8 @@ package edu.udo.piq.comps.selectcomps;
 
 public interface PListSelection extends PSelection {
 	
+	public PListIndex getLastSelected();
+	
 	public default int asListIndex(PModelIndex index) {
 		if (index == null) {
 			throw new NullPointerException("index == null");

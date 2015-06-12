@@ -71,7 +71,10 @@ public class SwingPKeyboard implements PKeyboard {
 		}
 		setModifierState(Modifier.CAPS, e.isShiftDown() || capsLockDown);
 		if (key != null && isModifierToggled(Modifier.CTRL)) {
-			key = ctrlMetaMap.get(key);
+			Key ctrlKey = ctrlMetaMap.get(key);
+			if (ctrlKey != null) {
+				key = ctrlKey;
+			}
 		}
 		if (key != null) {
 			int index = key.ordinal();

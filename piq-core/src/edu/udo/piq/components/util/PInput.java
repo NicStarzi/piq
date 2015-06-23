@@ -13,9 +13,9 @@ public interface PInput {
 		return KeyInputType.TRIGGER;
 	}
 	
-	public Key getTriggerKey();
+	public Key getInputKey();
 	
-	public boolean canBeTriggered(PKeyboard keyboard);
+	public boolean canBeUsed(PKeyboard keyboard);
 	
 	public static enum KeyInputType {
 		PRESS, 

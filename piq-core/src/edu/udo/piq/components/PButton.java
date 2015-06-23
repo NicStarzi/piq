@@ -23,13 +23,13 @@ import edu.udo.piq.tools.ImmutablePInsets;
 public class PButton extends AbstractPInputLayoutOwner {
 	
 	protected final PInput pressEnterInput = new PInput() {
-		public Key getTriggerKey() {
+		public Key getInputKey() {
 			return Key.ENTER;
 		}
 		public KeyInputType getKeyInputType() {
 			return KeyInputType.TRIGGER;
 		}
-		public boolean canBeTriggered(PKeyboard keyboard) {
+		public boolean canBeUsed(PKeyboard keyboard) {
 			return isEnabled() && getModel() != null;
 		}
 	};
@@ -39,13 +39,13 @@ public class PButton extends AbstractPInputLayoutOwner {
 		}
 	};
 	protected final PInput releaseEnterInput = new PInput() {
-		public Key getTriggerKey() {
+		public Key getInputKey() {
 			return Key.ENTER;
 		}
 		public KeyInputType getKeyInputType() {
 			return KeyInputType.RELEASE;
 		}
-		public boolean canBeTriggered(PKeyboard keyboard) {
+		public boolean canBeUsed(PKeyboard keyboard) {
 			return isEnabled() && getModel() != null;
 		}
 	};

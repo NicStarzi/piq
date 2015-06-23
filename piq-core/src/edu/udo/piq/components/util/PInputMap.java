@@ -23,8 +23,8 @@ public class PInputMap {
 				}
 				for (InputReactionTuple tuple : inputMap.values()) {
 					if (tuple.input.getKeyInputType() == KeyInputType.PRESS
-							&& tuple.input.getTriggerKey() == key 
-							&& tuple.input.canBeTriggered(keyboard)) {
+							&& tuple.input.getInputKey() == key 
+							&& tuple.input.canBeUsed(keyboard)) {
 						
 						tuple.reaction.run();
 					}
@@ -36,8 +36,8 @@ public class PInputMap {
 				}
 				for (InputReactionTuple tuple : inputMap.values()) {
 					if (tuple.input.getKeyInputType() == KeyInputType.TRIGGER 
-							&& tuple.input.getTriggerKey() == key 
-							&& tuple.input.canBeTriggered(keyboard)) {
+							&& tuple.input.getInputKey() == key 
+							&& tuple.input.canBeUsed(keyboard)) {
 						
 						tuple.reaction.run();
 					}
@@ -49,8 +49,8 @@ public class PInputMap {
 				}
 				for (InputReactionTuple tuple : inputMap.values()) {
 					if (tuple.input.getKeyInputType() == KeyInputType.RELEASE 
-							&& tuple.input.getTriggerKey() == key 
-							&& tuple.input.canBeTriggered(keyboard)) {
+							&& tuple.input.getInputKey() == key 
+							&& tuple.input.canBeUsed(keyboard)) {
 						
 						tuple.reaction.run();
 					}

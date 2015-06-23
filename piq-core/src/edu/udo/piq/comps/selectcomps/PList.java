@@ -33,13 +33,13 @@ public class PList extends AbstractPInputLayoutOwner
 	protected static final int DRAG_AND_DROP_DISTANCE = 20;
 	
 	private final PInput moveUpInput = new PInput() {
-		public Key getTriggerKey() {
+		public Key getInputKey() {
 			return Key.UP;
 		}
 		public KeyInputType getKeyInputType() {
 			return KeyInputType.PRESS;
 		}
-		public boolean canBeTriggered(PKeyboard keyboard) {
+		public boolean canBeUsed(PKeyboard keyboard) {
 			return isEnabled() && getModel() != null 
 					&& getSelection() != null 
 					&& getSelection().getLastSelected() != null;
@@ -51,13 +51,13 @@ public class PList extends AbstractPInputLayoutOwner
 		}
 	};
 	private final PInput moveDownInput = new PInput() {
-		public Key getTriggerKey() {
+		public Key getInputKey() {
 			return Key.DOWN;
 		}
 		public KeyInputType getKeyInputType() {
 			return KeyInputType.PRESS;
 		}
-		public boolean canBeTriggered(PKeyboard keyboard) {
+		public boolean canBeUsed(PKeyboard keyboard) {
 			return isEnabled() && getModel() != null 
 					&& getSelection() != null 
 					&& getSelection().getLastSelected() != null;

@@ -7,6 +7,7 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PDnDManager;
 import edu.udo.piq.PDnDSupport;
 import edu.udo.piq.PDnDTransfer;
+import edu.udo.piq.PDnDTransfer.IndexAndContentTuple;
 import edu.udo.piq.components.PPicture;
 import edu.udo.piq.tools.ImmutablePDnDTransfer;
 
@@ -43,10 +44,9 @@ public class DefaultPDnDSupport implements PDnDSupport {
 				return false;
 			}
 		}
-		@SuppressWarnings("unchecked")
-		List<Object> dataList = (List<Object>) transfer.getData();
-		for (Object data : dataList) {
-			if (!model.canAdd(dropIndex, data)) {
+		List<IndexAndContentTuple> dataList = transfer.getData();
+		for (IndexAndContentTuple tuple : dataList) {
+			if (!model.canAdd(dropIndex, tuple.getContent())) {
 				return false;
 			}
 		}
@@ -63,10 +63,9 @@ public class DefaultPDnDSupport implements PDnDSupport {
 		PModel model = dropComp.getModel();
 		PModelIndex dropIndex = dropComp.getDropIndex(x, y);
 		
-		@SuppressWarnings("unchecked")
-		List<Object> dataList = (List<Object>) transfer.getData();
-		for (Object data : dataList) {
-			model.add(dropIndex, data);
+		List<IndexAndContentTuple> dataList = transfer.getData();
+		for (IndexAndContentTuple tuple : dataList) {
+			model.add(dropIndex, tuple.getContent());
 		}
 	}
 	
@@ -113,9 +112,10 @@ public class DefaultPDnDSupport implements PDnDSupport {
 		PDropComponent dragComp = (PDropComponent) source;
 		PModel model = dragComp.getModel();
 		List<PModelIndex> dragIndices = dragComp.getDragIndices();
-		List<Object> data = new ArrayList<>();
+		List<IndexAndContentTuple> data = new ArrayList<>();
 		for (PModelIndex dragIndex : dragIndices) {
-			data.add(model.get(dragIndex));
+			data.add(new IndexAndContentTuple(model.get(dragIndex), dragIndex));
+//			data.add(model.get(dragIndex));
 		}
 		activeTransfer = new ImmutablePDnDTransfer(source, x, y, data, 
 				createVisibleRepresentation(data));
@@ -184,7 +184,7 @@ public class DefaultPDnDSupport implements PDnDSupport {
 		dropComp.setDropHighlight(null);
 	}
 	
-	protected PComponent createVisibleRepresentation(List<Object> data) {
+	protected PComponent createVisibleRepresentation(List<IndexAndContentTuple> data) {
 		PPicture pic = new PPicture();
 		pic.getModel().setImagePath("DragAndDrop.png");
 		pic.setStretchToSize(true);

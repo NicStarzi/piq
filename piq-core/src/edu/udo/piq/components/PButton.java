@@ -60,25 +60,6 @@ public class PButton extends AbstractPInputLayoutOwner {
 	
 	protected final List<PButtonModelObs> modelObsList = new CopyOnWriteArrayList<>();
 	protected final List<PButtonObs> obsList = new CopyOnWriteArrayList<>();
-//	private final PKeyboardObs keyObs = new PKeyboardObs() {
-//		public void keyTriggered(PKeyboard keyboard, Key key) {
-//			if (!hasFocus()) {
-//				return;
-//			}
-//			if (key == Key.ENTER && getModel() != null) {
-//				getModel().setPressed(true);
-//			}
-//		}
-//		public void keyReleased(PKeyboard keyboard, Key key) {
-//			if (!hasFocus()) {
-//				return;
-//			}
-//			if (key == Key.ENTER && getModel() != null && isPressed()) {
-//				getModel().setPressed(false);
-//				fireClickEvent();
-//			}
-//		}
-//	};
 	private final PMouseObs mouseObs = new PMouseObs() {
 //		public void mouseMoved(PMouse mouse) {
 //			setMouseOver(isMouseOverThisOrChild());
@@ -105,7 +86,6 @@ public class PButton extends AbstractPInputLayoutOwner {
 		}
 	};
 	protected PButtonModel model;
-//	protected boolean mouseOver;
 	
 	public PButton() {
 		super();
@@ -113,13 +93,10 @@ public class PButton extends AbstractPInputLayoutOwner {
 		defaultLayout.setInsets(new ImmutablePInsets(8));
 		setLayout(defaultLayout);
 		setModel(new DefaultPButtonModel());
-//		addObs(keyObs);
 		addObs(mouseObs);
 		
-		defineInput(pressEnterInput.getDefaultIdentifier(), 
-				pressEnterInput, pressEnterReaction);
-		defineInput(releaseEnterInput.getDefaultIdentifier(), 
-				releaseEnterInput, releaseEnterReaction);
+		defineInput("enterPress", pressEnterInput, pressEnterReaction);
+		defineInput("enterRelease", releaseEnterInput, releaseEnterReaction);
 	}
 	
 	protected PCentricLayout getLayoutInternal() {
@@ -156,15 +133,6 @@ public class PButton extends AbstractPInputLayoutOwner {
 	public PButtonModel getModel() {
 		return model;
 	}
-	
-//	public void setMouseOver(boolean value) {
-//		mouseOver = value;
-//		fireReRenderEvent();
-//	}
-//	
-//	public boolean isMouseOver() {
-//		return mouseOver;
-//	}
 	
 	public boolean isPressed() {
 		if (getModel() == null) {
@@ -208,10 +176,6 @@ public class PButton extends AbstractPInputLayoutOwner {
 	
 	public PSize getDefaultPreferredSize() {
 		return getLayout().getPreferredSize();
-	}
-	
-	public boolean isFocusable() {
-		return true;
 	}
 	
 	public void addObs(PButtonObs obs) {

@@ -8,6 +8,10 @@ public class AbstractPInputLayoutOwner extends AbstractPLayoutOwner {
 	protected final PInputMap inputMap = new PInputMap(this);
 	protected boolean enabled = true;
 	
+	public void defineInput(PInput input, Runnable reaction) {
+		defineInput(input.getDefaultIdentifier(), input, reaction);
+	}
+	
 	public void defineInput(Object identifier, PInput input, Runnable reaction) {
 		inputMap.defineInput(identifier, input, reaction);
 	}
@@ -25,6 +29,10 @@ public class AbstractPInputLayoutOwner extends AbstractPLayoutOwner {
 	
 	public boolean isEnabled() {
 		return enabled;
+	}
+	
+	public boolean isFocusable() {
+		return true;
 	}
 	
 }

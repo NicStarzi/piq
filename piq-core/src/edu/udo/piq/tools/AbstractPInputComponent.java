@@ -8,6 +8,10 @@ public class AbstractPInputComponent extends AbstractPComponent {
 	protected final PInputMap inputMap = new PInputMap(this);
 	protected boolean enabled = true;
 	
+	protected void defineInput(PInput input, Runnable reaction) {
+		defineInput(input.getDefaultIdentifier(), input, reaction);
+	}
+	
 	protected void defineInput(Object identifier, PInput input, Runnable reaction) {
 		inputMap.defineInput(identifier, input, reaction);
 	}
@@ -25,6 +29,10 @@ public class AbstractPInputComponent extends AbstractPComponent {
 	
 	public boolean isEnabled() {
 		return enabled;
+	}
+	
+	public boolean isFocusable() {
+		return true;
 	}
 	
 }

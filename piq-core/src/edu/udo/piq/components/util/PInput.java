@@ -6,7 +6,7 @@ import edu.udo.piq.PKeyboard.Key;
 public interface PInput {
 	
 	public default Object getDefaultIdentifier() {
-		return getClass().getName();
+		return getKeyInputType().name()+"_"+getInputKey().name();
 	}
 	
 	public default KeyInputType getKeyInputType() {

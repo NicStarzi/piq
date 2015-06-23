@@ -5,40 +5,34 @@ import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PKeyboard;
-import edu.udo.piq.PReadOnlyLayout;
+import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PMouse;
-import edu.udo.piq.PMouseObs;
-import edu.udo.piq.PRenderer;
-import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PMouse.MouseButton;
-import edu.udo.piq.PKeyboardObs;
-import edu.udo.piq.components.util.PModelHistory;
+import edu.udo.piq.PMouseObs;
+import edu.udo.piq.PReadOnlyLayout;
+import edu.udo.piq.PRenderer;
+import edu.udo.piq.components.util.PInput;
 import edu.udo.piq.layouts.PTupleLayout;
 import edu.udo.piq.layouts.PTupleLayout.Constraint;
-import edu.udo.piq.tools.AbstractPLayoutOwner;
+import edu.udo.piq.tools.AbstractPInputLayoutOwner;
 
-public class PCheckBoxTuple extends AbstractPLayoutOwner {
+public class PCheckBoxTuple extends AbstractPInputLayoutOwner {
 	
-	private final PKeyboardObs keyObs = new PKeyboardObs() {
-		public void keyTriggered(PKeyboard keyboard, Key key) {
-			if (!hasFocus() || getCheckBox() == null || getCheckBox().getModel() == null) {
-				return;
-			}
-			PCheckBoxModel model = getCheckBox().getModel();
-			if (key == Key.ENTER) {
-				getCheckBox().toggleChecked();
-			} else if (key == Key.UNDO) {
-				PModelHistory history = model.getHistory();
-				if (history != null && history.canUndo()) {
-					history.undo();
-				}
-			} else if (key == Key.REDO) {
-				PModelHistory history = model.getHistory();
-				if (history != null && history.canUndo()) {
-					history.redo();
-				}
-			}
+	protected final PInput pressEnterInput = new PInput() {
+		public Key getInputKey() {
+			return Key.ENTER;
+		}
+		public KeyInputType getKeyInputType() {
+			return KeyInputType.TRIGGER;
+		}
+		public boolean canBeUsed(PKeyboard keyboard) {
+			return isEnabled() && getCheckBox() != null && getCheckBox().getModel() != null;
+		}
+	};
+	protected final Runnable pressEnterReaction = new Runnable() {
+		public void run() {
+			getCheckBox().toggleChecked();
 		}
 	};
 	private final PMouseObs mouseObs = new PMouseObs() {
@@ -80,7 +74,6 @@ public class PCheckBoxTuple extends AbstractPLayoutOwner {
 		super();
 		setLayout(new PTupleLayout(this));
 		getLayoutInternal().addChild(new PCheckBox(), Constraint.FIRST);
-		addObs(keyObs);
 		addObs(mouseObs);
 		addObs(new PFocusObs() {
 			public void focusGained(PComponent oldOwner, PComponent newOwner) {
@@ -90,6 +83,7 @@ public class PCheckBoxTuple extends AbstractPLayoutOwner {
 				fireReRenderEvent();
 			}
 		});
+		defineInput("enter", pressEnterInput, pressEnterReaction);
 	}
 	
 	public PCheckBoxTuple(PComponent secondComponent) {
@@ -146,10 +140,6 @@ public class PCheckBoxTuple extends AbstractPLayoutOwner {
 			renderer.setColor(PColor.GREY50);
 			renderer.strokeQuad(x, y, fx, fy);
 		}
-	}
-	
-	public boolean isFocusable() {
-		return true;
 	}
 	
 	public boolean defaultFillsAllPixels() {

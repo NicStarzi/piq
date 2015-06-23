@@ -5,40 +5,34 @@ import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PKeyboard;
-import edu.udo.piq.PReadOnlyLayout;
+import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PMouse;
-import edu.udo.piq.PMouseObs;
-import edu.udo.piq.PRenderer;
-import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PMouse.MouseButton;
-import edu.udo.piq.PKeyboardObs;
-import edu.udo.piq.components.util.PModelHistory;
+import edu.udo.piq.PMouseObs;
+import edu.udo.piq.PReadOnlyLayout;
+import edu.udo.piq.PRenderer;
+import edu.udo.piq.components.util.PInput;
 import edu.udo.piq.layouts.PTupleLayout;
 import edu.udo.piq.layouts.PTupleLayout.Constraint;
-import edu.udo.piq.tools.AbstractPLayoutOwner;
+import edu.udo.piq.tools.AbstractPInputLayoutOwner;
 
-public class PRadioButtonTuple extends AbstractPLayoutOwner {
+public class PRadioButtonTuple extends AbstractPInputLayoutOwner {
 	
-	private final PKeyboardObs keyObs = new PKeyboardObs() {
-		public void keyTriggered(PKeyboard keyboard, Key key) {
-			if (!hasFocus() || getRadioButton() == null || getRadioButton().getModel() == null) {
-				return;
-			}
-			PRadioButtonModel model = getRadioButton().getModel();
-			if (key == Key.ENTER) {
-				getRadioButton().setSelected();
-			} else if (key == Key.UNDO) {
-				PModelHistory history = model.getHistory();
-				if (history != null && history.canUndo()) {
-					history.undo();
-				}
-			} else if (key == Key.REDO) {
-				PModelHistory history = model.getHistory();
-				if (history != null && history.canUndo()) {
-					history.redo();
-				}
-			}
+	protected final PInput pressEnterInput = new PInput() {
+		public Key getInputKey() {
+			return Key.ENTER;
+		}
+		public KeyInputType getKeyInputType() {
+			return KeyInputType.TRIGGER;
+		}
+		public boolean canBeUsed(PKeyboard keyboard) {
+			return isEnabled() && getRadioButton() != null && getRadioButton().getModel() != null;
+		}
+	};
+	protected final Runnable pressEnterReaction = new Runnable() {
+		public void run() {
+			getRadioButton().setSelected();
 		}
 	};
 	private final PMouseObs mouseObs = new PMouseObs() {
@@ -80,7 +74,6 @@ public class PRadioButtonTuple extends AbstractPLayoutOwner {
 		super();
 		setLayout(new PTupleLayout(this));
 		getLayoutInternal().addChild(new PRadioButton(), Constraint.FIRST);
-		addObs(keyObs);
 		addObs(mouseObs);
 		addObs(new PFocusObs() {
 			public void focusGained(PComponent oldOwner, PComponent newOwner) {
@@ -90,6 +83,7 @@ public class PRadioButtonTuple extends AbstractPLayoutOwner {
 				fireReRenderEvent();
 			}
 		});
+		defineInput("enter", pressEnterInput, pressEnterReaction);
 	}
 	
 	public PRadioButtonTuple(PComponent secondComponent) {
@@ -146,10 +140,6 @@ public class PRadioButtonTuple extends AbstractPLayoutOwner {
 			renderer.setColor(PColor.GREY50);
 			renderer.strokeQuad(x, y, fx, fy);
 		}
-	}
-	
-	public boolean isFocusable() {
-		return true;
 	}
 	
 	public boolean defaultFillsAllPixels() {

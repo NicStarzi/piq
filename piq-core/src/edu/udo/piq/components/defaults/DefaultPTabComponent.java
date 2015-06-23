@@ -65,12 +65,14 @@ public class DefaultPTabComponent extends PPanel implements PTabComponent {
 			renderer.setColor(PColor.GREY75);
 		}
 		renderer.drawQuad(x, y, fx, fy);
+		renderer.setColor(PColor.GREY50);
 		if (isSelected()) {
-			renderer.setColor(PColor.GREY50);
+			renderer.strokeTop(x, y, fx, fy);
+			renderer.strokeLeft(x, y, fx, fy);
+			renderer.strokeRight(x, y, fx, fy);
 		} else {
-			renderer.setColor(PColor.GREY50);
+			renderer.strokeQuad(x, y, fx, fy);
 		}
-		renderer.strokeQuad(x, y, fx, fy);
 	}
 	
 	public PSize getDefaultPreferredSize() {

@@ -58,9 +58,19 @@ public class PListLayout extends AbstractPLayout {
 				} else {
 					compList.add((Integer) constraint, child);
 				}
+				int index = compList.indexOf(child);
+				for (int i = index; i < compList.size(); i++) {
+					Integer con = Integer.valueOf(i);
+					setChildConstraint(compList.get(i), con);
+				}
 			}
 			public void childRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
-				compList.remove(child);
+				int index = compList.indexOf(child);
+				compList.remove(index);
+				for (int i = index; i < compList.size(); i++) {
+					Integer con = Integer.valueOf(i);
+					setChildConstraint(compList.get(i), con);
+				}
 			}
 		});
 		

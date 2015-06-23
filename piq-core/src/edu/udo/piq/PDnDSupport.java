@@ -1,8 +1,8 @@
 package edu.udo.piq;
 
-import edu.udo.piq.components.PTable;
 import edu.udo.piq.components.PTextArea;
 import edu.udo.piq.comps.selectcomps.PList;
+import edu.udo.piq.comps.selectcomps.PTable;
 import edu.udo.piq.comps.selectcomps.PTree;
 
 /**

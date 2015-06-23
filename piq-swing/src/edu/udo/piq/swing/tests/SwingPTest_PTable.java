@@ -8,10 +8,7 @@ import javax.swing.JFrame;
 import javax.swing.Timer;
 
 import edu.udo.piq.components.PPanel;
-import edu.udo.piq.components.PTable;
-import edu.udo.piq.components.defaults.DefaultPTableModel;
 import edu.udo.piq.layouts.PBorderLayout;
-import edu.udo.piq.layouts.PBorderLayout.Constraint;
 import edu.udo.piq.swing.JCompPRoot;
 
 public class SwingPTest_PTable {
@@ -49,18 +46,18 @@ public class SwingPTest_PTable {
 		updateTimer.setRepeats(true);
 		updateTimer.start();
 		
-		DefaultPTableModel tm = new DefaultPTableModel(3, 1);
-		tm.add("Hello World", 0, 0);
-		tm.add(Integer.valueOf(42), 1, 0);
-		tm.add(Boolean.TRUE, 2, 0);
+//		DefaultPTableModel tm = new DefaultPTableModel(3, 1);
+//		tm.add("Hello World", 0, 0);
+//		tm.add(Integer.valueOf(42), 1, 0);
+//		tm.add(Boolean.TRUE, 2, 0);
 		
 		PPanel bodyPnl = new PPanel();
 		bodyPnl.setLayout(new PBorderLayout(bodyPnl));
 		root.setBody(bodyPnl);
 		
-		PTable table = new PTable();
-		table.setModel(tm);
-		bodyPnl.addChild(table, Constraint.CENTER);
+//		PTable table = new PTable();
+//		table.setModel(tm);
+//		bodyPnl.addChild(table, Constraint.CENTER);
 	}
 	
 }

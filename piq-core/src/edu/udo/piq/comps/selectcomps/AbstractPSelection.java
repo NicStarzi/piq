@@ -1,5 +1,6 @@
 package edu.udo.piq.comps.selectcomps;
 
+import java.util.AbstractList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -52,6 +53,32 @@ public abstract class AbstractPSelection implements PSelection {
 		for (PSelectionObs obs : obsList) {
 			obs.onLastSelectedChanged(this, prevLastIndex, newLastIndex);
 		}
+	}
+	
+	protected static class SingletonList<K> extends AbstractList<K> {
+		
+		private K content = null;
+		
+		public K set(int index, K element) {
+			if (index != 0) {
+				throw new IndexOutOfBoundsException();
+			}
+			K oldContent = content;
+			content = element;
+			return oldContent;
+		}
+		
+		public K get(int index) {
+			if (index != 0) {
+				throw new IndexOutOfBoundsException();
+			}
+			return content;
+		}
+		
+		public int size() {
+			return content == null ? 0 : 1;
+		}
+		
 	}
 	
 }

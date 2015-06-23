@@ -1,6 +1,5 @@
 package edu.udo.piq.comps.selectcomps;
 
-import java.util.AbstractList;
 import java.util.Collections;
 import java.util.List;
 
@@ -50,32 +49,6 @@ public class PListSingleSelection extends AbstractPSelection implements PListSel
 		if (indices.get(0) != null) {
 			fireSelectionRemoved(indices.get(0));
 		}
-	}
-	
-	protected static class SingletonList<K> extends AbstractList<K> {
-		
-		private K content = null;
-		
-		public K set(int index, K element) {
-			if (index != 0) {
-				throw new IndexOutOfBoundsException();
-			}
-			K oldContent = content;
-			content = element;
-			return oldContent;
-		}
-		
-		public K get(int index) {
-			if (index != 0) {
-				throw new IndexOutOfBoundsException();
-			}
-			return content;
-		}
-		
-		public int size() {
-			return content == null ? 0 : 1;
-		}
-		
 	}
 	
 }

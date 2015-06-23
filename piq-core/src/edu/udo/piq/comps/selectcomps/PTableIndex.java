@@ -36,7 +36,11 @@ public class PTableIndex implements PModelIndex {
 	}
 	
 	public int hashCode() {
-		return getColumn() + 31 * getRow();
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + column;
+		result = prime * result + row;
+		return result;
 	}
 	
 	public boolean equals(Object obj) {

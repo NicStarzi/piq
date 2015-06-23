@@ -3,7 +3,7 @@ package edu.udo.piq.comps.selectcomps;
 import java.util.Collections;
 import java.util.List;
 
-public class PTreeSingleSelection extends AbstractPSelection implements PTreeSelection {
+public class PTableSingleSelection extends AbstractPSelection implements PTableSelection {
 	
 	protected final List<PModelIndex> indices = new SingletonList<PModelIndex>();
 	
@@ -37,8 +37,8 @@ public class PTreeSingleSelection extends AbstractPSelection implements PTreeSel
 		return Collections.unmodifiableList(indices);
 	}
 	
-	public PTreeIndex getLastSelected() {
-		return (PTreeIndex) super.getLastSelected();
+	public PTableIndex getLastSelected() {
+		return (PTableIndex) super.getLastSelected();
 	}
 	
 	public boolean isSelected(PModelIndex index) {

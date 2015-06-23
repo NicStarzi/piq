@@ -1,13 +1,16 @@
 package edu.udo.piq.lwjgl3;
 
-import org.lwjgl.Sys;
-import org.lwjgl.glfw.*;
-import org.lwjgl.opengl.*;
- 
 import java.nio.ByteBuffer;
- 
-import static org.lwjgl.glfw.Callbacks.*;
+
+import org.lwjgl.Sys;
+import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWKeyCallback;
+import org.lwjgl.glfw.GLFWvidmode;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GLContext;
+
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.*;
  
@@ -43,7 +46,7 @@ public class Lwjgl3Test {
         glfwSetErrorCallback(errorCallback = errorCallbackPrint(System.err));
  
         // Initialize GLFW. Most GLFW functions will not work before doing this.
-        if ( glfwInit() != GL11.GL_TRUE )
+        if (glfwInit() != GL11.GL_TRUE)
             throw new IllegalStateException("Unable to initialize GLFW");
  
         // Configure our window

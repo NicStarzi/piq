@@ -44,7 +44,7 @@ public interface PRenderer {
 	 * @throws NullPointerException if bounds are null
 	 * @see PBounds
 	 * @see #setClipBounds(int, int, int, int)
-	 * @see #getClipBounds()
+//	 * @see #getClipBounds()
 	 * @see #drawLine(float, float, float, float, float)
 	 * @see #drawTriangle(float, float, float, float, float, float)
 	 * @see #drawQuad(float, float, float, float)
@@ -70,7 +70,7 @@ public interface PRenderer {
 	 * @param height
 	 * @see PBounds
 	 * @see #setClipBounds(PBounds)
-	 * @see #getClipBounds()
+//	 * @see #getClipBounds()
 	 * @see #drawLine(float, float, float, float, float)
 	 * @see #drawTriangle(float, float, float, float, float, float)
 	 * @see #drawQuad(float, float, float, float)
@@ -79,27 +79,27 @@ public interface PRenderer {
 	 */
 	public void setClipBounds(int x, int y, int width, int height);
 	
-	/**
-	 * Returns the current clip bounds that are being used for any 
-	 * subsequent rendering operations.<br>
-	 * Any rendering being done outside of the clip bounds will be 
-	 * ignored and only pixels within the clip bounds will be rendered 
-	 * to screen.<br>
-	 * This method never returns null.<br>
-	 * 
-	 * @return the current clip bounds
-	 * @see PBounds
-	 * @see #setClipBounds(PBounds)
-	 * @see #setClipBounds(int, int, int, int)
-	 * @see #drawLine(float, float, float, float, float)
-	 * @see #drawTriangle(float, float, float, float, float, float)
-	 * @see #drawQuad(float, float, float, float)
-	 * @see #drawQuad(float, float, float, float, float, float, float, float)
-	 * @see #drawString(PFontResource, String, float, float)
-	 * @see #drawImage(PImageResource, float, float, float, float)
-	 * @see #drawImage(PImageResource, int, int, int, int, float, float, float, float)
-	 */
-	public PBounds getClipBounds();
+//	/**
+//	 * Returns the current clip bounds that are being used for any 
+//	 * subsequent rendering operations.<br>
+//	 * Any rendering being done outside of the clip bounds will be 
+//	 * ignored and only pixels within the clip bounds will be rendered 
+//	 * to screen.<br>
+//	 * This method never returns null.<br>
+//	 * 
+//	 * @return the current clip bounds
+//	 * @see PBounds
+//	 * @see #setClipBounds(PBounds)
+//	 * @see #setClipBounds(int, int, int, int)
+//	 * @see #drawLine(float, float, float, float, float)
+//	 * @see #drawTriangle(float, float, float, float, float, float)
+//	 * @see #drawQuad(float, float, float, float)
+//	 * @see #drawQuad(float, float, float, float, float, float, float, float)
+//	 * @see #drawString(PFontResource, String, float, float)
+//	 * @see #drawImage(PImageResource, float, float, float, float)
+//	 * @see #drawImage(PImageResource, int, int, int, int, float, float, float, float)
+//	 */
+//	public PBounds getClipBounds();
 	
 	/**
 	 * Sets the {@link PColor} that will be used by any subsequent 
@@ -110,7 +110,7 @@ public interface PRenderer {
 	 * @throws NullPointerException if color is null
 	 * @see #setColor1(double, double, double, double)
 	 * @see #setColor255(int, int, int, int)
-	 * @see #getColor()
+//	 * @see #getColor()
 	 * @see PColor
 	 * @see #drawLine(float, float, float, float, float)
 	 * @see #drawTriangle(float, float, float, float, float, float)
@@ -133,7 +133,7 @@ public interface PRenderer {
 	 * @param a the alpha color component as an integer between 0 and 255 inclusive
 	 * @see #setColor(PColor)
 	 * @see #setColor1(double, double, double, double)
-	 * @see #getColor()
+//	 * @see #getColor()
 	 * @see PColor
 	 * @see #drawLine(float, float, float, float, float)
 	 * @see #drawTriangle(float, float, float, float, float, float)
@@ -156,7 +156,7 @@ public interface PRenderer {
 	 * @param a the alpha color component as a floating point number between 0.0 and 1.0 inclusive
 	 * @see #setColor(PColor)
 	 * @see #setColor255(int, int, int, int)
-	 * @see #getColor()
+//	 * @see #getColor()
 	 * @see PColor
 	 * @see #drawLine(float, float, float, float, float)
 	 * @see #drawTriangle(float, float, float, float, float, float)
@@ -166,23 +166,23 @@ public interface PRenderer {
 	 */
 	public void setColor1(double r, double g, double b, double a);
 	
-	/**
-	 * Returns the current {@link PColor} being used for rendering 
-	 * geometry or text.<br>
-	 * This method will never return null.<br>
-	 * 
-	 * @return the color used for drawing geometry or text
-	 * @see #setColor(PColor)
-	 * @see #setColor1(double, double, double, double)
-	 * @see #setColor255(int, int, int, int)
-	 * @see PColor
-	 * @see #drawLine(float, float, float, float, float)
-	 * @see #drawTriangle(float, float, float, float, float, float)
-	 * @see #drawQuad(float, float, float, float)
-	 * @see #drawQuad(float, float, float, float, float, float, float, float)
-	 * @see #drawString(PFontResource, String, float, float)
-	 */
-	public PColor getColor();
+//	/**
+//	 * Returns the current {@link PColor} being used for rendering 
+//	 * geometry or text.<br>
+//	 * This method will never return null.<br>
+//	 * 
+//	 * @return the color used for drawing geometry or text
+//	 * @see #setColor(PColor)
+//	 * @see #setColor1(double, double, double, double)
+//	 * @see #setColor255(int, int, int, int)
+//	 * @see PColor
+//	 * @see #drawLine(float, float, float, float, float)
+//	 * @see #drawTriangle(float, float, float, float, float, float)
+//	 * @see #drawQuad(float, float, float, float)
+//	 * @see #drawQuad(float, float, float, float, float, float, float, float)
+//	 * @see #drawString(PFontResource, String, float, float)
+//	 */
+//	public PColor getColor();
 	
 	public default void drawImage(PImageResource imgRes, float x, float y, float fx, float fy) {
 		PSize size = imgRes.getSize();

@@ -64,7 +64,7 @@ public class PTabPanel extends AbstractPLayoutOwner {
 	
 	public void removeTab(int index) {
 		if (index == getSelectedTabIndex() && tabList.size() > 1) {
-			// TODO: do stuff
+			// TODO: select different tab
 		}
 		TabBodyTuple tuple = tabList.remove(index);
 		getLayoutInternal().removeChild(tuple.getTabComponent());

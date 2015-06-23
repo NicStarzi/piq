@@ -87,6 +87,7 @@ public class PTreeLayout2 extends AbstractPLayout implements PReadOnlyLayout {
 	protected void onChildRemoved(PComponent child, PTreeIndex index) {
 		if (child == rootComp) {
 			rootComp = null;
+			childMap.clear();
 			return;
 		}
 		PComponent parent = getParentAt(index);
@@ -109,6 +110,8 @@ public class PTreeLayout2 extends AbstractPLayout implements PReadOnlyLayout {
 			if (currentIndex.getLastIndex() != i) {
 				PTreeIndex newIndex = currentIndex.replaceIndex(currentIndex.getDepth() - 1, i);
 				setChildConstraint(sibbling, newIndex);
+				
+				//TODO: Correct indices of sub-tree
 			}
 		}
 	}

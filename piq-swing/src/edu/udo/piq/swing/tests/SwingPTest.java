@@ -16,7 +16,6 @@ import edu.udo.piq.components.PCheckBoxObs;
 import edu.udo.piq.components.PCheckBoxTuple;
 import edu.udo.piq.components.PDropDownList;
 import edu.udo.piq.components.PLabel;
-import edu.udo.piq.components.PList;
 import edu.udo.piq.components.PPanel;
 import edu.udo.piq.components.PPicture;
 import edu.udo.piq.components.PProgressBar;
@@ -28,8 +27,9 @@ import edu.udo.piq.components.PSliderModelObs;
 import edu.udo.piq.components.PSplitPanel;
 import edu.udo.piq.components.PTextArea;
 import edu.udo.piq.components.PToolTip;
-import edu.udo.piq.components.defaults.DefaultPListModel;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
+import edu.udo.piq.comps.selectcomps.DefaultPListModel;
+import edu.udo.piq.comps.selectcomps.PList;
 import edu.udo.piq.designs.standard.PStandardDesignSheet;
 import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
@@ -108,7 +108,7 @@ public class SwingPTest {
 		pic.setStretchToSize(true);
 		splitH.setFirstComponent(pic);
 		
-		PList list = new PList(new DefaultPListModel(new String[] {
+		PList list = new PList(new DefaultPListModel(new Object[] {
 				"A", "B", "C", "D",
 				"E", "F", "G", "H",
 			}));
@@ -192,7 +192,7 @@ public class SwingPTest {
 		ddl.setID("DropDownList");
 		String[] elems = new String[] {"one", "two", "three", "four"};
 		for (String s : elems) {
-			ddl.getList().getModel().addElement(ddl.getList().getModel().getElementCount(), s);
+			ddl.getList().getModel().add(ddl.getList().getModel().getSize(), s);
 		}
 		btnPnl.addChild(ddl, null);
 		

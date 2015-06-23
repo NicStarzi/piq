@@ -10,9 +10,9 @@ import javax.swing.Timer;
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PButtonObs;
 import edu.udo.piq.components.PLabel;
-import edu.udo.piq.components.PList;
 import edu.udo.piq.components.PPanel;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
+import edu.udo.piq.comps.selectcomps.PList;
 import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PBorderLayout.Constraint;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
@@ -80,13 +80,13 @@ public class SwingPTest_ScrollBar {
 		btnAdd.addObs(new PButtonObs() {
 			int counter = 0;
 			public void onClick(PButton button) {
-				list.getModel().addElement(list.getModel().getElementCount(), "Element "+(counter++));
+				list.getModel().add(list.getModel().getSize(), "Element "+(counter++));
 			}
 		});
 		btnRemove.addObs(new PButtonObs() {
 			public void onClick(PButton button) {
-				if (list.getModel().canRemoveElement(0)) {
-					list.getModel().removeElement(0);
+				if (list.getModel().canRemove(0)) {
+					list.getModel().remove(0);
 				}
 			}
 		});

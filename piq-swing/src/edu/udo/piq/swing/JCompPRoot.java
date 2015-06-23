@@ -32,9 +32,9 @@ import edu.udo.piq.PDesignSheet;
 import edu.udo.piq.PDialog;
 import edu.udo.piq.PDnDManager;
 import edu.udo.piq.PFontResource;
-import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.PImageResource;
+import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.tools.AbstractPRoot;
 import edu.udo.piq.tools.ReRenderSet;
@@ -124,6 +124,13 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 //		timerUpdate.setCoalesce(true);
 	}
 	
+	/*
+	 * Overwrites the protected super method
+	 */
+	public void setDesignSheet(PDesignSheet designSheet) {
+		super.setDesignSheet(designSheet);
+	}
+	
 	public JPanel getPanel() {
 		return panel;
 	}
@@ -160,13 +167,13 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 		return pDlg;
 	}
 	
-	public PFontResource fetchFontResource(String fontName, int pointSize, Style style) 
+	public PFontResource fetchFontResource(String fontName, double pointSize, Style style) 
 			throws NullPointerException, IllegalArgumentException 
 	{
 		FontInfo info = new FontInfo(fontName, pointSize, style);
 		AwtPFontResource fontRes = fontMap.get(info);
 		if (fontRes == null) {
-			fontRes = new AwtPFontResource(new Font(fontName, getAwtStyle(info), pointSize));
+			fontRes = new AwtPFontResource(new Font(fontName, getAwtStyle(info), (int) pointSize));
 			fontMap.put(info, fontRes);
 		}
 		return fontRes;
@@ -210,10 +217,6 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 			imgMap.put(imgPath, imgRes);
 		}
 		return imgRes;
-	}
-	
-	public void setDesignSheet(PDesignSheet designSheet) {
-		super.setDesignSheet(designSheet);
 	}
 	
 	public PBounds getBounds() {

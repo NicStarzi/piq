@@ -12,7 +12,6 @@ import edu.udo.piq.components.PButtonObs;
 import edu.udo.piq.components.PLabel;
 import edu.udo.piq.components.PPanel;
 import edu.udo.piq.components.PTabPanel;
-import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.layouts.PFreeLayout;
 import edu.udo.piq.layouts.PFreeLayout.FreeConstraint;
 import edu.udo.piq.swing.JCompPRoot;
@@ -55,11 +54,10 @@ public class SwingPTest_TabPanel {
 		PTabPanel bodyPnl = new PTabPanel();
 		root.setBody(bodyPnl);
 		
-		PLabel tabLbl1 = new PLabel(new DefaultPTextModel("Tab 1"));
 		PPanel tab1 = new PPanel();
 		tab1.setLayout(new PFreeLayout(tab1));
 		PButton btnTab1 = new PButton();
-		btnTab1.setContent(new PLabel(new DefaultPTextModel("Button 1")));
+		btnTab1.setContent(new PLabel("Button 1"));
 		btnTab1.addObs(new PButtonObs() {
 			public void onClick(PButton button) {
 				System.out.println("Button Tab 1");
@@ -67,11 +65,10 @@ public class SwingPTest_TabPanel {
 		});
 		tab1.addChild(btnTab1, new FreeConstraint(13, 47));
 		
-		PLabel tabLbl2 = new PLabel(new DefaultPTextModel("Tab 2"));
 		PPanel tab2 = new PPanel();
 		tab2.setLayout(new PFreeLayout(tab2));
 		PButton btnTab2 = new PButton();
-		btnTab2.setContent(new PLabel(new DefaultPTextModel("Button B")));
+		btnTab2.setContent(new PLabel("Button B"));
 		btnTab2.addObs(new PButtonObs() {
 			public void onClick(PButton button) {
 				System.out.println("Button Tab 2");
@@ -79,7 +76,9 @@ public class SwingPTest_TabPanel {
 		});
 		tab2.addChild(btnTab2, new FreeConstraint(68, 172));
 		
+		PLabel tabLbl1 = new PLabel("Tab 1");
 		bodyPnl.addTab(tabLbl1, tab1);
+		PLabel tabLbl2 = new PLabel("Tab 2");
 		bodyPnl.addTab(tabLbl2, tab2);
 	}
 	

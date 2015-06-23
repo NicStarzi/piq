@@ -69,7 +69,7 @@ public interface PDialog extends PRoot {
 	/**
 	 * Delegates to the {@link PRoot} that created this {@link PDialog}.<br>
 	 */
-	public PFontResource fetchFontResource(String fontName, int pointSize, Style style) throws NullPointerException;
+	public PFontResource fetchFontResource(String fontName, double pointSize, Style style) throws NullPointerException;
 	
 	/**
 	 * Delegates to the {@link PRoot} that created this {@link PDialog}.<br>

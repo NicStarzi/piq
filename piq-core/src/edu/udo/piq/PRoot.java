@@ -182,7 +182,7 @@ public interface PRoot extends PComponent {
 	 * @throws NullPointerException if fontName is null or style is null
 	 * @throws IllegalArgumentException if an arguments value is not supported
 	 */
-	public PFontResource fetchFontResource(String fontName, int pointSize, Style style) 
+	public PFontResource fetchFontResource(String fontName, double pointSize, Style style) 
 			throws NullPointerException, IllegalArgumentException;
 	
 	/**

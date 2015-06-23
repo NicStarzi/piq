@@ -180,7 +180,6 @@ public abstract class AbstractPRoot implements PRoot {
 	
 	protected void setDesignSheet(PDesignSheet designSheet) {
 		this.designSheet = designSheet;
-		needReLayout = true;
 		reLayOut(this);
 		reRender(this);
 	}
@@ -441,10 +440,10 @@ public abstract class AbstractPRoot implements PRoot {
 	
 	protected static class FontInfo {
 		protected final String name;
-		protected final int size;
+		protected final double size;
 		protected final Style style;
 		
-		public FontInfo(String fontName, int pointSize, Style fontStyle) {
+		public FontInfo(String fontName, double pointSize, Style fontStyle) {
 			if (fontName == null || fontStyle == null) {
 				throw new NullPointerException();
 			}
@@ -457,7 +456,7 @@ public abstract class AbstractPRoot implements PRoot {
 			return name;
 		}
 		
-		public int getSize() {
+		public double getSize() {
 			return size;
 		}
 		
@@ -470,7 +469,7 @@ public abstract class AbstractPRoot implements PRoot {
 			int result = 1;
 			result = prime * result + style.ordinal();
 			result = prime * result + name.hashCode();
-			result = prime * result + size;
+			result = prime * result + Double.hashCode(size);
 			return result;
 		}
 		

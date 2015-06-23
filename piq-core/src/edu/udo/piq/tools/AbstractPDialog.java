@@ -28,7 +28,7 @@ public abstract class AbstractPDialog extends AbstractPRoot implements PDialog {
 		return getSuperRoot().createDialog();
 	}
 	
-	public PFontResource fetchFontResource(String fontName, int pointSize,
+	public PFontResource fetchFontResource(String fontName, double pointSize,
 			Style style) throws NullPointerException 
 	{
 		throwExceptionIfDisposed();

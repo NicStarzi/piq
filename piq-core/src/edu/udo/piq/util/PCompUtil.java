@@ -14,27 +14,18 @@ public class PCompUtil {
 	
 	private PCompUtil() {}
 	
-//	/**
-//	 * If component has a parent then the {@link PBounds} of component will be 
-//	 * retrieved from its parents {@link PLayout}.<br>
-//	 * If component is an instance of {@link PRoot} then the PBounds will be 
-//	 * retrieved using the {@link PRoot#getBounds()} method.<br>
-//	 * If component does neither have a parent nor is a root null will be 
-//	 * returned.<br>
-//	 * 
-//	 * @param component
-//	 * @return the PBounds of component or null if component does not have any
-//	 * @throws NullPointerException if component is null
-//	 */
-//	public static PBounds getBoundsOf(PComponent component) throws NullPointerException {
-//		if (component.getParent() != null) {
-//			return component.getParent().getLayout().getChildBounds(component);
-//		}
-//		if (component instanceof PRoot) {
-//			return ((PRoot) component).getBounds();
-//		}
-//		return null;
-//	}
+	/**
+	 * Creates a new instance of {@link ObserverList} and returns it.<br>
+	 * Use this method if you are not sure which implementation of 
+	 * {@link ObserverList} is the best for your use case. This method 
+	 * will always return the default implementation that should be used 
+	 * in the most general case.<br>
+	 * @return		a non-null instance of {@link ObserverList}
+	 * @see ObserverList
+	 */
+	public static <E> ObserverList<E> createDefaultObserverList() {
+		return new ArrayObsList<E>();
+	}
 	
 	/**
 	 * Returns the preferred {@link PSize} of the component as returned by the 

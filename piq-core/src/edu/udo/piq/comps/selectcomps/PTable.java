@@ -107,7 +107,8 @@ public class PTable extends AbstractPInputLayoutOwner
 	private boolean isDragTagged = false;
 	
 	public PTable() {
-		this(new DefaultPTableModel());
+		//TODO Change to default model
+		this(new FixedSizePTableModel(0, 0));
 	}
 	
 	public PTable(PTableModel model) {
@@ -245,7 +246,8 @@ public class PTable extends AbstractPInputLayoutOwner
 			}
 		}
 		model = listModel;
-		getLayoutInternal().clearChildren();
+//		getLayoutInternal().clearChildren();
+		resizeLayoutTable();
 		if (getModel() != null) {
 			PTableModel model = getModel();
 			
@@ -256,6 +258,18 @@ public class PTable extends AbstractPInputLayoutOwner
 			for (PModelIndex index : model) {
 				contentAdded((PTableIndex) index, model.get(index));
 			}
+		}
+	}
+	
+	protected void resizeLayoutTable() {
+		PTableLayout3 layout = getLayoutInternal();
+		layout.removeAllColumnsAndRows();
+		PTableModel model = getModel();
+		for (int c = 0; c < model.getColumnCount(); c++) {
+			layout.addColumn();
+		}
+		for (int r = 0; r < model.getRowCount(); r++) {
+			layout.addRow();
 		}
 	}
 	
@@ -376,7 +390,22 @@ public class PTable extends AbstractPInputLayoutOwner
 		int fy = bounds.getFinalY();
 		
 		renderer.setColor(BACKGROUND_COLOR);
-		renderer.drawQuad(x + 0, y + 0, fx - 0, fy - 0);
+		renderer.drawQuad(x + 1, y + 1, fx - 1, fy - 1);
+		renderer.setColor(PColor.BLACK);
+		renderer.strokeQuad(x, y, fx, fy);
+		
+		PTableLayout3 layout = getLayoutInternal();
+		int colGapW = layout.getCellGapWidth();
+//		int rowGapH = layout.getCellGapHeight();
+		for (int c = 1; c < layout.getColumnCount(); c++) {
+			int colW = layout.getColumnWidth(c);
+			
+			for (int r = 1; r < layout.getRowCount(); r++) {
+				int cx = x + colW + (colW + colGapW) * (c - 1);
+				int cfx = cx + colGapW;
+				renderer.drawQuad(cx, y, cfx, fy);
+			}
+		}
 //		
 //		// If highlighted but no cell component is highlighted => highlight the end of the list
 //		if (isDropHighlighted() && currentDnDHighlightComponent == null) {
@@ -414,10 +443,6 @@ public class PTable extends AbstractPInputLayoutOwner
 //				renderer.drawQuad(cx, cy, cfx, cfy);
 //			}
 //		}
-	}
-	
-	public boolean isFocusable() {
-		return true;
 	}
 	
 	public void addObs(PModelObs obs) {

@@ -23,9 +23,9 @@ public class FixedSizePTableModel extends AbstractPTableModel implements PTableM
 	public Object get(PModelIndex index) throws WrongIndexType,
 			NullPointerException, IllegalIndex 
 	{
-		if (!contains(index)) {
-			throw new IllegalIndex(index);
-		}
+//		if (!contains(index)) {
+//			throw new IllegalIndex(index);
+//		}
 		PTableIndex ti = asTableIndex(index);
 		int id = id(ti.getColumn(), ti.getRow());
 		return cells[id];

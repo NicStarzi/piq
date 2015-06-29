@@ -25,7 +25,9 @@ public interface PTableModel extends PModel {
 	
 	public default boolean contains(PModelIndex index) {
 		PTableIndex ti = asTableIndex(index);
-		return contains(ti.getColumn(), ti.getRow());
+		int column = ti.getColumn();
+		int row = ti.getRow();
+		return withinBounds(column, row) && get(index) != null;
 	}
 	
 	public default boolean contains(int column, int row) {
@@ -33,11 +35,14 @@ public interface PTableModel extends PModel {
 	}
 	
 	public default boolean canAdd(PModelIndex index, Object content) {
-		return content != null && contains(index);
+		PTableIndex ti = asTableIndex(index);
+		int column = ti.getColumn();
+		int row = ti.getRow();
+		return content != null && withinBounds(column, row);
 	}
 	
 	public default boolean canAdd(int column, int row, Object content) {
-		return content != null && contains(column, row);
+		return content != null && withinBounds(column, row);
 	}
 	
 	public default void add(int column, int row, Object content) {

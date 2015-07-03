@@ -56,6 +56,23 @@ public class MovingPLayout extends AbstractPLayout {
 		timer.setOwner(null);
 	}
 	
+	public void setRadius(int value) {
+		radius = value;
+		fireInvalidateEvent();
+	}
+	
+	public int getRadius() {
+		return radius;
+	}
+	
+	public void setMoveUpdateDelay(int value) {
+		timer.setDelay(value);
+	}
+	
+	public int getMoveUpdateDelay() {
+		return timer.getDelay();
+	}
+	
 	protected boolean canAdd(PComponent component, Object constraint) {
 		return constraint == null;
 	}

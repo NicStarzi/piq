@@ -37,8 +37,8 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 	protected PLayout layout;
 	
 	/**
-	 * Saves the given {@link PReadOnlyLayout} as the layout for this component.<br>
-	 * If this component had a layout before it is cleared.<br>
+	 * Saves the given {@link PLayout} as the layout for this component.<br>
+	 * If this component had a layout before it is cleared and disposed.<br>
 	 * This method registers an observer at the given layout to react to
 	 * changes with a re-render.<br>
 	 * 
@@ -48,6 +48,7 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 		if (getLayout() != null) {
 			getLayout().removeObs(layoutObs);
 			this.layout.clearChildren();
+			this.layout.dispose();
 		}
 		this.layout = layout;
 		if (getLayout() != null) {

@@ -71,4 +71,11 @@ public interface PLayout extends PReadOnlyLayout {
 	 */
 	public void clearChildren();
 	
+	/**
+	 * Frees all resources that the layout may be holding.<br>
+	 * This method is being called by the owner of the {@link PLayout} when it is 
+	 * no longer in use. After a layout has been disposed it may no longer be used.<br>
+	 */
+	public default void dispose() {}
+	
 }

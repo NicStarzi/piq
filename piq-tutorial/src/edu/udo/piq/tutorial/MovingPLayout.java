@@ -16,7 +16,7 @@ public class MovingPLayout extends AbstractPLayout {
 	
 	protected final MutablePSize prefSize = new MutablePSize();
 	protected final PTimer timer = new PTimer(new PTimerCallback() {
-		public void action() {
+		public void onTick() {
 			time++;
 			fireInvalidateEvent();
 		}
@@ -98,7 +98,7 @@ public class MovingPLayout extends AbstractPLayout {
 	
 	public PSize getPreferredSize() {
 		if (content == null) {
-			return PSize.NULL_SIZE;
+			return PSize.ZERO_SIZE;
 		} else {
 			return getPreferredSizeOf(content);
 		}

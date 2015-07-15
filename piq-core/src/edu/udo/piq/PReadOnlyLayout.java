@@ -2,7 +2,6 @@ package edu.udo.piq;
 
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import edu.udo.piq.tools.AbstractPLayout;
 import edu.udo.piq.util.PCompUtil;
@@ -16,7 +15,7 @@ import edu.udo.piq.util.PCompUtil;
  * pattern. All implementations of PLayout should provide a way of adding 
  * and removing observers without throwing {@link ConcurrentModificationException}s 
  * if an observer is added / removed while an event is fired. The use of the 
- * {@link CopyOnWriteArrayList} is encouraged but is not enforced.<br>
+ * {@link PCompUtil#createDefaultObserverList()} is encouraged but is not enforced.<br>
  * <br>
  * For an easy to use abstract implementation of the PLayout interface 
  * have a look at the {@link AbstractPLayout} class.
@@ -156,12 +155,12 @@ public interface PReadOnlyLayout {
 	 * owner.<br>
 	 * This method never returns null.<br>
 	 * <br>
-	 * The use of the {@link PSize#NULL_SIZE} is encouraged when returning a 
+	 * The use of the {@link PSize#ZERO_SIZE} is encouraged when returning a 
 	 * size of (0, 0).<br>
 	 * 
 	 * @return the preferred size of this layout
 	 * @see PSize
-	 * @see PSize#NULL_SIZE
+	 * @see PSize#ZERO_SIZE
 	 * @see #getChildBounds(PComponent)
 	 * @see PComponent#getDefaultPreferredSize()
 	 * @see PDesign#getPreferredSize(PComponent)

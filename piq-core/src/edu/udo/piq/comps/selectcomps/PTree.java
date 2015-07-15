@@ -8,7 +8,6 @@ import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
@@ -23,6 +22,8 @@ import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.layouts.PTreeLayout2;
 import edu.udo.piq.tools.AbstractPInputLayoutOwner;
+import edu.udo.piq.util.ObserverList;
+import edu.udo.piq.util.PCompUtil;
 
 public class PTree extends AbstractPInputLayoutOwner 
 	implements PDropComponent 
@@ -46,8 +47,10 @@ public class PTree extends AbstractPInputLayoutOwner
 	protected static final PColor DROP_HIGHLIGHT_COLOR = PColor.RED;
 	protected static final int DRAG_AND_DROP_DISTANCE = 20;
 	
-	private final List<PModelObs> modelObsList = new CopyOnWriteArrayList<>();
-	private final List<PSelectionObs> selectionObsList = new CopyOnWriteArrayList<>();
+	protected final ObserverList<PModelObs> modelObsList
+		= PCompUtil.createDefaultObserverList();
+	protected final ObserverList<PSelectionObs> selectionObsList
+		= PCompUtil.createDefaultObserverList();
 	private final PSelectionObs selectionObs = new PSelectionObs() {
 		public void onSelectionAdded(PSelection selection, PModelIndex index) {
 			selectionAdded((PTreeIndex) index);

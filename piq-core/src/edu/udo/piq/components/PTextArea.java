@@ -38,7 +38,7 @@ public class PTextArea extends AbstractPComponent {
 	protected static final int DEFAULT_FOCUS_RENDER_TOGGLE_TIMER_DELAY = 6;
 	
 	private final PTimer focusToggleTimer = new PTimer(this, new PTimerCallback() {
-		public void action() {
+		public void onTick() {
 			PTextSelection selection = getSelection();
 			int selectionFrom = selection.getFrom();
 			int selectionTo = selection.getTo();
@@ -397,11 +397,11 @@ public class PTextArea extends AbstractPComponent {
 	public PSize getDefaultPreferredSize() {
 		String text = getText();
 		if (text == null || text.isEmpty()) {
-			return PSize.NULL_SIZE;
+			return PSize.ZERO_SIZE;
 		}
 		PFontResource font = getDefaultFont();
 		if (font == null) {
-			return PSize.NULL_SIZE;
+			return PSize.ZERO_SIZE;
 		}
 		int prefW = 0;
 		int prefH = 0;

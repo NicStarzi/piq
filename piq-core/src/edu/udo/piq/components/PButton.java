@@ -1,24 +1,23 @@
 package edu.udo.piq.components;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PKeyboard;
+import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PMouse;
+import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
-import edu.udo.piq.PKeyboard.Key;
-import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.components.defaults.DefaultPButtonModel;
 import edu.udo.piq.components.util.PInput;
 import edu.udo.piq.layouts.PCentricLayout;
 import edu.udo.piq.tools.AbstractPInputLayoutOwner;
 import edu.udo.piq.tools.ImmutablePInsets;
+import edu.udo.piq.util.ObserverList;
+import edu.udo.piq.util.PCompUtil;
 
 public class PButton extends AbstractPInputLayoutOwner {
 	
@@ -58,28 +57,10 @@ public class PButton extends AbstractPInputLayoutOwner {
 		}
 	};
 	
-	protected final List<PButtonModelObs> modelObsList = new CopyOnWriteArrayList<>();
-	protected final List<PButtonObs> obsList = new CopyOnWriteArrayList<>();
-	private final PMouseObs mouseObs = new PMouseObs() {
-//		public void mouseMoved(PMouse mouse) {
-//			setMouseOver(isMouseOverThisOrChild());
-//		}
-		public void buttonTriggered(PMouse mouse, MouseButton btn) {
-			if (isEnabled() && btn == MouseButton.LEFT && getModel() != null && isMouseOverThisOrChild()) {
-				getModel().setPressed(true);
-			}
-		}
-		public void buttonReleased(PMouse mouse, MouseButton btn) {
-			if (btn == MouseButton.LEFT && getModel() != null) {
-				boolean oldPressed = isPressed();
-				getModel().setPressed(false);
-				if (oldPressed && isEnabled() && isMouseOverThisOrChild()) {
-					takeFocus();
-					fireClickEvent();
-				}
-			}
-		}
-	};
+	protected final ObserverList<PButtonModelObs> modelObsList
+		= PCompUtil.createDefaultObserverList();
+	protected final ObserverList<PButtonObs> obsList
+		= PCompUtil.createDefaultObserverList();
 	protected final PButtonModelObs modelObs = new PButtonModelObs() {
 		public void onChange(PButtonModel model) {
 			fireReRenderEvent();
@@ -93,7 +74,23 @@ public class PButton extends AbstractPInputLayoutOwner {
 		defaultLayout.setInsets(new ImmutablePInsets(8));
 		setLayout(defaultLayout);
 		setModel(new DefaultPButtonModel());
-		addObs(mouseObs);
+		addObs(new PMouseObs() {
+			public void buttonTriggered(PMouse mouse, MouseButton btn) {
+				if (isEnabled() && btn == MouseButton.LEFT && getModel() != null && isMouseOverThisOrChild()) {
+					getModel().setPressed(true);
+				}
+			}
+			public void buttonReleased(PMouse mouse, MouseButton btn) {
+				if (btn == MouseButton.LEFT && getModel() != null) {
+					boolean oldPressed = isPressed();
+					getModel().setPressed(false);
+					if (oldPressed && isEnabled() && isMouseOverThisOrChild()) {
+						takeFocus();
+						fireClickEvent();
+					}
+				}
+			}
+		});
 		
 		defineInput("enterPress", pressEnterInput, pressEnterReaction);
 		defineInput("enterRelease", releaseEnterInput, releaseEnterReaction);

@@ -19,9 +19,11 @@ public class PDivider extends AbstractPComponent {
 		int fy = bounds.getFinalY();
 		
 		renderer.setColor(PColor.WHITE);
-		renderer.drawQuad(x + 0, y + 0, fx - 0, fy - 0);
+		renderer.strokeTop(x, y, fx, fy);
+		renderer.strokeLeft(x, y, fx, fy);
 		renderer.setColor(PColor.BLACK);
-		renderer.drawQuad(x + 1, y + 1, fx - 0, fy - 0);
+		renderer.strokeRight(x, y, fx, fy);
+		renderer.strokeBottom(x, y, fx, fy);
 		renderer.setColor(PColor.GREY75);
 		renderer.drawQuad(x + 1, y + 1, fx - 1, fy - 1);
 	}

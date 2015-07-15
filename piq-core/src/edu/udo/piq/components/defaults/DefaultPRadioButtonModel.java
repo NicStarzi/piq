@@ -1,15 +1,15 @@
 package edu.udo.piq.components.defaults;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import edu.udo.piq.components.PRadioButtonModelObs;
 import edu.udo.piq.components.PRadioButtonModel;
+import edu.udo.piq.components.PRadioButtonModelObs;
 import edu.udo.piq.components.util.PModelHistory;
+import edu.udo.piq.util.ObserverList;
+import edu.udo.piq.util.PCompUtil;
 
 public class DefaultPRadioButtonModel implements PRadioButtonModel {
 	
-	protected final List<PRadioButtonModelObs> obsList = new CopyOnWriteArrayList<>();
+	protected final ObserverList<PRadioButtonModelObs> obsList
+		= PCompUtil.createDefaultObserverList();
 	protected boolean selected;
 	
 	public void setSelected(final boolean isSelected) {

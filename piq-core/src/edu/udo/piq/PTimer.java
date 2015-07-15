@@ -104,7 +104,7 @@ public class PTimer {
 			} else {
 				stop();
 			}
-			callback.action();
+			callback.onTick();
 		}
 	}
 	

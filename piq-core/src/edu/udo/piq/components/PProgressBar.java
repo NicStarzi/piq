@@ -1,18 +1,17 @@
 package edu.udo.piq.components;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PFontResource;
+import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
-import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.components.defaults.DefaultPProgressBarModel;
 import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.ImmutablePSize;
+import edu.udo.piq.util.ObserverList;
+import edu.udo.piq.util.PCompUtil;
 
 public class PProgressBar extends AbstractPComponent {
 	
@@ -26,7 +25,8 @@ public class PProgressBar extends AbstractPComponent {
 	protected static final PColor DEFAULT_BORDER_COLOR = PColor.BLACK;
 	protected static final PColor DEFAULT_PROGRESS_COLOR = PColor.BLUE;
 	
-	private final List<PProgressBarModelObs> modelObsList = new CopyOnWriteArrayList<>();
+	protected final ObserverList<PProgressBarModelObs> modelObsList
+		= PCompUtil.createDefaultObserverList();
 	private final PProgressBarModelObs modelObs = new PProgressBarModelObs() {
 		public void valueChanged(PProgressBarModel model) {
 			fireReRenderEvent();

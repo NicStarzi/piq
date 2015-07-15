@@ -47,7 +47,7 @@ public class PToolTip extends AbstractPLayoutOwner {
 		}
 	};
 	private final PTimer showTimer = new PTimer(new PTimerCallback() {
-		public void action() {
+		public void onTick() {
 			addToOverlay();
 		}
 	});
@@ -128,7 +128,7 @@ public class PToolTip extends AbstractPLayoutOwner {
 		if (getLayout() != null) {
 			return getLayout().getPreferredSize();
 		}
-		return PSize.NULL_SIZE;
+		return PSize.ZERO_SIZE;
 	}
 	
 	protected void repositionOnOverlay() {

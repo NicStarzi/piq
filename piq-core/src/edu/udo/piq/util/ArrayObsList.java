@@ -1,6 +1,10 @@
 package edu.udo.piq.util;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * An implementation of {@link ObserverList} that uses an 
@@ -167,6 +171,54 @@ public class ArrayObsList<E> implements ObserverList<E> {
 			}
 		}
 		msgCount--;
+	}
+	
+	public Iterator<E> iterator() {
+		if (isEmpty()) {
+			List<E> emptyList = Collections.emptyList();
+			return emptyList.iterator();
+		}
+		return new ArrayObsListIterator<E>(this);
+	}
+	
+	private static class ArrayObsListIterator<E> implements Iterator<E> {
+		
+		private final ArrayObsList<E>	obsList;
+		private final Object[]			arr;
+		private final long[]			modTimeStamp;
+		private final long				timeStamp;
+		private int						pos;
+		
+		public ArrayObsListIterator(ArrayObsList<E> list) {
+			obsList = list;
+			arr = obsList.arr;
+			modTimeStamp = obsList.modTimeStamp;
+			timeStamp = obsList.modCount;
+			obsList.msgCount++;
+			pos = 0;
+		}
+		
+		public boolean hasNext() {
+			for (; pos < arr.length; pos++) {
+				if (arr[pos] != null && modTimeStamp[pos] < timeStamp) {
+					return true;
+				}
+			}
+			return false;
+		}
+		
+		@SuppressWarnings("unchecked")
+		public E next() {
+			if (!hasNext()) {
+				throw new NoSuchElementException();
+			}
+			E next = (E) arr[pos];
+			if (!hasNext()) {
+				obsList.msgCount--;
+			}
+			return next;
+		}
+		
 	}
 	
 }

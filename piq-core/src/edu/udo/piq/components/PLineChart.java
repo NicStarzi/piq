@@ -113,7 +113,7 @@ public class PLineChart extends AbstractPComponent {
 	
 	public PSize getDefaultPreferredSize() {
 		if (getModel() == null || getModel().getDataCount() == 0) {
-			return PSize.NULL_SIZE;
+			return PSize.ZERO_SIZE;
 		}
 		int scaleX = getDefaultScaleX();
 		int scaleY = getDefaultScaleY();

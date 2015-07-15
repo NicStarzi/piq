@@ -14,7 +14,7 @@ public interface PSize {
 	 * This instance could be used to save memory whenever this 
 	 * specific size is needed.<br>
 	 */
-	public static final PSize NULL_SIZE = new PSize() {
+	public static final PSize ZERO_SIZE = new PSize() {
 		public int getWidth() {
 			return 0;
 		}

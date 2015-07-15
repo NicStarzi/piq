@@ -1,8 +1,5 @@
 package edu.udo.piq.components;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PImageResource;
 import edu.udo.piq.PRenderer;
@@ -10,10 +7,13 @@ import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.defaults.DefaultPPictureModel;
 import edu.udo.piq.tools.AbstractPComponent;
+import edu.udo.piq.util.ObserverList;
+import edu.udo.piq.util.PCompUtil;
 
 public class PPicture extends AbstractPComponent {
 	
-	private final List<PPictureModelObs> modelObsList = new CopyOnWriteArrayList<>();
+	protected final ObserverList<PPictureModelObs> modelObsList
+		= PCompUtil.createDefaultObserverList();
 	private final PPictureModelObs modelObs = new PPictureModelObs() {
 		public void imagePathChanged(PPictureModel model) {
 			firePreferredSizeChangedEvent();
@@ -87,7 +87,7 @@ public class PPicture extends AbstractPComponent {
 	public PSize getDefaultPreferredSize() {
 		PImageResource imgRes = getImageResource();
 		if (imgRes == null) {
-			return PSize.NULL_SIZE;
+			return PSize.ZERO_SIZE;
 		}
 		return imgRes.getSize();
 	}

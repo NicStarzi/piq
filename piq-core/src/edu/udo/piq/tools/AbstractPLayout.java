@@ -3,9 +3,7 @@ package edu.udo.piq.tools;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
@@ -14,11 +12,13 @@ import edu.udo.piq.PLayoutDesign;
 import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
+import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
 
 public abstract class AbstractPLayout implements PLayout {
 	
-	private final List<PLayoutObs> obsList = new CopyOnWriteArrayList<>();
+	protected final ObserverList<PLayoutObs> obsList
+		= PCompUtil.createDefaultObserverList();
 	private final Map<PComponent, PCompInfo> compMap = new HashMap<>();
 	private final PComponent owner;
 	private PLayoutDesign design;
@@ -134,7 +134,7 @@ public abstract class AbstractPLayout implements PLayout {
 	
 	protected PSize getPreferredSizeOf(PComponent child) {
 		if (child == null) {
-			return PSize.NULL_SIZE;
+			return PSize.ZERO_SIZE;
 		}
 		return PCompUtil.getPreferredSizeOf(child);
 	}

@@ -42,14 +42,14 @@ public interface PFontResource {
 	 * that need to calculate their preferred sizes.<br>
 	 * This method should never return null.<br>
 	 * <br>
-	 * For empty texts (or texts with no size) the usage of {@link PSize#NULL_SIZE} 
+	 * For empty texts (or texts with no size) the usage of {@link PSize#ZERO_SIZE} 
 	 * is encouraged.<br>
 	 * 
 	 * @param text the string for which the size is to be determined
 	 * @return the minimum size for the given string when rendered with this font
 	 * @throws NullPointerException if string is null
 	 * @see PSize
-	 * @see PSize#NULL_SIZE
+	 * @see PSize#ZERO_SIZE
 	 * @see PComponent#getDefaultPreferredSize()
 	 * @see PDesign#getPreferredSize(PComponent)
 	 * @see PReadOnlyLayout#getPreferredSize()

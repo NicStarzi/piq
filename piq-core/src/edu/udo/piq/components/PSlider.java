@@ -1,8 +1,5 @@
 package edu.udo.piq.components;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PKeyboard;
@@ -17,6 +14,8 @@ import edu.udo.piq.components.defaults.DefaultPSliderModel;
 import edu.udo.piq.components.util.PInput;
 import edu.udo.piq.tools.AbstractPInputComponent;
 import edu.udo.piq.tools.ImmutablePSize;
+import edu.udo.piq.util.ObserverList;
+import edu.udo.piq.util.PCompUtil;
 
 public class PSlider extends AbstractPInputComponent {
 	
@@ -107,7 +106,8 @@ public class PSlider extends AbstractPInputComponent {
 			getModel().setValuePercent(valuePercent);
 		}
 	};
-	private final List<PSliderModelObs> modelObsList = new CopyOnWriteArrayList<>();
+	protected final ObserverList<PSliderModelObs> modelObsList
+		= PCompUtil.createDefaultObserverList();
 	protected final PSliderModelObs modelObs = new PSliderModelObs() {
 		public void rangeChanged(PSliderModel model) {
 			fireReRenderEvent();

@@ -1,32 +1,31 @@
 package edu.udo.piq.components;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PComponentObs;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PMouse;
+import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRootOverlay;
 import edu.udo.piq.PSize;
-import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.components.defaults.DefaultPButtonModel;
 import edu.udo.piq.layouts.PCentricLayout;
 import edu.udo.piq.layouts.PFreeLayout;
 import edu.udo.piq.layouts.PFreeLayout.FreeConstraint;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.tools.ImmutablePInsets;
+import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
 
 public class PDropDown extends AbstractPLayoutOwner {
 	
 	private static final int TRIANGLE_MIN_W = 12;
 	
-	private final List<PDropDownObs> obsList = new CopyOnWriteArrayList<>();
+	protected final ObserverList<PDropDownObs> obsList
+		= PCompUtil.createDefaultObserverList();
 	private final PMouseObs mouseObs = new PMouseObs() {
 		public void buttonTriggered(PMouse mouse, MouseButton btn) {
 			if (btn == MouseButton.LEFT && getModel() != null && isMouseOverThisOrChild()) {

@@ -1,8 +1,5 @@
 package edu.udo.piq.tools;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PComponentObs;
 import edu.udo.piq.PDesign;
@@ -13,14 +10,15 @@ import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PKeyboard.Modifier;
 import edu.udo.piq.PKeyboardObs;
-import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PMouse;
+import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
+import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
-import edu.udo.piq.PMouse.MouseButton;
+import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
 
 public class AbstractPComponent implements PComponent {
@@ -43,19 +41,23 @@ public class AbstractPComponent implements PComponent {
 	/**
 	 * Holds all {@link PComponentObs PComponentObservers} of this component.
 	 */
-	protected final List<PComponentObs> compObsList = new CopyOnWriteArrayList<>();
+	protected final ObserverList<PComponentObs> compObsList
+		= PCompUtil.createDefaultObserverList();
 	/**
 	 * Holds all {@link PFocusObs PFocusObservers} of this component.
 	 */
-	protected final List<PFocusObs> focusObsList = new CopyOnWriteArrayList<>();
+	protected final ObserverList<PFocusObs> focusObsList
+		= PCompUtil.createDefaultObserverList();
 	/**
 	 * Holds all {@link PMouseObs PMouseObservers} of this component.
 	 */
-	protected final List<PMouseObs> mouseObsList = new CopyOnWriteArrayList<>();
+	protected final ObserverList<PMouseObs> mouseObsList
+		= PCompUtil.createDefaultObserverList();
 	/**
 	 * Holds all {@link PKeyboardObs PKeyboardObservers} of this component.
 	 */
-	protected final List<PKeyboardObs> keyboardObsList = new CopyOnWriteArrayList<>();
+	protected final ObserverList<PKeyboardObs> keyboardObsList
+		= PCompUtil.createDefaultObserverList();
 	/**
 	 * Is registered at the {@link PRoot} of this component.<br>
 	 * This observer is used to propagate focus events to {@link PFocusObs} 
@@ -341,7 +343,7 @@ public class AbstractPComponent implements PComponent {
 		if (getLayout() != null) {
 			return getLayout().getPreferredSize();
 		}
-		return PSize.NULL_SIZE;
+		return PSize.ZERO_SIZE;
 	}
 	
 	/**

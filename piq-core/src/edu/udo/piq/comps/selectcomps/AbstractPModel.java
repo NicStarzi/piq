@@ -1,13 +1,13 @@
 package edu.udo.piq.comps.selectcomps;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import edu.udo.piq.components.util.PModelHistory;
+import edu.udo.piq.util.ObserverList;
+import edu.udo.piq.util.PCompUtil;
 
 public abstract class AbstractPModel implements PModel {
 	
-	protected final List<PModelObs> obsList = new CopyOnWriteArrayList<>();
+	protected final ObserverList<PModelObs> obsList
+		= PCompUtil.createDefaultObserverList();
 	
 	public PModelHistory getHistory() {
 		return null;

@@ -1,6 +1,6 @@
 package edu.udo.piq.util;
 
-public interface ObserverList<E> {
+public interface ObserverList<E> extends Iterable<E> {
 	
 	/**
 	 * Adds the new observer to this {@link ObserverList}. If an observer is 

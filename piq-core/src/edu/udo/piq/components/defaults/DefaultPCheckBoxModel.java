@@ -1,15 +1,15 @@
 package edu.udo.piq.components.defaults;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import edu.udo.piq.components.PCheckBoxModel;
 import edu.udo.piq.components.PCheckBoxModelObs;
 import edu.udo.piq.components.util.PModelHistory;
+import edu.udo.piq.util.ObserverList;
+import edu.udo.piq.util.PCompUtil;
 
 public class DefaultPCheckBoxModel implements PCheckBoxModel {
 	
-	protected final List<PCheckBoxModelObs> obsList = new CopyOnWriteArrayList<>();
+	protected final ObserverList<PCheckBoxModelObs> obsList
+		= PCompUtil.createDefaultObserverList();
 //	protected final PModelHistory history = new PModelHistory();
 	protected boolean checked;
 	

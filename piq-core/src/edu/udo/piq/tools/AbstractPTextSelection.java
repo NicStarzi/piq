@@ -1,15 +1,15 @@
 package edu.udo.piq.tools;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import edu.udo.piq.components.PTextModel;
 import edu.udo.piq.components.PTextSelection;
 import edu.udo.piq.components.PTextSelectionObs;
+import edu.udo.piq.util.ObserverList;
+import edu.udo.piq.util.PCompUtil;
 
 public abstract class AbstractPTextSelection implements PTextSelection {
 	
-	private final List<PTextSelectionObs> obsList = new CopyOnWriteArrayList<>();
+	protected final ObserverList<PTextSelectionObs> obsList
+		= PCompUtil.createDefaultObserverList();
 	private PTextModel model;
 	
 	public void setModel(PTextModel model) {

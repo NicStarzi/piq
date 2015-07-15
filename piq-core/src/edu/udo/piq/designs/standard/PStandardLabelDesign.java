@@ -57,14 +57,14 @@ public class PStandardLabelDesign extends PStandardDesign implements PDesign {
 		PLabel lbl = (PLabel) component;
 		String text = lbl.getText();
 		if (text == null || text.isEmpty()) {
-			return PSize.NULL_SIZE;
+			return PSize.ZERO_SIZE;
 		}
 		if (cachedFontRes == null) {
 			cachedFontRes = lbl.getRoot().
 					fetchFontResource(fontName, fontSize, fontStyle);
 		}
 		if (cachedFontRes == null) {
-			return PSize.NULL_SIZE;
+			return PSize.ZERO_SIZE;
 		}
 		return cachedFontRes.getSize(text);
 	}

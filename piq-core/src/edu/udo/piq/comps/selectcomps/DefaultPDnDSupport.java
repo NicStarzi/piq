@@ -13,7 +13,6 @@ import edu.udo.piq.tools.ImmutablePDnDTransfer;
 
 public class DefaultPDnDSupport implements PDnDSupport {
 	
-//	public static final DefaultPDnDSupport FLYWEIGHT_INSTANCE = new DefaultPDnDSupport();
 	private PDnDTransfer activeTransfer;
 	
 	public PDnDTransfer getActiveTransfer() {

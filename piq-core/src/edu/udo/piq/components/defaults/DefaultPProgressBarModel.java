@@ -1,17 +1,17 @@
 package edu.udo.piq.components.defaults;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import edu.udo.piq.components.PProgressBarModel;
 import edu.udo.piq.components.PProgressBarModelObs;
+import edu.udo.piq.util.ObserverList;
+import edu.udo.piq.util.PCompUtil;
 
 public class DefaultPProgressBarModel implements PProgressBarModel {
 	
 	public static final int DEFAULT_MAX_VALUE = 100;
 	public static final int DEFAULT_VALUE = 0;
 	
-	private final List<PProgressBarModelObs> obsList = new CopyOnWriteArrayList<>();
+	protected final ObserverList<PProgressBarModelObs> obsList
+		= PCompUtil.createDefaultObserverList();
 	private int maxValue = DEFAULT_MAX_VALUE;
 	private int value = DEFAULT_VALUE;
 	

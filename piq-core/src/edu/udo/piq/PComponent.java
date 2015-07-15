@@ -3,7 +3,6 @@ package edu.udo.piq;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import edu.udo.piq.components.PGlassPanel;
 import edu.udo.piq.components.util.PFocusTraversal;
@@ -30,8 +29,8 @@ import edu.udo.piq.util.PGuiUtil;
  * PComponents can be observed by {@link PComponentObs}ervers using the observer 
  * pattern. All implementations of PComponent should provide a way of adding 
  * and removing observers without throwing {@link ConcurrentModificationException}s 
- * if an observer is added / removed while an event is fired. The use of the 
- * {@link CopyOnWriteArrayList} is encouraged but is not enforced.<br>
+ * if an observer is added / removed while an event is fired. The use of 
+ * {@link PCompUtil#createDefaultObserverList()} is encouraged but is not enforced.<br>
  * <br>
  * For an easy to use abstract implementation of the PComponent interface 
  * have a look at the {@link AbstractPComponent} class.
@@ -168,7 +167,7 @@ public interface PComponent {
 		if (layout != null) {
 			return layout.getPreferredSize();
 		}
-		return PSize.NULL_SIZE;
+		return PSize.ZERO_SIZE;
 	}
 	
 	/**

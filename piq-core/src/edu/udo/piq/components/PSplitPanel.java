@@ -1,25 +1,25 @@
 package edu.udo.piq.components;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PMouse;
+import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
-import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.components.defaults.DefaultPSplitPanelModel;
 import edu.udo.piq.layouts.PSplitLayout;
 import edu.udo.piq.layouts.PSplitLayout.Constraint;
 import edu.udo.piq.layouts.PSplitLayout.Orientation;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
+import edu.udo.piq.util.ObserverList;
+import edu.udo.piq.util.PCompUtil;
 
 public class PSplitPanel extends AbstractPLayoutOwner {
 	
 	protected final PDivider divider;
-	private final List<PSplitPanelObs> obsList = new CopyOnWriteArrayList<>();
+	protected final ObserverList<PSplitPanelObs> obsList
+		= PCompUtil.createDefaultObserverList();
 	private final PMouseObs mouseObs = new PMouseObs() {
 		public void mouseMoved(PMouse mouse) {
 			if (pressed) {

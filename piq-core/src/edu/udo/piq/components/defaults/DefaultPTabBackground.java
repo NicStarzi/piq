@@ -20,7 +20,7 @@ public class DefaultPTabBackground extends PPanel {
 	}
 	
 	public PSize getDefaultPreferredSize() {
-		return PSize.NULL_SIZE;
+		return PSize.ZERO_SIZE;
 	}
 	
 }

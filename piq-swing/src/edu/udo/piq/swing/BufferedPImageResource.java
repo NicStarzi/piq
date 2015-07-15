@@ -14,7 +14,7 @@ public class BufferedPImageResource implements PImageResource {
 	public BufferedPImageResource(BufferedImage img) {
 		bImg = img;
 		if (bImg == null) {
-			size = PSize.NULL_SIZE;
+			size = PSize.ZERO_SIZE;
 		} else {
 			size = new ImmutablePSize(bImg.getWidth(), bImg.getHeight());
 		}

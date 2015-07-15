@@ -1,17 +1,16 @@
 package edu.udo.piq.components;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PFontResource;
+import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
-import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.tools.AbstractPComponent;
+import edu.udo.piq.util.ObserverList;
+import edu.udo.piq.util.PCompUtil;
 
 public class PLabel extends AbstractPComponent {
 	
@@ -20,7 +19,8 @@ public class PLabel extends AbstractPComponent {
 	protected static final Style DEFAULT_FONT_STYLE = Style.PLAIN;
 	protected static final PColor DEFAULT_TEXT_COLOR = PColor.BLACK;
 	
-	private final List<PTextModelObs> modelObsList = new CopyOnWriteArrayList<>();
+	protected final ObserverList<PTextModelObs> modelObsList
+		= PCompUtil.createDefaultObserverList();
 	private final PTextModelObs modelObs = new PTextModelObs() {
 		public void textChanged(PTextModel model) {
 			firePreferredSizeChangedEvent();
@@ -95,11 +95,11 @@ public class PLabel extends AbstractPComponent {
 	public PSize getDefaultPreferredSize() {
 		String text = getText();
 		if (text == null || text.isEmpty()) {
-			return PSize.NULL_SIZE;
+			return PSize.ZERO_SIZE;
 		}
 		PFontResource font = getDefaultFont();
 		if (font == null) {
-			return PSize.NULL_SIZE;
+			return PSize.ZERO_SIZE;
 		}
 		return font.getSize(text);
 	}

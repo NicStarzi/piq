@@ -1,14 +1,14 @@
 package edu.udo.piq.tools;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import edu.udo.piq.components.PLineChartModel;
 import edu.udo.piq.components.PLineChartModelObs;
+import edu.udo.piq.util.ObserverList;
+import edu.udo.piq.util.PCompUtil;
 
 public abstract class AbstractPLineChartModel implements PLineChartModel {
 	
-	private final List<PLineChartModelObs> obsList = new CopyOnWriteArrayList<>();
+	protected final ObserverList<PLineChartModelObs> obsList
+		= PCompUtil.createDefaultObserverList();
 	
 	public boolean canAddDataPoint(Object value) {
 		return canAddDataPoint(getDataCount(), value);

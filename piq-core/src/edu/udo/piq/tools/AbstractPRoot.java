@@ -2,17 +2,29 @@ package edu.udo.piq.tools;
 
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.concurrent.CopyOnWriteArrayList;
 
+import edu.udo.piq.PClipboard;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PComponentObs;
 import edu.udo.piq.PDesign;
 import edu.udo.piq.PDesignSheet;
+import edu.udo.piq.PDnDManager;
+import edu.udo.piq.PDnDSupport;
 import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PFontResource.Style;
+import edu.udo.piq.PKeyboard;
+import edu.udo.piq.PKeyboardObs;
+import edu.udo.piq.PLayoutObs;
+import edu.udo.piq.PMouse;
+import edu.udo.piq.PMouseObs;
+import edu.udo.piq.PReadOnlyLayout;
+import edu.udo.piq.PRenderer;
+import edu.udo.piq.PRoot;
+import edu.udo.piq.PRootOverlay;
+import edu.udo.piq.PSize;
+import edu.udo.piq.PTimer;
 import edu.udo.piq.components.PGlassPanel;
 import edu.udo.piq.components.PPanel;
 import edu.udo.piq.components.util.DefaultPFocusTraversal;
@@ -20,20 +32,8 @@ import edu.udo.piq.components.util.PFocusTraversal;
 import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PRootLayout;
 import edu.udo.piq.layouts.PRootLayout.Constraint;
-import edu.udo.piq.PClipboard;
-import edu.udo.piq.PDnDManager;
-import edu.udo.piq.PDnDSupport;
-import edu.udo.piq.PKeyboard;
-import edu.udo.piq.PKeyboardObs;
-import edu.udo.piq.PReadOnlyLayout;
-import edu.udo.piq.PLayoutObs;
-import edu.udo.piq.PMouse;
-import edu.udo.piq.PMouseObs;
-import edu.udo.piq.PRenderer;
-import edu.udo.piq.PRoot;
-import edu.udo.piq.PRootOverlay;
-import edu.udo.piq.PSize;
-import edu.udo.piq.PTimer;
+import edu.udo.piq.util.ObserverList;
+import edu.udo.piq.util.PCompUtil;
 
 public abstract class AbstractPRoot implements PRoot {
 	
@@ -81,8 +81,10 @@ public abstract class AbstractPRoot implements PRoot {
 	private final Set<PTimer> timersToRemove = new HashSet<>();
 	private Set<PComponent> reLayOutCompsFront = new TreeSet<>(componentComparator);
 	private Set<PComponent> reLayOutCompsBack = new TreeSet<>(componentComparator);
-	private final List<PComponentObs> compObsList = new CopyOnWriteArrayList<>();
-	private final List<PFocusObs> focusObsList = new CopyOnWriteArrayList<>();
+	protected final ObserverList<PComponentObs> compObsList
+		= PCompUtil.createDefaultObserverList();
+	protected final ObserverList<PFocusObs> focusObsList
+		= PCompUtil.createDefaultObserverList();
 	private PFocusTraversal focusTrav = new DefaultPFocusTraversal(this);
 	private PComponent focusOwner;
 	private String id;

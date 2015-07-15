@@ -1,5 +1,6 @@
 package edu.udo.piq.util;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -53,6 +54,10 @@ public class CoWALObserverList<E> implements ObserverList<E> {
 			E obs = internalList.get(i);
 			msg.notifyObs(obs);
 		}
+	}
+	
+	public Iterator<E> iterator() {
+		return internalList.iterator();
 	}
 	
 }

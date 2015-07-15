@@ -1,12 +1,14 @@
 package edu.udo.piq.comps.selectcomps;
 
 import java.util.AbstractList;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+
+import edu.udo.piq.util.ObserverList;
+import edu.udo.piq.util.PCompUtil;
 
 public abstract class AbstractPSelection implements PSelection {
 	
-	protected final List<PSelectionObs> obsList = new CopyOnWriteArrayList<>();
+	protected final ObserverList<PSelectionObs> obsList
+		= PCompUtil.createDefaultObserverList();
 	protected PModelIndex lastSelected = null;
 	
 	protected void setLastSelected(PModelIndex index) {

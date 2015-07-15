@@ -1,14 +1,14 @@
 package edu.udo.piq.components.defaults;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import edu.udo.piq.components.PButtonModel;
 import edu.udo.piq.components.PButtonModelObs;
+import edu.udo.piq.util.ObserverList;
+import edu.udo.piq.util.PCompUtil;
 
 public class DefaultPButtonModel implements PButtonModel {
 	
-	protected final List<PButtonModelObs> obsList = new CopyOnWriteArrayList<>();
+	protected final ObserverList<PButtonModelObs> obsList
+		= PCompUtil.createDefaultObserverList();
 	protected boolean pressed;
 	
 	public void setPressed(boolean isPressed) {

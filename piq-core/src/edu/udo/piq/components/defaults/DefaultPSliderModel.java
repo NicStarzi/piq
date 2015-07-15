@@ -1,15 +1,15 @@
 package edu.udo.piq.components.defaults;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import edu.udo.piq.components.PSliderModel;
 import edu.udo.piq.components.PSliderModelObs;
 import edu.udo.piq.components.util.PModelHistory;
+import edu.udo.piq.util.ObserverList;
+import edu.udo.piq.util.PCompUtil;
 
 public class DefaultPSliderModel implements PSliderModel {
 	
-	protected final List<PSliderModelObs> obsList = new CopyOnWriteArrayList<>();
+	protected final ObserverList<PSliderModelObs> obsList
+		= PCompUtil.createDefaultObserverList();
 	protected boolean pressed;
 	protected int value = 0;
 	protected int max = 100;

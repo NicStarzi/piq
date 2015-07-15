@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
@@ -22,6 +21,8 @@ import edu.udo.piq.components.util.PInput;
 import edu.udo.piq.layouts.PListLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
 import edu.udo.piq.tools.AbstractPInputLayoutOwner;
+import edu.udo.piq.util.ObserverList;
+import edu.udo.piq.util.PCompUtil;
 
 public class PList extends AbstractPInputLayoutOwner 
 	implements PDropComponent 
@@ -69,8 +70,10 @@ public class PList extends AbstractPInputLayoutOwner
 		}
 	};
 	
-	private final List<PModelObs> modelObsList = new CopyOnWriteArrayList<>();
-	private final List<PSelectionObs> selectionObsList = new CopyOnWriteArrayList<>();
+	protected final ObserverList<PModelObs> modelObsList
+		= PCompUtil.createDefaultObserverList();
+	protected final ObserverList<PSelectionObs> selectionObsList
+		= PCompUtil.createDefaultObserverList();
 	private final PSelectionObs selectionObs = new PSelectionObs() {
 		public void onSelectionAdded(PSelection selection, PModelIndex index) {
 			selectionAdded((PListIndex) index);

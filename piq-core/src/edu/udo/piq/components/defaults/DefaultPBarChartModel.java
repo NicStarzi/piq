@@ -1,18 +1,17 @@
 package edu.udo.piq.components.defaults;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import edu.udo.piq.components.PBarChartModel;
 import edu.udo.piq.components.PBarChartModelObs;
+import edu.udo.piq.util.ObserverList;
+import edu.udo.piq.util.PCompUtil;
 
 public class DefaultPBarChartModel implements PBarChartModel {
 	
-	private final List<PBarChartModelObs> obsList;
+	protected final ObserverList<PBarChartModelObs> obsList
+		= PCompUtil.createDefaultObserverList();
 	private final int[] barHeights;
 	
 	public DefaultPBarChartModel(int barCount) {
-		obsList = new CopyOnWriteArrayList<>();
 		barHeights = new int [barCount];
 	}
 	

@@ -212,7 +212,7 @@ public class ArrayObsList<E> implements ObserverList<E> {
 			if (!hasNext()) {
 				throw new NoSuchElementException();
 			}
-			E next = (E) arr[pos];
+			E next = (E) arr[pos++];
 			if (!hasNext()) {
 				obsList.msgCount--;
 			}

@@ -6,18 +6,19 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PDesign;
 import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PFontResource;
+import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.PKeyboard;
-import edu.udo.piq.PKeyboardObs;
-import edu.udo.piq.PMouse;
-import edu.udo.piq.PMouseObs;
-import edu.udo.piq.PTimerCallback;
 import edu.udo.piq.PKeyboard.Key;
+import edu.udo.piq.PKeyboardObs;
+import edu.udo.piq.PModelFactory;
+import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
+import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
-import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.PTimer;
+import edu.udo.piq.PTimerCallback;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.components.defaults.DefaultPTextSelection;
 import edu.udo.piq.tools.AbstractPComponent;
@@ -239,13 +240,22 @@ public class PTextArea extends AbstractPComponent {
 	private boolean focusRenderToggle;
 	private boolean editable;
 	
-	public PTextArea() {
-		this(new DefaultPTextModel());
+	public PTextArea(Object initialModelValue) {
+		this();
+		getModel().setValue(initialModelValue);
 	}
 	
-	public PTextArea(PTextModel model) {
+	public PTextArea() {
 		super();
-		setModel(model);
+		
+		PModelFactory modelFac = PModelFactory.getGlobalModelFactory();
+		PTextModel defaultModel = new DefaultPTextModel();
+		if (modelFac != null) {
+			defaultModel = (PTextModel) modelFac.getModelFor(this, defaultModel);
+		}
+		
+		setModel(defaultModel);
+		
 		setSelection(new DefaultPTextSelection());
 		
 		addObs(new PFocusObs() {

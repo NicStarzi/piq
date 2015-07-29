@@ -2,6 +2,7 @@ package edu.udo.piq.components;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
+import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
@@ -39,7 +40,14 @@ public class PCheckBox extends AbstractPComponent {
 	
 	public PCheckBox() {
 		super();
-		setModel(new DefaultPCheckBoxModel());
+		
+		PModelFactory modelFac = PModelFactory.getGlobalModelFactory();
+		PCheckBoxModel defaultModel = new DefaultPCheckBoxModel();
+		if (modelFac != null) {
+			defaultModel = (PCheckBoxModel) modelFac.getModelFor(this, defaultModel);
+		}
+		
+		setModel(defaultModel);
 		addObs(mouseObs);
 	}
 	

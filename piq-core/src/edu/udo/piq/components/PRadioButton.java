@@ -2,6 +2,7 @@ package edu.udo.piq.components;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
+import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
@@ -39,7 +40,14 @@ public class PRadioButton extends AbstractPComponent {
 	
 	public PRadioButton() {
 		super();
-		setModel(new DefaultPRadioButtonModel());
+		
+		PModelFactory modelFac = PModelFactory.getGlobalModelFactory();
+		PRadioButtonModel defaultModel = new DefaultPRadioButtonModel();
+		if (modelFac != null) {
+			defaultModel = (PRadioButtonModel) modelFac.getModelFor(this, defaultModel);
+		}
+		
+		setModel(defaultModel);
 		addObs(mouseObs);
 	}
 	

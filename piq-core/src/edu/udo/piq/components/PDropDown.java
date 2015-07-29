@@ -5,6 +5,7 @@ import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PComponentObs;
 import edu.udo.piq.PInsets;
+import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
@@ -69,9 +70,15 @@ public class PDropDown extends AbstractPLayoutOwner {
 		dropDownContainer = new PDropDownContainer(this);
 		dropDownContainer.addObs(containerObs);
 		
+		PModelFactory modelFac = PModelFactory.getGlobalModelFactory();
+		PButtonModel defaultModel = new DefaultPButtonModel();
+		if (modelFac != null) {
+			defaultModel = (PButtonModel) modelFac.getModelFor(this, defaultModel);
+		}
+		
 		setLayout(new PCentricLayout(this));
 		getLayoutInternal().setInsets(new ImmutablePInsets(4, 4, 4, TRIANGLE_MIN_W + 2 + 2 + 4));
-		setModel(new DefaultPButtonModel());
+		setModel(defaultModel);
 		
 		addObs(mouseObs);
 	}

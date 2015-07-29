@@ -4,6 +4,7 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PFontResource;
 import edu.udo.piq.PFontResource.Style;
+import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
@@ -30,16 +31,20 @@ public class PLabel extends AbstractPComponent {
 	private PTextModel model;
 	
 	public PLabel() {
-		this(new DefaultPTextModel());
+		super();
+		
+		PModelFactory modelFac = PModelFactory.getGlobalModelFactory();
+		PTextModel defaultModel = new DefaultPTextModel();
+		if (modelFac != null) {
+			defaultModel = (PTextModel) modelFac.getModelFor(this, defaultModel);
+		}
+		
+		setModel(defaultModel);
 	}
 	
 	public PLabel(Object defaultModelValue) {
-		this(new DefaultPTextModel(defaultModelValue));
-	}
-	
-	public PLabel(PTextModel model) {
-		super();
-		setModel(model);
+		this();
+		getModel().setValue(defaultModelValue);
 	}
 	
 	public void setModel(PTextModel model) {

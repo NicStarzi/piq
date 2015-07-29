@@ -2,6 +2,7 @@ package edu.udo.piq.components;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PImageResource;
+import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
@@ -20,12 +21,24 @@ public class PPicture extends AbstractPComponent {
 			fireReRenderEvent();
 		}
 	};
-	private PPictureModel model = new DefaultPPictureModel();
+	private PPictureModel model;
 	private boolean stretchToSize = false;
 	
 	public PPicture() {
 		super();
-		setModel(model);
+		
+		PModelFactory modelFac = PModelFactory.getGlobalModelFactory();
+		PPictureModel defaultModel = new DefaultPPictureModel();
+		if (modelFac != null) {
+			defaultModel = (PPictureModel) modelFac.getModelFor(this, defaultModel);
+		}
+		
+		setModel(defaultModel);
+	}
+	
+	public PPicture(String initialPicturePath) {
+		this();
+		getModel().setImagePath(initialPicturePath);
 	}
 	
 	public void setModel(PPictureModel model) {

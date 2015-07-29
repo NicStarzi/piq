@@ -3,6 +3,7 @@ package edu.udo.piq.components;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
+import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
@@ -65,7 +66,15 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 	
 	public PSplitPanel() {
 		super();
-		setModel(new DefaultPSplitPanelModel());
+		
+		PModelFactory modelFac = PModelFactory.getGlobalModelFactory();
+		PSplitPanelModel defaultModel = new DefaultPSplitPanelModel();
+		if (modelFac != null) {
+			defaultModel = (PSplitPanelModel) modelFac.getModelFor(this, defaultModel);
+		}
+		
+		setModel(defaultModel);
+		
 		setLayout(new PSplitLayout(this));
 		divider = new PDivider();
 		getLayoutInternal().addChild(divider, Constraint.DIVIDER);

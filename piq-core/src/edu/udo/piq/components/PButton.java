@@ -5,6 +5,7 @@ import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PKeyboard;
+import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
@@ -70,10 +71,17 @@ public class PButton extends AbstractPInputLayoutOwner {
 	
 	public PButton() {
 		super();
+		
+		PModelFactory modelFac = PModelFactory.getGlobalModelFactory();
+		PButtonModel defaultModel = new DefaultPButtonModel();
+		if (modelFac != null) {
+			defaultModel = (PButtonModel) modelFac.getModelFor(this, defaultModel);
+		}
+		
 		PCentricLayout defaultLayout = new PCentricLayout(this);
 		defaultLayout.setInsets(new ImmutablePInsets(8));
 		setLayout(defaultLayout);
-		setModel(new DefaultPButtonModel());
+		setModel(defaultModel);
 		addObs(new PMouseObs() {
 			public void buttonTriggered(PMouse mouse, MouseButton btn) {
 				if (isEnabled() && btn == MouseButton.LEFT && getModel() != null && isMouseOverThisOrChild()) {

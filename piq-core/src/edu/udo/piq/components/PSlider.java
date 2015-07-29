@@ -5,6 +5,7 @@ import edu.udo.piq.PColor;
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PKeyboard.Modifier;
+import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
@@ -120,7 +121,15 @@ public class PSlider extends AbstractPInputComponent {
 	
 	public PSlider() {
 		super();
-		setModel(new DefaultPSliderModel());
+		
+		PModelFactory modelFac = PModelFactory.getGlobalModelFactory();
+		PSliderModel defaultModel = new DefaultPSliderModel();
+		if (modelFac != null) {
+			defaultModel = (PSliderModel) modelFac.getModelFor(this, defaultModel);
+		}
+		
+		setModel(defaultModel);
+		
 		addObs(mouseObs);
 		
 		defineInput("up",			pressUpInput,			addReaction);

@@ -4,6 +4,7 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PFontResource;
 import edu.udo.piq.PFontResource.Style;
+import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
@@ -35,7 +36,15 @@ public class PProgressBar extends AbstractPComponent {
 	private PProgressBarModel model;
 	
 	public PProgressBar() {
-		this(new DefaultPProgressBarModel());
+		super();
+		
+		PModelFactory modelFac = PModelFactory.getGlobalModelFactory();
+		PProgressBarModel defaultModel = new DefaultPProgressBarModel();
+		if (modelFac != null) {
+			defaultModel = (PProgressBarModel) modelFac.getModelFor(this, defaultModel);
+		}
+		
+		setModel(defaultModel);
 	}
 	
 	public PProgressBar(PProgressBarModel model) {

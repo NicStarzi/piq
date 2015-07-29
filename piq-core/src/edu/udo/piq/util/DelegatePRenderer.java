@@ -4,6 +4,7 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PFontResource;
 import edu.udo.piq.PImageResource;
+import edu.udo.piq.PRenderMode;
 import edu.udo.piq.PRenderer;
 
 public class DelegatePRenderer implements PRenderer {
@@ -178,6 +179,26 @@ public class DelegatePRenderer implements PRenderer {
 		x += ox;
 		y += oy;
 		delegate.drawEllipse(x, y, width, height);
+	}
+	
+	public void setRenderMode(PRenderMode mode) {
+		delegate.setRenderMode(mode);
+	}
+	
+	public PRenderMode getActiveRenderMode() {
+		return delegate.getActiveRenderMode();
+	}
+	
+	public PRenderMode getRenderModeFill() {
+		return delegate.getRenderModeFill();
+	}
+	
+	public PRenderMode getRenderModeOutline() {
+		return delegate.getRenderModeOutline();
+	}
+	
+	public PRenderMode getRenderModeOutlineDashed() {
+		return delegate.getRenderModeOutlineDashed();
 	}
 	
 }

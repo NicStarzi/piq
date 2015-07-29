@@ -34,6 +34,47 @@ package edu.udo.piq;
 public interface PRenderer {
 	
 	/**
+	 * Sets the platform specific {@link PRenderMode} for this {@link PRenderer} 
+	 * to mode. All following primitive rendering operations 
+	 * <b>({@link #drawString(PFontResource, String, float, float)} and 
+	 * {@link #drawImage(PImageResource, int, int, int, int, float, float, float, float)} 
+	 * excluded)</b> will use this {@link PRenderMode} when being applied.<br>
+	 * @param mode						the new render mode that is to be used
+	 * @throws NullPointerException		if mode is null
+	 * @see #drawLine(float, float, float, float, float)
+	 * @see #drawTriangle(float, float, float, float, float, float)
+	 * @see #drawQuad(float, float, float, float, float, float, float, float)
+	 * @see #drawPolygon(float[], float[])
+	 * @see #drawEllipse(int, int, int, int)
+	 * @see #getActiveRenderMode()
+	 * @see #getRenderModeFill()
+	 * @see #getRenderModeOutline()
+	 * @see #getRenderModeOutlineDashed()
+	 */
+	public void setRenderMode(PRenderMode mode);
+	
+	/**
+	 * Returns the currently active {@link PRenderMode} as used by this {@link PRenderer}. 
+	 * The returned value will never be null.<br>
+	 * @return	a non-null instance of {@link PRenderMode}
+	 */
+	public PRenderMode getActiveRenderMode();
+	
+	/**
+	 * Returns the platform specific {@link PRenderMode} that can be used to completely fill 
+	 * the inside of a primitive shape (triangles, quads, ellipses and polygons are primitive 
+	 * shapes). <br>
+	 * The returned value is never null. This rendering mode must always be supported by all 
+	 * {@link PRenderer renderers}.<br>
+	 * @return a non-null instance of {@link PRenderMode}
+	 */
+	public PRenderMode getRenderModeFill();
+	
+	public PRenderMode getRenderModeOutline();
+	
+	public PRenderMode getRenderModeOutlineDashed();
+	
+	/**
 	 * Sets the clipping bounds that will be used for any subsequent 
 	 * rendering operations.<br>
 	 * Any rendering being done outside of the clip bounds will be 

@@ -1,6 +1,5 @@
 package edu.udo.piq.swing;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -13,19 +12,27 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PFontResource;
 import edu.udo.piq.PImageResource;
+import edu.udo.piq.PRenderMode;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.tools.ImmutablePBounds;
 import edu.udo.piq.tools.ImmutablePColor;
 
 public class SwingPRenderer implements PRenderer {
 	
-	private final int[] xCoords = new int[4];
-	private final int[] yCoords = new int[4];
+	private static final SwingPRenderMode MODE_FILL = new SwingPRenderModeFill();
+	private static final SwingPRenderMode MODE_OUTLINE = new SwingPRenderModeOutline();
+	private static final SwingPRenderMode MODE_DASHED = new SwingPRenderModeOutlineDashed();
+	
+	private SwingPRenderMode renderMode = MODE_FILL;
 	private Graphics2D graphics;
 	
 	public void setGraphics(Graphics2D g) {
 		graphics = g;
 	}
+	
+	/*
+	 * Metadata
+	 */
 	
 	public void setClipBounds(int x, int y, int width, int height) {
 		graphics.setClip(x, y, width, height);
@@ -55,6 +62,55 @@ public class SwingPRenderer implements PRenderer {
 		return new ImmutablePColor(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha());
 	}
 	
+	/*
+	 * Primitive rendering
+	 */
+	
+	public void drawLine(
+			float x1, float y1, 
+			float x2, float y2, 
+			float lineWidth) 
+	{
+		renderMode.drawLine(graphics, x1, y1, x2, y2, lineWidth);
+	}
+	
+	public void drawTriangle(
+			float x1, float y1, 
+			float x2, float y2, 
+			float x3, float y3) 
+	{
+		renderMode.drawTriangle(graphics, x1, y1, x2, y2, x3, y3);
+	}
+	
+	public void drawQuad(PBounds bounds) {
+		renderMode.drawQuad(graphics, bounds);
+	}
+	
+	public void drawQuad(float x, float y, float fx, float fy) {
+		renderMode.drawQuad(graphics, x, y, fx, fy);
+	}
+	
+	public void drawQuad(
+			float x1, float y1, 
+			float x2, float y2, 
+			float x3, float y3, 
+			float x4, float y4) 
+	{
+		renderMode.drawQuad(graphics, x1, y1, x2, y2, x3, y3, x4, y4);
+	}
+	
+	public void drawPolygon(float[] xCoords, float[] yCoords) {
+		renderMode.drawPolygon(graphics, xCoords, yCoords);
+	}
+	
+	public void drawEllipse(int x, int y, int width, int height) {
+		renderMode.drawEllipse(graphics, x, y, width, height);
+	}
+	
+	/*
+	 * Non-Primitive rendering
+	 */
+	
 	public void drawImage(PImageResource imgRes, float x, float y, float fx, float fy) {
 		BufferedImage bufImg = ((BufferedPImageResource) imgRes).getBufferedImage();
 		if (bufImg == null) {
@@ -79,66 +135,6 @@ public class SwingPRenderer implements PRenderer {
 				null);
 	}
 	
-	public void drawLine(
-			float x1, float y1, 
-			float x2, float y2, 
-			float lineWidth) 
-	{
-		graphics.setStroke(new BasicStroke(lineWidth));
-		graphics.drawLine((int) x1, (int) y1, (int) x2, (int) y2);
-	}
-	
-	public void drawTriangle(
-			float x1, float y1, 
-			float x2, float y2, 
-			float x3, float y3) 
-	{
-		drawPolygon(x1, y1, x2, y2, x3, y3, 0, 0, 3);
-	}
-	
-	public void drawQuad(float x, float y, float fx, float fy) {
-		graphics.fillRect((int) x, (int) y, (int) (fx - x), (int) (fy - y));
-	}
-	
-	public void drawQuad(
-			float x1, float y1, 
-			float x2, float y2, 
-			float x3, float y3, 
-			float x4, float y4) 
-	{
-		drawPolygon(x1, y1, x2, y2, x3, y3, x4, y4, 3);
-	}
-	
-	private void drawPolygon(
-			float x1, float y1, 
-			float x2, float y2, 
-			float x3, float y3, 
-			float x4, float y4, 
-			int number) 
-	{
-		xCoords[0] = (int) x1;
-		xCoords[1] = (int) x2;
-		xCoords[2] = (int) x3;
-		xCoords[3] = (int) x4;
-		yCoords[0] = (int) y1;
-		yCoords[1] = (int) y2;
-		yCoords[2] = (int) y3;
-		yCoords[3] = (int) y4;
-		graphics.fillPolygon(xCoords, yCoords, 3);
-	}
-	
-	public void drawPolygon(float[] xCoords, float[] yCoords) {
-		int count = Math.min(xCoords.length, yCoords.length);
-		
-		int[] xCoords2 = new int[count];
-		int[] yCoords2 = new int[count];
-		for (int i = 0; i < count; i++) {
-			xCoords2[i] = Math.round(xCoords[i]);
-			yCoords2[i] = Math.round(yCoords[i]);
-		}
-		graphics.fillPolygon(xCoords2, xCoords2, count);
-	}
-	
 	public void drawLetter(PFontResource font, char c, float x, float y) {
 		drawString(font, Character.toString(c), x, y);
 	}
@@ -152,8 +148,34 @@ public class SwingPRenderer implements PRenderer {
 		graphics.drawString(text, x, y);
 	}
 	
-	public void drawEllipse(int x, int y, int width, int height) {
-		graphics.fillOval(x, y, width, height);
+	/*
+	 * Render modes
+	 */
+	
+	public void setRenderMode(PRenderMode mode) {
+		if (mode == null) {
+			throw new NullPointerException("mode");
+		}
+		if (!(mode instanceof SwingPRenderMode)) {
+			throw new IllegalArgumentException("mode="+mode);
+		}
+		renderMode = (SwingPRenderMode) mode;
+	}
+	
+	public PRenderMode getActiveRenderMode() {
+		return renderMode;
+	}
+	
+	public PRenderMode getRenderModeFill() {
+		return MODE_FILL;
+	}
+	
+	public PRenderMode getRenderModeOutline() {
+		return MODE_OUTLINE;
+	}
+	
+	public PRenderMode getRenderModeOutlineDashed() {
+		return MODE_DASHED;
 	}
 	
 }

@@ -36,6 +36,14 @@ public class DnDCompPreview extends AbstractPComponent {
 		wrapRenderer.setPositionOffsetX(ox);
 		wrapRenderer.setPositionOffsetY(oy);
 		original.defaultRender(wrapRenderer);
+		
+		for (PComponent child : original.getChildren()) {
+//			PBounds clipBnds = ownBnds.getIntersection(child.getBounds());
+//			if (clipBnds != null) {
+//				wrapRenderer.setClipBounds(clipBnds);
+//			}
+			child.defaultRender(wrapRenderer);
+		}
 	}
 	
 	public PSize getDefaultPreferredSize() {

@@ -220,25 +220,25 @@ public class Lwjgl3PMouse implements PMouse {
 	
 	protected void fireMoveEvent() {
 		for (PMouseObs obs : obsList) {
-			obs.mouseMoved(this);
+			obs.onMouseMoved(this);
 		}
 	}
 	
 	protected void fireTriggerEvent(MouseButton btn) {
 		for (PMouseObs obs : obsList) {
-			obs.buttonTriggered(this, btn);
+			obs.onButtonTriggered(this, btn);
 		}
 	}
 	
 	protected void fireReleaseEvent(MouseButton btn) {
 		for (PMouseObs obs : obsList) {
-			obs.buttonReleased(this, btn);
+			obs.onButtonReleased(this, btn);
 		}
 	}
 	
 	protected void firePressEvent(MouseButton btn) {
 		for (PMouseObs obs : obsList) {
-			obs.buttonPressed(this, btn);
+			obs.onButtonPressed(this, btn);
 		}
 	}
 	

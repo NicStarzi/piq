@@ -102,24 +102,24 @@ public class AbstractPComponent implements PComponent {
 	 * that are registered at this {@link PComponent}.<br>
 	 */
 	protected final PMouseObs delegateMouseObs = new PMouseObs() {
-		public void mouseMoved(PMouse mouse) {
+		public void onMouseMoved(PMouse mouse) {
 			for (PMouseObs obs : mouseObsList) {
-				obs.mouseMoved(mouse);
+				obs.onMouseMoved(mouse);
 			}
 		}
-		public void buttonTriggered(PMouse mouse, MouseButton btn) {
+		public void onButtonTriggered(PMouse mouse, MouseButton btn) {
 			for (PMouseObs obs : mouseObsList) {
-				obs.buttonTriggered(mouse, btn);
+				obs.onButtonTriggered(mouse, btn);
 			}
 		}
-		public void buttonReleased(PMouse mouse, MouseButton btn) {
+		public void onButtonReleased(PMouse mouse, MouseButton btn) {
 			for (PMouseObs obs : mouseObsList) {
-				obs.buttonReleased(mouse, btn);
+				obs.onButtonReleased(mouse, btn);
 			}
 		}
-		public void buttonPressed(PMouse mouse, MouseButton btn) {
+		public void onButtonPressed(PMouse mouse, MouseButton btn) {
 			for (PMouseObs obs : mouseObsList) {
-				obs.buttonPressed(mouse, btn);
+				obs.onButtonPressed(mouse, btn);
 			}
 		}
 	};

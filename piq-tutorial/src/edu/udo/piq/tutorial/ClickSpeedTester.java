@@ -42,14 +42,14 @@ public class ClickSpeedTester extends AbstractPComponent {
 	
 	public ClickSpeedTester() {
 		addObs(new PMouseObs() {
-			public void buttonTriggered(PMouse mouse, MouseButton btn) {
+			public void onButtonTriggered(PMouse mouse, MouseButton btn) {
 				if (btn == MouseButton.LEFT && isMouseOver()) {
 					onClick();
 				}
 			}
 		});
 		timer = new PTimer(this, new PTimerCallback() {
-			public void onTick() {
+			public void onTimerEvent() {
 				ClickSpeedTester.this.onTick();
 			}
 		});

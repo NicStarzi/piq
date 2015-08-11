@@ -1,0 +1,232 @@
+package edu.udo.piq.util;
+
+import java.util.Collection;
+
+import javax.naming.OperationNotSupportedException;
+
+public class ThrowException {
+	
+	public static void ifNull(Object obj, String optionalMsg) 
+			throws IllegalArgumentException 
+	{
+		if (obj == null) {
+			iae(createErrorMsg(optionalMsg, obj, 
+					" must not be null but is"));
+		}
+	}
+	
+	public static void ifNotNull(Object obj, String optionalMsg) 
+			throws IllegalArgumentException 
+	{
+		if (obj == null) {
+			iae(createErrorMsg(optionalMsg, obj, 
+					" must be null but is not"));
+		}
+	}
+	
+	public static void ifEqual(Object guard, Object value, String optionalMsg)
+			throws IllegalArgumentException
+	{
+		if (guard.equals(value)) {
+			iae(createErrorMsg(optionalMsg, "value(", 
+					value, ") equals (", guard, ")"));
+		}
+	}
+	
+	public static void ifNotEqual(Object guard, Object value, String optionalMsg)
+			throws IllegalArgumentException
+	{
+		if (!guard.equals(value)) {
+			iae(createErrorMsg(optionalMsg, "(", 
+					value, ") not equal (", guard, ")"));
+		}
+	}
+	
+	public static void ifEqual(long guard, long value, String optionalMsg) 
+			throws IllegalArgumentException 
+	{
+		if (value == guard) {
+			iae(createErrorMsg(optionalMsg, "value(", 
+					value, ") == (", guard, ")"));
+		}
+	}
+	
+	public static void ifEqual(double guard, double value, String optionalMsg) 
+			throws IllegalArgumentException 
+	{
+		if (value == guard) {
+			iae(createErrorMsg(optionalMsg, "value(", 
+					value, ") == (", guard, ")"));
+		}
+	}
+	
+	public static void ifLess(long min, long value, String optionalMsg) 
+			throws IllegalArgumentException 
+	{
+		if (value < min) {
+			iae(createErrorMsg(optionalMsg, "value(", 
+					value, ") < minimum(", min, ")"));
+		}
+	}
+	
+	public static void ifLess(double min, double value, String optionalMsg) 
+			throws IllegalArgumentException 
+	{
+		if (value < min) {
+			iae(createErrorMsg(optionalMsg, "value(", 
+					value, ") < minimum(", min, ")"));
+		}
+	}
+	
+	public static void ifLessOrEqual(long min, long value, String optionalMsg) 
+			throws IllegalArgumentException 
+	{
+		ifLess(min, value, optionalMsg);
+		ifEqual(min, value, optionalMsg);
+	}
+	
+	public static void ifLessOrEqual(double min, double value, String optionalMsg) 
+			throws IllegalArgumentException 
+	{
+		ifLess(min, value, optionalMsg);
+		ifEqual(min, value, optionalMsg);
+	}
+	
+	public static void ifMore(long max, long value, String optionalMsg) 
+			throws IllegalArgumentException 
+	{
+		if (value > max) {
+			iae(createErrorMsg(optionalMsg, "value(", 
+					value, ") > maximum(", max, ")"));
+		}
+	}
+	
+	public static void ifMore(double max, double value, String optionalMsg) 
+			throws IllegalArgumentException 
+	{
+		if (value > max) {
+			iae(createErrorMsg(optionalMsg, "value(", 
+					value, ") > maximum(", max, ")"));
+		}
+	}
+	
+	public static void ifMoreOrEqual(long max, long value, String optionalMsg) 
+			throws IllegalArgumentException 
+	{
+		ifMore(max, value, optionalMsg);
+		ifEqual(max, value, optionalMsg);
+	}
+	
+	public static void ifMoreOrEqual(double max, double value, String optionalMsg) 
+			throws IllegalArgumentException 
+	{
+		ifMore(max, value, optionalMsg);
+		ifEqual(max, value, optionalMsg);
+	}
+	
+	public static void ifWithin(long min, long max, long value, String optionalMsg) 
+			throws IllegalArgumentException 
+	{
+		if (value >= min && value <= max) {
+			iae(createErrorMsg(optionalMsg, "minimum(", min, ") <= value(", 
+					value, ") <= maximum(", max, ")"));
+		}
+	}
+	
+	public static void ifWithin(double min, double max, double value, String optionalMsg) 
+			throws IllegalArgumentException 
+	{
+		if (value >= min && value <= max) {
+			iae(createErrorMsg(optionalMsg, "minimum(", min, ") <= value(", 
+					value, ") <= maximum(", max, ")"));
+		}
+	}
+	
+	public static void ifNotWithin(long min, long max, long value, String optionalMsg) 
+			throws IllegalArgumentException 
+	{
+		ifLess(min, value, optionalMsg);
+		ifMore(max, value, optionalMsg);
+	}
+	
+	public static void ifNotWithin(double min, double max, double value, String optionalMsg) 
+			throws IllegalArgumentException 
+	{
+		ifLess(min, value, optionalMsg);
+		ifMore(max, value, optionalMsg);
+	}
+	
+	public static void ifTrue(boolean condition, String optionalMsg) 
+			throws IllegalStateException 
+	{
+		if (condition) {
+			ise(createErrorMsg(optionalMsg, "success condition not met"));
+		}
+	}
+	
+	public static void ifFalse(boolean condition, String optionalMsg) 
+			throws IllegalStateException 
+	{
+		if (!condition) {
+			ise(createErrorMsg(optionalMsg, "error condition met"));
+		}
+	}
+	
+	public static void ifIncluded(Collection<?> collection, Object obj, String optionalMsg) 
+			throws IllegalArgumentException 
+	{
+		if (collection.contains(obj)) {
+			iae(createErrorMsg(optionalMsg, obj, " is included in ", collection));
+		}
+	}
+	
+	public static void ifExcluded(Collection<?> collection, Object obj, String optionalMsg) 
+			throws IllegalArgumentException 
+	{
+		if (!collection.contains(obj)) {
+			iae(createErrorMsg(optionalMsg, obj, " is missing from ", collection));
+		}
+	}
+	
+	public static void always(String optionalMsg) 
+			throws OperationNotSupportedException 
+	{
+		if (optionalMsg != null) {
+			throw new OperationNotSupportedException(optionalMsg);
+		}
+		throw new OperationNotSupportedException();
+	}
+	
+	private static void iae(String msg) throws IllegalArgumentException {
+		throw new IllegalArgumentException(msg);
+	}
+	
+	/**
+	 * Throws an IllegalStateException with msg as argument.
+	 * @param msg
+	 * @throws IllegalStateException
+	 */
+	private static void ise(String msg) throws IllegalStateException {
+		throw new IllegalStateException(msg);
+	}
+	
+	/**
+	 * Concatenates all the parts and puts the optional message at the 
+	 * end if it is not null.<br>
+	 * @param optionalMsg		can be null
+	 * @param parts				concatenated by StringBuilder
+	 * @return					a non-null String
+	 */
+	private static String createErrorMsg(String optionalMsg, Object ... parts) {
+		StringBuilder sb = new StringBuilder();
+		for (Object obj : parts) {
+			sb.append(obj);
+		}
+		if (optionalMsg != null) {
+			sb.append(": ");
+			sb.append(optionalMsg);
+		}
+		return sb.toString();
+	}
+	
+}

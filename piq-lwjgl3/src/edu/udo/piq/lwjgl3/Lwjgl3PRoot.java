@@ -166,7 +166,7 @@ public class Lwjgl3PRoot extends AbstractPRoot implements PRoot {
 		
 		glfwSwapBuffers(wndHnd);
 		glfwPollEvents();
-		super.update();
+		super.update(1);
 	}
 	
 	public void reRender(PComponent component) {

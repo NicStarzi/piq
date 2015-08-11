@@ -24,7 +24,7 @@ public class PTabPanel extends AbstractPLayoutOwner {
 		getLayoutInternal().setTabBackground(new DefaultPTabBackground());
 		
 		addObs(new PMouseObs() {
-			public void buttonTriggered(PMouse mouse, MouseButton btn) {
+			public void onButtonTriggered(PMouse mouse, MouseButton btn) {
 				if (btn == MouseButton.LEFT && isMouseOverThisOrChild()) {
 					int mx = mouse.getX();
 					int my = mouse.getY();

@@ -95,7 +95,15 @@ public interface PBounds extends PSize {
 		return x >= getX() && x <= getFinalX() && y >= getY() && y <= getFinalY();
 	}
 	
-	public default PBounds getIntersection(PBounds other) {
+	/**
+	 * Creates and returns a new instance of {@link PBounds} that is the 
+	 * intersection between these bounds and the other bounds.<br>
+	 * If these two PBounds are disjunct, that means there is no intersection, 
+	 * null will be returned.<br>
+	 * @param other		a non-null instance of PBounds
+	 * @return			a new PBounds object or null if no intersection exists
+	 */
+	public default PBounds makeIntersection(PBounds other) {
 		int x = Math.max(getX(), other.getX());
 		int y = Math.max(getY(), other.getY());
 		int fx = Math.min(getFinalX(), other.getFinalX());

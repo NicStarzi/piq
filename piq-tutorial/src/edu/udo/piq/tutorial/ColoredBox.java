@@ -21,13 +21,13 @@ public class ColoredBox extends AbstractPComponent {
 		super();
 		
 		addObs(new PMouseObs() {
-			public void buttonTriggered(PMouse mouse, MouseButton btn) {
+			public void onButtonTriggered(PMouse mouse, MouseButton btn) {
 				if (btn == MouseButton.LEFT && isMouseOverThisOrChild()) {
 					isPressed = true;
 					fireReRenderEvent();
 				}
 			}
-			public void buttonReleased(PMouse mouse, MouseButton btn) {
+			public void onButtonReleased(PMouse mouse, MouseButton btn) {
 				if (btn == MouseButton.LEFT && isPressed) {
 					isPressed = false;
 					fireReRenderEvent();

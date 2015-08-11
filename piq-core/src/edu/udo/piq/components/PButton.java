@@ -83,12 +83,12 @@ public class PButton extends AbstractPInputLayoutOwner {
 		setLayout(defaultLayout);
 		setModel(defaultModel);
 		addObs(new PMouseObs() {
-			public void buttonTriggered(PMouse mouse, MouseButton btn) {
+			public void onButtonTriggered(PMouse mouse, MouseButton btn) {
 				if (isEnabled() && btn == MouseButton.LEFT && getModel() != null && isMouseOverThisOrChild()) {
 					getModel().setPressed(true);
 				}
 			}
-			public void buttonReleased(PMouse mouse, MouseButton btn) {
+			public void onButtonReleased(PMouse mouse, MouseButton btn) {
 				if (btn == MouseButton.LEFT && getModel() != null) {
 					boolean oldPressed = isPressed();
 					getModel().setPressed(false);
@@ -154,8 +154,10 @@ public class PButton extends AbstractPInputLayoutOwner {
 		int fy = bnds.getFinalY();
 		
 		if (isPressed()) {
+			renderer.setRenderMode(renderer.getRenderModeOutline());
 			renderer.setColor(PColor.GREY25);
-			renderer.strokeQuad(x, y, fx, fy);
+			renderer.drawQuad(x, y, fx, fy);
+			renderer.setRenderMode(renderer.getRenderModeFill());
 			renderer.setColor(PColor.GREY75);
 			renderer.drawQuad(x + 1, y + 1, fx - 1, fy - 1);
 		} else {
@@ -174,8 +176,10 @@ public class PButton extends AbstractPInputLayoutOwner {
 			int innerY = y + insets.getFromTop();
 			int innerFx = fx - insets.getFromRight();
 			int innerFy = fy - insets.getFromBottom();
+			
+			renderer.setRenderMode(renderer.getRenderModeOutlineDashed());
 			renderer.setColor(PColor.GREY50);
-			renderer.strokeQuad(innerX, innerY, innerFx, innerFy);
+			renderer.drawQuad(innerX, innerY, innerFx, innerFy);
 		}
 	}
 	

@@ -1,5 +1,7 @@
 package edu.udo.piq;
 
+import edu.udo.piq.tools.AbstractPSize;
+
 /**
  * This interface represents an abstract two dimensional size in 
  * width and height.<br>
@@ -14,39 +16,12 @@ public interface PSize {
 	 * This instance could be used to save memory whenever this 
 	 * specific size is needed.<br>
 	 */
-	public static final PSize ZERO_SIZE = new PSize() {
+	public static final PSize ZERO_SIZE = new AbstractPSize() {
 		public int getWidth() {
 			return 0;
 		}
 		public int getHeight() {
 			return 0;
-		}
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + getWidth();
-			result = prime * result + getHeight();
-			return result;
-		}
-		public boolean equals(Object obj) {
-			if (this == obj) {
-				return true;
-			}
-			if (obj == null || !(obj instanceof PSize)) {
-				return false;
-			}
-			PSize other = (PSize) obj;
-			return getWidth() == other.getWidth() && getHeight() == other.getHeight();
-		}
-		public String toString() {
-			StringBuilder builder = new StringBuilder();
-			builder.append(PSize.class.getSimpleName());
-			builder.append(" [width=");
-			builder.append(getWidth());
-			builder.append(", height=");
-			builder.append(getHeight());
-			builder.append("]");
-			return builder.toString();
 		}
 	};
 	

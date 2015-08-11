@@ -23,7 +23,7 @@ public class PRadioButton extends AbstractPComponent {
 	protected final ObserverList<PRadioButtonObs> obsList
 		= PCompUtil.createDefaultObserverList();
 	private final PMouseObs mouseObs = new PMouseObs() {
-		public void buttonTriggered(PMouse mouse, MouseButton btn) {
+		public void onButtonTriggered(PMouse mouse, MouseButton btn) {
 			if (btn == MouseButton.LEFT && isMouseOver()) {
 				setSelected();
 				fireClickEvent();

@@ -123,7 +123,7 @@ public class SwingPTest_FreeLayout {
 		dd.setPreview(new PLabel(new DefaultPTextModel("Click Me!")));
 		dd.setBody(pnlDd);
 		dd.addObs(new PDropDownObs() {
-			public void bodyShown(PDropDown dropDown) {
+			public void onBodyShown(PDropDown dropDown) {
 //				System.out.println();
 //				System.out.println("bodyShown");
 //				System.out.println(dropDown.getBody().getDebugInfo());
@@ -133,7 +133,7 @@ public class SwingPTest_FreeLayout {
 //					System.out.println(child.getDebugInfo());
 //				}
 			}
-			public void bodyHidden(PDropDown dropDown) {
+			public void onBodyHidden(PDropDown dropDown) {
 //				System.out.println();
 //				System.out.println("bodyHidden");
 //				System.out.println(dropDown.getBody().getDebugInfo());

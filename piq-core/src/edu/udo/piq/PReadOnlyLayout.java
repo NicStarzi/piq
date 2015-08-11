@@ -168,8 +168,28 @@ public interface PReadOnlyLayout {
 	 */
 	public PSize getPreferredSize();
 	
+	/**
+	 * Sets a custom {@link PLayoutDesign} for this layout.<br>
+	 * When a custom design is set the layout will take configuration information 
+	 * from the custom design if possible.<br>
+	 * If no custom design is set the default design will be taken from the 
+	 * {@link PDesignSheet} of the root of the owner.<br>
+	 * @param design		the custom design for this layout or null to use the default design
+	 */
 	public void setDesign(PLayoutDesign design);
 	
+	/**
+	 * Returns the {@link PLayoutDesign} used to configure this layout.<br>
+	 * If this layout has a custom design set then the custom design is 
+	 * returned. Otherwise the returned design will be taken from the 
+	 * {@link PDesignSheet} of the root of the owner of this layout.<br>
+	 * If this layout has no owner, or if the owner is not part of a GUI, 
+	 * and thus does not have a root, null is returned.<br>
+	 * 
+	 * @return				the design where the configuration for this layout is stored
+	 * @see PLayoutDesign
+	 * @see PDesignSheet
+	 */
 	public PLayoutDesign getDesign();
 	
 	/**

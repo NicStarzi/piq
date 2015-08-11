@@ -2,8 +2,8 @@ package edu.udo.piq.components;
 
 public interface PDropDownObs {
 	
-	public void bodyShown(PDropDown dropDown);
+	public default void onBodyShown(PDropDown dropDown) {}
 	
-	public void bodyHidden(PDropDown dropDown);
+	public default void onBodyHidden(PDropDown dropDown) {}
 	
 }

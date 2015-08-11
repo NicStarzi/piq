@@ -28,13 +28,13 @@ public class PDropDown extends AbstractPLayoutOwner {
 	protected final ObserverList<PDropDownObs> obsList
 		= PCompUtil.createDefaultObserverList();
 	private final PMouseObs mouseObs = new PMouseObs() {
-		public void buttonTriggered(PMouse mouse, MouseButton btn) {
+		public void onButtonTriggered(PMouse mouse, MouseButton btn) {
 			if (btn == MouseButton.LEFT && getModel() != null && isMouseOverThisOrChild()) {
 				getModel().setPressed(true);
 //				setPressed(true);
 			}
 		}
-		public void buttonReleased(PMouse mouse, MouseButton btn) {
+		public void onButtonReleased(PMouse mouse, MouseButton btn) {
 			if (btn == MouseButton.LEFT && getModel() != null) {
 				boolean oldPressed = isPressed();
 //				setPressed(false);
@@ -236,13 +236,13 @@ public class PDropDown extends AbstractPLayoutOwner {
 	
 	protected void fireShowEvent() {
 		for (PDropDownObs obs : obsList) {
-			obs.bodyShown(this);
+			obs.onBodyShown(this);
 		}
 	}
 	
 	protected void fireHideEvent() {
 		for (PDropDownObs obs : obsList) {
-			obs.bodyHidden(this);
+			obs.onBodyHidden(this);
 		}
 	}
 	
@@ -253,7 +253,7 @@ public class PDropDown extends AbstractPLayoutOwner {
 			setLayout(new PCentricLayout(this));
 			getLayout().setInsets(new ImmutablePInsets(1));
 			addObs(new PMouseObs() {
-				public void buttonTriggered(PMouse mouse, MouseButton btn) {
+				public void onButtonTriggered(PMouse mouse, MouseButton btn) {
 					if (!dropDown.isMouseOverThisOrChild() && !isMouseOverThisOrChild()) {
 						dropDown.hideDropDown();
 					}

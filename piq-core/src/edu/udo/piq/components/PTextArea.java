@@ -39,7 +39,7 @@ public class PTextArea extends AbstractPComponent {
 	protected static final int DEFAULT_FOCUS_RENDER_TOGGLE_TIMER_DELAY = 6;
 	
 	private final PTimer focusToggleTimer = new PTimer(this, new PTimerCallback() {
-		public void onTick() {
+		public void onTimerEvent() {
 			PTextSelection selection = getSelection();
 			int selectionFrom = selection.getFrom();
 			int selectionTo = selection.getTo();
@@ -187,7 +187,7 @@ public class PTextArea extends AbstractPComponent {
 		}
 	};
 	private final PMouseObs mouseObs = new PMouseObs() {
-		public void mouseMoved(PMouse mouse) {
+		public void onMouseMoved(PMouse mouse) {
 			if (mouse.isPressed(MouseButton.LEFT) && pressedIndex != INDEX_NO_SELECTION) {
 				int mx = mouse.getX();
 				int my = mouse.getY();
@@ -199,7 +199,7 @@ public class PTextArea extends AbstractPComponent {
 //				mouse.setCursor(PCursorType.TEXT);
 //			}
 		}
-		public void buttonTriggered(PMouse mouse, MouseButton btn) {
+		public void onButtonTriggered(PMouse mouse, MouseButton btn) {
 			if (btn == MouseButton.LEFT) {
 				int mx = mouse.getX();
 				int my = mouse.getY();
@@ -211,7 +211,7 @@ public class PTextArea extends AbstractPComponent {
 				}
 			}
 		}
-		public void buttonReleased(PMouse mouse, MouseButton btn) {
+		public void onButtonReleased(PMouse mouse, MouseButton btn) {
 			if (btn == MouseButton.LEFT && pressedIndex != INDEX_NO_SELECTION) {
 				pressedIndex = INDEX_NO_SELECTION;
 				fireReRenderEvent();
@@ -244,6 +244,11 @@ public class PTextArea extends AbstractPComponent {
 		this();
 		getModel().setValue(initialModelValue);
 	}
+	
+//	public PTextArea(PTextModel model) {
+//		super();
+//		setModel(model);
+//	}
 	
 	public PTextArea() {
 		super();

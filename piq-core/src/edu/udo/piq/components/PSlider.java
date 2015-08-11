@@ -81,12 +81,12 @@ public class PSlider extends AbstractPInputComponent {
 	};
 	
 	private final PMouseObs mouseObs = new PMouseObs() {
-		public void mouseMoved(PMouse mouse) {
+		public void onMouseMoved(PMouse mouse) {
 			if (mouse.isPressed(MouseButton.LEFT) && getModel().isPressed()) {
 				updatePosition(mouse);
 			}
 		}
-		public void buttonTriggered(PMouse mouse, MouseButton btn) {
+		public void onButtonTriggered(PMouse mouse, MouseButton btn) {
 			if (btn == MouseButton.LEFT && !getModel().isPressed()
 					&& isMouseWithinClippedBounds()) {
 				
@@ -95,7 +95,7 @@ public class PSlider extends AbstractPInputComponent {
 				updatePosition(mouse);
 			}
 		}
-		public void buttonReleased(PMouse mouse, MouseButton btn) {
+		public void onButtonReleased(PMouse mouse, MouseButton btn) {
 			if (btn == MouseButton.LEFT && getModel().isPressed()) {
 				getModel().setPressed(false);
 			}

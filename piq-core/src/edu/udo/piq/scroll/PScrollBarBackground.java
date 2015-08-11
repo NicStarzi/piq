@@ -26,13 +26,13 @@ public class PScrollBarBackground extends AbstractPComponent {
 	
 	private final List<PScrollBarBackgroundObs> obsList = new CopyOnWriteArrayList<>();
 	private final PTimer clickRepeatTimer = new PTimer(this, new PTimerCallback() {
-		public void onTick() {
+		public void onTimerEvent() {
 			clickRepeatTimer.setDelay(CLICK_REPEAT_TIMER_REPEAT_DELAY);
 			fireClickEvent();
 		}
 	});
 	private final PMouseObs mouseObs = new PMouseObs() {
-		public void buttonTriggered(PMouse mouse, MouseButton btn) {
+		public void onButtonTriggered(PMouse mouse, MouseButton btn) {
 			if (btn == MouseButton.LEFT && isMouseOver()) {
 				getModel().setPressed(true);
 				clickRepeatTimer.setDelay(CLICK_REPEAT_TIMER_INITIAL_DELAY);
@@ -40,7 +40,7 @@ public class PScrollBarBackground extends AbstractPComponent {
 				fireClickEvent();
 			}
 		}
-		public void buttonReleased(PMouse mouse, MouseButton btn) {
+		public void onButtonReleased(PMouse mouse, MouseButton btn) {
 			if (btn == MouseButton.LEFT) {
 				clickRepeatTimer.stop();
 				getModel().setPressed(false);

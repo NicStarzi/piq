@@ -104,8 +104,8 @@ public abstract class AbstractPRoot implements PRoot {
 	 * Updates
 	 */
 	
-	public void update() {
-		tickAllTimers();
+	protected void update(int milliSeconds) {
+		tickAllTimers(milliSeconds);
 		reLayOutAll();
 	}
 	
@@ -124,10 +124,10 @@ public abstract class AbstractPRoot implements PRoot {
 		}
 	}
 	
-	protected void tickAllTimers() {
+	protected void tickAllTimers(int milliSeconds) {
 		timerIterationInProgress = true;
 		for (PTimer timer : timerSet) {
-			timer.tick();
+			timer.tick(milliSeconds);
 		}
 		timerIterationInProgress = false;
 		timerSet.removeAll(timersToRemove);

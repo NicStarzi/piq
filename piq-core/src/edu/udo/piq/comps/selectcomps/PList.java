@@ -125,13 +125,13 @@ public class PList extends AbstractPInputLayoutOwner
 		setModel(model);
 		
 		addObs(new PMouseObs() {
-			public void buttonTriggered(PMouse mouse, MouseButton btn) {
+			public void onButtonTriggered(PMouse mouse, MouseButton btn) {
 				PList.this.onMouseButtonTriggred(mouse, btn);
 			}
-			public void buttonReleased(PMouse mouse, MouseButton btn) {
+			public void onButtonReleased(PMouse mouse, MouseButton btn) {
 				PList.this.onMouseReleased(mouse, btn);
 			}
-			public void mouseMoved(PMouse mouse) {
+			public void onMouseMoved(PMouse mouse) {
 				PList.this.onMouseMoved(mouse);
 			}
 		});

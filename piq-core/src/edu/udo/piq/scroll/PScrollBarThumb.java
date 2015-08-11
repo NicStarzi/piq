@@ -18,12 +18,12 @@ public class PScrollBarThumb extends AbstractPComponent {
 	private static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(12, 12);
 	
 	private final PMouseObs mouseObs = new PMouseObs() {
-		public void buttonTriggered(PMouse mouse, MouseButton btn) {
+		public void onButtonTriggered(PMouse mouse, MouseButton btn) {
 			if (btn == MouseButton.LEFT && isMouseOver()) {
 				getModel().setPressed(true);
 			}
 		}
-		public void buttonReleased(PMouse mouse, MouseButton btn) {
+		public void onButtonReleased(PMouse mouse, MouseButton btn) {
 			if (btn == MouseButton.LEFT) {
 				getModel().setPressed(false);
 			}

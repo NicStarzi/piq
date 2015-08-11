@@ -52,8 +52,9 @@ public interface PKeyboard {
 	 * An enumeration of all Keyboard keys that are supported by 
 	 * a {@link PKeyboard} implementation.<br>
 	 * A particular keyboard implementation does not need to support 
-	 * all of these keys. If a key is not supported a method will 
-	 * simply ignore this key.
+	 * all of these keys. If a key is not supported by a 
+	 * {@link PKeyboard} implementation its methods will simply ignore 
+	 * this key.
 	 */
 	public static enum Key {
 		A, B, C, D, E, F, G, H, I, 
@@ -112,6 +113,12 @@ public interface PKeyboard {
 		;
 	}
 	
+	/**
+	 * An enumeration of all modifier keys that can be supported by a
+	 * {@link PKeyboard}. An implementation is not required to support 
+	 * all of these modifier keys. If a modifier is not supported it 
+	 * will be reported as never being toggled.<br>
+	 */
 	public static enum Modifier {
 		CAPS,
 		ALT,

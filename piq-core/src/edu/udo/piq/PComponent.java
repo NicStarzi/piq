@@ -88,12 +88,12 @@ public interface PComponent {
 	/**
 	 * Sets a custom {@link PDesign} for this component.<br>
 	 * When this component is being rendered and a custom 
-	 * design is set then the custom design will be used.<br>
+	 * design is set then the custom design will be used for 
+	 * rendering.<br>
 	 * If no custom design is set the default design will 
 	 * be taken from the {@link PDesignSheet} of the root.<br>
 	 * 
-	 * @param design the custom design for this component or null 
-	 * to use the default design
+	 * @param design		the custom design for this component or null to use the default design
 	 */
 	public void setDesign(PDesign design);
 	
@@ -105,7 +105,7 @@ public interface PComponent {
 	 * If this component is not part of a GUI tree, and thus does 
 	 * not have a root, null is returned.<br>
 	 * 
-	 * @return the design used to render this component
+	 * @return				the design used to render this component
 	 * @see PDesign
 	 * @see PDesignSheet
 	 */
@@ -528,7 +528,7 @@ public interface PComponent {
 	 * 
 	 * @return the clipped {@link PBounds} of this component or null
 	 * @see #getBounds()
-	 * @see PBounds#getIntersection(PBounds)
+	 * @see PBounds#makeIntersection(PBounds)
 	 */
 	public default PBounds getClippedBounds() {
 		PComponent current = this;

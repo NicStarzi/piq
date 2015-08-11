@@ -36,7 +36,7 @@ public class PRadioButtonTuple extends AbstractPInputLayoutOwner {
 		}
 	};
 	private final PMouseObs mouseObs = new PMouseObs() {
-		public void buttonTriggered(PMouse mouse, MouseButton btn) {
+		public void onButtonTriggered(PMouse mouse, MouseButton btn) {
 			PComponent scndCmp = getSecondComponent();
 			if (scndCmp != null && scndCmp.isMouseOver()) {
 				if (!scndCmp.isFocusable()) {

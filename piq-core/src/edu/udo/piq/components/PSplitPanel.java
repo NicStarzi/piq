@@ -22,7 +22,7 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 	protected final ObserverList<PSplitPanelObs> obsList
 		= PCompUtil.createDefaultObserverList();
 	private final PMouseObs mouseObs = new PMouseObs() {
-		public void mouseMoved(PMouse mouse) {
+		public void onMouseMoved(PMouse mouse) {
 			if (pressed) {
 //				mouse.setCursor(PCursorType.SCROLL);
 				PBounds bounds = getBounds();
@@ -40,14 +40,14 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 				fireDividerMovedEvent();
 			}
 		}
-		public void buttonReleased(PMouse mouse, MouseButton btn) {
+		public void onButtonReleased(PMouse mouse, MouseButton btn) {
 			if (pressed && btn == MouseButton.LEFT) {
 //				mouse.setCursor(PCursorType.NORMAL);
 				pressed = false;
 				fireDividerReleasedEvent();
 			}
 		}
-		public void buttonTriggered(PMouse mouse, MouseButton btn) {
+		public void onButtonTriggered(PMouse mouse, MouseButton btn) {
 			if (!pressed && btn == MouseButton.LEFT && divider.isMouseOver()) {
 //				mouse.setCursor(PCursorType.SCROLL);
 				pressed = true;

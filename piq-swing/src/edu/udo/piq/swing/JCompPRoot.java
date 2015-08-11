@@ -146,7 +146,7 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 				return;
 			}
 		}
-		super.update();
+		super.update(1);
 //		if (timersNeedUpdate) {
 //			tickAllTimers();
 //			timersNeedUpdate = false;
@@ -285,6 +285,8 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 				renderer.setClipBounds(clipX, clipY, clipW, clipH);
 //				System.out.println("clip="+clipX+", "+clipY+", "+clipW+", "+clipH);
 				
+				renderer.setRenderMode(renderer.getRenderModeFill());
+				renderer.setColor1(1, 1, 1, 1);
 				PDesign design = comp.getDesign();
 				design.render(renderer, comp);
 //				System.out.println("render="+comp);

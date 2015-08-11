@@ -1,6 +1,5 @@
 package edu.udo.piq.components;
 
-import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.comps.selectcomps.PList;
 import edu.udo.piq.comps.selectcomps.PListIndex;
 import edu.udo.piq.comps.selectcomps.PListSingleSelection;
@@ -13,21 +12,18 @@ import edu.udo.piq.comps.selectcomps.PSelectionObs;
 public class PDropDownList extends PDropDown {
 	
 	private final PSelectionObs listSelectObs = new PSelectionObs() {
-		public void onSelectionRemoved(PSelection selection, PModelIndex index) {
-			if (index.equals(displayedIndex)) {
-				if (list.getModel().getSize() > 0) {
-					setDisplayedIndex(0);
-				} else {
-					setDisplayedIndex(null);
-				}
-			}
-		}
 		public void onSelectionAdded(PSelection selection, PModelIndex index) {
 			setDisplayedIndex(index);
 		}
-		public void onLastSelectedChanged(PSelection selection,
-				PModelIndex prevLastSelected, PModelIndex newLastSelected) 
-		{
+		public void onSelectionRemoved(PSelection selection, PModelIndex index) {
+			if (index.equals(displayedIndex)) {
+				setDisplayedIndex(null);
+//				if (list.getModel().getSize() > 0) {
+//					list.getSelection().addSelection(new PListIndex(0));
+//				} else {
+//					setDisplayedIndex(null);
+//				}
+			}
 		}
 	};
 	private final PModelObs modelObs = new PModelObs() {
@@ -35,18 +31,22 @@ public class PDropDownList extends PDropDown {
 				Object newContent) 
 		{
 			if (displayedIndex == null) {
-				setDisplayedIndex(index);
+				list.getSelection().addSelection(index);
 			}
 		}
 		public void onContentRemoved(PModel model, PModelIndex index,
 				Object oldContent) 
 		{
 			if (index.equals(displayedIndex)) {
+				setDisplayedIndex(null);
 				if (list.getModel().getSize() > 0) {
-					setDisplayedIndex(0);
-				} else {
-					setDisplayedIndex(null);
+					list.getSelection().addSelection(new PListIndex(0));
 				}
+//				if (list.getModel().getSize() > 0) {
+//					setDisplayedIndex(0);
+//				} else {
+//					setDisplayedIndex(null);
+//				}
 			}
 		}
 		public void onContentChanged(PModel model, PModelIndex index,
@@ -70,14 +70,12 @@ public class PDropDownList extends PDropDown {
 		list.addObs(listSelectObs);
 		setBody(list);
 		
-		label = new PLabel(new DefaultPTextModel());
+		label = new PLabel();
 		setPreview(label);
 		
 		addObs(new PDropDownObs() {
-			public void bodyShown(PDropDown dropDown) {
+			public void onBodyShown(PDropDown dropDown) {
 				getBody().takeFocus();
-			}
-			public void bodyHidden(PDropDown dropDown) {
 			}
 		});
 	}
@@ -95,7 +93,7 @@ public class PDropDownList extends PDropDown {
 		if (displayedIndex == null) {
 			label.getModel().setValue(null);
 		} else {
-			label.getModel().setValue(list.getModel().get(index));
+			label.getModel().setValue(list.getModel().get(displayedIndex));
 		}
 	}
 	

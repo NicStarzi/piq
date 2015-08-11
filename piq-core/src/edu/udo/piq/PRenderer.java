@@ -34,11 +34,18 @@ package edu.udo.piq;
 public interface PRenderer {
 	
 	/**
-	 * Sets the platform specific {@link PRenderMode} for this {@link PRenderer} 
-	 * to mode. All following primitive rendering operations 
-	 * <b>({@link #drawString(PFontResource, String, float, float)} and 
-	 * {@link #drawImage(PImageResource, int, int, int, int, float, float, float, float)} 
-	 * excluded)</b> will use this {@link PRenderMode} when being applied.<br>
+	 * Sets the platform specific {@link PRenderMode} for this {@link PRenderer}. 
+	 * All following primitive rendering operations will use this {@link PRenderMode} 
+	 * when being performed.<br>
+	 * Primitive rendering operations are {@link #drawEllipse(int, int, int, int)}, 
+	 * {@link #drawLine(float, float, float, float, float)}, 
+	 * {@link #drawPolygon(float[], float[])}, 
+	 * {@link #drawTriangle(float, float, float, float, float, float)} and all kinds of 
+	 * {@link #drawQuad(PBounds)}.<br>
+	 * Non-primitive rendering operations are 
+	 * {@link #drawImage(PImageResource, float, float, float, float)}, 
+	 * {@link #drawImage(PImageResource, int, int, int, int, float, float, float, float)}, 
+	 * and {@link #drawString(PFontResource, String, float, float)}.<br>
 	 * @param mode						the new render mode that is to be used
 	 * @throws NullPointerException		if mode is null
 	 * @see #drawLine(float, float, float, float, float)
@@ -64,8 +71,7 @@ public interface PRenderer {
 	 * Returns the platform specific {@link PRenderMode} that can be used to completely fill 
 	 * the inside of a primitive shape (triangles, quads, ellipses and polygons are primitive 
 	 * shapes). <br>
-	 * The returned value is never null. This rendering mode must always be supported by all 
-	 * {@link PRenderer renderers}.<br>
+	 * The returned value is never null. This rendering mode must always be supported.<br>
 	 * @return a non-null instance of {@link PRenderMode}
 	 */
 	public PRenderMode getRenderModeFill();

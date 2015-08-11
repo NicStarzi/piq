@@ -108,13 +108,13 @@ public class PTree extends AbstractPInputLayoutOwner
 		setModel(model);
 		
 		addObs(new PMouseObs() {
-			public void buttonTriggered(PMouse mouse, MouseButton btn) {
+			public void onButtonTriggered(PMouse mouse, MouseButton btn) {
 				PTree.this.onMouseButtonTriggred(mouse, btn);
 			}
-			public void buttonReleased(PMouse mouse, MouseButton btn) {
+			public void onButtonReleased(PMouse mouse, MouseButton btn) {
 				PTree.this.onMouseReleased(mouse, btn);
 			}
-			public void mouseMoved(PMouse mouse) {
+			public void onMouseMoved(PMouse mouse) {
 				PTree.this.onMouseMoved(mouse);
 			}
 		});

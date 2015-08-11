@@ -61,10 +61,10 @@ public class PDnDManager {
 		}
 		this.root = root;
 		mouseObs = new PMouseObs() {
-			public void mouseMoved(PMouse mouse) {
+			public void onMouseMoved(PMouse mouse) {
 				onMouseMove(mouse);
 			}
-			public void buttonReleased(PMouse mouse, MouseButton btn) {
+			public void onButtonReleased(PMouse mouse, MouseButton btn) {
 				onMouseRelease(mouse, btn);
 			}
 		};

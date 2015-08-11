@@ -25,7 +25,7 @@ public class SwingPRenderModeOutline implements SwingPRenderMode {
 	}
 	
 	public void drawQuad(Graphics2D g, float x, float y, float fx, float fy) {
-		g.drawRect((int) x, (int) y, (int) (fx - x), (int) (fy - y));
+		g.drawRect((int) x, (int) y, (int) (fx - x) - 1, (int) (fy - y) - 1);
 	}
 	
 	public void drawQuad(Graphics2D g, 

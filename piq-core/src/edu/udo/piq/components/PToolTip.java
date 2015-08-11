@@ -22,7 +22,7 @@ public class PToolTip extends AbstractPLayoutOwner {
 	public static final int DEFAULT_SHOW_DELAY = 60;
 	
 	private final PMouseObs mouseObs = new PMouseObs() {
-		public void mouseMoved(PMouse mouse) {
+		public void onMouseMoved(PMouse mouse) {
 			if (isShown) {
 				if (!isMouseWithinClippedBounds()) {
 					removeFromOverlay();
@@ -34,20 +34,20 @@ public class PToolTip extends AbstractPLayoutOwner {
 				if (showX != newShowX || showY != newShowY) {
 					showX = newShowX;
 					showY = newShowY;
-					if (showTimer.isRunning()) {
+					if (showTimer.isStarted()) {
 						showTimer.restart();
 					}
 				}
-				if (isWithin && !showTimer.isRunning()) {
+				if (isWithin && !showTimer.isStarted()) {
 					showTimer.start();
-				} else if (!isWithin && showTimer.isRunning()) {
+				} else if (!isWithin && showTimer.isStarted()) {
 					showTimer.stop();
 				}
 			}
 		}
 	};
 	private final PTimer showTimer = new PTimer(new PTimerCallback() {
-		public void onTick() {
+		public void onTimerEvent() {
 			addToOverlay();
 		}
 	});

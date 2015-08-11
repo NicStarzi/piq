@@ -16,11 +16,13 @@ import edu.udo.piq.tools.MutablePSize;
 public class PTableLayout3 extends AbstractPLayout {
 	
 	public static final int DEFAULT_COLUMN_WIDTH = 50;
+	public static final int DEFAULT_ROW_HEIGHT = 16;
 	
 	protected final MutablePSize prefSize = new MutablePSize();
 	private final ResizableTable<PComponent> table = new ResizableTable<>(0, 0);
 	private int[]		colWidths	= new int[0];
 	private boolean[]	colWidthSet	= new boolean[0];
+	private int[]		rowHeights	= new int[0];
 	private int cellGapW = 1;
 	private int cellGapH = 1;
 	
@@ -106,12 +108,21 @@ public class PTableLayout3 extends AbstractPLayout {
 		fireInvalidateEvent();
 	}
 	
+	public int getRowHeight(int row) {
+		return rowHeights[row];
+	}
+	
 	public void addRow() {
 		addRow(getRowCount());
 	}
 	
 	public void addRow(int index) {
 		table.addRow(index);
+		int rowCount = table.getRowCount();
+		int[] newRowHeights = new int[rowCount];
+		System.arraycopy(rowHeights, index, newRowHeights, index + 1, rowHeights.length - index);
+		rowHeights = newRowHeights;
+		rowHeights[index] = DEFAULT_ROW_HEIGHT;
 		fireInvalidateEvent();
 	}
 	
@@ -120,6 +131,7 @@ public class PTableLayout3 extends AbstractPLayout {
 		table.setSize(0, 0);
 		colWidths = new int[0];
 		colWidthSet = new boolean[0];
+		rowHeights = new int[0];
 		fireInvalidateEvent();
 	}
 	
@@ -160,6 +172,7 @@ public class PTableLayout3 extends AbstractPLayout {
 				}
 				compX += childW + cellGapW;
 			}
+			rowHeights[r] = rowH;
 			compX = x;
 			compY += rowH + cellGapH;
 		}
@@ -179,9 +192,7 @@ public class PTableLayout3 extends AbstractPLayout {
 				int childH = childPrefSize.getHeight();
 				colH += childH;
 			}
-			if (prefH < colH) {
-				prefH = colH;
-			}
+			prefH += colH;
 		}
 		prefSize.setWidth(prefW);
 		prefSize.setHeight(prefH);

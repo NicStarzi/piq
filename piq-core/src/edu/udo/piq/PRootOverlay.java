@@ -35,7 +35,9 @@ public interface PRootOverlay {
 	
 	/**
 	 * Returns the {@link PBounds} for this overlay. This might be useful to certain components 
-	 * that make use of the overlay and try to stay within the visible area.<br>
+	 * that make use of the overlay and try to stay within the visible area. Usually these bounds 
+	 * will be equal to the bounds of the root but implementations are free to differ from this 
+	 * norm.<br>
 	 * The returned bounds are never null.<br>
 	 * 
 	 * @return the current {@link PBounds} of the {@link PRootOverlay}

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
@@ -17,8 +16,11 @@ import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
+import edu.udo.piq.PSize;
 import edu.udo.piq.layouts.PTableLayout3;
 import edu.udo.piq.tools.AbstractPInputLayoutOwner;
+import edu.udo.piq.util.ObserverList;
+import edu.udo.piq.util.PCompUtil;
 
 public class PTable extends AbstractPInputLayoutOwner 
 	implements PDropComponent 
@@ -66,8 +68,10 @@ public class PTable extends AbstractPInputLayoutOwner
 //		}
 //	};
 	
-	private final List<PModelObs> modelObsList = new CopyOnWriteArrayList<>();
-	private final List<PSelectionObs> selectionObsList = new CopyOnWriteArrayList<>();
+	protected final ObserverList<PModelObs> modelObsList
+		= PCompUtil.createDefaultObserverList();
+	protected final ObserverList<PSelectionObs> selectionObsList
+		= PCompUtil.createDefaultObserverList();
 	private final PSelectionObs selectionObs = new PSelectionObs() {
 		public void onSelectionAdded(PSelection selection, PModelIndex index) {
 			selectionAdded((PTableIndex) index);
@@ -120,13 +124,13 @@ public class PTable extends AbstractPInputLayoutOwner
 		setModel(model);
 		
 		addObs(new PMouseObs() {
-			public void buttonTriggered(PMouse mouse, MouseButton btn) {
+			public void onButtonTriggered(PMouse mouse, MouseButton btn) {
 				PTable.this.onMouseButtonTriggred(mouse, btn);
 			}
-			public void buttonReleased(PMouse mouse, MouseButton btn) {
+			public void onButtonReleased(PMouse mouse, MouseButton btn) {
 				PTable.this.onMouseReleased(mouse, btn);
 			}
-			public void mouseMoved(PMouse mouse) {
+			public void onMouseMoved(PMouse mouse) {
 				PTable.this.onMouseMoved(mouse);
 			}
 		});
@@ -392,57 +396,44 @@ public class PTable extends AbstractPInputLayoutOwner
 		renderer.setColor(BACKGROUND_COLOR);
 		renderer.drawQuad(x + 1, y + 1, fx - 1, fy - 1);
 		renderer.setColor(PColor.BLACK);
-		renderer.strokeQuad(x, y, fx, fy);
 		
 		PTableLayout3 layout = getLayoutInternal();
 		int colGapW = layout.getCellGapWidth();
-//		int rowGapH = layout.getCellGapHeight();
+		int rowGapH = layout.getCellGapHeight();
+		
+		PSize prefSize = layout.getPreferredSize();
+		int sizeFx = x + prefSize.getWidth();
+		int sizeFy = y + prefSize.getHeight();
+		renderer.strokeQuad(x, y, sizeFx + colGapW, sizeFy + rowGapH);
+		
 		for (int c = 1; c < layout.getColumnCount(); c++) {
 			int colW = layout.getColumnWidth(c);
 			
 			for (int r = 1; r < layout.getRowCount(); r++) {
 				int cx = x + colW + (colW + colGapW) * (c - 1);
 				int cfx = cx + colGapW;
-				renderer.drawQuad(cx, y, cfx, fy);
+				renderer.drawQuad(cx, y, cfx, sizeFy);
+				
+				int rowH = layout.getRowHeight(r);
+				int cy = y + rowH + (rowH + rowGapH) * (r - 1);
+				int cfy = cy + rowGapH;
+				renderer.drawQuad(x, cy, sizeFx, cfy);
 			}
 		}
-//		
-//		// If highlighted but no cell component is highlighted => highlight the end of the list
-//		if (isDropHighlighted() && currentDnDHighlightComponent == null) {
-//			renderer.setColor(DROP_HIGHLIGHT_COLOR);
-//			
-//			// Check whether there are any cell components in the list
-//			int lastIndex = getModel().getSize() - 1;
-//			if (lastIndex == -1) {
-//				// No components in the list, highlight top of the list
-//				renderer.drawQuad(x, y, fx, y + 2);
-//			} else {
-//				// Highlight bottom of the last cell component in the list
-//				PTableIndex lastListIndex = new PTableIndex(lastIndex);
-//				PCellComponent lastCellComp = getCellComponent(lastListIndex);
-//				PBounds lastCellBounds = lastCellComp.getBounds();
-//				int cx = lastCellBounds.getX();
-//				int cy = lastCellBounds.getFinalY();
-//				int cfx = lastCellBounds.getFinalX();
-//				int cfy = cy + 2;
-//				
-//				renderer.drawQuad(cx, cy, cfx, cfy);
-//			}
-//		}
-//		if (hasFocus() && getSelection() != null) {
-//			PTableIndex lastSelectedIndex = getSelection().getLastSelected();
-//			if (lastSelectedIndex != null) {
-//				PCellComponent cellComp = getCellComponent(lastSelectedIndex);
-//				PBounds cellBounds = cellComp.getBounds();
-//				int cx = cellBounds.getX() - 1;
-//				int cy = cellBounds.getY() - 1;
-//				int cfx = cellBounds.getFinalX() + 1;
-//				int cfy = cellBounds.getFinalY() + 1;
-//				
-//				renderer.setColor(FOCUS_COLOR);
-//				renderer.drawQuad(cx, cy, cfx, cfy);
-//			}
-//		}
+		if (hasFocus() && getSelection() != null) {
+			PTableIndex lastSelectedIndex = getSelection().getLastSelected();
+			if (lastSelectedIndex != null) {
+				PCellComponent cellComp = getCellComponent(lastSelectedIndex);
+				PBounds cellBounds = cellComp.getBounds();
+				int cx = cellBounds.getX() - 1;
+				int cy = cellBounds.getY() - 1;
+				int cfx = cellBounds.getFinalX() + 1;
+				int cfy = cellBounds.getFinalY() + 1;
+				
+				renderer.setColor(FOCUS_COLOR);
+				renderer.drawQuad(cx, cy, cfx, cfy);
+			}
+		}
 	}
 	
 	public void addObs(PModelObs obs) {

@@ -5,13 +5,12 @@ import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PKeyboard;
-import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PKeyboard.Key;
+import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
-import edu.udo.piq.PSize;
 import edu.udo.piq.components.defaults.DefaultPButtonModel;
 import edu.udo.piq.components.util.PInput;
 import edu.udo.piq.layouts.PCentricLayout;
@@ -172,19 +171,15 @@ public class PButton extends AbstractPInputLayoutOwner {
 		}
 		if (hasFocus()) {
 			PInsets insets = getLayoutInternal().getInsets();
-			int innerX = x + insets.getFromLeft();
-			int innerY = y + insets.getFromTop();
-			int innerFx = fx - insets.getFromRight();
-			int innerFy = fy - insets.getFromBottom();
+			int innerX = x + insets.getFromLeft() - 1;
+			int innerY = y + insets.getFromTop() - 1;
+			int innerFx = fx - insets.getFromRight() + 1;
+			int innerFy = fy - insets.getFromBottom() + 1;
 			
 			renderer.setRenderMode(renderer.getRenderModeOutlineDashed());
 			renderer.setColor(PColor.GREY50);
 			renderer.drawQuad(innerX, innerY, innerFx, innerFy);
 		}
-	}
-	
-	public PSize getDefaultPreferredSize() {
-		return getLayout().getPreferredSize();
 	}
 	
 	public void addObs(PButtonObs obs) {

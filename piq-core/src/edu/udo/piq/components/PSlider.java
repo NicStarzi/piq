@@ -196,7 +196,8 @@ public class PSlider extends AbstractPInputComponent {
 		
 		if (hasFocus()) {
 			renderer.setColor(PColor.GREY50);
-			renderer.strokeQuad(x, y, fx, fy, 1);
+			renderer.setRenderMode(renderer.getRenderModeOutlineDashed());
+			renderer.drawQuad(x, y, fx, fy);
 		}
 	}
 	

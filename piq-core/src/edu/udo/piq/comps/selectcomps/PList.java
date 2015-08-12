@@ -425,6 +425,7 @@ public class PList extends AbstractPInputLayoutOwner
 				int cfy = cellBounds.getFinalY() + 1;
 				
 				renderer.setColor(FOCUS_COLOR);
+				renderer.setRenderMode(renderer.getRenderModeOutlineDashed());
 				renderer.drawQuad(cx, cy, cfx, cfy);
 			}
 		}

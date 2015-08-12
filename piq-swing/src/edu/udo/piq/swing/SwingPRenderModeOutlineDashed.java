@@ -35,7 +35,7 @@ public class SwingPRenderModeOutlineDashed implements SwingPRenderMode {
 	public void drawQuad(Graphics2D g, float x, float y, float fx, float fy) {
 		Stroke oldStroke = g.getStroke();
 		g.setStroke(dashed);
-		g.drawRect((int) x, (int) y, (int) (fx - x), (int) (fy - y));
+		g.drawRect((int) x, (int) y, (int) (fx - x) - 1, (int) (fy - y) - 1);
 		g.setStroke(oldStroke);
 	}
 	

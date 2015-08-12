@@ -138,7 +138,8 @@ public class PCheckBoxTuple extends AbstractPInputLayoutOwner {
 			int fy = bnds.getFinalY();
 			
 			renderer.setColor(PColor.GREY50);
-			renderer.strokeQuad(x, y, fx, fy);
+			renderer.setRenderMode(renderer.getRenderModeOutlineDashed());
+			renderer.drawQuad(x, y, fx, fy);
 		}
 	}
 	

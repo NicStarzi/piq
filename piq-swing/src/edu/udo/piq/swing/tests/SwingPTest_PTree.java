@@ -7,12 +7,12 @@ import java.awt.event.ActionListener;
 import javax.swing.JFrame;
 import javax.swing.Timer;
 
-import edu.udo.piq.components.PSplitPanel;
-import edu.udo.piq.comps.selectcomps.DefaultPListModel;
-import edu.udo.piq.comps.selectcomps.DefaultPTreeModel;
-import edu.udo.piq.comps.selectcomps.PList;
-import edu.udo.piq.comps.selectcomps.PTree;
-import edu.udo.piq.comps.selectcomps.PTreeIndex;
+import edu.udo.piq.components.collections.PList;
+import edu.udo.piq.components.collections.PTree;
+import edu.udo.piq.components.collections.PTreeIndex;
+import edu.udo.piq.components.containers.PSplitPanel;
+import edu.udo.piq.components.defaults.DefaultPListModel;
+import edu.udo.piq.components.defaults.DefaultPTreeModel;
 import edu.udo.piq.swing.JCompPRoot;
 
 public class SwingPTest_PTree {

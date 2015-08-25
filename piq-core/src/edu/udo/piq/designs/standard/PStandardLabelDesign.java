@@ -8,7 +8,7 @@ import edu.udo.piq.PFontResource;
 import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
-import edu.udo.piq.components.PLabel;
+import edu.udo.piq.components.textbased.PLabel;
 
 public class PStandardLabelDesign extends PStandardDesign implements PDesign {
 	

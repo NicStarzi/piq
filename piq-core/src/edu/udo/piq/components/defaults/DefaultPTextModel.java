@@ -1,6 +1,6 @@
 package edu.udo.piq.components.defaults;
 
-import edu.udo.piq.components.PTextModel;
+import edu.udo.piq.components.textbased.PTextModel;
 import edu.udo.piq.components.util.PDictionary;
 import edu.udo.piq.tools.AbstractPTextModel;
 

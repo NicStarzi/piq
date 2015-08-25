@@ -9,12 +9,12 @@ import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 import javax.swing.Timer;
 
-import edu.udo.piq.components.PLabel;
-import edu.udo.piq.components.PPanel;
 import edu.udo.piq.components.PRadioButton;
 import edu.udo.piq.components.PRadioButtonGroup;
 import edu.udo.piq.components.PRadioButtonTuple;
+import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
+import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.layouts.PFreeLayout;
 import edu.udo.piq.swing.JCompPRoot;
 

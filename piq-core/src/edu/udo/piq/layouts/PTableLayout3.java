@@ -8,8 +8,8 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PSize;
-import edu.udo.piq.comps.selectcomps.DefaultPCellComponent;
-import edu.udo.piq.comps.selectcomps.PTableIndex;
+import edu.udo.piq.components.collections.PTableIndex;
+import edu.udo.piq.components.defaults.DefaultPCellComponent;
 import edu.udo.piq.tools.AbstractPLayout;
 import edu.udo.piq.tools.MutablePSize;
 

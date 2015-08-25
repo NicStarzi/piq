@@ -1,6 +1,6 @@
 package edu.udo.piq;
 
-import edu.udo.piq.components.PGlassPanel;
+import edu.udo.piq.components.containers.PGlassPanel;
 import edu.udo.piq.layouts.PFreeLayout;
 
 /**

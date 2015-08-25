@@ -1,7 +1,7 @@
 package edu.udo.piq.components.defaults;
 
-import edu.udo.piq.components.PSplitPanelModel;
-import edu.udo.piq.components.PSplitPanelModelObs;
+import edu.udo.piq.components.containers.PSplitPanelModel;
+import edu.udo.piq.components.containers.PSplitPanelModelObs;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
 

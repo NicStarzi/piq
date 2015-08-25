@@ -1,8 +1,8 @@
 package edu.udo.piq.components.defaults;
 
 import edu.udo.piq.PComponent;
-import edu.udo.piq.components.PTabComponent;
-import edu.udo.piq.components.PTabFactory;
+import edu.udo.piq.components.containers.PTabComponent;
+import edu.udo.piq.components.containers.PTabFactory;
 
 public class DefaultPTabFactory implements PTabFactory {
 	

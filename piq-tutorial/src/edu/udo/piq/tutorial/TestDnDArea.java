@@ -9,8 +9,8 @@ import javax.swing.Timer;
 
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PButtonObs;
-import edu.udo.piq.components.PLabel;
-import edu.udo.piq.components.PSplitPanel;
+import edu.udo.piq.components.containers.PSplitPanel;
+import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.swing.JCompPRoot;
 
 public class TestDnDArea {

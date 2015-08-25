@@ -197,6 +197,18 @@ public class ThrowException {
 		throw new OperationNotSupportedException();
 	}
 	
+	@SuppressWarnings("unchecked") // this is safe because of the instanceof check
+	public static <E> E ifTypeCastFails(Object obj, Class<E> clazz, String optionalMsg) {
+		ifNull(obj, optionalMsg);
+		if (clazz.isInstance(obj)) {
+			return (E) obj;
+		} else {
+			iae(createErrorMsg(optionalMsg, obj, " is not of type ", clazz));
+			// this can never happen!
+			throw new UnsupportedOperationException();
+		}
+	}
+	
 	private static void iae(String msg) throws IllegalArgumentException {
 		throw new IllegalArgumentException(msg);
 	}

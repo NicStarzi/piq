@@ -6,3 +6,6 @@ TODO:
  - PPasswordField
  - PSpinner
  - PScrollPanel
+ - PMouse: press and trigger is the same right now
+ - Consistent use of models (constructor, PModelFactory, etc) for all components that have models
+ - Improve Drag&Drop / Copy-Cut-Paste to support structural information about the moved indices

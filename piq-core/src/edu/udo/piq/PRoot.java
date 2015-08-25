@@ -1,8 +1,8 @@
 package edu.udo.piq;
 
 import edu.udo.piq.PFontResource.Style;
-import edu.udo.piq.components.PGlassPanel;
-import edu.udo.piq.components.PPanel;
+import edu.udo.piq.components.containers.PGlassPanel;
+import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.layouts.PRootLayout;
 import edu.udo.piq.util.PGuiTreeIterator;
 

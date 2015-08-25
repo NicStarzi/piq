@@ -10,7 +10,7 @@ import edu.udo.piq.PLayoutDesign;
 import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PSize;
-import edu.udo.piq.components.PPanel;
+import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.tools.AbstractPLayout;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.tools.MutablePSize;

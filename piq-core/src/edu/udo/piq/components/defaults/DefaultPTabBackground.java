@@ -4,7 +4,7 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
-import edu.udo.piq.components.PPanel;
+import edu.udo.piq.components.containers.PPanel;
 
 public class DefaultPTabBackground extends PPanel {
 	

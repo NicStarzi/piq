@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
 
-import edu.udo.piq.components.PGlassPanel;
+import edu.udo.piq.components.containers.PGlassPanel;
 import edu.udo.piq.components.util.PFocusTraversal;
 import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.ImmutablePBounds;

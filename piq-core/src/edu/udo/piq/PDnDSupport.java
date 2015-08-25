@@ -1,9 +1,9 @@
 package edu.udo.piq;
 
-import edu.udo.piq.components.PTextArea;
-import edu.udo.piq.comps.selectcomps.PList;
-import edu.udo.piq.comps.selectcomps.PTable;
-import edu.udo.piq.comps.selectcomps.PTree;
+import edu.udo.piq.components.collections.PList;
+import edu.udo.piq.components.collections.PTable;
+import edu.udo.piq.components.collections.PTree;
+import edu.udo.piq.components.textbased.PTextArea;
 
 /**
  * A {@link PDnDSupport} is used in all {@link PComponent PComponents} that allow the user 

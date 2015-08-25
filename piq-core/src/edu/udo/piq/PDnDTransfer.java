@@ -2,7 +2,7 @@ package edu.udo.piq;
 
 import java.util.List;
 
-import edu.udo.piq.comps.selectcomps.PModelIndex;
+import edu.udo.piq.components.collections.PModelIndex;
 
 public interface PDnDTransfer {
 	

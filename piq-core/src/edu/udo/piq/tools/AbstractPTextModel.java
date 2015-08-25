@@ -1,7 +1,7 @@
 package edu.udo.piq.tools;
 
-import edu.udo.piq.components.PTextModel;
-import edu.udo.piq.components.PTextModelObs;
+import edu.udo.piq.components.textbased.PTextModel;
+import edu.udo.piq.components.textbased.PTextModelObs;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
 

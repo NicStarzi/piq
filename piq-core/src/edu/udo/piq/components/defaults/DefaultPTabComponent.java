@@ -5,8 +5,8 @@ import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
-import edu.udo.piq.components.PPanel;
-import edu.udo.piq.components.PTabComponent;
+import edu.udo.piq.components.containers.PPanel;
+import edu.udo.piq.components.containers.PTabComponent;
 import edu.udo.piq.layouts.PCentricLayout;
 
 public class DefaultPTabComponent extends PPanel implements PTabComponent {

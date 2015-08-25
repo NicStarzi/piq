@@ -3,7 +3,7 @@ package edu.udo.piq;
 import com.sun.javafx.cursor.CursorType;
 
 import edu.udo.piq.PCursor.PCursorType;
-import edu.udo.piq.comps.selectcomps.PSelectionComponent;
+import edu.udo.piq.components.collections.PSelectionComponent;
 import edu.udo.piq.util.PCompUtil;
 
 public interface PMouse {

@@ -2,26 +2,26 @@ package edu.udo.piq;
 
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PCheckBox;
-import edu.udo.piq.components.PLabel;
 import edu.udo.piq.components.PPicture;
 import edu.udo.piq.components.PProgressBar;
 import edu.udo.piq.components.PRadioButton;
 import edu.udo.piq.components.PSlider;
-import edu.udo.piq.components.PSplitPanel;
-import edu.udo.piq.components.PTextArea;
+import edu.udo.piq.components.collections.PList;
+import edu.udo.piq.components.collections.PTable;
+import edu.udo.piq.components.collections.PTree;
+import edu.udo.piq.components.containers.PSplitPanel;
 import edu.udo.piq.components.defaults.DefaultPButtonModel;
 import edu.udo.piq.components.defaults.DefaultPCheckBoxModel;
+import edu.udo.piq.components.defaults.DefaultPListModel;
 import edu.udo.piq.components.defaults.DefaultPPictureModel;
 import edu.udo.piq.components.defaults.DefaultPProgressBarModel;
 import edu.udo.piq.components.defaults.DefaultPRadioButtonModel;
 import edu.udo.piq.components.defaults.DefaultPSliderModel;
 import edu.udo.piq.components.defaults.DefaultPSplitPanelModel;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
-import edu.udo.piq.comps.selectcomps.DefaultPListModel;
-import edu.udo.piq.comps.selectcomps.DefaultPTreeModel;
-import edu.udo.piq.comps.selectcomps.PList;
-import edu.udo.piq.comps.selectcomps.PTable;
-import edu.udo.piq.comps.selectcomps.PTree;
+import edu.udo.piq.components.defaults.DefaultPTreeModel;
+import edu.udo.piq.components.textbased.PLabel;
+import edu.udo.piq.components.textbased.PTextArea;
 
 public abstract class PModelFactory {
 	

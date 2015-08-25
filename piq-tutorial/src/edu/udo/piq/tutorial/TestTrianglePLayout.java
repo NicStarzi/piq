@@ -9,8 +9,8 @@ import javax.swing.Timer;
 
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PButtonObs;
-import edu.udo.piq.components.PLabel;
-import edu.udo.piq.components.PPanel;
+import edu.udo.piq.components.containers.PPanel;
+import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.swing.JCompPRoot;
 import edu.udo.piq.tutorial.TrianglePLayout.Pos;
 

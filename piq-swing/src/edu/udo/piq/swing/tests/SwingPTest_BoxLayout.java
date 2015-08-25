@@ -7,8 +7,8 @@ import java.awt.event.ActionListener;
 import javax.swing.JFrame;
 import javax.swing.Timer;
 
-import edu.udo.piq.components.PPanel;
 import edu.udo.piq.components.PPicture;
+import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.layouts.PBoxLayout;
 import edu.udo.piq.layouts.PBoxLayout.Box;
 import edu.udo.piq.swing.JCompPRoot;

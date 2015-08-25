@@ -1,74 +1,59 @@
-//package edu.udo.piq.components.defaults;
+package edu.udo.piq.components.defaults;
+//package edu.udo.piq.comps.selectcomps;
 //
 //import java.util.ArrayList;
-//import java.util.Arrays;
+//import java.util.Iterator;
 //import java.util.List;
 //
-//import edu.udo.piq.components.PTableModel;
-//import edu.udo.piq.components.util.PModelHistory;
-//import edu.udo.piq.tools.AbstractPTableModel;
-//
-//public class DefaultPTableModel extends AbstractPTableModel implements PTableModel {
+//public class DefaultPTableModel extends AbstractPModel implements PTableModel {
 //	
 //	private final List<Object[]> rows = new ArrayList<>();
 //	private int colCount;
 //	
-//	public DefaultPTableModel() {
-//		this(0, 0);
+//	public Object get(PModelIndex index) {
+//		PTableIndex tableIndex = asTableIndex(index);
+//		return get(tableIndex.getColumn(), tableIndex.getRow());
 //	}
 //	
-//	public DefaultPTableModel(int columnCount, int rowCount) {
-//		resize(columnCount, rowCount);
+//	public boolean contains(PModelIndex index) {
+//		PTableIndex tableIndex = asTableIndex(index);
+//		return contains(tableIndex.getColumn(), tableIndex.getRow());
 //	}
 //	
-//	public void addRow(int rowIndex) {
-//		Object[] newRow = new Object[getColumnCount()];
-//		rows.add(rowIndex, newRow);
-//		fireRowAddedEvent(rowIndex);
-//	}
-//	
-//	public void removeRow(int rowIndex) {
-//		rows.remove(rowIndex);
-//		fireRowRemovedEvent(rowIndex);
-//	}
-//	
-//	public void addColumn(int columnIndex) {
-//		colCount += 1;
-//		int afterIndex = columnIndex + 1;
-//		for (int i = 0; i < rows.size(); i++) {
-//			Object[] row = rows.get(i);
-//			Object[] newRow = new Object[colCount];
-//			rows.set(i, newRow);
-//			System.out.println("row="+Arrays.toString(row));
-//			System.arraycopy(row, 0, newRow, 0, columnIndex);
-//			System.arraycopy(row, columnIndex, newRow, afterIndex, colCount - afterIndex);
-//			System.out.println("newRow="+Arrays.toString(newRow));
+//	public PTableIndex getIndexOf(Object content) {
+//		for (int colIndex = 0; colIndex < rows.size(); colIndex++) {
+//			Object[] row = rows.get(colIndex);
+//			for (int rowIndex = 0; rowIndex < row.length; rowIndex++) {
+//				if (content.equals(row[rowIndex])) {
+//					return new PTableIndex(colIndex, rowIndex);
+//				}
+//			}
 //		}
-//		fireColumnAddedEvent(columnIndex);
+//		return null;
 //	}
 //	
-//	public void removeColumn(int columnIndex) {
-//		colCount -= 1;
-////		int beforeIndex = columnIndex - 1;
-//		for (int i = 0; i < rows.size(); i++) {
-//			Object[] row = rows.get(i);
-//			Object[] newRow = new Object[colCount];
-//			rows.set(i, newRow);
-//			System.out.println("row="+Arrays.toString(row));
-//			System.arraycopy(row, 0, newRow, 0, columnIndex);
-//			System.arraycopy(row, columnIndex + 1, newRow, columnIndex, colCount - columnIndex);
-//			System.out.println("newRow="+Arrays.toString(newRow));
-//		}
-//		fireColumnRemovedEvent(columnIndex);
+//	public boolean canAdd(PModelIndex index, Object content) {
+//		PTableIndex tableIndex = asTableIndex(index);
+//		return canAdd(tableIndex.getColumn(), tableIndex.getRow(), content);
 //	}
 //	
-//	public void resize(int newColumnCount, int newRowCount) {
-//		while (newColumnCount > getColumnCount()) {
-//			addColumn(getColumnCount());
-//		}
-//		while (newRowCount > getRowCount()) {
-//			addRow(getRowCount());
-//		}
+//	public void add(PModelIndex index, Object content) {
+//		PTableIndex tableIndex = asTableIndex(index);
+//		add(tableIndex.getColumn(), tableIndex.getRow(), content);
+//	}
+//	
+//	public boolean canRemove(PModelIndex index) {
+//		PTableIndex tableIndex = asTableIndex(index);
+//		return canRemove(tableIndex.getColumn(), tableIndex.getRow());
+//	}
+//	
+//	public void remove(PModelIndex index) {
+//		PTableIndex tableIndex = asTableIndex(index);
+//		remove(tableIndex.getColumn(), tableIndex.getRow());
+//	}
+//	
+//	public Iterator<PModelIndex> iterator() {
+//		return null;
 //	}
 //	
 //	public int getColumnCount() {
@@ -79,76 +64,47 @@
 //		return rows.size();
 //	}
 //	
-//	public int getColumnIndexOf(Object cell) {
-//		for (int i = 0; i < rows.size(); i++) {
-//			Object[] row = rows.get(i);
-//			for (int j = 0; j < row.length; j++) {
-//				if (cell.equals(row[j])) {
-//					return j;
-//				}
-//			}
-//		}
-//		return -1;
+//	public Object get(int column, int row) {
+//		return rows.get(row)[column];
 //	}
 //	
-//	public int getRowIndexOf(Object cell) {
-//		for (int i = 0; i < rows.size(); i++) {
-//			Object[] row = rows.get(i);
-//			for (int j = 0; j < row.length; j++) {
-//				if (cell.equals(row[j])) {
-//					return i;
-//				}
-//			}
-//		}
-//		return -1;
+//	public boolean contains(int column, int row) {
+//		return column >= 0 && column < getColumnCount() 
+//				&& row >= 0 && row < getRowCount();
 //	}
 //	
-//	public Object getCell(int columnIndex, int rowIndex) {
-//		return rows.get(rowIndex)[columnIndex];
+//	public boolean canAdd(int column, int row, Object content) {
+//		return content != null && contains(column, row);
 //	}
 //	
-//	public boolean canAdd(Object cell, int columnIndex, int rowIndex) {
-//		return cell != null && columnIndex >= 0 && columnIndex < getColumnCount() 
-//				&& rowIndex >= 0 && rowIndex < getRowCount();
-//	}
-//	
-//	public void add(Object cell, int columnIndex, int rowIndex) {
-//		setCell(cell, columnIndex, rowIndex);
-//	}
-//	
-//	public boolean canRemove(int columnIndex, int rowIndex) {
-//		return columnIndex >= 0 && columnIndex < getColumnCount() 
-//				&& rowIndex >= 0 && rowIndex < getRowCount();
-//	}
-//	
-//	public void remove(int columnIndex, int rowIndex) {
-//		setCell(null, columnIndex, rowIndex);
-//	}
-//	
-//	protected void setCell(Object newValue, int columnIndex, int rowIndex) {
-//		Object[] row = rows.get(rowIndex);
-//		Object oldValue = row[columnIndex];
-//		if (oldValue != newValue) {
-//			row[columnIndex] = newValue;
-//			fireCellChangedEvent(columnIndex, rowIndex);
+//	public void add(int column, int row, Object content) {
+//		Object oldContent = get(column, row);
+//		set(column, row, content);
+//		if (oldContent == null) {
+//			fireAddEvent(new PTableIndex(column, row), content);
+//		} else {
+//			fireChangeEvent(new PTableIndex(column, row), content);
 //		}
 //	}
 //	
-//	public PModelHistory getHistory() {
-//		return null;
+//	public boolean canRemove(int column, int row) {
+//		return contains(column, row);
 //	}
 //	
-//	public String getDebugInfo() {
-//		StringBuilder sb = new StringBuilder();
-//		for (int r = 0; r < getRowCount(); r++) {
-//			Object[] row = rows.get(r);
-//			for (int c = 0; c < colCount; c++) {
-//				sb.append(row[c]);
-//				sb.append(", ");
-//			}
-//			sb.append("\n");
+//	public void remove(int column, int row) {
+//		Object oldContent = get(column, row);
+//		if (oldContent != null) {
+//			set(column, row, null);
+//			fireRemoveEvent(new PTableIndex(column, row), oldContent);
 //		}
-//		return sb.toString();
+//	}
+//	
+//	protected void set(int column, int row, Object content) {
+//		Object[] rowArr = rows.get(row);
+//		Object oldValue = rowArr[column];
+//		if (oldValue != content) {
+//			rowArr[column] = content;
+//		}
 //	}
 //	
 //}

@@ -1,4 +1,4 @@
-package edu.udo.piq.components;
+package edu.udo.piq.components.charts;
 
 import edu.udo.piq.components.util.PModelHistory;
 

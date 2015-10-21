@@ -5,7 +5,7 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractPComponent;
-import edu.udo.piq.util.DelegatePRenderer;
+import edu.udo.piq.tools.DelegatePRenderer;
 
 public class DnDCompPreview extends AbstractPComponent {
 	

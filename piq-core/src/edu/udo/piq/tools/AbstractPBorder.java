@@ -7,6 +7,7 @@ import edu.udo.piq.layouts.PCentricLayout;
 public abstract class AbstractPBorder extends AbstractPLayoutOwner implements PBorder {
 	
 	public AbstractPBorder() {
+		super();
 		setLayout(new PCentricLayout(this));
 	}
 	

@@ -5,12 +5,12 @@ public interface PCursor {
 	public PCursorType getCursorType();
 	
 	public static enum PCursorType {
-		NORMAL, 
-		HAND, 
-		TEXT, 
-		SCROLL, 
-		BUSY, 
-		CUSTOM, 
+		NORMAL,
+		HAND,
+		TEXT,
+		SCROLL,
+		BUSY,
+		CUSTOM,
 		;
 	}
 	

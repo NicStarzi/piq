@@ -23,6 +23,7 @@ public interface PRoot extends PComponent {
 	 * Returns this.<br>
 	 * @return this
 	 */
+	@Override
 	public default PRoot getRoot() {
 		return this;
 	}
@@ -31,6 +32,7 @@ public interface PRoot extends PComponent {
 	 * Throws an {@link UnsupportedOperationException}.<br>
 	 * @throws UnsupportedOperationException
 	 */
+	@Override
 	public default void setParent(PComponent parent) 
 			throws UnsupportedOperationException 
 	{
@@ -44,12 +46,14 @@ public interface PRoot extends PComponent {
 	 * 
 	 * @see #getOverlay()
 	 */
+	@Override
 	public PRootLayout getLayout();
 	
 	/**
 	 * Returns null.<br>
 	 * @return null
 	 */
+	@Override
 	public default PComponent getParent() {
 		return null;
 	}
@@ -58,6 +62,7 @@ public interface PRoot extends PComponent {
 	 * Throws an {@link UnsupportedOperationException}.<br>
 	 * @throws UnsupportedOperationException
 	 */
+	@Override
 	public default void setDesign(PDesign design) 
 			throws UnsupportedOperationException  
 	{
@@ -68,6 +73,7 @@ public interface PRoot extends PComponent {
 	 * Throws an {@link UnsupportedOperationException}.<br>
 	 * @throws UnsupportedOperationException
 	 */
+	@Override
 	public default PDesign getDesign() 
 			throws UnsupportedOperationException  
 	{
@@ -78,6 +84,7 @@ public interface PRoot extends PComponent {
 	 * Throws an {@link UnsupportedOperationException}.<br>
 	 * @throws UnsupportedOperationException
 	 */
+	@Override
 	public default void defaultRender(PRenderer renderer) 
 			throws UnsupportedOperationException  
 	{
@@ -88,6 +95,7 @@ public interface PRoot extends PComponent {
 	 * Always returns true for {@link PRoot} instances.<br>
 	 * @return true
 	 */
+	@Override
 	public default boolean defaultFillsAllPixels() {
 		return true;
 	}
@@ -96,6 +104,7 @@ public interface PRoot extends PComponent {
 	 * Always returns false for {@link PRoot} instances.<br>
 	 * @return true
 	 */
+	@Override
 	public default boolean isElusive() {
 		return false;
 	}
@@ -108,6 +117,7 @@ public interface PRoot extends PComponent {
 	 * 
 	 * @return the bounds of this root
 	 */
+	@Override
 	public PBounds getBounds();
 	
 	/**
@@ -199,7 +209,18 @@ public interface PRoot extends PComponent {
 	 * @return an instance of {@link PImageResource}
 	 * @throws NullPointerException if imgPath is null
 	 */
-	public PImageResource fetchImageResource(String imgPath) throws NullPointerException;
+	public PImageResource fetchImageResource(String imgPath) 
+			throws NullPointerException;
+	
+	/**
+	 * 
+	 * @param width				the width of the image, must be positive (> 0)
+	 * @param height			the height of the image, must be positive (> 0)
+	 * @return					a newly created {@link PImageResource}
+	 * @throws IllegalArgumentException		if either width or height are less then or equal to 0
+	 */
+	public PImageResource createImageResource(int width, int height, PImageMeta metaInfo) 
+			throws IllegalArgumentException;
 	
 	/**
 	 * Returns an implementation of {@link PMouse}.<br>
@@ -211,6 +232,7 @@ public interface PRoot extends PComponent {
 	 * @see PMouse
 	 * @see PKeyboard
 	 */
+	@Override
 	public PMouse getMouse();
 	
 	/**
@@ -223,6 +245,7 @@ public interface PRoot extends PComponent {
 	 * @see PKeyboard
 	 * @see PMouse
 	 */
+	@Override
 	public PKeyboard getKeyboard();
 	
 	/**
@@ -255,9 +278,11 @@ public interface PRoot extends PComponent {
 	
 	/**
 	 * Sets the body {@link PComponent} of this {@link PRoot} to the given component.<br>
-	 * Although it does not seem to be very useful it is possible to set the body to null.<br>
+	 * Although it does not seem to be very useful it is possible to set the body to null. 
+	 * If the body of a root is null the GUI will not contain anything except the overlay 
+	 * and he root will fill the background with an arbitrary default color.<br>
 	 * 
-	 * @param component the new body for this {@link PRoot} or null
+	 * @param component			the new body for this {@link PRoot} or null
 	 * @see PRootLayout
 	 */
 	public void setBody(PComponent component);
@@ -266,7 +291,7 @@ public interface PRoot extends PComponent {
 	 * Returns the body {@link PComponent} of this {@link PRoot}, this is usually a 
 	 * {@link PPanel} but could be any kind of component or even null.<br>
 	 * 
-	 * @return the body component of this root or null
+	 * @return					the body component of this root or null
 	 * @see PRootLayout
 	 */
 	public PComponent getBody();
@@ -293,6 +318,7 @@ public interface PRoot extends PComponent {
 	 * @see #getOverlay()
 	 * @see PComponent#getDragAndDropSupport()
 	 */
+	@Override
 	public PDnDManager getDragAndDropManager();
 	
 	/**
@@ -307,7 +333,7 @@ public interface PRoot extends PComponent {
 	
 	/**
 	 * Sets the focused {@link PComponent} of this GUI to the given component.<br>
-	 * If component is null then no component will have focus anymore.<br>
+	 * If <code>component</code> is null then no component will have focus anymore.<br>
 	 * 
 	 * @param component the new focused component or null
 	 * @see #getFocusOwner()
@@ -319,9 +345,9 @@ public interface PRoot extends PComponent {
 	 * A registered Timer will be ticked once every millisecond.<br>
 	 * A timer can not be registered more then once.<br>
 	 * 
-	 * @param timer the timer that is to be registered
-	 * @throws NullPointerException if timer is null
-	 * @throws IllegalArgumentException if timer was already registered
+	 * @param timer						the timer that is to be registered
+	 * @throws NullPointerException		if timer is null
+	 * @throws IllegalArgumentException	if timer was already registered
 	 * @see PTimer
 	 * @see #unregisterTimer(PTimer)
 	 */
@@ -330,12 +356,12 @@ public interface PRoot extends PComponent {
 	/**
 	 * Unregisters the given {@link PTimer} from this root.<br>
 	 * The unregistered timer will no longer be ticked.<br>
-	 * If the timer has not been registered before an 
+	 * If the timer has not been registered before, an 
 	 * {@link IllegalArgumentException} will be thrown.<br>
 	 * 
-	 * @param timer the timer that is to be unregistered
-	 * @throws NullPointerException if timer is null
-	 * @throws IllegalArgumentException if timer was not registered
+	 * @param timer						the timer that is to be unregistered
+	 * @throws NullPointerException		if timer is null
+	 * @throws IllegalArgumentException	if timer was not registered
 	 * @see PTimer
 	 * @see #registerTimer(PTimer)
 	 */
@@ -352,6 +378,7 @@ public interface PRoot extends PComponent {
 	 * @see #getFocusOwner()
 	 * @see #setFocusOwner(PComponent)
 	 */
+	@Override
 	public void addObs(PFocusObs obs) throws NullPointerException;
 	
 	/**
@@ -364,5 +391,25 @@ public interface PRoot extends PComponent {
 	 * @see #getFocusOwner()
 	 * @see #setFocusOwner(PComponent)
 	 */
+	@Override
 	public void removeObs(PFocusObs obs) throws NullPointerException;
+	
+	/**
+	 * Notifies all {@link PGlobalEventObs global event observers} registered at this 
+	 * {@link PRoot} of the event by calling the 
+	 * {@link PGlobalEventObs#onGlobalEvent(PComponent, Object)} method with the given 
+	 * <code>source</code> and <code>eventData</code>.<br>
+	 * @param source					the component that generated the event
+	 * @param eventData					the event data
+	 * @throws NullPointerException		if either source or eventData is null
+	 * @see #addObs(PGlobalEventObs)
+	 * @see #removeObs(PGlobalEventObs)
+	 */
+	public void fireGlobalEvent(PComponent source, Object eventData) throws NullPointerException;
+	
+	//TODO:
+	public void addObs(PGlobalEventObs obs) throws NullPointerException;
+	
+	//TODO:
+	public void removeObs(PGlobalEventObs obs) throws NullPointerException;
 }

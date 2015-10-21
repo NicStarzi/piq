@@ -33,6 +33,7 @@ import edu.udo.piq.PDialog;
 import edu.udo.piq.PDnDManager;
 import edu.udo.piq.PFontResource;
 import edu.udo.piq.PFontResource.Style;
+import edu.udo.piq.PImageMeta;
 import edu.udo.piq.PImageResource;
 import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PRoot;
@@ -219,6 +220,14 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 		return imgRes;
 	}
 	
+	public PImageResource createImageResource(int width, int height,
+			PImageMeta metaInfo) throws IllegalArgumentException 
+	{
+		BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		BufferedPImageResource res = new BufferedPImageResource(img);
+		return res;
+	}
+	
 	public PBounds getBounds() {
 		return bounds;
 	}
@@ -327,6 +336,10 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 			this.clipFx = clipFx;
 			this.clipFy = clipFy;
 		}
+	}
+
+	public boolean isElusive() {
+		return false;
 	}
 	
 }

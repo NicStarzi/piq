@@ -3,7 +3,7 @@ package edu.udo.piq.components.defaults;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.udo.piq.components.PLineChartModel;
+import edu.udo.piq.components.charts.PLineChartModel;
 import edu.udo.piq.components.util.PModelHistory;
 import edu.udo.piq.tools.AbstractPLineChartModel;
 

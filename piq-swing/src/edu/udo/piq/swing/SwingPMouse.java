@@ -141,6 +141,7 @@ public class SwingPMouse implements PMouse {
 		case DRAG_AND_DROP:
 			return 0;
 		case RIGHT:
+		case POPUP_TRIGGER:
 			return 1;
 		case MIDDLE:
 			return 2;

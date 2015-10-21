@@ -3,17 +3,22 @@ package edu.udo.piq.swing.tests;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.Timer;
 
 import edu.udo.piq.PColor;
+import edu.udo.piq.PComponent;
+import edu.udo.piq.PGlobalEventObs;
 import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PButtonObs;
 import edu.udo.piq.components.PCheckBox;
 import edu.udo.piq.components.PCheckBoxObs;
 import edu.udo.piq.components.PCheckBoxTuple;
+import edu.udo.piq.components.PHighlightButton;
 import edu.udo.piq.components.PPicture;
 import edu.udo.piq.components.PProgressBar;
 import edu.udo.piq.components.PProgressBarModel;
@@ -21,6 +26,8 @@ import edu.udo.piq.components.PProgressBarModelObs;
 import edu.udo.piq.components.PSlider;
 import edu.udo.piq.components.PSliderModel;
 import edu.udo.piq.components.PSliderModelObs;
+import edu.udo.piq.components.PStraightLine;
+import edu.udo.piq.components.PStraightLine.LineOrientation;
 import edu.udo.piq.components.collections.PList;
 import edu.udo.piq.components.containers.PDropDownList;
 import edu.udo.piq.components.containers.PPanel;
@@ -30,6 +37,9 @@ import edu.udo.piq.components.defaults.DefaultPListModel;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.components.textbased.PTextArea;
+import edu.udo.piq.components.util.PPopup;
+import edu.udo.piq.components.util.PPopupObs;
+import edu.udo.piq.components.util.PPopupProvider;
 import edu.udo.piq.designs.standard.PStandardDesignSheet;
 import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
@@ -76,6 +86,15 @@ public class SwingPTest {
 //			}
 //		});
 		frame.setContentPane(root.getPanel());
+		root.addObs(new PGlobalEventObs() {
+			public void onGlobalEvent(PComponent source, Object eventData) {
+				if ("CreateNew".equals(eventData)) {
+					System.out.println("Create New !!!");
+				} else {
+					System.out.println("UnknownGlobalEvent: "+eventData);
+				}
+			}
+		});
 		
 		
 		Timer updateTimer = new Timer(10, new ActionListener() {
@@ -151,6 +170,46 @@ public class SwingPTest {
 		txtAr.setEditable(true);
 		splitV.setSecondComponent(txtAr);
 		
+		PPopup popupTxtAr = new PPopup(txtAr);
+		popupTxtAr.addObs(new PPopupObs() {
+			public void onPopupShown(PPopup popup, PComponent popupComp) {
+				System.out.println("onPopupShown");
+			}
+			public void onPopupHidden(PPopup popup, PComponent popupComp) {
+				System.out.println("onPopupHidden");
+			}
+		});
+		popupTxtAr.setPopupProvider(new PPopupProvider() {
+			public List<PComponent> createOptions(PComponent component) {
+				List<PComponent> result = new ArrayList<>();
+				
+				PHighlightButton btnNew = new PHighlightButton();
+				btnNew.setGlobalEventProvider((btn) -> "CreateNew");
+				btnNew.setContent(new PLabel("New"));
+				btnNew.addObs((PButton btn) -> System.out.println("New!"));
+				result.add(btnNew);
+				
+				PStraightLine sep1 = new PStraightLine(LineOrientation.HORIZONTAL);
+				result.add(sep1);
+				
+				PHighlightButton btnEdit = new PHighlightButton();
+				btnEdit.setContent(new PLabel("Edit"));
+				btnEdit.addObs((PButton btn) -> System.out.println("Edit!"));
+				result.add(btnEdit);
+				
+				PStraightLine sep2 = new PStraightLine(LineOrientation.HORIZONTAL);
+				result.add(sep2);
+				
+				PHighlightButton btnDelete = new PHighlightButton();
+				btnDelete.setContent(new PLabel("Delete"));
+				btnDelete.addObs((PButton btn) -> System.out.println("Delete!"));
+				result.add(btnDelete);
+				
+				return result;
+			}
+		});
+		popupTxtAr.setEnabled(true);
+		
 		PPanel btnPnl = new PPanel();
 		btnPnl.setID("Button Panel");
 		btnPnl.setLayout(new PWrapLayout(btnPnl, ListAlignment.FROM_LEFT));
@@ -158,6 +217,7 @@ public class SwingPTest {
 		bodyPnl.addChild(btnPnl, PBorderLayout.Constraint.BOTTOM);
 		
 		final PButton btnChange = new PButton();
+		btnChange.setGlobalEventProvider((btn) -> "CreateNew");
 		btnChange.setID("Change Button");
 		btnChange.setContent(new PSlider());
 //		btnChange.setContent(new PLabel(new DefaultPTextModel("Change")));

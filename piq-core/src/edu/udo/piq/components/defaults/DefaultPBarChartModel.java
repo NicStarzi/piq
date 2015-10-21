@@ -1,7 +1,7 @@
 package edu.udo.piq.components.defaults;
 
-import edu.udo.piq.components.PBarChartModel;
-import edu.udo.piq.components.PBarChartModelObs;
+import edu.udo.piq.components.charts.PBarChartModel;
+import edu.udo.piq.components.charts.PBarChartModelObs;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
 

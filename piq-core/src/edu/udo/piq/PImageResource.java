@@ -1,5 +1,7 @@
 package edu.udo.piq;
 
+import edu.udo.piq.tools.DoNothingRenderer;
+
 /**
  * This interface defines abstract platform independent image resources.<br>
  * The implementation of these image resources depends heavily on the used 
@@ -18,5 +20,16 @@ public interface PImageResource {
 	 * @return the size for this image
 	 */
 	public PSize getSize();
+	
+	/**
+	 * Creates a new {@link PRenderer} that can be used to paint this 
+	 * {@link PImageResource}.<br>
+	 * The returned renderer is never null but might do nothing at all if 
+	 * custom painting of images is not possible.<br>
+	 * @return			a non-null instance of {@link PRenderer}
+	 */
+	public default PRenderer createRenderer() {
+		return new DoNothingRenderer();
+	}
 	
 }

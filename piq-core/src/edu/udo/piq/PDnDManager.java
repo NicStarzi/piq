@@ -4,6 +4,7 @@ import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.components.containers.PGlassPanel;
 import edu.udo.piq.layouts.PFreeLayout.FreeConstraint;
 import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.ThrowException;
 
 /**
  * The {@link PDnDManager} is a part of a {@link PRoot} and handles dragging and 
@@ -56,9 +57,7 @@ public class PDnDManager {
 	 * @see PRoot#getDragAndDropManager()
 	 */
 	public PDnDManager(PRoot root) throws NullPointerException {
-		if (root == null) {
-			throw new NullPointerException("root == null");
-		}
+		ThrowException.ifNull(root, "root == null");
 		this.root = root;
 		mouseObs = new PMouseObs() {
 			public void onMouseMoved(PMouse mouse) {
@@ -143,12 +142,8 @@ public class PDnDManager {
 	 * @see #abortDrag()
 	 */
 	public void startDrag(PDnDTransfer transfer) throws IllegalStateException, IllegalArgumentException {
-		if (getActiveTransfer() != null) {
-			throw new IllegalStateException("activeTransfer != null");
-		}
-		if (transfer == null) {
-			throw new IllegalArgumentException("transfer == null");
-		}
+		ThrowException.ifNotNull(getActiveTransfer(), "activeTransfer != null");
+		ThrowException.ifNull(transfer, "transfer == null");
 		activeTransfer = transfer;
 		
 		currentOverlay = getRoot().getOverlay();
@@ -363,9 +358,7 @@ public class PDnDManager {
 	}
 	
 	protected void throwExceptionIfNoDragActive() {
-		if (getActiveTransfer() == null) {
-			throw new IllegalStateException("activeTransfer == null");
-		}
+		ThrowException.ifNull(getActiveTransfer(), "activeTransfer == null");
 	}
 	
 }

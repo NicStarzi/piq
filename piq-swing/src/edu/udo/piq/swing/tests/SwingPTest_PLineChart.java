@@ -9,8 +9,8 @@ import javax.swing.Timer;
 
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PButtonObs;
-import edu.udo.piq.components.PLineChart;
 import edu.udo.piq.components.PSlider;
+import edu.udo.piq.components.charts.PLineChart;
 import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.components.textbased.PLabel;

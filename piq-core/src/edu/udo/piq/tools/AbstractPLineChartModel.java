@@ -1,7 +1,7 @@
 package edu.udo.piq.tools;
 
-import edu.udo.piq.components.PLineChartModel;
-import edu.udo.piq.components.PLineChartModelObs;
+import edu.udo.piq.components.charts.PLineChartModel;
+import edu.udo.piq.components.charts.PLineChartModelObs;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
 

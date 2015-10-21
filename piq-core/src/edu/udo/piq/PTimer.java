@@ -173,40 +173,6 @@ public class PTimer {
 		return paused;
 	}
 	
-//	/**
-//	 * Returns the current state of the timer. The state of the timer 
-//	 * depends on the running and paused flags, as well as on whether 
-//	 * the timer is owned by a component or not and if the owner is part 
-//	 * of a GUI.<br>
-//	 * <br>
-//	 * If the timer has no owner, or if the owner is not part of a GUI 
-//	 * is {@link PTimerState#DISABLED}.<br>
-//	 * If the timer is not disabled it is either {@link PTimerState#STARTED}, 
-//	 * {@link PTimerState#PAUSED} or {@link PTimerState#STOPPED} based on 
-//	 * the return values of {@link #isStarted()} and {@link #isPaused()}.<br>
-//	 * @return			a non-null value of {@link PTimerState}
-//	 */
-//	public PTimerState getState() {
-//		// no owner => no root => disabled
-//		if (getOwner() == null) {
-//			return PTimerState.DISABLED;
-//		}
-//		// not registered => either stopped or disabled
-//		if (currentRoot == null) {
-//			// no root => disabled
-//			if (getOwner().getRoot() == null) {
-//				return PTimerState.DISABLED;
-//			} else {
-//				return PTimerState.STOPPED;
-//			}
-//		}
-//		// registered => either paused or running
-//		if (paused) {
-//			return PTimerState.PAUSED;
-//		}
-//		return PTimerState.STARTED;
-//	}
-	
 	/**
 	 * Sets the delay of this timer to <code>value</code> (in milliseconds).<br>
 	 * The delay of a timer is the time it takes the timer to expire after 
@@ -332,6 +298,7 @@ public class PTimer {
 	 * @param milliSeconds
 	 */
 	public void tick(int milliSeconds) {
+		ThrowException.ifLess(0, milliSeconds, "milliSeconds < 0");
 		if (isStarted() && !isPaused()) {
 			timeCount += milliSeconds;
 			
@@ -355,9 +322,9 @@ public class PTimer {
 				/*
 				 * The new root is the old root.
 				 * If we were registered before we will still be 
-				 * registered afterwards
+				 * registered afterwards.
+				 * => We don't need to do anything!
 				 */
-				currentRoot = newRoot;
 			} else {
 				// Root has changed. Remove from old root, add to new root
 				if (oldRoot != null) {

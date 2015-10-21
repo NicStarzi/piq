@@ -14,6 +14,7 @@ import edu.udo.piq.PDnDManager;
 import edu.udo.piq.PDnDSupport;
 import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PFontResource.Style;
+import edu.udo.piq.PGlobalEventObs;
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PKeyboardObs;
 import edu.udo.piq.PLayoutObs;
@@ -37,6 +38,8 @@ import edu.udo.piq.util.PCompUtil;
 
 public abstract class AbstractPRoot implements PRoot {
 	
+	protected final ObserverList<PGlobalEventObs> globalObsList
+			= PCompUtil.createDefaultObserverList();
 	protected final PRootLayout layout;
 	protected PDesignSheet designSheet = new AbstractPDesignSheet();
 	protected PMouse mouse;
@@ -386,6 +389,26 @@ public abstract class AbstractPRoot implements PRoot {
 	
 	public String getID() {
 		return id;
+	}
+	
+	public void fireGlobalEvent(PComponent source, Object eventData)
+			throws NullPointerException 
+	{
+		for (PGlobalEventObs obs : globalObsList) {
+			try {
+				obs.onGlobalEvent(source, eventData);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public void addObs(PGlobalEventObs obs) throws NullPointerException {
+		globalObsList.add(obs);
+	}
+	
+	public void removeObs(PGlobalEventObs obs) throws NullPointerException {
+		globalObsList.remove(obs);
 	}
 	
 	public String toString() {

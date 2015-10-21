@@ -3,6 +3,8 @@ package edu.udo.piq.components;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
+import edu.udo.piq.PGlobalEventGenerator;
+import edu.udo.piq.PGlobalEventProvider;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PKeyboard.Key;
@@ -19,7 +21,7 @@ import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
 
-public class PButton extends AbstractPInputLayoutOwner {
+public class PButton extends AbstractPInputLayoutOwner implements PGlobalEventGenerator {
 	
 	protected final PInput pressEnterInput = new PInput() {
 		public Key getInputKey() {
@@ -67,6 +69,7 @@ public class PButton extends AbstractPInputLayoutOwner {
 		}
 	};
 	protected PButtonModel model;
+	private PGlobalEventProvider globalEventProv;
 	
 	public PButton() {
 		super();
@@ -105,6 +108,14 @@ public class PButton extends AbstractPInputLayoutOwner {
 	
 	protected PCentricLayout getLayoutInternal() {
 		return (PCentricLayout) super.getLayout();
+	}
+	
+	public void setGlobalEventProvider(PGlobalEventProvider provider) {
+		globalEventProv = provider;
+	}
+	
+	public PGlobalEventProvider getGlobalEventProvider() {
+		return globalEventProv;
 	}
 	
 	public void setContent(PComponent component) {
@@ -182,6 +193,10 @@ public class PButton extends AbstractPInputLayoutOwner {
 		}
 	}
 	
+	public boolean defaultFillsAllPixels() {
+		return true;
+	}
+	
 	public void addObs(PButtonObs obs) {
 		obsList.add(obs);
 	}
@@ -206,8 +221,13 @@ public class PButton extends AbstractPInputLayoutOwner {
 	
 	protected void fireClickEvent() {
 		for (PButtonObs obs : obsList) {
-			obs.onClick(this);
+			try {
+				obs.onClick(this);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
+		fireGlobalEvent();
 	}
 	
 }

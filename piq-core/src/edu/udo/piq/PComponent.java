@@ -10,6 +10,7 @@ import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.ImmutablePBounds;
 import edu.udo.piq.util.PCompUtil;
 import edu.udo.piq.util.PGuiUtil;
+import edu.udo.piq.util.ThrowException;
 
 /**
  * The key part of the piq GUI widget toolkit.<br>
@@ -435,6 +436,7 @@ public interface PComponent {
 	 * @see #getParent()
 	 */
 	public default boolean isAncestorOf(PComponent maybeDescendant) {
+		ThrowException.ifNull(maybeDescendant, "maybeDescendant == null");
 		PComponent comp = maybeDescendant.getParent();
 		while (comp != null) {
 			if (comp == this) {
@@ -457,6 +459,7 @@ public interface PComponent {
 	 * @see #getParent()
 	 */
 	public default boolean isDescendantOf(PComponent maybeAncestor) {
+		ThrowException.ifNull(maybeAncestor, "maybeAncestor == null");
 		return maybeAncestor.isAncestorOf(this);
 	}
 	
@@ -593,9 +596,6 @@ public interface PComponent {
 		if (mouse == null) {
 			return false;
 		}
-//		int mx = mouse.getX();
-//		int my = mouse.getY();
-//		PComponent compAtMouse = PCompUtil.getComponentAt(getRoot(), mx, my);
 		PComponent compAtMouse = mouse.getComponentAtMouse();
 		return compAtMouse == this;
 	}
@@ -616,9 +616,6 @@ public interface PComponent {
 		if (mouse == null) {
 			return false;
 		}
-//		int mx = mouse.getX();
-//		int my = mouse.getY();
-//		PComponent compAtMouse = PCompUtil.getComponentAt(getRoot(), mx, my);
 		PComponent compAtMouse = mouse.getComponentAtMouse();
 		return compAtMouse == this || isAncestorOf(compAtMouse);
 	}
@@ -653,9 +650,7 @@ public interface PComponent {
 	 */
 	public default void takeFocus() {
 		PRoot root = getRoot();
-		if (root == null) {
-			throw new IllegalStateException(this+".getRoot() == null");
-		}
+		ThrowException.ifNull(root, "getRoot() == null");
 		root.setFocusOwner(this);
 	}
 	
@@ -671,11 +666,8 @@ public interface PComponent {
 	 */
 	public default void releaseFocus() {
 		PRoot root = getRoot();
-		if (root == null) {
-			throw new IllegalStateException(this+".getRoot() == null");
-		} if (root.getFocusOwner() != this) {
-			throw new IllegalStateException(this+".hasFocus() == false");
-		}
+		ThrowException.ifNull(root, "getRoot() == null");
+		ThrowException.ifFalse(root.getFocusOwner() == this, "hasFocus() == false");
 		root.setFocusOwner(null);
 	}
 	

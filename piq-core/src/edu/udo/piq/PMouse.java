@@ -4,6 +4,7 @@ import com.sun.javafx.cursor.CursorType;
 
 import edu.udo.piq.PCursor.PCursorType;
 import edu.udo.piq.components.collections.PSelectionComponent;
+import edu.udo.piq.components.util.PPopup;
 import edu.udo.piq.util.PCompUtil;
 
 public interface PMouse {
@@ -165,9 +166,18 @@ public interface PMouse {
 		/**
 		 * This mouse button is used for dragging data from one 
 		 * {@link PSelectionComponent} to another via a 
-		 * drag-and-drop motion.
+		 * drag-and-drop motion.<br>
+		 * This is a virtual button which should be identical to a 
+		 * non virtual button.<br>
 		 */
 		DRAG_AND_DROP,
+		/**
+		 * This mouse button is used to trigger {@link PPopup popups} 
+		 * on top of components.<br>
+		 * This is a virtual button which should be identical to a 
+		 * non virtual button.<br> 
+		 */
+		POPUP_TRIGGER,
 		;
 	}
 	

@@ -1,4 +1,4 @@
-package edu.udo.piq.components;
+package edu.udo.piq.components.charts;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;

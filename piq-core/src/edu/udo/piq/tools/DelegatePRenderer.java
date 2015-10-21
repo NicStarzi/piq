@@ -1,4 +1,4 @@
-package edu.udo.piq.util;
+package edu.udo.piq.tools;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;

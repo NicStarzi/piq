@@ -11,6 +11,10 @@ import edu.udo.piq.util.PCompUtil;
 public class ReRenderSet implements Iterable<PComponent> {
 	
 	private final PRoot root;
+	/**
+	 * This is a {@link LinkedList} because we need to clear it 
+	 * regularly and delete elements at arbitrary indices.<br>
+	 */
 	private final List<PComponent> buffer = new LinkedList<>();
 	private boolean containsRoot = false;
 	

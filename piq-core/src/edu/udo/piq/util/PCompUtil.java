@@ -24,7 +24,7 @@ public class PCompUtil {
 	 * @see ObserverList
 	 */
 	public static <T> ObserverList<T> createDefaultObserverList() {
-		return new ArrayObsList<T>();
+		return new ArrayObsList<>();
 	}
 	
 	/**

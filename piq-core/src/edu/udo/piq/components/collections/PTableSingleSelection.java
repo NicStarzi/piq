@@ -7,7 +7,7 @@ import edu.udo.piq.tools.AbstractPSelection;
 
 public class PTableSingleSelection extends AbstractPSelection implements PTableSelection {
 	
-	protected final List<PModelIndex> indices = new SingletonList<PModelIndex>();
+	protected final List<PModelIndex> indices = new SingletonList<>();
 	
 	public void addSelection(PModelIndex index) {
 		if (indices.get(0) == index) {

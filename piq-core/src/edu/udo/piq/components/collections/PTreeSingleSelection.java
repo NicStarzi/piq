@@ -7,7 +7,7 @@ import edu.udo.piq.tools.AbstractPSelection;
 
 public class PTreeSingleSelection extends AbstractPSelection implements PTreeSelection {
 	
-	protected final List<PModelIndex> indices = new SingletonList<PModelIndex>();
+	protected final List<PModelIndex> indices = new SingletonList<>();
 	
 	public void addSelection(PModelIndex index) {
 		if (isSelected(index)) {

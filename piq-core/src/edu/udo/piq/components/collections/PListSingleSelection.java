@@ -7,7 +7,7 @@ import edu.udo.piq.tools.AbstractPSelection;
 
 public class PListSingleSelection extends AbstractPSelection implements PListSelection {
 	
-	protected final List<PModelIndex> indices = new SingletonList<PModelIndex>();
+	protected final List<PModelIndex> indices = new SingletonList<>();
 	
 	public void addSelection(PModelIndex index) {
 		if (indices.get(0) == index) {

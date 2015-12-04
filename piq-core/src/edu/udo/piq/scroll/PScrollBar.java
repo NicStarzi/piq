@@ -9,12 +9,12 @@ public class PScrollBar extends AbstractPLayoutOwner {
 	
 	private final PScrollBarModelObs modelObs = new PScrollBarModelObs() {
 		public void sizeChanged(PScrollBarModel model, int oldValue, int newValue) {
-			fireReLayOutEvent();
-		}
-		public void scrollChanged(PScrollBarModel model, double oldValue, double newValue) {
-			fireReLayOutEvent();
+			onSizeChanged();
 		}
 		public void preferredSizeChanged(PScrollBarModel model, int oldValue, int newValue) {
+			onSizeChanged();
+		}
+		public void scrollChanged(PScrollBarModel model, double oldValue, double newValue) {
 			fireReLayOutEvent();
 		}
 	};
@@ -95,6 +95,21 @@ public class PScrollBar extends AbstractPLayoutOwner {
 	
 	public PScrollBarModel getModel() {
 		return model;
+	}
+	
+	private void onSizeChanged() {
+		fireReLayOutEvent();
+		boolean active = isActive();
+		getLayoutInternal().getFirstButton().setActive(active);
+		getLayoutInternal().getSecondButton().setActive(active);
+		getLayoutInternal().getFirstBackground().setActive(active);
+		getLayoutInternal().getSecondBackground().setActive(active);
+		getLayoutInternal().getThumb().setActive(active);
+	}
+	
+	public boolean isActive() {
+		PScrollBarModel model = getModel();
+		return model.getPreferredSize() > model.getSize();
 	}
 	
 }

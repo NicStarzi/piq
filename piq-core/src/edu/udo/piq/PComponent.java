@@ -7,7 +7,7 @@ import java.util.ConcurrentModificationException;
 import edu.udo.piq.components.containers.PGlassPanel;
 import edu.udo.piq.components.util.PFocusTraversal;
 import edu.udo.piq.tools.AbstractPComponent;
-import edu.udo.piq.tools.ImmutablePBounds;
+import edu.udo.piq.tools.MutablePBounds;
 import edu.udo.piq.util.PCompUtil;
 import edu.udo.piq.util.PGuiUtil;
 import edu.udo.piq.util.ThrowException;
@@ -523,39 +523,44 @@ public interface PComponent {
 	 * More specifically the returned {@link PBounds} are those bounds that 
 	 * are created by recursively intersecting this components bounds with 
 	 * its parents bounds.<br>
-	 * The returned {@link PBounds} are immutable and not synchronized with 
-	 * the components bounds.<br>
+	 * The returned {@link PBounds} are not synchronized with this components 
+	 * actual bounds and may or may not be immutable.<br>
 	 * <br>
-	 * If the clipped bounds of this component would have negative size 
-	 * null is returned instead.<br>
+	 * If the clipped bounds of this component would have negative size, or 
+	 * if this component has no parent, null is returned instead.<br>
 	 * 
 	 * @return the clipped {@link PBounds} of this component or null
 	 * @see #getBounds()
 	 * @see PBounds#makeIntersection(PBounds)
+	 * @see PCompUtil#fillClippedBounds(MutablePBounds, PComponent)
 	 */
 	public default PBounds getClippedBounds() {
-		PComponent current = this;
-		int clipX = Integer.MIN_VALUE;
-		int clipY = Integer.MIN_VALUE;
-		int clipFx = Integer.MAX_VALUE;
-		int clipFy = Integer.MAX_VALUE;
-		while (current != null) {
-			PBounds bounds = current.getBounds();
-			if (bounds == null) {
-				return null;
-			}
-			clipX = Math.max(bounds.getX(), clipX);
-			clipY = Math.max(bounds.getY(), clipY);
-			clipFx = Math.min(bounds.getFinalX(), clipFx);
-			clipFy = Math.min(bounds.getFinalY(), clipFy);
-			int clipW = clipFx - clipX;
-			int clipH = clipFy - clipY;
-			if (clipW < 0 || clipH < 0) {
-				return null;
-			}
-			current = current.getParent();
+		if (getParent() == null) {
+			return null;
 		}
-		return new ImmutablePBounds(clipX, clipY, clipFx - clipX, clipFy - clipY);
+		return PCompUtil.fillClippedBounds(null, this);
+//		PComponent current = this;
+//		int clipX = Integer.MIN_VALUE;
+//		int clipY = Integer.MIN_VALUE;
+//		int clipFx = Integer.MAX_VALUE;
+//		int clipFy = Integer.MAX_VALUE;
+//		while (current != null) {
+//			PBounds bounds = current.getBounds();
+//			if (bounds == null) {
+//				return null;
+//			}
+//			clipX = Math.max(bounds.getX(), clipX);
+//			clipY = Math.max(bounds.getY(), clipY);
+//			clipFx = Math.min(bounds.getFinalX(), clipFx);
+//			clipFy = Math.min(bounds.getFinalY(), clipFy);
+//			int clipW = clipFx - clipX;
+//			int clipH = clipFy - clipY;
+//			if (clipW < 0 || clipH < 0) {
+//				return null;
+//			}
+//			current = current.getParent();
+//		}
+//		return new ImmutablePBounds(clipX, clipY, clipFx - clipX, clipFy - clipY);
 	}
 	
 	/**

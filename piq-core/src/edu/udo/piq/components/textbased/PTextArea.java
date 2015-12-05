@@ -376,6 +376,10 @@ public class PTextArea extends AbstractPComponent {
 		return text.toString();
 	}
 	
+	public boolean defaultFillsAllPixels() {
+		return true;
+	}
+	
 	public void defaultRender(PRenderer renderer) {
 		PFontResource font = getDefaultFont();
 		PBounds bounds = getBounds();

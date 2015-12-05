@@ -25,7 +25,7 @@ public class MutablePBounds extends AbstractPBounds implements PBounds {
 		this.h = height;
 	}
 	
-	protected void setX(int value) {
+	public void setX(int value) {
 		x = value;
 	}
 	
@@ -33,7 +33,7 @@ public class MutablePBounds extends AbstractPBounds implements PBounds {
 		return x;
 	}
 	
-	protected void setY(int value) {
+	public void setY(int value) {
 		y = value;
 	}
 	
@@ -41,7 +41,7 @@ public class MutablePBounds extends AbstractPBounds implements PBounds {
 		return y;
 	}
 	
-	protected void setWidth(int value) {
+	public void setWidth(int value) {
 		w = value;
 	}
 	
@@ -49,7 +49,7 @@ public class MutablePBounds extends AbstractPBounds implements PBounds {
 		return w;
 	}
 	
-	protected void setHeight(int value) {
+	public void setHeight(int value) {
 		h = value;
 	}
 	

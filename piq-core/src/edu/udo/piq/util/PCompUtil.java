@@ -9,10 +9,75 @@ import edu.udo.piq.PDesign;
 import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
+import edu.udo.piq.tools.ImmutablePBounds;
+import edu.udo.piq.tools.MutablePBounds;
 
 public class PCompUtil {
 	
 	private PCompUtil() {}
+	
+	/**
+	 * Returns the portion of the components {@link PBounds} that is not 
+	 * clipped by the bounds of an ancestor of the component.<br>
+	 * More specifically the returned {@link PBounds} are those bounds that 
+	 * are created by recursively intersecting the components bounds with 
+	 * its parents bounds.<br>
+	 * The returned {@link PBounds} are not synchronized with the components 
+	 * actual bounds and may or may not be immutable.<br>
+	 * <br>
+	 * If the clipped bounds of the component would have negative size, or 
+	 * if the component has no parent, null is returned instead.<br>
+	 * 
+	 * @param result					used to store the result. If this is 
+	 * 									null a new instance of {@link PBounds} 
+	 * 									will be created and returned. If the  
+	 * 									argument is not null it will be returned.
+	 * @param comp						the component for which the clipped 
+	 * 									bounds are calculated. Must not be null.
+	 * @return							the clipped {@link PBounds} of this 
+	 * 									component or null
+	 * @throws NullPointerException		if comp is null
+	 * @see PComponent#getBounds()
+	 * @see PComponent#getClippedBounds()
+	 * @see PBounds#makeIntersection(PBounds)
+	 */
+	public static PBounds fillClippedBounds(MutablePBounds result, PComponent comp) {
+		ThrowException.ifNull(comp, "component == null");
+		if (comp.getParent() == null) {
+			return null;
+		}
+		PComponent current = comp;
+		int clipX = Integer.MIN_VALUE;
+		int clipY = Integer.MIN_VALUE;
+		int clipFx = Integer.MAX_VALUE;
+		int clipFy = Integer.MAX_VALUE;
+		int clipW = Integer.MAX_VALUE;
+		int clipH = Integer.MAX_VALUE;
+		while (current != null) {
+			PBounds bounds = current.getBounds();
+			if (bounds == null) {
+				break;
+			}
+			clipX = Math.max(bounds.getX(), clipX);
+			clipY = Math.max(bounds.getY(), clipY);
+			clipFx = Math.min(bounds.getFinalX(), clipFx);
+			clipFy = Math.min(bounds.getFinalY(), clipFy);
+			clipW = clipFx - clipX;
+			clipH = clipFy - clipY;
+			if (clipW < 0 || clipH < 0) {
+				return null;
+			}
+			current = current.getParent();
+		}
+		if (result == null) {
+			return new ImmutablePBounds(clipX, clipY, clipW, clipH);
+		}
+		result.setX(clipX);
+		result.setY(clipY);
+		result.setWidth(clipW);
+		result.setHeight(clipH);
+		return result;
+	}
 	
 	/**
 	 * Creates a new instance of {@link ObserverList} and returns it.<br>

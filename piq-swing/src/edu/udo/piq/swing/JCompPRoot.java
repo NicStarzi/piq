@@ -38,7 +38,9 @@ import edu.udo.piq.PImageResource;
 import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.tools.AbstractPRoot;
+import edu.udo.piq.tools.MutablePBounds;
 import edu.udo.piq.tools.ReRenderSet;
+import edu.udo.piq.util.PCompUtil;
 
 public class JCompPRoot extends AbstractPRoot implements PRoot {
 	
@@ -62,14 +64,12 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 				wnd = (Window) awtRoot;
 				wnd.addWindowListener(wndListener);
 			}
-//			timerUpdate.start();
 		}
 		public void removeNotify() {
 			super.removeNotify();
 			if (wnd != null) {
 				wnd.removeWindowListener(wndListener);
 			}
-//			timerUpdate.stop();
 		}
 		public void paintComponent(Graphics g) {
 			render((Graphics2D) g);
@@ -84,23 +84,7 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 	private final SwingPClipboard clipboard = new SwingPClipboard();
 	private final PDnDManager dndManager = new PDnDManager(this);
 	private final JPanelPBounds bounds = new JPanelPBounds(panel);
-//	private final Timer timerUpdate = new Timer(1, new ActionListener() {
-//		public void actionPerformed(ActionEvent e) {
-//			timersNeedUpdate = true;
-//		}
-//	});
-//	private Set<PComponent> reRenderSet = new HashSet<>();
-//	private volatile boolean timersNeedUpdate = false;
-//	private final Set<PComponent> reRenderSet = new HashSet<>();
 	private final ReRenderSet reRenderSet = new ReRenderSet(this);
-//	private final Comparator<PComponent> componentReRenderComparator = new Comparator<PComponent>() {
-//		public int compare(PComponent o1, PComponent o2) {
-//			int depth1 = o1.getDepth();
-//			int depth2 = o2.getDepth();
-//			return depth1 - depth2;
-//		}
-//	};
-//	private boolean reRenderAll = false;
 	
 	public JCompPRoot() {
 		super();
@@ -120,9 +104,6 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 		super.keyboard = keyboard;
 		super.clipboard = clipboard;
 		super.dndManager = dndManager;
-		
-//		timerUpdate.setRepeats(true);
-//		timerUpdate.setCoalesce(true);
 	}
 	
 	/*
@@ -148,10 +129,6 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 			}
 		}
 		super.update(1);
-//		if (timersNeedUpdate) {
-//			tickAllTimers();
-//			timersNeedUpdate = false;
-//		}
 		
 		mouse.update();
 	}
@@ -249,26 +226,48 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 //		System.out.println();
 		
 		renderer.setGraphics(g);
-		
 		PBounds bnds = getBounds();
-		int w = bnds.getWidth();
-		int h = bnds.getHeight();
+		int rootFx = bnds.getWidth();
+		int rootFy = bnds.getHeight();
 		
 		Deque<StackInfo> stack = new ArrayDeque<>();
-//		Iterable<PComponent> compsToRender = reRenderSet.containsRoot() ? getLayout().getChildren() : reRenderSet;
-//		for (PComponent child : compsToRender) {
-		for (PComponent child : getLayout().getChildren()) {
-			// We check to see whether the component is still part of this GUI tree
-			if (child.getRoot() == this) {
-				// We do addFirst here for consistency with the while-loop
-				stack.addFirst(new StackInfo(child, true, 0, 0, w, h));
-//				stack.addLast(new StackInfo(child, true, 0, 0, w, h));
+		/*
+		 * If the root is to be rendered we will re-render everything.
+		 */
+		if (reRenderSet.containsRoot()) {
+			for (PComponent child : getLayout().getChildren()) {
+				stack.addFirst(new StackInfo(child, true, 0, 0, rootFx, rootFy));
+			}
+		} else {
+			// these are filled by PCompUtil.fillClippedBounds(...)
+			// This is used to cut down on the number of objects created
+			MutablePBounds tmpBnds = new MutablePBounds();
+			
+			for (PComponent child : reRenderSet) {
+				// We check to see whether the component is still part of this GUI tree
+				if (child.getRoot() == this) {
+					PBounds clipBnds = PCompUtil.fillClippedBounds(tmpBnds, child);
+//					System.out.println("child="+child+", clipBnds="+clipBnds);
+					// If the clipped bounds are null the component is completely 
+					// concealed and does not need to be rendered
+					if (clipBnds == null) {
+//						System.out.println("JCompPRoot.render()::ComponentClipped");
+						continue;
+					}
+					int clipX = clipBnds.getX();
+					int clipY = clipBnds.getY();
+					int clipFx = clipBnds.getFinalX();
+					int clipFy = clipBnds.getFinalY();
+					// We do addFirst here for consistency with the while-loop
+					stack.addFirst(new StackInfo(child, true, clipX, clipY, clipFx, clipFy));
+				}
+			}
+			// The overlay must be rendered last whenever the rest of the GUI is rendered
+			if (getLayout().getOverlay() != null) {
+				PComponent overlay = (PComponent) getLayout().getOverlay();
+				stack.addLast(new StackInfo(overlay, true, 0, 0, rootFx, rootFy));
 			}
 		}
-//		if (!reRenderSet.containsRoot() && getLayout().getOverlay() != null) {
-//			System.out.println("add overlay to render set");
-//			stack.addLast(new StackInfo((PComponent) getLayout().getOverlay(), true, 0, 0, w, h));
-//		}
 		while (!stack.isEmpty()) {
 			StackInfo info = stack.pollLast();
 //			StackInfo info = stack.pop();
@@ -280,14 +279,15 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 			int clipFy = Math.min(compBounds.getFinalY(), info.clipFy);
 			int clipW = clipFx - clipX;
 			int clipH = clipFy - clipY;
+//			System.out.println("comp="+comp+", clipX="+clipX+", clipY="+clipY+", clipW="+clipW+", clipH="+clipH);
 			if (clipW < 0 || clipH < 0) {
 //				System.out.println("ignore="+comp);
 				continue;
 			}
 			/*
 			 * We might not need to render this component.
-			 * Only render component if component fired a reRenderEvent or if an 
-			 * ancestor of component was rendered.
+			 * Only render this component if this component fired a reRenderEvent 
+			 * or if an ancestor of this component was rendered.
 			 */
 			boolean render = info.needRender || reRenderSet.contains(comp);
 			if (render) {

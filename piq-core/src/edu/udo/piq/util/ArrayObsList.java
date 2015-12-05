@@ -161,6 +161,9 @@ public class ArrayObsList<E> implements ObserverList<E> {
 	
 	@SuppressWarnings("unchecked")
 	public void sendNotify(Message<E> msg) {
+		if (arr == null) {
+			return;
+		}
 		final Object[] arr = this.arr;
 		final long[] modTimeStamp = this.modTimeStamp;
 		final long modCountNow = modCount;

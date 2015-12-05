@@ -35,6 +35,7 @@ public class DefaultPScrollBarModel extends AbstractPScrollBarModel implements P
 			value = 1;
 		}
 		double oldValue = getScroll();
+//		System.out.println("model.setScroll="+value+", old="+oldValue);
 		if (value != oldValue) {
 			scroll = value;
 //			System.out.println("scroll="+value);
@@ -47,22 +48,22 @@ public class DefaultPScrollBarModel extends AbstractPScrollBarModel implements P
 	}
 	
 	public void addSmallStep() {
-		modStep(getAdvanceSmallStep());
+		modScrollByAdvance(getAdvanceSmallStep());
 	}
 	
 	public void addBigStep() {
-		modStep(getAdvanceBigStep());
+		modScrollByAdvance(getAdvanceBigStep());
 	}
 	
 	public void subSmallStep() {
-		modStep(-getAdvanceSmallStep());
+		modScrollByAdvance(-getAdvanceSmallStep());
 	}
 	
 	public void subBigStep() {
-		modStep(-getAdvanceBigStep());
+		modScrollByAdvance(-getAdvanceBigStep());
 	}
 	
-	private void modStep(double advance) {
+	protected void modScrollByAdvance(double advance) {
 		int maxOffset = getPreferredSize() - getSize();
 		double scrollStep = advance / maxOffset;
 		setScroll(getScroll() + scrollStep);
@@ -90,6 +91,7 @@ public class DefaultPScrollBarModel extends AbstractPScrollBarModel implements P
 		if (value != oldValue) {
 			size = value;
 			fireSizeChangedEvent(oldValue);
+//			System.out.println("size="+getSize()+" >= pref="+getPreferredSize());
 			if (getSize() >= getPreferredSize()) {
 				setScroll(0);
 			}

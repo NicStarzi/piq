@@ -30,7 +30,7 @@ public class PScrollPanel extends AbstractPLayoutOwner {
 		}
 	};
 	private final PComponentObs bodyObs = new PComponentObs() {
-		public void preferredSizeChanged(PComponent component) {
+		public void onPreferredSizeChanged(PComponent component) {
 			refreshPrefSize();
 		}
 	};
@@ -56,6 +56,12 @@ public class PScrollPanel extends AbstractPLayoutOwner {
 		
 		setHorizontalScrollBar(new PScrollBar());
 		setVerticalScrollBar(new PScrollBar());
+		
+		addObs(new PComponentObs() {
+			public void onBoundsChanged(PComponent component) {
+				refreshSize();
+			}
+		});
 	}
 	
 	protected void setLayout(PScrollPanelLayout layout) {

@@ -541,6 +541,9 @@ public interface PComponent {
 		int clipFy = Integer.MAX_VALUE;
 		while (current != null) {
 			PBounds bounds = current.getBounds();
+			if (bounds == null) {
+				return null;
+			}
 			clipX = Math.max(bounds.getX(), clipX);
 			clipY = Math.max(bounds.getY(), clipY);
 			clipFx = Math.min(bounds.getFinalX(), clipFx);

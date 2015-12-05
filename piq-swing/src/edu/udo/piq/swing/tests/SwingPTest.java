@@ -45,6 +45,7 @@ import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
 import edu.udo.piq.layouts.PSplitLayout.Orientation;
 import edu.udo.piq.layouts.PWrapLayout;
+import edu.udo.piq.scroll.PScrollPanel;
 import edu.udo.piq.swing.JCompPRoot;
 import edu.udo.piq.tools.AbstractPTextModel;
 
@@ -132,6 +133,9 @@ public class SwingPTest {
 				"E", "F", "G", "H",
 			}));
 		list.setID("List");
+//		PScrollPanel scrollList = new PScrollPanel();
+//		scrollList.setBody(list);
+//		splitH.setSecondComponent(scrollList);
 		splitH.setSecondComponent(list);
 		
 		PToolTip tipList = new PToolTip(new DefaultPTextModel("This is a nice list!"));
@@ -163,12 +167,14 @@ public class SwingPTest {
 //		table.getSelection().setSelectionMode(SelectionMode.SINGLE_CELL);
 //		splitV.setSecondComponent(table);
 		
+		PScrollPanel scrollTxtAr = new PScrollPanel();
 		PTextArea txtAr = new PTextArea(new DefaultPTextModel(
 			"This is \n a simple test \nto see whether the PTextArea class \nworks as intended."
 		));
 		txtAr.setID("TextArea");
 		txtAr.setEditable(true);
-		splitV.setSecondComponent(txtAr);
+		scrollTxtAr.setBody(txtAr);
+		splitV.setSecondComponent(scrollTxtAr);
 		
 		PPopup popupTxtAr = new PPopup(txtAr);
 		popupTxtAr.addObs(new PPopupObs() {

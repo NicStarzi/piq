@@ -326,7 +326,7 @@ public abstract class AbstractPRoot implements PRoot {
 		reRender(this);
 		reLayOut(this);
 		for (PComponentObs obs : compObsList) {
-			obs.preferredSizeChanged(this);
+			obs.onPreferredSizeChanged(this);
 		}
 	}
 	

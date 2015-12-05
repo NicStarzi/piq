@@ -17,7 +17,7 @@ public class PInputMap {
 	public PInputMap(PComponent component) {
 		owner = component;
 		owner.addObs(new PKeyboardObs() {
-			public void keyPressed(PKeyboard keyboard, Key key) {
+			public void onKeyPressed(PKeyboard keyboard, Key key) {
 				if (!owner.hasFocus()) {
 					return;
 				}
@@ -30,7 +30,7 @@ public class PInputMap {
 					}
 				}
 			}
-			public void keyTriggered(PKeyboard keyboard, Key key) {
+			public void onKeyTriggered(PKeyboard keyboard, Key key) {
 				if (!owner.hasFocus()) {
 					return;
 				}
@@ -43,7 +43,7 @@ public class PInputMap {
 					}
 				}
 			}
-			public void keyReleased(PKeyboard keyboard, Key key) {
+			public void onKeyReleased(PKeyboard keyboard, Key key) {
 				if (!owner.hasFocus()) {
 					return;
 				}

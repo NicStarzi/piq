@@ -52,7 +52,7 @@ public class PDropDown extends AbstractPLayoutOwner {
 		}
 	};
 	private final PComponentObs containerObs = new PComponentObs() {
-		public void preferredSizeChanged(PComponent component) {
+		public void onPreferredSizeChanged(PComponent component) {
 			if (bodyShown) {
 				repositionDropDownContainer();
 			}
@@ -160,14 +160,21 @@ public class PDropDown extends AbstractPLayoutOwner {
 		int btnFx = btnX + (insets.getFromRight() - 2 - insets.getFromLeft());
 		int btnFy = fy - insets.getFromBottom();
 		
-		renderer.setColor(PColor.BLACK);
-		renderer.strokeBottom(btnX, btnY, btnFx, btnFy);
-		renderer.strokeRight(btnX, btnY, btnFx, btnFy);
-		renderer.setColor(PColor.WHITE);
-		renderer.strokeTop(btnX, btnY, btnFx, btnFy);
-		renderer.strokeLeft(btnX, btnY, btnFx, btnFy);
-		renderer.setColor(PColor.GREY75);
-		renderer.drawQuad(btnX + 1, btnY + 1, btnFx - 1, btnFy - 1);
+		if (isPressed()) {
+			renderer.setColor(PColor.GREY25);
+			renderer.strokeQuad(btnX, btnY, btnFx, btnFy);
+			renderer.setColor(PColor.GREY75);
+			renderer.drawQuad(btnX + 1, btnY + 1, btnFx - 1, btnFy - 1);
+		} else {
+			renderer.setColor(PColor.BLACK);
+			renderer.strokeBottom(btnX, btnY, btnFx, btnFy);
+			renderer.strokeRight(btnX, btnY, btnFx, btnFy);
+			renderer.setColor(PColor.WHITE);
+			renderer.strokeTop(btnX, btnY, btnFx, btnFy);
+			renderer.strokeLeft(btnX, btnY, btnFx, btnFy);
+			renderer.setColor(PColor.GREY75);
+			renderer.drawQuad(btnX + 1, btnY + 1, btnFx - 1, btnFy - 1);
+		}
 		
 		int triaX1 = btnX + 4;
 		int triaY1 = btnY + 4;

@@ -126,6 +126,7 @@ public class PSplitLayout extends AbstractPLayout {
 			setChildBounds(first, x, y, w, firstH);
 			setChildBounds(second, x, y + firstH + dividerH, w, secondH);
 			setChildBounds(divider, x, y + firstH, w, dividerH);
+//			System.out.println("PSplitLayout.layOut()="+getChildBounds(second));
 		}
 	}
 	

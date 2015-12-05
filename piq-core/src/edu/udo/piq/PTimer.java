@@ -26,7 +26,7 @@ public class PTimer {
 	 * Must be unregistered and registered when the owner changes.
 	 */
 	private final PComponentObs ownerObs = new PComponentObs() {
-		public void rootChanged(PComponent component, PRoot currentRoot) {
+		public void onRootChanged(PComponent component, PRoot currentRoot) {
 			onRootChange();
 		}
 	};

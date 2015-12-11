@@ -13,11 +13,15 @@ import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.components.util.PInput;
+import edu.udo.piq.components.util.PPopupComponent;
+import edu.udo.piq.components.util.PPopupComponentObs;
 import edu.udo.piq.layouts.PTupleLayout;
 import edu.udo.piq.layouts.PTupleLayout.Constraint;
 import edu.udo.piq.tools.AbstractPInputLayoutOwner;
+import edu.udo.piq.util.ObserverList;
+import edu.udo.piq.util.PCompUtil;
 
-public class PCheckBoxTuple extends AbstractPInputLayoutOwner {
+public class PCheckBoxTuple extends AbstractPInputLayoutOwner implements PPopupComponent {
 	
 	protected final PInput pressEnterInput = new PInput() {
 		public Key getInputKey() {
@@ -35,6 +39,8 @@ public class PCheckBoxTuple extends AbstractPInputLayoutOwner {
 			getCheckBox().toggleChecked();
 		}
 	};
+	protected final ObserverList<PPopupComponentObs> obsList
+		= PCompUtil.createDefaultObserverList();
 	private final PMouseObs mouseObs = new PMouseObs() {
 		public void onButtonTriggered(PMouse mouse, MouseButton btn) {
 			PComponent scndCmp = getSecondComponent();
@@ -42,16 +48,19 @@ public class PCheckBoxTuple extends AbstractPInputLayoutOwner {
 				if (!scndCmp.isFocusable()) {
 					getCheckBox().toggleChecked();
 					takeFocus();
+					firePopupCloseEvent();
 				}
 			} else if (isMouseOver()) {
 				getCheckBox().toggleChecked();
 				takeFocus();
+				firePopupCloseEvent();
 			}
 		}
 	};
 	private final PCheckBoxObs chkBxObs = new PCheckBoxObs() {
 		public void onClick(PCheckBox checkBox) {
 			takeFocus();
+			firePopupCloseEvent();
 		}
 	};
 	private final PLayoutObs layoutObs = new PLayoutObs() {
@@ -161,6 +170,18 @@ public class PCheckBoxTuple extends AbstractPInputLayoutOwner {
 	
 	public void removeObs(PCheckBoxModelObs obs) {
 		getCheckBox().removeObs(obs);
+	}
+	
+	public void addObs(PPopupComponentObs obs) {
+		obsList.add(obs);
+	}
+	
+	public void removeObs(PPopupComponentObs obs) {
+		obsList.remove(obs);
+	}
+	
+	protected void firePopupCloseEvent() {
+		obsList.sendNotify((obs) -> obs.onClosePopup(this));
 	}
 	
 }

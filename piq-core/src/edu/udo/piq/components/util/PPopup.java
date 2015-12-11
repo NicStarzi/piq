@@ -2,6 +2,7 @@ package edu.udo.piq.components.util;
 
 import java.util.List;
 
+import edu.udo.piq.PBorder;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PMouse;
@@ -15,6 +16,7 @@ import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.layouts.PListLayout;
 import edu.udo.piq.layouts.PFreeLayout.FreeConstraint;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
+import edu.udo.piq.tools.AbstractPContainer;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
@@ -29,25 +31,50 @@ public class PPopup {
 			onMouseTrigger(mouse, btn);
 		}
 	};
+	private final PPopupComponentObs compObs = new PPopupComponentObs() {
+		public void onClosePopup(PPopupComponent comp) {
+			hidePopup();
+		}
+	};
 	private final PComponent owner;
-	private PPopupProvider provider;
+	private PPopupBodyProvider bodyProvider;
+	private PPopupBorderProvider borderProvider;
+	private PPopupOptionsProvider optionsProvider;
 	private PComponent popupComp;
 	private boolean enabled;
 	
 	public PPopup(PComponent component) {
 		owner = component;
+		setBodyProvider((comp) -> new PPanel());
+		setBorderProvider((comp) -> new PLineBorder(1));
 	}
 	
 	public PComponent getOwner() {
 		return owner;
 	}
 	
-	public void setPopupProvider(PPopupProvider popupProvider) {
-		provider = popupProvider;
+	public void setBodyProvider(PPopupBodyProvider provider) {
+		bodyProvider = provider;
 	}
 	
-	public PPopupProvider getPopupProvider() {
-		return provider;
+	public PPopupBodyProvider getBodyProvider() {
+		return bodyProvider;
+	}
+	
+	public void setBorderProvider(PPopupBorderProvider provider) {
+		borderProvider = provider;
+	}
+	
+	public PPopupBorderProvider getBorderProvider() {
+		return borderProvider;
+	}
+	
+	public void setOptionsProvider(PPopupOptionsProvider provider) {
+		optionsProvider = provider;
+	}
+	
+	public PPopupOptionsProvider getOptionsProvider() {
+		return optionsProvider;
 	}
 	
 	public void setEnabled(boolean isEnabled) {
@@ -87,7 +114,8 @@ public class PPopup {
 		if (isShown()) {
 			return;
 		}
-		PRoot root = getOwner().getRoot();
+		PComponent owner = getOwner();
+		PRoot root = owner.getRoot();
 		if (root == null) {
 			/*
 			 * This should not be possible since the showPopup method
@@ -97,21 +125,40 @@ public class PPopup {
 			 */
 			return;
 		}
-		ThrowException.ifNull(getPopupProvider(), "getPopupProvider() == null");
-		List<PComponent> options = getPopupProvider().createOptions(getOwner());
+		ThrowException.ifNull(getBodyProvider(), "getBodyProvider() == null");
+		ThrowException.ifNull(getBorderProvider(), "getBorderProvider() == null");
+		ThrowException.ifNull(getOptionsProvider(), "getPopupProvider() == null");
 		
-		PPanel listPnl = new PPanel();
-		PListLayout listLayout = new PListLayout(listPnl);
+		AbstractPContainer body = getBodyProvider().createBody(owner);
+		if (body == null) {
+			return;
+		}
+		List<PComponent> options = getOptionsProvider().createOptions(owner);
+		if (options.isEmpty()) {
+			return;
+		}
+		
+		PListLayout listLayout = new PListLayout(body);
 		listLayout.setAlignment(ListAlignment.FROM_TOP);
 		listLayout.setInsets(new ImmutablePInsets(1));
-		listPnl.setLayout(listLayout);
+		body.setLayout(listLayout);
 		
 		for (int i = 0; i < options.size(); i++) {
-			listPnl.addChild(options.get(i), Integer.valueOf(i));
+			PComponent optionsComp = options.get(i);
+			body.addChild(optionsComp, Integer.valueOf(i));
+			if (optionsComp instanceof PPopupComponent) {
+				((PPopupComponent) optionsComp).addObs(compObs);
+			}
 		}
 		PRootOverlay overlay = root.getOverlay();
 		
-		popupComp = new PLineBorder(listPnl, 1);
+		PBorder border = getBorderProvider().createBorder(owner);
+		if (border == null) {
+			popupComp = body;
+		} else {
+			border.setContent(body);
+			popupComp = border;
+		}
 		/*
 		 * We add the popup temporarily so that any components that need a
 		 * PRoot to correctly calculate their size (for example PLabels)
@@ -133,6 +180,11 @@ public class PPopup {
 	
 	private void hidePopup() {
 		if (isShown()) {
+			for (PComponent optionsComp : popupComp.getChildren()) {
+				if (optionsComp instanceof PPopupComponent) {
+					((PPopupComponent) optionsComp).removeObs(compObs);
+				}
+			}
 			popupComp.getRoot().getOverlay().getLayout().removeChild(popupComp);
 			popupComp = null;
 			fireHideEvent();

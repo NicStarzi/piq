@@ -27,4 +27,7 @@ public class BufferedPImageResource implements PImageResource {
 	public PSize getSize() {
 		return size;
 	}
+	
+	public void dispose() {
+	}
 }

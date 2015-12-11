@@ -65,4 +65,7 @@ public class AwtPFontResource implements PFontResource {
 		}
 	}
 	
+	public void dispose() {
+	}
+	
 }

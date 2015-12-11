@@ -56,6 +56,7 @@ public class ArrayObsList<E> implements ObserverList<E> {
 	private int msgCount = 0;
 	
 	public void add(E obs) {
+		ThrowException.ifNull(obs, "obs == null");
 		if (arr == null || arr.length == size) {
 			resize();
 		}
@@ -107,6 +108,7 @@ public class ArrayObsList<E> implements ObserverList<E> {
 	}
 	
 	public void remove(E obs) {
+		ThrowException.ifNull(obs, "obs == null");
 		if (arr != null) {
 			for (int i = 0; i < arr.length; i++) {
 				if (obs.equals(arr[i])) {
@@ -161,6 +163,9 @@ public class ArrayObsList<E> implements ObserverList<E> {
 	
 	@SuppressWarnings("unchecked")
 	public void sendNotify(Message<E> msg) {
+		if (isEmpty()) {
+			return;
+		}
 		final Object[] arr = this.arr;
 		final long[] modTimeStamp = this.modTimeStamp;
 		final long modCountNow = modCount;

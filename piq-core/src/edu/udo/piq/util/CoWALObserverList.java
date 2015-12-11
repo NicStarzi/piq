@@ -19,11 +19,13 @@ public class CoWALObserverList<E> implements ObserverList<E> {
 	private List<E> internalList = null;
 	
 	public void add(E obs) {
+		ThrowException.ifNull(obs, "obs == null");
 		createLazy();
 		internalList.add(obs);
 	}
 	
 	public void remove(E obs) {
+		ThrowException.ifNull(obs, "obs == null");
 		if (internalList != null) {
 			internalList.remove(obs);
 			if (internalList.isEmpty()) {

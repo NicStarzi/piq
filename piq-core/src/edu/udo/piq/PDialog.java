@@ -2,7 +2,7 @@ package edu.udo.piq;
 
 import edu.udo.piq.PFontResource.Style;
 
-public interface PDialog extends PRoot {
+public interface PDialog extends PRoot, PDisposable {
 	
 	/**
 	 * Makes the {@link PDialog} appear on screen.<br>

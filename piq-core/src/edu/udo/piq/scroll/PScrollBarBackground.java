@@ -33,7 +33,7 @@ public class PScrollBarBackground extends AbstractPComponent {
 	});
 	private final PMouseObs mouseObs = new PMouseObs() {
 		public void onButtonTriggered(PMouse mouse, MouseButton btn) {
-			if (btn == MouseButton.LEFT && isMouseOver()) {
+			if (isActive() && btn == MouseButton.LEFT && isMouseOver()) {
 				getModel().setPressed(true);
 				clickRepeatTimer.setDelay(CLICK_REPEAT_TIMER_INITIAL_DELAY);
 				clickRepeatTimer.start();
@@ -41,7 +41,7 @@ public class PScrollBarBackground extends AbstractPComponent {
 			}
 		}
 		public void onButtonReleased(PMouse mouse, MouseButton btn) {
-			if (btn == MouseButton.LEFT) {
+			if (isActive() && btn == MouseButton.LEFT) {
 				clickRepeatTimer.stop();
 				getModel().setPressed(false);
 			}
@@ -53,6 +53,7 @@ public class PScrollBarBackground extends AbstractPComponent {
 		}
 	};
 	protected PButtonModel model;
+	protected boolean active;
 	
 	public PScrollBarBackground() {
 		super();
@@ -76,11 +77,21 @@ public class PScrollBarBackground extends AbstractPComponent {
 		return model;
 	}
 	
+	public void setActive(boolean value) {
+		active = value;
+		clickRepeatTimer.stop();
+		getModel().setPressed(false);
+	}
+	
+	public boolean isActive() {
+		return active;
+	}
+	
 	public boolean isPressed() {
 		if (getModel() == null) {
 			return false;
 		}
-		return getModel().isPressed();
+		return isActive() && getModel().isPressed();
 	}
 	
 	public void defaultRender(PRenderer renderer) {

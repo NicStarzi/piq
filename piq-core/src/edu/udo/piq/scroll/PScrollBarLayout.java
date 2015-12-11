@@ -65,6 +65,18 @@ public class PScrollBarLayout extends AbstractMapPLayout implements PLayout {
 		return (PScrollBarButton) getChildForConstraint(Constraint.BTN2);
 	}
 	
+	public PScrollBarBackground getFirstBackground() {
+		return (PScrollBarBackground) getChildForConstraint(Constraint.BG1);
+	}
+	
+	public PScrollBarBackground getSecondBackground() {
+		return (PScrollBarBackground) getChildForConstraint(Constraint.BG2);
+	}
+	
+	public PScrollBarThumb getThumb() {
+		return (PScrollBarThumb) getChildForConstraint(Constraint.THUMB);
+	}
+	
 	protected boolean canAdd(PComponent component, Object constraint) {
 		if (constraint == null || !(constraint instanceof Constraint)) {
 			return false;
@@ -75,7 +87,7 @@ public class PScrollBarLayout extends AbstractMapPLayout implements PLayout {
 	}
 	
 	public void layOut() {
-		System.out.println("PScrollBarLayout.layOut");
+//		System.out.println("PScrollBarLayout.layOut");
 		PBounds ob = getOwner().getBounds();
 		int x = ob.getX();
 		int y = ob.getY();
@@ -141,7 +153,7 @@ public class PScrollBarLayout extends AbstractMapPLayout implements PLayout {
 		int thumbH;
 		if (thumb != null) {
 			double scroll = getOwner().getModel().getScroll();
-			System.out.println("layout.scroll="+scroll);
+//			System.out.println("layout.scroll="+scroll);
 			double size = getThumbSize();
 			if (horizontal) {
 				thumbW = (int) (w * size);
@@ -215,7 +227,7 @@ public class PScrollBarLayout extends AbstractMapPLayout implements PLayout {
 		if (size >= prefSize) {
 			return 0;
 		}
-		System.out.println("layout.thumbSize="+((double) size / (double) prefSize));
+//		System.out.println("layout.thumbSize="+((double) size / (double) prefSize));
 		return (double) size / (double) prefSize;
 	}
 	

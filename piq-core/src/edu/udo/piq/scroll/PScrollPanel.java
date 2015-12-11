@@ -17,20 +17,20 @@ public class PScrollPanel extends AbstractPLayoutOwner {
 	
 	private final PScrollBarModelObs modelObs = new PScrollBarModelObs() {
 		public void sizeChanged(PScrollBarModel model, int oldValue, int newValue) {
-			System.out.println("scrollPanel.sizeChanged="+newValue);
+//			System.out.println("scrollPanel.sizeChanged="+newValue);
 			fireReLayOutEvent();
 		}
 		public void scrollChanged(PScrollBarModel model, double oldValue, double newValue) {
-			System.out.println("scrollPanel.scrollChanged="+newValue);
+//			System.out.println("scrollPanel.scrollChanged="+newValue);
 			fireReLayOutEvent();
 		}
 		public void preferredSizeChanged(PScrollBarModel model, int oldValue, int newValue) {
-			System.out.println("scrollPanel.preferredSizeChanged="+newValue);
+//			System.out.println("scrollPanel.preferredSizeChanged="+newValue);
 			fireReLayOutEvent();
 		}
 	};
 	private final PComponentObs bodyObs = new PComponentObs() {
-		public void preferredSizeChanged(PComponent component) {
+		public void onPreferredSizeChanged(PComponent component) {
 			refreshPrefSize();
 		}
 	};
@@ -56,6 +56,12 @@ public class PScrollPanel extends AbstractPLayoutOwner {
 		
 		setHorizontalScrollBar(new PScrollBar());
 		setVerticalScrollBar(new PScrollBar());
+		
+		addObs(new PComponentObs() {
+			public void onBoundsChanged(PComponent component) {
+				refreshSize();
+			}
+		});
 	}
 	
 	protected void setLayout(PScrollPanelLayout layout) {
@@ -209,7 +215,7 @@ public class PScrollPanel extends AbstractPLayoutOwner {
 	}
 	
 	public boolean defaultFillsAllPixels() {
-		return false;
+		return true;
 	}
 	
 }

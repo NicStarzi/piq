@@ -24,6 +24,7 @@ public class RenderRectangle implements RenderOp {
 	}
 	
 	public void perform() {
+		System.out.println("x="+x+", y="+y+", fx="+fx+", fy="+fy);
 		GL11.glBegin(GL11.GL_TRIANGLES);
 		GL11.glColor4f(r, g, b, a);
 		

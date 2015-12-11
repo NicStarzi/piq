@@ -45,7 +45,7 @@ public class PScrollPanelLayout extends AbstractMapPLayout implements PLayout {
 	}
 	
 	public void layOut() {
-		System.out.println("PScrollPanelLayout.layOut");
+//		System.out.println("PScrollPanelLayout.layOut");
 		PComponent body = getBody();
 		if (body != null) {
 			PBounds ob = getOwner().getBounds();
@@ -58,20 +58,28 @@ public class PScrollPanelLayout extends AbstractMapPLayout implements PLayout {
 			
 			PScrollBar barH = getHorizontalScrollBar();
 			PScrollBar barV = getVerticalScrollBar();
-			int barPrefH = getPreferredSizeOf(barH).getHeight();
 			int barPrefW = getPreferredSizeOf(barV).getWidth();
+			int barPrefH = getPreferredSizeOf(barH).getHeight();
 			setChildBounds(barH, x, fy - barPrefH, w - barPrefW, barPrefH);
 			setChildBounds(barV, fx - barPrefW, y, barPrefW, h - barPrefH);
 			w -= barPrefW;
 			h -= barPrefH;
 			
+			PSize bodyPrefSize = getPreferredSizeOf(body);
+			int bodyPrefW = bodyPrefSize.getWidth();
+			int bodyPrefH = bodyPrefSize.getHeight();
+			int maxOffsetX = bodyPrefW - w;
+			int maxOffsetY = bodyPrefH - h;
+			
 			int offsetX = 0;
 			if (barH != null) {
-				offsetX = (int) (w * barH.getModel().getScroll());
+				offsetX = (int) (maxOffsetX * barH.getModel().getScroll());
+//				System.out.println("bodyPrefW="+bodyPrefW+", w="+w+", maxOffsetX="+maxOffsetX+", offsetX="+offsetX);
 			}
 			int offsetY = 0;
 			if (barV != null) {
-				offsetY = (int) (h * barV.getModel().getScroll());
+				offsetY = (int) (maxOffsetY * barV.getModel().getScroll());
+//				System.out.println("bodyPrefH="+bodyPrefH+", h="+h+", maxOffsetY="+maxOffsetY+", offsetY="+offsetY);
 			}
 			x -= offsetX;
 			y -= offsetY;

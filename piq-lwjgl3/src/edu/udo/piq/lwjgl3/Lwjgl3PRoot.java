@@ -21,6 +21,7 @@ import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
 import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
 import static org.lwjgl.glfw.GLFW.glfwTerminate;
 import static org.lwjgl.glfw.GLFW.glfwWindowHint;
+import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_FALSE;
@@ -32,20 +33,21 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWWindowPosCallback;
 import org.lwjgl.glfw.GLFWWindowSizeCallback;
+import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GLContext;
 
 import edu.udo.piq.PBounds;
+import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PDesign;
 import edu.udo.piq.PDesignSheet;
 import edu.udo.piq.PDialog;
 import edu.udo.piq.PFontResource;
 import edu.udo.piq.PFontResource.Style;
+import edu.udo.piq.PImageMeta;
 import edu.udo.piq.PImageResource;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.tools.AbstractPBounds;
@@ -54,25 +56,23 @@ import edu.udo.piq.util.PGuiTreeIterator;
 
 public class Lwjgl3PRoot extends AbstractPRoot implements PRoot {
 	
-	private final GLFWErrorCallback errorCB = Callbacks.errorCallbackPrint(System.err);
+	private final GLFWErrorCallback errorCB = GLFWErrorCallback.createPrint(System.err);
 	private final GLFWWindowSizeCallback sizeCB = new GLFWWindowSizeCallback() {
 		public void invoke(long window, int width, int height) {
-			wndWidth = width;
-			wndHeight = height;
+			updateSize(width, height);
 		}
 	};
 	private final GLFWWindowPosCallback posCB = new GLFWWindowPosCallback() {
 		public void invoke(long window, int xpos, int ypos) {
-			wndX = xpos;
-			wndY = ypos;
+			updatePosition(xpos, ypos);
 		}
 	};
 	private final AbstractPBounds bnds = new AbstractPBounds() {
-		public int getY() {
-			return wndY;
-		}
 		public int getX() {
-			return wndX;
+			return 0;
+		}
+		public int getY() {
+			return 0;
 		}
 		public int getWidth() {
 			return wndWidth;
@@ -98,6 +98,17 @@ public class Lwjgl3PRoot extends AbstractPRoot implements PRoot {
 		if (wndHnd == NULL) {
 			throw new RuntimeException("glfwCreateWindow == NULL");
 		}
+		keyboard = new Lwjgl3PKeyboard(this);
+		mouse = new Lwjgl3PMouse(this);
+		
+		glfwSetWindowPos(wndHnd, x, y);
+		glfwMakeContextCurrent(wndHnd);
+		glfwSwapInterval(1);
+		glfwShowWindow(wndHnd);
+		GL.createCapabilities();
+		
+		setClearColor(PColor.GREY75);
+		
 		glfwSetWindowPosCallback(wndHnd, posCB);
 		glfwSetWindowSizeCallback(wndHnd, sizeCB);
 		glfwSetCharCallback(wndHnd, getKeyboard().charCB);
@@ -105,16 +116,23 @@ public class Lwjgl3PRoot extends AbstractPRoot implements PRoot {
 		glfwSetMouseButtonCallback(wndHnd, getMouse().mouseBtnCB);
 		glfwSetCursorPosCallback(wndHnd, getMouse().mousePosCB);
 		
-		glfwSetWindowPos(wndHnd, x, y);
-		glfwMakeContextCurrent(wndHnd);
-		glfwSwapInterval(1);
-		glfwShowWindow(wndHnd);
-		GLContext.createFromCurrent();
-		glClearColor(0f, 0f, 0f, 1.0f);
+		updateSize(w, h);
 	}
 	
 	public long getWindowHandle() {
 		return wndHnd;
+	}
+	
+	public int getWindowX() {
+		return wndX;
+	}
+	
+	public int getWindowY() {
+		return wndY;
+	}
+	
+	public boolean isCloseRequested() {
+		return glfwWindowShouldClose(getWindowHandle()) == GL_TRUE;
 	}
 	
 	public void dispose() {
@@ -143,16 +161,45 @@ public class Lwjgl3PRoot extends AbstractPRoot implements PRoot {
 		super.setDesignSheet(designSheet);
 	}
 	
+	private void updatePosition(int x, int y) {
+		wndX = x;
+		wndY = y;
+	}
+	
+	private void updateSize(int width, int height) {
+		wndWidth = width;
+		wndHeight = height;
+		GL11.glOrtho(0, wndWidth, wndHeight, 0, 1, -1);
+		GL11.glViewport(0, 0, wndWidth, wndHeight);
+		fireSizeChanged();
+	}
+	
 	public PBounds getBounds() {
 		return bnds;
+	}
+	
+	private void setClearColor(PColor color) {
+		glClearColor((float) color.getRed1(), 
+				(float) color.getGreen1(), 
+				(float) color.getBlue1(), 1f);
+	}
+	
+	public void startUpdateLoop() {
+		while (!isCloseRequested()) {
+			update();
+		}
 	}
 	
 	public void update() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 		if (needReRender) {
+			System.out.println("Lwjgl3PRoot.update()");
 			renderer.startRendering();
-			for (PComponent comp : new PGuiTreeIterator(this)) {
+			PGuiTreeIterator iter = new PGuiTreeIterator(this);
+			iter.next(); // the first element is this root itself
+			while (iter.hasNext()) {
+				PComponent comp = iter.next();
 				PDesign design = comp.getDesign();
 				if (design == null) {
 					comp.defaultRender(renderer);
@@ -161,15 +208,18 @@ public class Lwjgl3PRoot extends AbstractPRoot implements PRoot {
 				}
 			}
 			renderer.endRendering();
+			needReRender = false;
 		}
 		renderer.renderAll();
 		
 		glfwSwapBuffers(wndHnd);
 		glfwPollEvents();
+		
 		super.update(1);
 	}
 	
 	public void reRender(PComponent component) {
+		needReRender = true;
 	}
 	
 	public PDialog createDialog() {
@@ -190,6 +240,12 @@ public class Lwjgl3PRoot extends AbstractPRoot implements PRoot {
 			e.printStackTrace();
 		}
 		return img;
+	}
+	
+	public PImageResource createImageResource(int width, int height,
+			PImageMeta metaInfo) throws IllegalArgumentException 
+	{
+		return null;
 	}
 	
 	public Lwjgl3PKeyboard getKeyboard() {

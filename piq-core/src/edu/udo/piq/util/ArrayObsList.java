@@ -163,7 +163,7 @@ public class ArrayObsList<E> implements ObserverList<E> {
 	
 	@SuppressWarnings("unchecked")
 	public void sendNotify(Message<E> msg) {
-		if (isEmpty()) {
+		if (arr == null || isEmpty()) {
 			return;
 		}
 		final Object[] arr = this.arr;
@@ -183,7 +183,7 @@ public class ArrayObsList<E> implements ObserverList<E> {
 			List<E> emptyList = Collections.emptyList();
 			return emptyList.iterator();
 		}
-		return new ArrayObsListIterator<E>(this);
+		return new ArrayObsListIterator<>(this);
 	}
 	
 	private static class ArrayObsListIterator<E> implements Iterator<E> {

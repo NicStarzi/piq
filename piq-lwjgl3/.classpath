@@ -3,10 +3,10 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/piq-core"/>
-	<classpathentry kind="lib" path="lib/lwjgl/jar/lwjgl.jar" sourcepath="lib/lwjgl/src.zip">
+	<classpathentry kind="lib" path="lwjgl/lwjgl.jar" sourcepath="lwjgl/src.zip">
 		<attributes>
-			<attribute name="javadoc_location" value="file:/D:/GitHub/piq/piq-lwjgl3/lib/lwjgl/doc/"/>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="piq-lwjgl3/lib/lwjgl/native"/>
+			<attribute name="javadoc_location" value="file:lwjgl/doc/"/>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="lwjgl/native"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="output" path="bin"/>

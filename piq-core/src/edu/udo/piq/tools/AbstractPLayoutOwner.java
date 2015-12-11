@@ -29,7 +29,7 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 		}
 	};
 	protected final PComponentObs childObs = new PComponentObs() {
-		public void preferredSizeChanged(PComponent component) {
+		public void onPreferredSizeChanged(PComponent component) {
 			fireReLayOutEvent();
 			checkForPreferredSizeChange();
 		}

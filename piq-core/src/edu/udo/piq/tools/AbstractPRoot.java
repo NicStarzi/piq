@@ -149,7 +149,9 @@ public abstract class AbstractPRoot implements PRoot {
 			reLayOutCompsFront = temp;
 			for (PComponent comp : reLayOutCompsBack) {
 //				System.out.println("LayOut="+comp);
-				comp.reLayOut();
+				if (comp.getRoot() == this) {
+					comp.reLayOut();
+				}
 			}
 			reLayOutCompsBack.clear();
 //			System.out.println("##############################");
@@ -324,7 +326,7 @@ public abstract class AbstractPRoot implements PRoot {
 		reRender(this);
 		reLayOut(this);
 		for (PComponentObs obs : compObsList) {
-			obs.preferredSizeChanged(this);
+			obs.onPreferredSizeChanged(this);
 		}
 	}
 	

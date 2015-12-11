@@ -192,7 +192,7 @@ public class SwingPTest_PList2 {
 		btnRemove.setContent(new PLabel("Remove"));
 		btnPnl.addChild(btnRemove, null);
 		
-		final List<String> names = new ArrayList<String>(Arrays.asList(new String[] {
+		final List<String> names = new ArrayList<>(Arrays.asList(new String[] {
 				"A", "B", "C", "D", "E", "F", "G", "H", "I", 
 				"J", "K", "L", "M", "N", "O", "P", "Q", "R", 
 				"S", "T", "U", "V", "W", "X", "Y", "Z",

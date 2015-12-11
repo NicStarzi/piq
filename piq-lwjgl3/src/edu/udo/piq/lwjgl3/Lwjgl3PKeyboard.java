@@ -130,31 +130,31 @@ public class Lwjgl3PKeyboard implements PKeyboard {
 	
 	protected void firePressEvent(Key key) {
 		for (PKeyboardObs obs : obsList) {
-			obs.keyPressed(this, key);
+			obs.onKeyPressed(this, key);
 		}
 	}
 	
 	protected void fireTriggerEvent(Key key) {
 		for (PKeyboardObs obs : obsList) {
-			obs.keyTriggered(this, key);
+			obs.onKeyTriggered(this, key);
 		}
 	}
 	
 	protected void fireReleaseEvent(Key key) {
 		for (PKeyboardObs obs : obsList) {
-			obs.keyReleased(this, key);
+			obs.onKeyReleased(this, key);
 		}
 	}
 	
 	protected void fireModifierToggledEvent(Modifier mod) {
 		for (PKeyboardObs obs : obsList) {
-			obs.modifierToggled(this, mod);
+			obs.onModifierToggled(this, mod);
 		}
 	}
 	
 	protected void fireStringTypedEvent(String string) {
 		for (PKeyboardObs obs : obsList) {
-			obs.stringTyped(this, string);
+			obs.onStringTyped(this, string);
 		}
 	}
 	

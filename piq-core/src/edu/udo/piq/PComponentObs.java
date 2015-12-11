@@ -17,14 +17,24 @@ public interface PComponentObs {
 	 * @param component the component that fired the event
 	 * @param currentRoot a PRoot or null
 	 */
-	public default void rootChanged(PComponent component, PRoot currentRoot) {}
+	public default void onRootChanged(PComponent component, PRoot currentRoot) {}
 	
 	/**
 	 * This event is fired when a {@link PComponent} has changed its preferred size.<br>
 	 * 
 	 * @param component the component that changed its preferred size
 	 */
-	public default void preferredSizeChanged(PComponent component) {}
+	public default void onPreferredSizeChanged(PComponent component) {}
+	
+	/**
+	 * This event is fired when the {@link PBounds} of a {@link PComponent} have changed.<br>
+	 * The bounds of a component change when the component is laid out by its parents 
+	 * {@link PLayout} or when the component is added to or removed from a {@link PLayout}.<br>
+	 * The bounds of a component may be null.<br> 
+	 * 
+	 * @param component the component that fired the event
+	 */
+	public default void onBoundsChanged(PComponent component) {}
 	
 	/**
 	 * This event is fired by a {@link PComponent} when the component 
@@ -32,7 +42,7 @@ public interface PComponentObs {
 	 * 
 	 * @param component the component that fired the event
 	 */
-	public default void wasAdded(PComponent component) {}
+	public default void onAdd(PComponent component) {}
 	
 	/**
 	 * This event is fired by a {@link PComponent} when the component 
@@ -40,6 +50,6 @@ public interface PComponentObs {
 	 * 
 	 * @param component the component that fired the event
 	 */
-	public default void wasRemoved(PComponent component) {}
+	public default void onRemove(PComponent component) {}
 	
 }

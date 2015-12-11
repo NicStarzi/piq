@@ -1,6 +1,8 @@
 /bin
+/lwjgl
 /native
 /doc
 .class
 lwjgl.jar
 lwjglSrc.zip
+.classpath

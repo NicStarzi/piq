@@ -127,6 +127,7 @@ public class Lwjgl3PMouse implements PMouse {
 		case LEFT:
 		case DRAG_AND_DROP:
 			return 0;
+		case POPUP_TRIGGER:
 		case RIGHT:
 			return 1;
 		case MIDDLE:

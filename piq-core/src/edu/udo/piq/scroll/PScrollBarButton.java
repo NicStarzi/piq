@@ -33,7 +33,7 @@ public class PScrollBarButton extends AbstractPComponent {
 	});
 	private final PMouseObs mouseObs = new PMouseObs() {
 		public void onButtonTriggered(PMouse mouse, MouseButton btn) {
-			if (btn == MouseButton.LEFT && isMouseOver()) {
+			if (isActive() && btn == MouseButton.LEFT && isMouseOver()) {
 				if (!model.isPressed()) {
 					getModel().setPressed(true);
 					clickRepeatTimer.setDelay(CLICK_REPEAT_TIMER_INITIAL_DELAY);
@@ -43,7 +43,7 @@ public class PScrollBarButton extends AbstractPComponent {
 			}
 		}
 		public void onButtonReleased(PMouse mouse, MouseButton btn) {
-			if (btn == MouseButton.LEFT) {
+			if (isActive() && btn == MouseButton.LEFT) {
 				clickRepeatTimer.stop();
 				getModel().setPressed(false);
 			}
@@ -56,6 +56,7 @@ public class PScrollBarButton extends AbstractPComponent {
 	};
 	protected PButtonModel model;
 	protected Direction dir = Direction.UP;
+	protected boolean active;
 	
 	public PScrollBarButton() {
 		super();
@@ -88,11 +89,21 @@ public class PScrollBarButton extends AbstractPComponent {
 		return model;
 	}
 	
+	public void setActive(boolean value) {
+		active = value;
+		clickRepeatTimer.stop();
+		getModel().setPressed(false);
+	}
+	
+	public boolean isActive() {
+		return active;
+	}
+	
 	public boolean isPressed() {
 		if (getModel() == null) {
 			return false;
 		}
-		return getModel().isPressed();
+		return isActive() && getModel().isPressed();
 	}
 	
 	public void defaultRender(PRenderer renderer) {
@@ -162,7 +173,13 @@ public class PScrollBarButton extends AbstractPComponent {
 		default:
 			break;
 		}
-		renderer.setColor(PColor.BLACK);
+		PColor triangleColor;
+		if (isActive()) {
+			triangleColor = PColor.BLACK;
+		} else {
+			triangleColor = PColor.GREY50;
+		}
+		renderer.setColor(triangleColor);
 		renderer.drawTriangle(ax1, ay1, ax2, ay2, ax3, ay3);
 	}
 	

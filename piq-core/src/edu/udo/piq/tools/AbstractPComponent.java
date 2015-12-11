@@ -1,5 +1,6 @@
 package edu.udo.piq.tools;
 
+import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PComponentObs;
 import edu.udo.piq.PDesign;
@@ -78,7 +79,7 @@ public class AbstractPComponent implements PComponent {
 		}
 	};
 	protected final PComponentObs parentObs = new PComponentObs() {
-		public void rootChanged(PComponent component, PRoot currentRoot) {
+		public void onRootChanged(PComponent component, PRoot currentRoot) {
 			setCachedRoot(currentRoot);
 		}
 	};
@@ -90,9 +91,8 @@ public class AbstractPComponent implements PComponent {
 	protected final PLayoutObs parentLayoutObs = new PLayoutObs() {
 		public void childLaidOut(PReadOnlyLayout layout, PComponent child, Object constraint) {
 			if (child == AbstractPComponent.this) {
+				checkForBoundsChange();
 //				System.out.println(AbstractPComponent.this+".wasLayedOut: bounds="+getBounds());
-				fireReLayOutEvent();
-				fireReRenderEvent();
 			}
 		}
 	};
@@ -103,24 +103,16 @@ public class AbstractPComponent implements PComponent {
 	 */
 	protected final PMouseObs delegateMouseObs = new PMouseObs() {
 		public void onMouseMoved(PMouse mouse) {
-			for (PMouseObs obs : mouseObsList) {
-				obs.onMouseMoved(mouse);
-			}
+			mouseObsList.sendNotify(obs -> obs.onMouseMoved(mouse));
 		}
 		public void onButtonTriggered(PMouse mouse, MouseButton btn) {
-			for (PMouseObs obs : mouseObsList) {
-				obs.onButtonTriggered(mouse, btn);
-			}
+			mouseObsList.sendNotify(obs -> obs.onButtonTriggered(mouse, btn));
 		}
 		public void onButtonReleased(PMouse mouse, MouseButton btn) {
-			for (PMouseObs obs : mouseObsList) {
-				obs.onButtonReleased(mouse, btn);
-			}
+			mouseObsList.sendNotify(obs -> obs.onButtonReleased(mouse, btn));
 		}
 		public void onButtonPressed(PMouse mouse, MouseButton btn) {
-			for (PMouseObs obs : mouseObsList) {
-				obs.onButtonPressed(mouse, btn);
-			}
+			mouseObsList.sendNotify(obs -> obs.onButtonPressed(mouse, btn));
 		}
 	};
 	/**
@@ -129,30 +121,20 @@ public class AbstractPComponent implements PComponent {
 	 * that are registered at this {@link PComponent}.<br>
 	 */
 	protected final PKeyboardObs delegateKeyObs = new PKeyboardObs() {
-		public void stringTyped(PKeyboard keyboard, String string) {
-			for (PKeyboardObs obs : keyboardObsList) {
-				obs.stringTyped(keyboard, string);
-			}
+		public void onStringTyped(PKeyboard keyboard, String string) {
+			keyboardObsList.sendNotify(obs -> obs.onStringTyped(keyboard, string));
 		}
-		public void modifierToggled(PKeyboard keyboard, Modifier modifier) {
-			for (PKeyboardObs obs : keyboardObsList) {
-				obs.modifierToggled(keyboard, modifier);
-			}
+		public void onModifierToggled(PKeyboard keyboard, Modifier modifier) {
+			keyboardObsList.sendNotify(obs -> obs.onModifierToggled(keyboard, modifier));
 		}
-		public void keyPressed(PKeyboard keyboard, Key key) {
-			for (PKeyboardObs obs : keyboardObsList) {
-				obs.keyPressed(keyboard, key);
-			}
+		public void onKeyPressed(PKeyboard keyboard, Key key) {
+			keyboardObsList.sendNotify(obs -> obs.onKeyPressed(keyboard, key));
 		}
-		public void keyTriggered(PKeyboard keyboard, Key key) {
-			for (PKeyboardObs obs : keyboardObsList) {
-				obs.keyTriggered(keyboard, key);
-			}
+		public void onKeyTriggered(PKeyboard keyboard, Key key) {
+			keyboardObsList.sendNotify(obs -> obs.onKeyTriggered(keyboard, key));
 		}
-		public void keyReleased(PKeyboard keyboard, Key key) {
-			for (PKeyboardObs obs : keyboardObsList) {
-				obs.keyReleased(keyboard, key);
-			}
+		public void onKeyReleased(PKeyboard keyboard, Key key) {
+			keyboardObsList.sendNotify(obs -> obs.onKeyReleased(keyboard, key));
 		}
 	};
 	/**
@@ -174,6 +156,17 @@ public class AbstractPComponent implements PComponent {
 	 */
 	private int lastPrefW = -1;
 	private int lastPrefH = -1;
+	/**
+	 * These fields are used to store the previous bounds of this component.<br>
+	 * After this component has been laid out by its parents layout as detected 
+	 * via the {@link #parentLayoutObs}, the new bounds are checked against the 
+	 * old bounds and the {@link #fireBoundsChangedEvent()} method is called if 
+	 * the bounds have changed.<br>
+	 */
+	private int lastBndsX = -1;
+	private int lastBndsY = -1;
+	private int lastBndsW = 0;
+	private int lastBndsH = 0;
 	/**
 	 * The components id will be displayed by the toString() method unless the id 
 	 * is null.<br> If the id is null the toString() method will show the components 
@@ -401,85 +394,57 @@ public class AbstractPComponent implements PComponent {
 	}
 	
 	public void addObs(PComponentObs obs) throws NullPointerException {
-		if (obs == null) {
-			throw new NullPointerException("obs="+obs);
-		}
 		compObsList.add(obs);
 	}
 	
 	public void removeObs(PComponentObs obs) throws NullPointerException {
-		if (obs == null) {
-			throw new NullPointerException("obs="+obs);
-		}
 		compObsList.remove(obs);
 	}
 	
 	public void addObs(PFocusObs obs) throws NullPointerException {
-		if (obs == null) {
-			throw new NullPointerException("obs="+obs);
-		}
 		focusObsList.add(obs);
 	}
 	
 	public void removeObs(PFocusObs obs) throws NullPointerException {
-		if (obs == null) {
-			throw new NullPointerException("obs="+obs);
-		}
 		focusObsList.remove(obs);
 	}
 	
 	public void addObs(PMouseObs obs) throws NullPointerException {
-		if (obs == null) {
-			throw new NullPointerException("obs="+obs);
-		}
 		mouseObsList.add(obs);
 		registerMouseObs();
 	}
 	
 	public void removeObs(PMouseObs obs) throws NullPointerException {
-		if (obs == null) {
-			throw new NullPointerException("obs="+obs);
-		}
 		mouseObsList.remove(obs);
 	}
 	
 	public void addObs(PKeyboardObs obs) throws NullPointerException {
-		if (obs == null) {
-			throw new NullPointerException("obs="+obs);
-		}
 		keyboardObsList.add(obs);
 		registerKeyBoardObs();
 	}
 	
 	public void removeObs(PKeyboardObs obs) throws NullPointerException {
-		if (obs == null) {
-			throw new NullPointerException("obs="+obs);
-		}
 		keyboardObsList.remove(obs);
 	}
 	
 	protected void fireRootChangedEvent() {
-		for (PComponentObs obs : compObsList) {
-			obs.rootChanged(this, cachedRoot);
-		}
+		compObsList.sendNotify(obs -> obs.onRootChanged(this, cachedRoot));
 	}
 	
 	protected void fireAddedEvent() {
-		for (PComponentObs obs : compObsList) {
-			obs.wasAdded(this);
-		}
+		compObsList.sendNotify(obs -> obs.onAdd(this));
 	}
 	
 	protected void fireRemovedEvent() {
-		for (PComponentObs obs : compObsList) {
-			obs.wasRemoved(this);
-		}
+		compObsList.sendNotify(obs -> obs.onRemove(this));
 	}
 	
 	protected void firePreferredSizeChangedEvent() {
-		for (PComponentObs obs : compObsList) {
-			obs.preferredSizeChanged(this);
-		}
+		compObsList.sendNotify(obs -> obs.onPreferredSizeChanged(this));
+	}
+	
+	protected void fireBoundsChangedEvent() {
+		compObsList.sendNotify(obs -> obs.onBoundsChanged(this));
 	}
 	
 	protected void fireReRenderEvent() {
@@ -498,14 +463,42 @@ public class AbstractPComponent implements PComponent {
 	}
 	
 	protected void fireFocusGainedEvent(PComponent oldFocusOwner) {
-		for (PFocusObs obs : focusObsList) {
-			obs.focusGained(oldFocusOwner, this);
-		}
+		focusObsList.sendNotify(obs -> obs.focusGained(oldFocusOwner, this));
 	}
 	
 	protected void fireFocusLostEvent() {
-		for (PFocusObs obs : focusObsList) {
-			obs.focusLost(this);
+		focusObsList.sendNotify(obs -> obs.focusLost(this));
+	}
+	
+	protected void checkForBoundsChange() {
+		final PBounds currentBounds = getBounds();
+		final int currentX;
+		final int currentY;
+		final int currentW;
+		final int currentH;
+		if (currentBounds == null) {
+			currentX = -1;
+			currentY = -1;
+			currentW = 0;
+			currentH = 0;
+		} else {
+			currentX = currentBounds.getX();
+			currentY = currentBounds.getY();
+			currentW = currentBounds.getWidth();
+			currentH = currentBounds.getHeight();
+		}
+		if (lastBndsX != currentX
+				|| lastBndsY != currentY
+				|| lastBndsW != currentW
+				|| lastBndsH != currentH) 
+		{
+			lastBndsX = currentX;
+			lastBndsY = currentY;
+			lastBndsW = currentW;
+			lastBndsH = currentH;
+			fireBoundsChangedEvent();
+			fireReLayOutEvent();
+			fireReRenderEvent();
 		}
 	}
 	
@@ -513,8 +506,8 @@ public class AbstractPComponent implements PComponent {
 		PSize currentPrefSize = PCompUtil.getPreferredSizeOf(this);
 		
 		if (lastPrefW != currentPrefSize.getWidth() 
-				|| lastPrefH != currentPrefSize.getHeight()) {
-			
+				|| lastPrefH != currentPrefSize.getHeight()) 
+		{
 			lastPrefW = currentPrefSize.getWidth();
 			lastPrefH = currentPrefSize.getHeight();
 			firePreferredSizeChangedEvent();

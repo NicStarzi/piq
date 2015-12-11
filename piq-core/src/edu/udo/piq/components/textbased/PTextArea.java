@@ -59,7 +59,7 @@ public class PTextArea extends AbstractPComponent {
 		}
 	});
 	private final PKeyboardObs keyObs = new PKeyboardObs() {
-		public void stringTyped(PKeyboard keyboard, String typedString) {
+		public void onStringTyped(PKeyboard keyboard, String typedString) {
 			if (!isEditable() || skipInput(keyboard, null)) {
 				return;
 			}
@@ -76,7 +76,7 @@ public class PTextArea extends AbstractPComponent {
 //			selection.setSelection(newFrom, newFrom);
 			getModel().setValue(newText);
 		}
-		public void keyPressed(PKeyboard keyboard, Key key) {
+		public void onKeyPressed(PKeyboard keyboard, Key key) {
 			if (skipInput(keyboard, key)) {
 				return;
 			}
@@ -374,6 +374,10 @@ public class PTextArea extends AbstractPComponent {
 			return "";
 		}
 		return text.toString();
+	}
+	
+	public boolean defaultFillsAllPixels() {
+		return true;
 	}
 	
 	public void defaultRender(PRenderer renderer) {

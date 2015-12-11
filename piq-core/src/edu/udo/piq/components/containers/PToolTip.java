@@ -65,7 +65,7 @@ public class PToolTip extends AbstractPLayoutOwner {
 		showTimer.setDelay(DEFAULT_SHOW_DELAY);
 		
 		addObs(new PComponentObs() {
-			public void preferredSizeChanged(PComponent component) {
+			public void onPreferredSizeChanged(PComponent component) {
 				if (isShown) {
 					repositionOnOverlay();
 				}

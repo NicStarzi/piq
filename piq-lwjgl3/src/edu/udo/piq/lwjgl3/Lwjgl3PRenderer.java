@@ -5,15 +5,44 @@ import java.util.List;
 
 import edu.udo.piq.PFontResource;
 import edu.udo.piq.PImageResource;
+import edu.udo.piq.PRenderMode;
 import edu.udo.piq.PRenderer;
+import edu.udo.piq.util.ThrowException;
 
 public class Lwjgl3PRenderer implements PRenderer {
 	
-	private final List<RenderOp> renderList = new ArrayList<>();
-	private float currentColorR;
-	private float currentColorG;
-	private float currentColorB;
-	private float currentColorA;
+	private final Lwjgl3RenderMode RENDER_MODE_FILL = new Lwjgl3RenderMode(this);
+	private final Lwjgl3RenderMode RENDER_MODE_OUTLINE = new Lwjgl3RenderMode(this);
+	private final Lwjgl3RenderMode RENDER_MODE_DASHED = new Lwjgl3RenderMode(this);
+	
+	protected final List<RenderOp> renderList = new ArrayList<>();
+	protected Lwjgl3RenderMode mode = getRenderModeFill();
+	protected float currentColorR;
+	protected float currentColorG;
+	protected float currentColorB;
+	protected float currentColorA;
+	
+	public void setRenderMode(PRenderMode mode) {
+		this.mode = ThrowException.ifTypeCastFails(mode, 
+				Lwjgl3RenderMode.class, 
+				"mode.getClass() != Lwjgl3RenderMode.class");
+	}
+	
+	public Lwjgl3RenderMode getActiveRenderMode() {
+		return mode;
+	}
+	
+	public Lwjgl3RenderMode getRenderModeFill() {
+		return RENDER_MODE_FILL;
+	}
+	
+	public Lwjgl3RenderMode getRenderModeOutline() {
+		return RENDER_MODE_OUTLINE;
+	}
+	
+	public Lwjgl3RenderMode getRenderModeOutlineDashed() {
+		return RENDER_MODE_DASHED;
+	}
 	
 	public void startRendering() {
 		renderList.clear();
@@ -29,7 +58,7 @@ public class Lwjgl3PRenderer implements PRenderer {
 	}
 	
 	public void setClipBounds(int x, int y, int width, int height) {
-		renderList.add(new RenderScissor(x, y, width, height));
+		renderList.add(mode.setClipBounds(x, y, width, height));
 	}
 	
 	public void setColor1(double r, double g, double b, double a) {
@@ -43,10 +72,7 @@ public class Lwjgl3PRenderer implements PRenderer {
 			int u, int v, int fu, int fv,
 			float x, float y, float fx, float fy) 
 	{
-		renderList.add(new RenderImage(
-				(Lwjgl3PImage) imgRes, 
-				u, v, fu, fv, 
-				x, y, fx, fy));
+		renderList.add(mode.drawImage(imgRes, u, v, fu, fv, x, y, fx, fy));
 	}
 	
 	public void drawLine(
@@ -54,22 +80,11 @@ public class Lwjgl3PRenderer implements PRenderer {
 			float x2, float y2, 
 			float lineWidth) 
 	{
-		float r = currentColorR;
-		float g = currentColorG;
-		float b = currentColorB;
-		float a = currentColorA;
-		renderList.add(new RenderLine(
-				r, g, b, a, 
-				x1, x2, y1, y2, 
-				lineWidth));
+		renderList.add(mode.drawLine(x1, y1, x2, y2, lineWidth));
 	}
 	
 	public void drawPolygon(float[] xCoords, float[] yCoords) {
-		float r = currentColorR;
-		float g = currentColorG;
-		float b = currentColorB;
-		float a = currentColorA;
-		renderList.add(new RenderPolygon(r, g, b, a, xCoords, yCoords));
+		renderList.add(mode.drawPolygon(xCoords, yCoords));
 	}
 	
 	public void drawTriangle(
@@ -77,27 +92,14 @@ public class Lwjgl3PRenderer implements PRenderer {
 			float x2, float y2, 
 			float x3, float y3) 
 	{
-		float r = currentColorR;
-		float g = currentColorG;
-		float b = currentColorB;
-		float a = currentColorA;
-		renderList.add(new RenderTriangle(
-				r, g, b, a, 
-				x1, x2, x3, 
-				y1, y2, y3));
+		renderList.add(mode.drawTriangle(x1, y1, x2, y2, x3, y3));
 	}
 	
 	public void drawQuad(
 			float x, float y, 
 			float fx, float fy) 
 	{
-		float r = currentColorR;
-		float g = currentColorG;
-		float b = currentColorB;
-		float a = currentColorA;
-		renderList.add(new RenderRectangle(
-				r, g, b, a, 
-				x, y, fx, fy));
+		renderList.add(mode.drawQuad(x, y, fx, fy));
 	}
 	
 	public void drawQuad(
@@ -106,35 +108,16 @@ public class Lwjgl3PRenderer implements PRenderer {
 			float x3, float y3, 
 			float x4, float y4) 
 	{
-		float r = currentColorR;
-		float g = currentColorG;
-		float b = currentColorB;
-		float a = currentColorA;
-		renderList.add(new RenderQuad(
-				r, g, b, a, 
-				x1, x2, x3, x4, 
-				y1, y2, y3, y4));
+		renderList.add(mode.drawQuad(x1, y1, x2, y2, x3, y3, x4, y4));
 	}
 	
 	public void drawString(PFontResource font, String text, float x, float y) {
 		Lwjgl3PFont lwjglFont = (Lwjgl3PFont) font;
-		
-		float r = currentColorR;
-		float g = currentColorG;
-		float b = currentColorB;
-		float a = currentColorA;
-		renderList.add(new RenderText(
-				lwjglFont, text, x, y, 
-				r, g, b, a));
+		renderList.add(mode.drawString(lwjglFont, text, x, y));
 	}
 	
 	public void drawEllipse(int x, int y, int width, int height) {
-		float r = currentColorR;
-		float g = currentColorG;
-		float b = currentColorB;
-		float a = currentColorA;
-		renderList.add(new RenderEllipse(r, g, b, a, 
-				x, y, width, height));
+		renderList.add(mode.drawEllipse(x, y, width, height));
 	}
 	
 	protected static interface RenderOp {

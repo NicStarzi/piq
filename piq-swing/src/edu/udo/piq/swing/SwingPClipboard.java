@@ -22,7 +22,7 @@ public class SwingPClipboard implements PClipboard {
 			if (object instanceof String) {
 				trans = new StringSelection((String) object);
 			} else {
-				trans = new ObjectTransferable<Object>(object);
+				trans = new ObjectTransferable<>(object);
 			}
 			getClipboard().setContents(trans, null);
 			return true;

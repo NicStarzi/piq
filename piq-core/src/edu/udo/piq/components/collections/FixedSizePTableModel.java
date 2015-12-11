@@ -14,6 +14,10 @@ public class FixedSizePTableModel extends AbstractPTableModel implements PTableM
 		cells = new Object[cols * rows];
 	}
 	
+//	protected PModel createEmptyInstance() {
+//		return new FixedSizePTableModel(cols, rows);
+//	}
+	
 	public int getColumnCount() {
 		return cols;
 	}

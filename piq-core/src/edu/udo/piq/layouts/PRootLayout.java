@@ -11,9 +11,9 @@ import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PRootOverlay;
 import edu.udo.piq.PSize;
-import edu.udo.piq.tools.AbstractPLayout;
+import edu.udo.piq.tools.AbstractMapPLayout;
 
-public class PRootLayout extends AbstractPLayout {
+public class PRootLayout extends AbstractMapPLayout {
 	
 	private final PRoot owner;
 	private final List<PComponent> components = Arrays.asList(new PComponent[Constraint.values().length]);

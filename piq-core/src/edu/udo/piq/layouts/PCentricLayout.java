@@ -7,11 +7,11 @@ import edu.udo.piq.PLayoutDesign;
 import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PSize;
-import edu.udo.piq.tools.AbstractPLayout;
+import edu.udo.piq.tools.AbstractMapPLayout;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.tools.MutablePSize;
 
-public class PCentricLayout extends AbstractPLayout {
+public class PCentricLayout extends AbstractMapPLayout {
 	
 	/**
 	 * To save memory the preferred size of the layout 

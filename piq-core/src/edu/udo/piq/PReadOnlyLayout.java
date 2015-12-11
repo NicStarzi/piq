@@ -3,7 +3,7 @@ package edu.udo.piq;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
 
-import edu.udo.piq.tools.AbstractPLayout;
+import edu.udo.piq.tools.AbstractMapPLayout;
 import edu.udo.piq.util.PCompUtil;
 
 /**
@@ -18,7 +18,7 @@ import edu.udo.piq.util.PCompUtil;
  * {@link PCompUtil#createDefaultObserverList()} is encouraged but is not enforced.<br>
  * <br>
  * For an easy to use abstract implementation of the PLayout interface 
- * have a look at the {@link AbstractPLayout} class.
+ * have a look at the {@link AbstractMapPLayout} class.
  * 
  * @author Nic Starzi
  * 
@@ -26,7 +26,7 @@ import edu.udo.piq.util.PCompUtil;
  * @see PComponent
  * @see PBounds
  */
-public interface PReadOnlyLayout {
+public interface PReadOnlyLayout extends PDisposable {
 	
 	public static final String ATTRIBUTE_KEY_INSETS = "insets";
 	public static final String ATTRIBUTE_KEY_GAP = "gap";
@@ -210,5 +210,12 @@ public interface PReadOnlyLayout {
 	 * @throws NullPointerException if obs is null
 	 */
 	public void removeObs(PLayoutObs obs) throws NullPointerException;
+	
+	/**
+	 * Frees all resources that the layout may be holding.<br>
+	 * This method is being called by the owner of the {@link PLayout} when it is 
+	 * no longer in use. After a layout has been disposed it may no longer be used.<br>
+	 */
+	public default void dispose() {}
 	
 }

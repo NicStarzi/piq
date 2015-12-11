@@ -5,10 +5,10 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PSize;
-import edu.udo.piq.tools.AbstractPLayout;
+import edu.udo.piq.tools.AbstractMapPLayout;
 import edu.udo.piq.tools.MutablePSize;
 
-public class PSplitLayout extends AbstractPLayout {
+public class PSplitLayout extends AbstractMapPLayout {
 	
 	public static final Orientation DEFAULT_ORIENTATION = Orientation.HORIZONTAL;
 	public static final double DEFAULT_SPLIT_POSITON = 0.5;

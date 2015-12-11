@@ -4,9 +4,9 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PLayout;
 import edu.udo.piq.PSize;
-import edu.udo.piq.tools.AbstractPLayout;
+import edu.udo.piq.tools.AbstractMapPLayout;
 
-public class PScrollPanelLayout extends AbstractPLayout implements PLayout {
+public class PScrollPanelLayout extends AbstractMapPLayout implements PLayout {
 	
 	public PScrollPanelLayout(PComponent component) {
 		super(component);

@@ -7,11 +7,11 @@ import edu.udo.piq.PLayoutDesign;
 import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PSize;
-import edu.udo.piq.tools.AbstractPLayout;
+import edu.udo.piq.tools.AbstractMapPLayout;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.tools.MutablePSize;
 
-public class PMatrixLayout extends AbstractPLayout {
+public class PMatrixLayout extends AbstractMapPLayout {
 	
 	protected final int gridW;
 	protected final int gridH;

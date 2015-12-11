@@ -5,10 +5,10 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PSize;
-import edu.udo.piq.tools.AbstractPLayout;
+import edu.udo.piq.tools.AbstractMapPLayout;
 import edu.udo.piq.tools.MutablePSize;
 
-public class PTableLayout2 extends AbstractPLayout {
+public class PTableLayout2 extends AbstractMapPLayout {
 	
 	protected final MutablePSize prefSize = new MutablePSize();
 	private Constraint[] table;

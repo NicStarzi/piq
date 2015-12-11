@@ -11,11 +11,11 @@ import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.containers.PPanel;
-import edu.udo.piq.tools.AbstractPLayout;
+import edu.udo.piq.tools.AbstractMapPLayout;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.tools.MutablePSize;
 
-public class PDockLayout extends AbstractPLayout {
+public class PDockLayout extends AbstractMapPLayout {
 	
 	protected final MutablePSize prefSize = new MutablePSize();
 	protected final List<List<PComponent>> rows = new ArrayList<>();

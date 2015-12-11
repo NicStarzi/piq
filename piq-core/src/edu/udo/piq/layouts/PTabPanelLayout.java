@@ -10,10 +10,10 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PSize;
-import edu.udo.piq.tools.AbstractPLayout;
+import edu.udo.piq.tools.AbstractMapPLayout;
 import edu.udo.piq.tools.MutablePSize;
 
-public class PTabPanelLayout extends AbstractPLayout {
+public class PTabPanelLayout extends AbstractMapPLayout {
 	
 //	private final Comparator<PComponent> childComparator = new Comparator<PComponent>() {
 //		public int compare(PComponent cmp1, PComponent cmp2) {

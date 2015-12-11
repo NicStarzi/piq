@@ -9,10 +9,10 @@ import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
 import edu.udo.piq.PTimer;
 import edu.udo.piq.PTimerCallback;
-import edu.udo.piq.tools.AbstractPLayout;
+import edu.udo.piq.tools.AbstractMapPLayout;
 import edu.udo.piq.tools.MutablePSize;
 
-public class MovingPLayout extends AbstractPLayout {
+public class MovingPLayout extends AbstractMapPLayout {
 	
 	protected final MutablePSize prefSize = new MutablePSize();
 	protected final PTimer timer = new PTimer(new PTimerCallback() {

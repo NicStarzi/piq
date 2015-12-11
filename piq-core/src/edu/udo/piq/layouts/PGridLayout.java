@@ -2,9 +2,9 @@ package edu.udo.piq.layouts;
 
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PSize;
-import edu.udo.piq.tools.AbstractPLayout;
+import edu.udo.piq.tools.AbstractMapPLayout;
 
-public class PGridLayout extends AbstractPLayout {
+public class PGridLayout extends AbstractMapPLayout {
 	
 	protected final PComponent[] componentGrid;
 	protected final int w, h;

@@ -10,11 +10,11 @@ import edu.udo.piq.PLayoutDesign;
 import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PSize;
-import edu.udo.piq.tools.AbstractPLayout;
+import edu.udo.piq.tools.AbstractMapPLayout;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.tools.MutablePSize;
 
-public class PListLayout extends AbstractPLayout {
+public class PListLayout extends AbstractMapPLayout {
 	
 	public static final ListAlignment DEFAULT_ALIGNMENT = ListAlignment.FROM_TOP;
 	public static final int DEFAULT_GAP = 2;

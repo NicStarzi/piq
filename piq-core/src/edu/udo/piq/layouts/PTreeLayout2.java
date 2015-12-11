@@ -19,11 +19,11 @@ import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.collections.PTreeIndex;
 import edu.udo.piq.components.defaults.DefaultPCellComponent;
-import edu.udo.piq.tools.AbstractPLayout;
+import edu.udo.piq.tools.AbstractMapPLayout;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.tools.MutablePSize;
 
-public class PTreeLayout2 extends AbstractPLayout implements PReadOnlyLayout {
+public class PTreeLayout2 extends AbstractMapPLayout implements PReadOnlyLayout {
 	
 	public void debug() {
 		System.out.println("### childmap ###");

@@ -1,10 +1,5 @@
 package edu.udo.piq.tools;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PLayout;
@@ -14,80 +9,96 @@ import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.ThrowException;
 
 public abstract class AbstractPLayout implements PLayout {
 	
 	protected final ObserverList<PLayoutObs> obsList
 		= PCompUtil.createDefaultObserverList();
-	private final Map<PComponent, PCompInfo> compMap = new HashMap<>();
 	private final PComponent owner;
 	private PLayoutDesign design;
 	
 	protected AbstractPLayout(PComponent component) {
-		if (component == null) {
-			throw new NullPointerException();
-		}
+		ThrowException.ifNull(component, "component == null");
 		owner = component;
 	}
 	
 	protected abstract boolean canAdd(PComponent component, Object constraint);
+	
+	protected abstract PCompInfo getInfoFor(PComponent child);
+	
+	protected abstract Iterable<PCompInfo> getAllInfos();
+	
+	protected abstract void clearAllInfosInternal();
+	
+	protected abstract void addInfoInternal(PCompInfo info);
+	
+	protected abstract void removeInfoInternal(PCompInfo info);
 	
 	public PComponent getOwner() {
 		return owner;
 	}
 	
 	public void addChild(PComponent component, Object constraint) throws NullPointerException, IllegalArgumentException, IllegalStateException {
-		if (component == null) {
-			throw new NullPointerException("component="+component);
-		} if (!canAdd(component, constraint)) {
-			throw new IllegalArgumentException("constraint="+constraint);
-		} if (containsChild(component)) {
-			throw new IllegalStateException(this+".contains "+component);
-		}
+		ThrowException.ifNull(component, "component == null");
+		ThrowException.ifFalse(canAdd(component, constraint), "canAdd(component, constraint) == false");
+		ThrowException.ifTrue(containsChild(component), "containsChild(component) == true");
+		
 		PCompInfo info = new PCompInfo(component, constraint);
-		compMap.put(component, info);
+		addInfoInternal(info);
 		
 		component.setParent(getOwner());
 		fireAddEvent(component, constraint);
 	}
 	
 	public void removeChild(PComponent child) throws NullPointerException, IllegalArgumentException {
-		if (child == null) {
-			throw new NullPointerException("component="+child);
-		} if (!containsChild(child)) {
-			throw new IllegalStateException(this+".contains not "+child);
-		}
-		Object constraint = compMap.get(child).constr;
+		ThrowException.ifNull(child, "child == null");
 		
-		compMap.remove(child);
+		PCompInfo info = getInfoFor(child);
+		ThrowException.ifNull(info, "containsChild(child) == false");
+		
+		Object constraint = info.constr;
+		
+		removeInfoInternal(info);
 		child.setParent(null);
 		fireRemoveEvent(child, constraint);
 	}
 	
 	public void removeChild(Object constraint) throws IllegalArgumentException, IllegalStateException {
-		removeChild(getChildForConstraint(constraint));
+		PComponent child = getChildForConstraint(constraint);
+		ThrowException.ifNull(child, "containsChild(constraint) == false");
+		removeChild(child);
 	}
 	
 	public void clearChildren() {
-		Collection<PComponent> children = getChildren();
-		for (PComponent child : children) {
-			Object constraint = compMap.get(child).constr;
+		for (PCompInfo info : getAllInfos()) {
+			PComponent child = info.comp;
+			Object constraint = info.constr;
 			child.setParent(null);
 			fireRemoveEvent(child, constraint);
 		}
-		compMap.clear();
+		clearAllInfosInternal();
 	}
 	
 	public boolean containsChild(PComponent child) throws NullPointerException {
-		return compMap.containsKey(child);
+		return getInfoFor(child) != null;
 	}
 	
 	public boolean containsChild(Object constraint) throws IllegalArgumentException {
 		return getChildForConstraint(constraint) != null;
 	}
 	
+	public PComponent getChildForConstraint(Object constraint) {
+		for (PCompInfo info : getAllInfos()) {
+			if (constraintsAreEqual(info.constr, constraint)) {
+				return info.comp;
+			}
+		}
+		return null;
+	}
+	
 	public PComponent getChildAt(int x, int y) {
-		for (PCompInfo info : compMap.values()) {
+		for (PCompInfo info : getAllInfos()) {
 			if (info.comp.isElusive()) {
 				if (info.comp.getLayout() != null) {
 					PComponent grandChild = info.comp.getLayout().getChildAt(x, y);
@@ -103,34 +114,44 @@ public abstract class AbstractPLayout implements PLayout {
 	}
 	
 	public PBounds getChildBounds(PComponent child) throws NullPointerException, IllegalArgumentException {
-		if (child == null) {
-			throw new NullPointerException("child == null");
-		}
-		PCompInfo info = compMap.get(child);
-		if (info != null) {
-			return info.bounds;
-		}
-		throw new IllegalArgumentException(child+" is not a child of "+getOwner());
+		ThrowException.ifNull(child, "child == null");
+		PCompInfo info = getInfoFor(child);
+		ThrowException.ifNull(info, "containsChild(child) == false");
+		return info.bounds;
 	}
 	
 	public Object getChildConstraint(PComponent child) throws NullPointerException {
+		ThrowException.ifNull(child, "child == null");
+		PCompInfo info = getInfoFor(child);
+		ThrowException.ifNull(info, "containsChild(child) == false");
+		return info.constr;
+	}
+	
+	protected void setChildBounds(PComponent child, int x, int y, int width, int height) {
 		if (child == null) {
-			throw new NullPointerException("child == null");
+			return;
 		}
-		PCompInfo info = compMap.get(child);
-		if (info != null) {
-			return info.constr;
-		}
-		throw new IllegalArgumentException(child+" is not a child of "+getOwner());
+		PCompInfo info = getInfoFor(child);
+		ThrowException.ifNull(info, "containsChild(child) == false");
+		setChildBounds(info, x, y, width, height);
 	}
 	
-	public Collection<PComponent> getChildren() {
-		return Collections.unmodifiableSet(compMap.keySet());
+	protected void setChildBounds(PCompInfo info, int x, int y, int width, int height) {
+		MutablePBounds bnds = info.bounds;
+		if (bnds.x != x || bnds.y != y || bnds.w != width || bnds.h != height) {
+			bnds.setX(x);
+			bnds.setY(y);
+			bnds.setWidth(width);
+			bnds.setHeight(height);
+			fireLaidOutEvent(info.comp, info.constr);
+		}
 	}
 	
-	/*
-	 * Utility methods
-	 */
+	protected void setChildConstraint(PComponent child, Object constraint) {
+		PCompInfo info = getInfoFor(child);
+		ThrowException.ifNull(info, "containsChild(child) == false");
+		info.constr = constraint;
+	}
 	
 	protected PSize getPreferredSizeOf(PComponent child) {
 		if (child == null) {
@@ -139,49 +160,11 @@ public abstract class AbstractPLayout implements PLayout {
 		return PCompUtil.getPreferredSizeOf(child);
 	}
 	
-	protected void setChildBounds(PComponent child, int x, int y, int width, int height) {
-		if (child == null) {
-			return;
+	protected boolean constraintsAreEqual(Object constr1, Object constr2) {
+		if (constr1 == null) {
+			return constr2 == null;
 		}
-		PCompInfo info = compMap.get(child);
-		MutablePBounds bnds = info.bounds;
-		if (bnds.x != x || bnds.y != y || bnds.w != width || bnds.h != height) {
-			bnds.setX(x);
-			bnds.setY(y);
-			bnds.setWidth(width);
-			bnds.setHeight(height);
-			fireLaidOutEvent(child, getChildConstraint(child));
-		}
-	}
-	
-	protected void setChildConstraint(PComponent child, Object constraint) {
-		PCompInfo info = compMap.get(child);
-		if (info == null) {
-			throw new IllegalArgumentException("component is not a child of this layout: "+child);
-		}
-		info.constr = constraint;
-	}
-	
-	public PComponent getChildForConstraint(Object constraint) {
-		for (PCompInfo info : compMap.values()) {
-			if ((info.constr == null && constraint == null) 
-					|| info.constr.equals(constraint)) 
-			{
-				return info.comp;
-			}
-		}
-		return null;
-	}
-	
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append(getClass().getSimpleName());
-		builder.append(" [owner=");
-		builder.append(getOwner());
-		builder.append(", children=");
-		builder.append(getChildren());
-		builder.append("]");
-		return builder.toString();
+		return constr1.equals(constr2);
 	}
 	
 	public void setDesign(PLayoutDesign design) {
@@ -205,16 +188,10 @@ public abstract class AbstractPLayout implements PLayout {
 	 */
 	
 	public void addObs(PLayoutObs obs) throws NullPointerException {
-		if (obs == null) {
-			throw new NullPointerException("obs="+obs);
-		}
 		obsList.add(obs);
 	}
 	
 	public void removeObs(PLayoutObs obs) throws NullPointerException {
-		if (obs == null) {
-			throw new NullPointerException("obs="+obs);
-		}
 		obsList.remove(obs);
 	}
 	
@@ -240,6 +217,17 @@ public abstract class AbstractPLayout implements PLayout {
 		for (PLayoutObs obs : obsList) {
 			obs.layoutInvalidated(this);
 		}
+	}
+	
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append(getClass().getSimpleName());
+		builder.append(" [owner=");
+		builder.append(getOwner());
+		builder.append(", children=");
+		builder.append(getChildren());
+		builder.append("]");
+		return builder.toString();
 	}
 	
 	/*

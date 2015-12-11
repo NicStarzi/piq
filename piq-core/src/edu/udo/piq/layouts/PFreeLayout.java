@@ -10,10 +10,10 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PSize;
-import edu.udo.piq.tools.AbstractPLayout;
+import edu.udo.piq.tools.AbstractMapPLayout;
 import edu.udo.piq.tools.MutablePSize;
 
-public class PFreeLayout extends AbstractPLayout {
+public class PFreeLayout extends AbstractMapPLayout {
 	
 	/**
 	 * To save memory the preferred size of the layout 

@@ -10,10 +10,10 @@ import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.collections.PTableIndex;
 import edu.udo.piq.components.defaults.DefaultPCellComponent;
-import edu.udo.piq.tools.AbstractPLayout;
+import edu.udo.piq.tools.AbstractMapPLayout;
 import edu.udo.piq.tools.MutablePSize;
 
-public class PTableLayout3 extends AbstractPLayout {
+public class PTableLayout3 extends AbstractMapPLayout {
 	
 	public static final int DEFAULT_COLUMN_WIDTH = 50;
 	public static final int DEFAULT_ROW_HEIGHT = 16;

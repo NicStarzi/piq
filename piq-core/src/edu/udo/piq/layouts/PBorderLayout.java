@@ -2,19 +2,21 @@ package edu.udo.piq.layouts;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PLayoutObs;
+import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PSize;
-import edu.udo.piq.tools.AbstractPLayout;
+import edu.udo.piq.tools.AbstractEnumPLayout;
 import edu.udo.piq.tools.MutablePSize;
 
-public class PBorderLayout extends AbstractPLayout {
+public class PBorderLayout extends 
+	AbstractEnumPLayout<edu.udo.piq.layouts.PBorderLayout.Constraint> 
+{
 	
-	/**
-	 * Used to store all components at their position.<br>
-	 * The index of a component is equal to the ordinal 
-	 * number of the positions constraint.<br>
-	 */
+//	/**
+//	 * Used to store all components at their position.<br>
+//	 * The index of a component is equal to the ordinal 
+//	 * number of the positions constraint.<br>
+//	 */
 	protected final PComponent[] positions;
 	/**
 	 * To save memory the preferred size of the layout 
@@ -25,7 +27,7 @@ public class PBorderLayout extends AbstractPLayout {
 	protected final MutablePSize prefSize;
 	
 	public PBorderLayout(PComponent owner) {
-		super(owner);
+		super(owner, Constraint.class);
 		positions = new PComponent[Constraint.values().length];
 		prefSize = new MutablePSize();
 		
@@ -39,6 +41,10 @@ public class PBorderLayout extends AbstractPLayout {
 				positions[pos.ordinal()] = null;
 			}
 		});
+	}
+	
+	protected String getErrorMsgConstraintIllegal() {
+		return "constraint.getClass() != Constraint.class";
 	}
 	
 	protected boolean canAdd(PComponent cmp, Object constraint) {

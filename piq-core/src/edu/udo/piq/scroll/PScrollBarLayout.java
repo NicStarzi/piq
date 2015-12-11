@@ -6,10 +6,10 @@ import edu.udo.piq.PLayout;
 import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PSize;
-import edu.udo.piq.tools.AbstractPLayout;
+import edu.udo.piq.tools.AbstractMapPLayout;
 import edu.udo.piq.tools.MutablePSize;
 
-public class PScrollBarLayout extends AbstractPLayout implements PLayout {
+public class PScrollBarLayout extends AbstractMapPLayout implements PLayout {
 	
 	private static final Class<?>[] compClasses = new Class<?>[Constraint.values().length];
 	static {

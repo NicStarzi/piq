@@ -395,7 +395,9 @@ public interface PComponent {
 	 */
 	public default PBounds getBounds() {
 		if (getParent() != null) {
-			return getParent().getLayout().getChildBounds(this);
+			PBounds bnds = getParent().getLayout().getChildBounds(this);
+			ThrowException.ifNull(bnds, "bounds == null");
+			return bnds;
 		}
 		if (this instanceof PRoot) {
 			return ((PRoot) this).getBounds();

@@ -1,11 +1,11 @@
 package edu.udo.piq.tools;
 
 import edu.udo.piq.PFontResource;
+import edu.udo.piq.PImageRenderer;
 import edu.udo.piq.PImageResource;
 import edu.udo.piq.PRenderMode;
-import edu.udo.piq.PRenderer;
 
-public class DoNothingRenderer implements PRenderer {
+public class DoNothingRenderer implements PImageRenderer {
 	
 	private static PRenderMode RM_FILL = new PRenderMode() {};
 	private static PRenderMode RM_OUTLINE;
@@ -58,6 +58,9 @@ public class DoNothingRenderer implements PRenderer {
 	}
 	
 	public void drawEllipse(int x, int y, int width, int height) {
+	}
+	
+	public void dispose() {
 	}
 	
 }

@@ -11,7 +11,7 @@ import edu.udo.piq.tools.DoNothingRenderer;
  * 
  * @author Nic Starzi
  */
-public interface PImageResource {
+public interface PImageResource extends PDisposable {
 	
 	/**
 	 * Returns the {@link PSize} of this image resource in width and height.<br>
@@ -28,7 +28,7 @@ public interface PImageResource {
 	 * custom painting of images is not possible.<br>
 	 * @return			a non-null instance of {@link PRenderer}
 	 */
-	public default PRenderer createRenderer() {
+	public default PImageRenderer createRenderer() {
 		return new DoNothingRenderer();
 	}
 	

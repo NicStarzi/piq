@@ -3,11 +3,12 @@ package edu.udo.piq.tools;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PFontResource;
+import edu.udo.piq.PImageRenderer;
 import edu.udo.piq.PImageResource;
 import edu.udo.piq.PRenderMode;
 import edu.udo.piq.PRenderer;
 
-public class DelegatePRenderer implements PRenderer {
+public class DelegatePRenderer implements PImageRenderer {
 	
 	private final PRenderer delegate;
 	private float ox, oy;
@@ -118,10 +119,6 @@ public class DelegatePRenderer implements PRenderer {
 		y3 += oy;
 		delegate.drawTriangle(x1, y1, x2, y2, x3, y3);
 	}
-	
-//	public void drawQuad(PBounds bounds) {
-//		delegate.drawQuad(bounds);
-//	}
 	
 	public void drawQuad(
 			float x, float y, 

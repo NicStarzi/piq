@@ -17,7 +17,7 @@ import edu.udo.piq.util.PCompUtil;
  * 
  * @see PRenderer
  */
-public interface PFontResource {
+public interface PFontResource extends PDisposable {
 	
 	/**
 	 * Returns the name of the font, for example Arial or Times New Roman.<br>

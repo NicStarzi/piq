@@ -165,6 +165,25 @@ public interface PModel extends Iterable<PModelIndex> {
 	 * this model does not support undo- and redo functionality.<br>
 	 * @return		a model history or null
 	 */
-	public PModelHistory getHistory();
+	public default PModelHistory getHistory() {
+		return null;
+	}
+	
+//	/**
+//	 * Returns a new instance of {@link Iterator} that will allow iteration over
+//	 * all indices within this model in the best order for removal.
+//	 * 
+//	 * @return a new Iterator
+//	 */
+//	public Iterator<PModelIndex> removeIterator();
+//	
+//	/**
+//	 * Returns a new instance of {@link Iterator} that will allow iteration over
+//	 * all indices within this model in the best order for insertion into
+//	 * another model.
+//	 * 
+//	 * @return a new Iterator
+//	 */
+//	public Iterator<PModelIndex> insertIterator();
 	
 }

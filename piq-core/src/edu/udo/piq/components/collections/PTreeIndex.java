@@ -3,6 +3,8 @@ package edu.udo.piq.components.collections;
 import java.util.Arrays;
 import java.util.Collection;
 
+import edu.udo.piq.util.ThrowException;
+
 public class PTreeIndex implements PModelIndex {
 	
 	private static final int[] ROOT_ARR = new int[0];
@@ -11,13 +13,17 @@ public class PTreeIndex implements PModelIndex {
 	private final int depth;
 	
 	public PTreeIndex(Collection<Integer> childIndices) {
-		indices = new int[childIndices.size()];
-		depth = indices.length;
-		
-		int id = 0;
-		for (Integer i : childIndices) {
-			indices[id++] = i.intValue();
+		// Do not copy empty collections
+		if (childIndices.size() == 0) {
+			indices = ROOT_ARR;
+		} else {
+			indices = new int[childIndices.size()];
+			int id = 0;
+			for (Integer i : childIndices) {
+				indices[id++] = i.intValue();
+			}
 		}
+		depth = indices.length;
 	}
 	
 	public PTreeIndex() {
@@ -25,14 +31,23 @@ public class PTreeIndex implements PModelIndex {
 	}
 	
 	public PTreeIndex(int ... childIndices) {
-		indices = Arrays.copyOf(childIndices, childIndices.length);
+		// Do not copy empty arrays
+		if (childIndices.length == 0) {
+			indices = ROOT_ARR;
+		} else {
+			indices = Arrays.copyOf(childIndices, childIndices.length);
+		}
 		depth = childIndices.length;
 	}
 	
 	protected PTreeIndex(int[] childIndices, int depth) {
-		indices = Arrays.copyOf(childIndices, depth);
+		// Do not copy empty arrays
+		if (depth == 0) {
+			indices = ROOT_ARR;
+		} else {
+			indices = Arrays.copyOf(childIndices, depth);
+		}
 		this.depth = indices.length;
-//		this.depth = depth;
 	}
 	
 	public int getDepth() {
@@ -53,7 +68,21 @@ public class PTreeIndex implements PModelIndex {
 		return indices[depth - 1];
 	}
 	
-	public PTreeIndex makeParentIndex() {
+	public PTreeIndex createCommonAncestorIndex(PTreeIndex other) {
+		int[] indicesThis = indices;
+		int[] indicesOther = other.indices;
+		int searchLength = Math.min(indicesThis.length, indicesOther.length);
+		int commonLength = 0;
+		for (int i = 0; i < searchLength; i++) {
+			if (indicesThis[i] != indicesOther[i]) {
+				break;
+			}
+			commonLength++;
+		}
+		return new PTreeIndex(indicesThis, commonLength);
+	}
+	
+	public PTreeIndex createParentIndex() {
 		return new PTreeIndex(indices, depth - 1);
 	}
 	
@@ -72,11 +101,25 @@ public class PTreeIndex implements PModelIndex {
 	}
 	
 	public PTreeIndex append(int ... childIndices) {
+		return append(childIndices.length, childIndices);
+	}
+	
+	public PTreeIndex append(int length, int[] childIndices) {
 		int oldDepth = getDepth();
-		int newDepth = oldDepth + childIndices.length;
+		int newDepth = oldDepth + length;
 		int[] newIndices = Arrays.copyOf(indices, newDepth);
-		System.arraycopy(childIndices, 0, newIndices, oldDepth, childIndices.length);
+		System.arraycopy(childIndices, 0, newIndices, oldDepth, length);
 		return new PTreeIndex(newIndices);
+	}
+	
+	public PTreeIndex append(PTreeIndex index) {
+		return append(index.depth, index.indices);
+	}
+	
+	public PTreeIndex withOffset(PModelIndex offset) {
+		PTreeIndex offsetTree = ThrowException.ifTypeCastFails(offset, 
+				PTreeIndex.class, "(offset instanceof PTreeIndex) == false");
+		return offsetTree.append(this);
 	}
 	
 	public String toString() {

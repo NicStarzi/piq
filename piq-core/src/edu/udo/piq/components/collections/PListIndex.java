@@ -1,5 +1,7 @@
 package edu.udo.piq.components.collections;
 
+import edu.udo.piq.util.ThrowException;
+
 public class PListIndex implements PModelIndex {
 	
 	private final int index;
@@ -13,6 +15,13 @@ public class PListIndex implements PModelIndex {
 	
 	public int getIndexValue() {
 		return index;
+	}
+	
+	public PListIndex withOffset(PModelIndex offset) {
+		PListIndex offsetList = ThrowException.ifTypeCastFails(offset, 
+				PListIndex.class, "(offset instanceof PListIndex) == false");
+		int indexValue = offsetList.getIndexValue() + getIndexValue();
+		return new PListIndex(indexValue);
 	}
 	
 	public String toString() {

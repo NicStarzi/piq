@@ -1,27 +1,29 @@
 package edu.udo.piq.tools;
 
-import java.util.List;
-
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PDnDTransfer;
+import edu.udo.piq.components.collections.PModel;
 
 public class ImmutablePDnDTransfer implements PDnDTransfer {
 	
 	private final PComponent src;
 	private final int x;
 	private final int y;
-	private final List<IndexAndContentTuple> dataList;
+	private final PModel data;
+//	private final List<IndexAndContentTuple> dataList;
 	private final PComponent visPres;
 	
 	public ImmutablePDnDTransfer(PComponent source, 
-			int fromX, int fromY, 
-			List<IndexAndContentTuple> data, 
+			int fromX, int fromY,
+			PModel dataModel,
+//			List<IndexAndContentTuple> data, 
 			PComponent visibleRepresentation) 
 	{
 		src = source;
 		x = fromX;
 		y = fromY;
-		dataList = data;
+		data = dataModel;
+//		dataList = data;
 		visPres = visibleRepresentation;
 	}
 	
@@ -37,9 +39,13 @@ public class ImmutablePDnDTransfer implements PDnDTransfer {
 		return y;
 	}
 	
-	public List<IndexAndContentTuple> getData() {
-		return dataList;
+	public PModel getData() {
+		return data;
 	}
+	
+//	public List<IndexAndContentTuple> getData() {
+//		return dataList;
+//	}
 	
 	public PComponent getVisibleRepresentation() {
 		return visPres;

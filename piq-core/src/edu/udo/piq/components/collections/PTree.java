@@ -444,7 +444,7 @@ public class PTree extends AbstractPInputLayoutOwner
 				&& currentDnDHighlightComponent == null) 
 		{
 			PTreeIndex childIndex = (PTreeIndex) currentDnDHighlightIndex;
-			PTreeIndex parentIndex = childIndex.makeParentIndex();
+			PTreeIndex parentIndex = childIndex.createParentIndex();
 			// check if parent has children or not
 			int childCount = getModel().getChildCount(parentIndex);
 			if (childCount == 0) {

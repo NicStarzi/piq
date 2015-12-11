@@ -10,6 +10,18 @@ public interface PSelectionComponent {
 	
 	public PModelIndex getIndexAt(int x, int y);
 	
+	public default Object getContentAt(int x, int y) {
+		PModel model = getModel();
+		if (model == null) {
+			return null;
+		}
+		PModelIndex index = getIndexAt(x, y);
+		if (index == null) {
+			return null;
+		}
+		return model.get(index);
+	}
+	
 	public List<Object> getAllSelectedContent();
 	
 	public void addObs(PModelObs obs);

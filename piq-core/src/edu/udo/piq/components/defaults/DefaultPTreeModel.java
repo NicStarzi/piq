@@ -14,10 +14,15 @@ import edu.udo.piq.components.collections.PTreeIndex;
 import edu.udo.piq.components.collections.PTreeModel;
 import edu.udo.piq.components.collections.WrongIndexType;
 import edu.udo.piq.tools.AbstractPModel;
+import edu.udo.piq.util.ThrowException;
 
 public class DefaultPTreeModel extends AbstractPModel implements PTreeModel {
 	
 	private DefaultPTreeNode rootNode;
+	
+//	protected PModel createEmptyInstance() {
+//		return new DefaultPTreeModel();
+//	}
 	
 	public Object getRoot() {
 		if (rootNode == null) {
@@ -145,9 +150,7 @@ public class DefaultPTreeModel extends AbstractPModel implements PTreeModel {
 	}
 	
 	protected PTreeIndex asTreeIndex(PModelIndex index) {
-		if (index == null) {
-			throw new NullPointerException("index == null");
-		}
+		ThrowException.ifNull(index, "index == null");
 		if (index instanceof PTreeIndex) {
 			return (PTreeIndex) index;
 		}

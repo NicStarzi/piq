@@ -1,8 +1,6 @@
 package edu.udo.piq;
 
-import java.util.List;
-
-import edu.udo.piq.components.collections.PModelIndex;
+import edu.udo.piq.components.collections.PModel;
 
 public interface PDnDTransfer {
 	
@@ -12,36 +10,36 @@ public interface PDnDTransfer {
 	
 	public int getDragStartY();
 	
-	public List<IndexAndContentTuple> getData();
+	public PModel getData();
 	
 	public PComponent getVisibleRepresentation();
-	
-	public static class IndexAndContentTuple {
-		
-		private final Object content;
-		private final PModelIndex index;
-		
-		public IndexAndContentTuple(Object content, PModelIndex index) {
-			this.content = content;
-			this.index = index;
-		}
-		
-		public Object getContent() {
-			return content;
-		}
-		
-		public PModelIndex getIndex() {
-			return index;
-		}
-		
-		public String toString() {
-			StringBuilder sb = new StringBuilder();
-			sb.append(getContent());
-			sb.append(" at ");
-			sb.append(getIndex());
-			return sb.toString();
-		}
-		
-	}
+//	
+//	public static class IndexAndContentTuple {
+//		
+//		private final Object content;
+//		private final PModelIndex index;
+//		
+//		public IndexAndContentTuple(Object content, PModelIndex index) {
+//			this.content = content;
+//			this.index = index;
+//		}
+//		
+//		public Object getContent() {
+//			return content;
+//		}
+//		
+//		public PModelIndex getIndex() {
+//			return index;
+//		}
+//		
+//		public String toString() {
+//			StringBuilder sb = new StringBuilder();
+//			sb.append(getContent());
+//			sb.append(" at ");
+//			sb.append(getIndex());
+//			return sb.toString();
+//		}
+//		
+//	}
 	
 }

@@ -1,5 +1,7 @@
 package edu.udo.piq.components.collections;
 
+import edu.udo.piq.util.ThrowException;
+
 public class PTableIndex implements PModelIndex {
 	
 	private final int column;
@@ -22,6 +24,14 @@ public class PTableIndex implements PModelIndex {
 	
 	public int getRow() {
 		return row;
+	}
+	
+	public PTableIndex withOffset(PModelIndex offset) {
+		PTableIndex offsetTable = ThrowException.ifTypeCastFails(offset, 
+				PTableIndex.class, "(offset instanceof PTableIndex) == false");
+		int row = offsetTable.getRow() + getRow();
+		int col = offsetTable.getColumn() + getColumn();
+		return new PTableIndex(col, row);
 	}
 	
 	public String toString() {

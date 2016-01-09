@@ -133,10 +133,10 @@ public class SwingPTest {
 				"E", "F", "G", "H",
 			}));
 		list.setID("List");
-//		PScrollPanel scrollList = new PScrollPanel();
-//		scrollList.setBody(list);
-//		splitH.setSecondComponent(scrollList);
-		splitH.setSecondComponent(list);
+		PScrollPanel scrollList = new PScrollPanel();
+		scrollList.setBody(list);
+		splitH.setSecondComponent(scrollList);
+//		splitH.setSecondComponent(list);
 		
 		PToolTip tipList = new PToolTip(new DefaultPTextModel("This is a nice list!"));
 		tipList.setID("Tooltip - List");
@@ -293,6 +293,7 @@ public class SwingPTest {
 				sDs.getLabelDesign().setBackgroundColor(backColor);
 				sDs.getLabelDesign().setFontSize(size);
 				sDs.getLabelDesign().setFontStyle(style);
+				root.reRender(root);
 			}
 		});
 		chkBxTpl.getCheckBox().addObs(new PCheckBoxObs() {

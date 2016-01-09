@@ -4,14 +4,12 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PLayoutDesign;
-import edu.udo.piq.PReadOnlyLayout;
-import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PSize;
-import edu.udo.piq.tools.AbstractMapPLayout;
+import edu.udo.piq.tools.AbstractArrayPLayout;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.tools.MutablePSize;
 
-public class PCentricLayout extends AbstractMapPLayout {
+public class PCentricLayout extends AbstractArrayPLayout {
 	
 	/**
 	 * To save memory the preferred size of the layout 
@@ -21,20 +19,10 @@ public class PCentricLayout extends AbstractMapPLayout {
 	 */
 	protected final MutablePSize prefSize;
 	protected PInsets insets = new ImmutablePInsets(4);
-	protected PComponent content;
 	
 	public PCentricLayout(PComponent component) {
-		super(component);
+		super(component, 1);
 		prefSize = new MutablePSize();
-		
-		addObs(new PLayoutObs() {
-			public void childAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
-				content = child;
-			}
-			public void childRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
-				content = null;
-			}
-		});
 	}
 	
 	public void setInsets(PInsets insets) {
@@ -62,7 +50,7 @@ public class PCentricLayout extends AbstractMapPLayout {
 	}
 	
 	public PComponent getContent() {
-		return content;
+		return getCompAt(0);
 	}
 	
 	protected boolean canAdd(PComponent component, Object constraint) {
@@ -70,6 +58,7 @@ public class PCentricLayout extends AbstractMapPLayout {
 	}
 	
 	public void layOut() {
+		PComponent content = getContent();
 		if (content != null) {
 			PBounds ob = getOwner().getBounds();
 			PInsets insets = getInsets();
@@ -109,6 +98,7 @@ public class PCentricLayout extends AbstractMapPLayout {
 	public PSize getPreferredSize() {
 		int prefW = getInsets().getHorizontal();
 		int prefH = getInsets().getVertical();
+		PComponent content = getContent();
 		if (content != null) {
 			PSize contentSize = getPreferredSizeOf(content);
 			prefW += contentSize.getWidth();
@@ -117,6 +107,13 @@ public class PCentricLayout extends AbstractMapPLayout {
 		prefSize.setWidth(prefW);
 		prefSize.setHeight(prefH);
 		return prefSize;
+	}
+	
+	protected int getIndexFor(Object constr) {
+		if (constr == null) {
+			return 0;
+		}
+		return -1;
 	}
 	
 }

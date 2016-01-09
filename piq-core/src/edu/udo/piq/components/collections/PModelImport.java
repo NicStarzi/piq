@@ -13,7 +13,7 @@ public interface PModelImport {
 	 * transformed internally.<br>
 	 * @param dst			a non-null {@link PModel} used as the destination
 	 * @param dstIndex		a non-null {@link PModelIndex} which is compatible with the destination model
-	 * @param src			a non-null {@link PModel} used as the source
+	 * @param src			a non-null {@link PModel} from which data is copied into <code>dst</code>
 	 */
 	public void importData(PModel dst, PModelIndex dstIndex, PModel src);
 	

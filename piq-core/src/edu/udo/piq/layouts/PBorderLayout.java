@@ -2,8 +2,6 @@ package edu.udo.piq.layouts;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PLayoutObs;
-import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractEnumPLayout;
 import edu.udo.piq.tools.MutablePSize;
@@ -12,51 +10,20 @@ public class PBorderLayout extends
 	AbstractEnumPLayout<edu.udo.piq.layouts.PBorderLayout.Constraint> 
 {
 	
-//	/**
-//	 * Used to store all components at their position.<br>
-//	 * The index of a component is equal to the ordinal 
-//	 * number of the positions constraint.<br>
-//	 */
-	protected final PComponent[] positions;
 	/**
 	 * To save memory the preferred size of the layout 
 	 * is an instance of MutablePSize which is updated 
 	 * and returned by the {@link #getPreferredSize()} 
 	 * method.<br>
 	 */
-	protected final MutablePSize prefSize;
+	protected final MutablePSize prefSize = new MutablePSize();
 	
 	public PBorderLayout(PComponent owner) {
 		super(owner, Constraint.class);
-		positions = new PComponent[Constraint.values().length];
-		prefSize = new MutablePSize();
-		
-		addObs(new PLayoutObs() {
-			public void childAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
-				Constraint pos = (Constraint) constraint;
-				positions[pos.ordinal()] = child;
-			}
-			public void childRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
-				Constraint pos = (Constraint) constraint;
-				positions[pos.ordinal()] = null;
-			}
-		});
 	}
 	
 	protected String getErrorMsgConstraintIllegal() {
 		return "constraint.getClass() != Constraint.class";
-	}
-	
-	protected boolean canAdd(PComponent cmp, Object constraint) {
-		return constraint != null && constraint instanceof Constraint && getChildForConstraint(constraint) == null;
-	}
-	
-	public PComponent getChildForConstraint(Object constraint) {
-		if (constraint == null || !(constraint instanceof Constraint)) {
-			throw new IllegalArgumentException();
-		}
-		Constraint pos = (Constraint) constraint;
-		return positions[pos.ordinal()];
 	}
 	
 	public void layOut() {

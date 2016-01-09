@@ -18,7 +18,7 @@ public class ThrowException {
 	public static void ifNotNull(Object obj, String optionalMsg) 
 			throws IllegalArgumentException 
 	{
-		if (obj == null) {
+		if (obj != null) {
 			iae(createErrorMsg(optionalMsg, obj, 
 					" must be null but is not"));
 		}

@@ -79,6 +79,12 @@ public class PTreeIndex implements PModelIndex {
 			}
 			commonLength++;
 		}
+		if (commonLength == indicesThis.length) {
+			return this;
+		}
+		if (commonLength == indicesOther.length) {
+			return other;
+		}
 		return new PTreeIndex(indicesThis, commonLength);
 	}
 	

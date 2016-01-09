@@ -159,7 +159,11 @@ public class LinkedArray<E> implements Iterable<E> {
 	}
 	
 	public E get(int index) {
-		return buffer[index].content;
+		Elem<E> elem = buffer[index];
+		if (elem == null) {
+			return null;
+		}
+		return elem.content;
 	}
 	
 	public int length() {

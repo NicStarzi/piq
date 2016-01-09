@@ -53,6 +53,7 @@ public interface PColor {
 	 * An immutable PColor implementation representing absolute blue.
 	 */
 	public static final PColor BLUE		= new ImmutablePColor(0.00, 0.00, 1.00);
+	public static final PColor DARK_BLUE	= new ImmutablePColor(0.00, 0.00, 0.50);
 	/**
 	 * An immutable PColor implementation representing absolute magenta 
 	 * (red = 100%, blue = 100%).

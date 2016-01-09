@@ -11,7 +11,7 @@ import edu.udo.piq.components.textbased.PLabel;
 public class DefaultPCellComponent extends PLabel implements PCellComponent {
 	
 	public static final PColor DEFAULT_TEXT_SELECTED_COLOR			= PColor.WHITE;
-	public static final PColor DEFAULT_BACKGROUND_SELECTED_COLOR	= PColor.BLUE;
+	public static final PColor DEFAULT_BACKGROUND_SELECTED_COLOR	= PColor.DARK_BLUE;
 	public static final PColor DEFAULT_DROP_HIGHLIGHT_COLOR			= PColor.RED;
 	
 	private boolean selected;

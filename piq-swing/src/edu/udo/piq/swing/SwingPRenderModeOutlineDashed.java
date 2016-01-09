@@ -8,7 +8,7 @@ public class SwingPRenderModeOutlineDashed implements SwingPRenderMode {
 	
 	private final Stroke dashed = new BasicStroke(1, 
 			BasicStroke.CAP_BUTT, 
-			BasicStroke.JOIN_BEVEL, 0, new float[]{3}, 0);
+			BasicStroke.JOIN_BEVEL, 0, new float[]{2}, 0);
 	private int[] xCoordsInternal = new int[4];
 	private int[] yCoordsInternal = new int[4];
 	

@@ -141,7 +141,9 @@ public class PDnDManager {
 	 * @see PDnDTransfer
 	 * @see #abortDrag()
 	 */
-	public void startDrag(PDnDTransfer transfer) throws IllegalStateException, IllegalArgumentException {
+	public void startDrag(PDnDTransfer transfer) 
+			throws IllegalStateException, IllegalArgumentException 
+	{
 		ThrowException.ifNotNull(getActiveTransfer(), "activeTransfer != null");
 		ThrowException.ifNull(transfer, "transfer == null");
 		activeTransfer = transfer;

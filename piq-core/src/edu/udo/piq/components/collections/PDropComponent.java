@@ -45,6 +45,4 @@ public interface PDropComponent extends PSelectionComponent {
 		return new ArrayList<>(getSelection().getAllSelected());
 	}
 	
-//	public PModel getDragModel();
-	
 }

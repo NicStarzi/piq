@@ -151,8 +151,8 @@ public class PScrollBar extends AbstractPLayoutOwner {
 		return model.getPreferredSize() > model.getSize();
 	}
 	
-	private void onThumbClicked() {
-		
-	}
+//	private void onThumbClicked() {
+//		
+//	}
 	
 }

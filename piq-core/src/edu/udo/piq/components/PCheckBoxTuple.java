@@ -85,10 +85,10 @@ public class PCheckBoxTuple extends AbstractPInputLayoutOwner implements PPopupC
 		getLayoutInternal().addChild(new PCheckBox(), Constraint.FIRST);
 		addObs(mouseObs);
 		addObs(new PFocusObs() {
-			public void focusGained(PComponent oldOwner, PComponent newOwner) {
+			public void onFocusGained(PComponent oldOwner, PComponent newOwner) {
 				fireReRenderEvent();
 			}
-			public void focusLost(PComponent oldOwner) {
+			public void onFocusLost(PComponent oldOwner) {
 				fireReRenderEvent();
 			}
 		});

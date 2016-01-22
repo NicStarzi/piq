@@ -122,12 +122,12 @@ public class PTree extends AbstractPInputLayoutOwner
 			}
 		});
 		addObs(new PFocusObs() {
-			public void focusGained(PComponent oldOwner, PComponent newOwner) {
+			public void onFocusGained(PComponent oldOwner, PComponent newOwner) {
 				if (newOwner == PTree.this && getSelection() != null) {
 					fireReRenderEvent();
 				}
 			}
-			public void focusLost(PComponent oldOwner) {
+			public void onFocusLost(PComponent oldOwner) {
 				if (oldOwner == PTree.this && getSelection() != null) {
 					fireReRenderEvent();
 				}

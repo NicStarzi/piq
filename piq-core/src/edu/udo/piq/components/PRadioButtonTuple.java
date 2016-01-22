@@ -76,10 +76,10 @@ public class PRadioButtonTuple extends AbstractPInputLayoutOwner {
 		getLayoutInternal().addChild(new PRadioButton(), Constraint.FIRST);
 		addObs(mouseObs);
 		addObs(new PFocusObs() {
-			public void focusGained(PComponent oldOwner, PComponent newOwner) {
+			public void onFocusGained(PComponent oldOwner, PComponent newOwner) {
 				fireReRenderEvent();
 			}
-			public void focusLost(PComponent oldOwner) {
+			public void onFocusLost(PComponent oldOwner) {
 				fireReRenderEvent();
 			}
 		});

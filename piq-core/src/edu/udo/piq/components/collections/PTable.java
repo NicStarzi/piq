@@ -137,12 +137,12 @@ public class PTable extends AbstractPInputLayoutOwner
 			}
 		});
 		addObs(new PFocusObs() {
-			public void focusGained(PComponent oldOwner, PComponent newOwner) {
+			public void onFocusGained(PComponent oldOwner, PComponent newOwner) {
 				if (newOwner == PTable.this && getSelection() != null) {
 					fireReRenderEvent();
 				}
 			}
-			public void focusLost(PComponent oldOwner) {
+			public void onFocusLost(PComponent oldOwner) {
 				if (oldOwner == PTable.this && getSelection() != null) {
 					fireReRenderEvent();
 				}

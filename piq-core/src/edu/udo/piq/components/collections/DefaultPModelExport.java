@@ -9,6 +9,13 @@ import edu.udo.piq.components.defaults.DefaultPTreeModel;
 
 public class DefaultPModelExport implements PModelExport {
 	
+	public boolean canExport(PModel src, List<PModelIndex> indices) {
+		return false;
+	}
+	
+	public void finishExport(PModel src, List<PModelIndex> indices) {
+	}
+	
 	public PModel createExportModel(PModel src, List<PModelIndex> indices) {
 //		if (src instanceof PTreeModel) {
 //			return buildTreeModel(src, indices);

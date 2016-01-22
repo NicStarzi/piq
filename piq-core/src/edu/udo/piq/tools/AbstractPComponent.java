@@ -65,13 +65,13 @@ public class AbstractPComponent implements PComponent {
 	 * that are registered at this component.<br>
 	 */
 	protected final PFocusObs rootFocusObs = new PFocusObs() {
-		public void focusLost(PComponent oldOwner) {
+		public void onFocusLost(PComponent oldOwner) {
 			if (oldOwner == AbstractPComponent.this) {
 				fireFocusLostEvent();
 				fireReRenderEvent();
 			}
 		}
-		public void focusGained(PComponent oldOwner, PComponent newOwner) {
+		public void onFocusGained(PComponent oldOwner, PComponent newOwner) {
 			if (newOwner == AbstractPComponent.this) {
 				fireFocusGainedEvent(oldOwner);
 				fireReRenderEvent();
@@ -463,11 +463,11 @@ public class AbstractPComponent implements PComponent {
 	}
 	
 	protected void fireFocusGainedEvent(PComponent oldFocusOwner) {
-		focusObsList.sendNotify(obs -> obs.focusGained(oldFocusOwner, this));
+		focusObsList.sendNotify(obs -> obs.onFocusGained(oldFocusOwner, this));
 	}
 	
 	protected void fireFocusLostEvent() {
-		focusObsList.sendNotify(obs -> obs.focusLost(this));
+		focusObsList.sendNotify(obs -> obs.onFocusLost(this));
 	}
 	
 	protected void checkForBoundsChange() {

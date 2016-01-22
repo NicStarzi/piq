@@ -332,13 +332,13 @@ public abstract class AbstractPRoot implements PRoot {
 	
 	protected void fireFocusGainedEvent(PComponent oldFocusOwner) {
 		for (PFocusObs obs : focusObsList) {
-			obs.focusGained(oldFocusOwner, getFocusOwner());
+			obs.onFocusGained(oldFocusOwner, getFocusOwner());
 		}
 	}
 	
 	protected void fireFocusLostEvent(PComponent oldFocusOwner) {
 		for (PFocusObs obs : focusObsList) {
-			obs.focusLost(oldFocusOwner);
+			obs.onFocusLost(oldFocusOwner);
 		}
 	}
 	

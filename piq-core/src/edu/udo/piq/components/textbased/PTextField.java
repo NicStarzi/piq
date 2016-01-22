@@ -2,95 +2,27 @@ package edu.udo.piq.components.textbased;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
-import edu.udo.piq.PComponent;
-import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PFontResource;
-import edu.udo.piq.PFontResource.Style;
-import edu.udo.piq.PModelFactory;
-import edu.udo.piq.PMouse;
-import edu.udo.piq.PMouse.MouseButton;
-import edu.udo.piq.PMouseObs;
+import edu.udo.piq.PInsets;
 import edu.udo.piq.PRenderer;
-import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.collections.PListIndex;
-import edu.udo.piq.components.collections.PModelIndex;
-import edu.udo.piq.components.collections.PSelection;
-import edu.udo.piq.components.collections.PSelectionObs;
-import edu.udo.piq.components.defaults.DefaultPTextModel;
-import edu.udo.piq.components.defaults.DefaultPTextSelection;
-import edu.udo.piq.tools.AbstractPComponent;
+import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.tools.ImmutablePSize;
-import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.tools.MutablePSize;
 
-public class PTextField extends AbstractPComponent {
+public class PTextField extends AbstractPTextComponent {
 	
-	protected static final String DEFAULT_FONT_NAME = "Arial";
-	protected static final int DEFAULT_FONT_SIZE = 14;
-	protected static final Style DEFAULT_FONT_STYLE = Style.PLAIN;
-	protected static final PColor DEFAULT_TEXT_COLOR = PColor.BLACK;
-	protected static final PColor DEFAULT_TEXT_HIGHLIGHT_COLOR = PColor.WHITE;
-	protected static final PColor DEFAULT_TEXT_SELECTION_COLOR = PColor.BLUE;
+	public static final PInsets DEFAULT_INSETS = new ImmutablePInsets(4);
 	protected static final PColor DEFAULT_BACKGROUND_COLOR = PColor.WHITE;
-	protected static final int DEFAULT_FOCUS_RENDER_TOGGLE_TIMER_DELAY = 6;
-	private static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(100, 18);
+	protected static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(200, 24);
 	
-	protected final ObserverList<PTextModelObs> modelObsList
-		= PCompUtil.createDefaultObserverList();
-	private final PTextModelObs modelObs = new PTextModelObs() {
-		public void textChanged(PTextModel model) {
-			fireReRenderEvent();
-		}
-	};
-	private final PSelectionObs selectionObs = new PSelectionObs() {
-		public void onSelectionAdded(PSelection selection, PModelIndex index) {
-			fireReRenderEvent();
-		}
-		public void onSelectionRemoved(PSelection selection, PModelIndex index) {
-			fireReRenderEvent();
-		}
-		public void onLastSelectedChanged(PSelection selection, 
-				PModelIndex prevLastSelected, PModelIndex newLastSelected) 
-		{
-			fireReRenderEvent();
-		}
-	};
-	private PTextModel model;
-	private PTextSelection selection;
-	
-	public PTextField() {
-		super();
-		setSelection(new DefaultPTextSelection());
-		
-		PModelFactory modelFac = PModelFactory.getGlobalModelFactory();
-		PTextModel defaultModel = new DefaultPTextModel();
-		if (modelFac != null) {
-			defaultModel = (PTextModel) modelFac.getModelFor(this, defaultModel);
-		}
-		setModel(defaultModel);
-		
-		addObs(new PMouseObs() {
-			public void onButtonTriggered(PMouse mouse, MouseButton btn) {
-				PTextField.this.onMouseButtonTriggred(mouse, btn);
-			}
-		});
-		addObs(new PFocusObs() {
-			public void focusGained(PComponent oldOwner, PComponent newOwner) {
-				if (newOwner == PTextField.this && getSelection() != null) {
-					fireReRenderEvent();
-				}
-			}
-			public void focusLost(PComponent oldOwner) {
-				if (oldOwner == PTextField.this && getSelection() != null) {
-					fireReRenderEvent();
-				}
-			}
-		});
-	}
+	protected final MutablePSize prefSize = new MutablePSize(200, 22);
+	protected PTextIndexTableSingleLine idxTab = new PTextIndexTableSingleLine();
+	protected PInsets insets;
 	
 	public PTextField(PTextModel model) {
-		super();
+		this();
 		setModel(model);
 	}
 	
@@ -99,57 +31,79 @@ public class PTextField extends AbstractPComponent {
 		getModel().setValue(defaultModelValue);
 	}
 	
-	public void setModel(PTextModel model) {
-		PTextModel oldModel = getModel();
-		if (oldModel != null) {
-			oldModel.removeObs(modelObs);
-			for (PTextModelObs obs : modelObsList) {
-				oldModel.removeObs(obs);
-			}
-		}
-		this.model = model;
-		if (model != null) {
-			model.addObs(modelObs);
-			for (PTextModelObs obs : modelObsList) {
-				model.addObs(obs);
-			}
-		}
-		fireReRenderEvent();
+	public PTextField() {
+		super();
+		setInsets(DEFAULT_INSETS);
 	}
 	
-	public PTextModel getModel() {
-		return model;
+	public void setModel(PTextModel model) {
+		super.setModel(model);
+		if (idxTab != null) {
+			idxTab.setLastIndexInRow(getText().length());
+		}
 	}
 	
 	public void setSelection(PTextSelection textSelection) {
-		if (getSelection() != null) {
-			getSelection().removeObs(selectionObs);
-//			for (PSelectionObs obs : selectionObsList) {
-//				getSelection().removeObs(obs);
-//			}
-		}
-		selection = textSelection;
-		if (getSelection() != null) {
-			getSelection().addObs(selectionObs);
-//			for (PSelectionObs obs : selectionObsList) {
-//				getSelection().addObs(obs);
-//			}
-		}
+		super.setSelection(textSelection);
 	}
 	
-	public PTextSelection getSelection() {
-		return selection;
+	public void setEditable(boolean value) {
+		super.setEditable(value);
 	}
 	
-	public String getText() {
-		if (getModel() == null) {
-			return "";
+	public PTextIndexTable getIndexTable() {
+		return idxTab;
+	}
+	
+	protected void onTextChanged() {
+		idxTab.setLastIndexInRow(getText().length());
+	}
+	
+	public void setInsets(PInsets value) {
+		insets = value;
+		firePreferredSizeChangedEvent();
+		fireReRenderEvent();
+	}
+	
+	public PInsets getInsets() {
+		return insets;
+	}
+	
+	public PListIndex getTextIndexAt(int x, int y) {
+		PFontResource font = getDefaultFont();
+		// No font => no selection
+		if (font == null) {
+			return null;
 		}
-		Object text = getModel().getText();
-		if (text == null) {
-			return "";
+		String text = getText();
+		// Empty text => always select first index
+		if (text.isEmpty()) {
+			return new PListIndex(0);
 		}
-		return text.toString();
+		PBounds bounds = getBounds();
+		PInsets insets = getInsets();
+		x = (x - bounds.getX()) - insets.getFromBottom();
+		y = (y - bounds.getY()) - insets.getFromTop();
+		// Out of bounds => select first or last index
+		if (x < 0 || y < 0) {
+			return new PListIndex(0);
+		}
+		if (x > bounds.getFinalX() - insets.getFromRight() 
+				|| y > bounds.getFinalY() - insets.getFromBottom()) 
+		{
+			return new PListIndex(text.length());
+		}
+		int letterX = 0;
+		for (int i = 0; i < text.length(); i++) {
+			char c = text.charAt(i);
+			PSize size = font.getSize(Character.toString(c));
+			int letterW = size.getWidth();
+			if (x < letterX + letterW) {
+				return new PListIndex(i);
+			}
+			letterX += letterW;
+		}
+		return new PListIndex(text.length());
 	}
 	
 	public void defaultRender(PRenderer renderer) {
@@ -160,6 +114,7 @@ public class PTextField extends AbstractPComponent {
 		int fy = bnds.getFinalY();
 		
 		// Render border
+		renderer.setRenderMode(renderer.getRenderModeFill());
 		renderer.setColor(PColor.BLACK);
 		renderer.strokeTop(x + 1, y + 1, fx - 1, fy - 1);
 		renderer.strokeLeft(x + 1, y + 1, fx - 1, fy - 1);
@@ -178,97 +133,105 @@ public class PTextField extends AbstractPComponent {
 		renderer.setColor(PColor.WHITE);
 		renderer.drawQuad(x + 2, y + 2, fx - 2, fy - 2);
 		
-		// Render text
+		PFontResource font = getDefaultFont();
+		
 		String text = getText();
-		if (text == null || text.isEmpty()) {
+		if (text == null) {
 			return;
 		}
-		PFontResource font = getDefaultFont();
-		int textX = x + 2;
+		PInsets insets = getInsets();
+		int txtX = x + insets.getFromLeft();
+		int txtY = y + insets.getFromTop();
+		int txtH = bnds.getHeight() - insets.getVertical();
+		if (text.isEmpty()) {
+			if (hasFocus() && getCaretRenderTimer().isFocusRender()) {
+				int minH = font.getSize(" ").getHeight();
+				int drawY = (txtY + txtH / 2) - minH / 2;
+				renderer.setColor(getDefaultSelectionBackgroundColor());
+				renderer.drawQuad(txtX, drawY, txtX + 2, drawY + minH);
+			}
+			return;
+		}
 		
 		PTextSelection selection = getSelection();
+		PColor textColor = getDefaultTextUnselectedColor();
 		if (selection.hasSelection()) {
-			int selectionFrom = selection.getLowestSelectedIndex().getIndexValue();
-			int selectionTo = selection.getHighestSelectedIndex().getIndexValue();
+			PListIndex fromIndex = selection.getLowestSelectedIndex();
+			PListIndex toIndex = selection.getHighestSelectedIndex();
+			int selectedFrom = fromIndex.getIndexValue();
+			int selectedTo = toIndex.getIndexValue();
 			
-			String textPreSelection = text.substring(0, selectionFrom);
-			String textSelection = text.substring(selectionFrom, selectionTo);
-			String textPostSelection = text.substring(selectionTo);
+			String beforeSelected = text.substring(0, selectedFrom);
+			String afterSelected = text.substring(selectedTo);
 			
-			PSize sizePreSelection = font.getSize(textPreSelection);
-			PSize sizeSelection = font.getSize(textSelection);
-//			PSize sizePostSelection = font.getSize(textPostSelection);
-			
-			int textY = y + (fy - y) / 2 - sizeSelection.getHeight() / 2;
-			
-			renderer.setColor(getDefaultTextColor());
-			renderer.drawString(font, textPreSelection, textX, textY);
-			textX += sizePreSelection.getWidth();
-			
-			renderer.setColor(DEFAULT_TEXT_HIGHLIGHT_COLOR);
-			renderer.drawString(font, textSelection, textX, textY);
-			textX += sizeSelection.getWidth();
-			
-			renderer.setColor(getDefaultTextColor());
-			renderer.drawString(font, textPostSelection, textX, textY);
+			txtX = renderText(renderer, font, txtX, txtY, txtH, beforeSelected, textColor, null);
+			if (selectedFrom == selectedTo) {
+				if (hasFocus() && getCaretRenderTimer().isFocusRender()) {
+					renderer.setColor(getDefaultSelectionBackgroundColor());
+					char c;
+					if (selectedFrom == text.length()) {
+						c = text.charAt(selectedFrom - 1);
+					} else {
+						c = text.charAt(selectedFrom);
+					}
+					PSize charSize = font.getSize(Character.toString(c));
+					int minH = charSize.getHeight();
+					int drawY = (txtY + txtH / 2) - minH / 2;
+					renderer.drawQuad(txtX - 1, drawY, txtX + 1, drawY + minH);
+				}
+				renderText(renderer, font, txtX, txtY, txtH, afterSelected, textColor, null);
+			} else {
+				String selected = text.substring(selectedFrom, selectedTo);
+				txtX = renderText(renderer, font, txtX, txtY, txtH, selected, 
+						getDefaultTextSelectedColor(), textColor);
+				
+				renderText(renderer, font, txtX, txtY, txtH, afterSelected, textColor, null);
+			}
 		} else {
-			PSize textSize = font.getSize(text);
-			
-			int textY = y + (fy - y) / 2 - textSize.getHeight() / 2;
-			
-			renderer.setColor(getDefaultTextColor());
-			renderer.drawString(font, text, textX, textY);
+			renderText(renderer, font, txtX, txtY, txtH, text, textColor, null);
 		}
+	}
+	
+	private int renderText(PRenderer renderer, PFontResource font, 
+			int drawX, int drawY, int h, String text, 
+			PColor txtColor, PColor bgColor) 
+	{
+		renderer.setColor(txtColor);
+		PSize lineSize = font.getSize(text);
+		int txtW = lineSize.getWidth();
+		int txtH = lineSize.getHeight();
+		drawY = (drawY + h / 2) - txtH / 2;
+		if (bgColor != null) {
+			renderer.setColor(bgColor);
+			renderer.drawQuad(drawX, drawY, drawX + txtW, drawY + txtH);
+			renderer.setColor(txtColor);
+		}
+		renderer.drawString(font, text, drawX, drawY);
+		return drawX + txtW;
+	}
+	
+	public PSize getDefaultPreferredSize() {
+		PFontResource font = getDefaultFont();
+		if (font == null) {
+			return DEFAULT_PREFERRED_SIZE;
+		}
+		String text = getText();
+		if (text == null || text.isEmpty()) {
+			return DEFAULT_PREFERRED_SIZE;
+		}
+		PInsets insets = getInsets();
+		PSize textSize = font.getSize(text);
+		prefSize.setWidth(textSize.getWidth() + insets.getHorizontal());
+		prefSize.setHeight(textSize.getHeight() + insets.getVertical());
+		return prefSize;
 	}
 	
 	public boolean defaultFillsAllPixels() {
 		return true;
 	}
 	
-	public PSize getDefaultPreferredSize() {
-		return DEFAULT_PREFERRED_SIZE;
-	}
-	
-	protected PColor getDefaultTextColor() {
-		return DEFAULT_TEXT_COLOR;
-	}
-	
-	protected PFontResource getDefaultFont() {
-		PRoot root = getRoot();
-		if (root == null) {
-			return null;
-		}
-		return root.fetchFontResource(DEFAULT_FONT_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_STYLE);
-	}
-	
-	protected PListIndex getIndexAt(int x, int y) {
-		return new PListIndex(0);
-//		PFontResource font = getDefaultFont();
-//		if (font == null) {
-//			return INDEX_NO_SELECTION;
-//		}
-//		String text = getText();
-//		if (text.isEmpty()) {
-//			return 0;
-//		}
-////		if (posTable.isInvalid()) {
-////			buildTextPositionTable();
-////		}
-//		PBounds bounds = getBounds();
-//		x -= bounds.getX();
-//		y -= bounds.getY();
-//		return posTable.getIndexAt(x, y);
-	}
-	
-	protected void onMouseButtonTriggred(PMouse mouse, MouseButton btn) {
-		if (btn == MouseButton.LEFT && isMouseOver()) {
-			PListIndex index = getIndexAt(mouse.getX(), mouse.getY());
-			if (index != null) {
-				getSelection().clearSelection();
-				getSelection().addSelection(index);
-				takeFocus();
-			}
-		}
+	protected PColor getDefaultBackgroundColor() {
+		return DEFAULT_BACKGROUND_COLOR;
 	}
 	
 }

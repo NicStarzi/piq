@@ -128,10 +128,6 @@ public class DefaultPTextSelection extends AbstractPSelection implements PTextSe
 		return val >= from && val <= to;
 	}
 	
-	public static class Test$ {
-		
-	}
-	
 	protected void fireEvents(int oldFrom, int oldTo) {
 		int newFrom = from.getIndexValue();
 		int newTo = to.getIndexValue();

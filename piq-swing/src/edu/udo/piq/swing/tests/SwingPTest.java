@@ -29,6 +29,7 @@ import edu.udo.piq.components.PSliderModelObs;
 import edu.udo.piq.components.PStraightLine;
 import edu.udo.piq.components.PStraightLine.LineOrientation;
 import edu.udo.piq.components.collections.PList;
+import edu.udo.piq.components.collections.PListIndex;
 import edu.udo.piq.components.containers.PDropDownList;
 import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.components.containers.PSplitPanel;
@@ -169,9 +170,10 @@ public class SwingPTest {
 		
 		PTextArea txtAr = new PTextArea("This is \n a simple test "
 				+ "\nto see whether the PTextArea class \nworks as intended.");
-		PScrollPanel scrollTxtAr = new PScrollPanel();
 		txtAr.setID("TextArea");
 		txtAr.setEditable(true);
+		txtAr.getSelection().addSelection(new PListIndex(6));
+		PScrollPanel scrollTxtAr = new PScrollPanel();
 		scrollTxtAr.setBody(txtAr);
 		splitV.setSecondComponent(scrollTxtAr);
 		

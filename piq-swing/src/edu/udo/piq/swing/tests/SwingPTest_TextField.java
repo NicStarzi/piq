@@ -20,8 +20,8 @@ public class SwingPTest_TextField extends AbstractSwingPTest {
 		bodyPnl.setLayout(new PFreeLayout(bodyPnl));
 		root.setBody(bodyPnl);
 		
-		PTextField txtField = new PTextField();
-		bodyPnl.addChild(txtField, new FreeConstraint(24, 73));
+		PTextField txtField = new PTextField("Dies ist: EIN TEST!");
+		bodyPnl.addChild(txtField, new FreeConstraint(24, 73));//, 200, 100
 	}
 	
 }

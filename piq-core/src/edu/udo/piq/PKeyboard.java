@@ -126,6 +126,7 @@ public interface PKeyboard {
 		CTRL,
 		META,
 		;
+		public static final Modifier SHIFT = CAPS;
 	}
 	
 }

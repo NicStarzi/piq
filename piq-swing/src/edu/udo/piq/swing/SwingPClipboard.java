@@ -16,7 +16,7 @@ public class SwingPClipboard implements PClipboard {
 		return Toolkit.getDefaultToolkit().getSystemClipboard();
 	}
 	
-	public boolean store(Object object) {
+	public boolean put(Object object) {
 		try {
 			Transferable trans;
 			if (object instanceof String) {
@@ -30,6 +30,19 @@ public class SwingPClipboard implements PClipboard {
 			e.printStackTrace();
 			return false;
 		}
+	}
+	
+	public Object get() {
+		try {
+			Transferable transferable = getClipboard().getContents(null);
+			for (DataFlavor dataFlavor : transferable.getTransferDataFlavors()) {
+				Object obj = transferable.getTransferData(dataFlavor);
+				return obj;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	@SuppressWarnings("unchecked")

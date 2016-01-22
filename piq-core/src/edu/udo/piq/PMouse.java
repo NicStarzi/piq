@@ -41,6 +41,8 @@ public interface PMouse {
 	 */
 	public int getDeltaY();
 	
+	public int getClickCount();
+	
 	/**
 	 * Returns true if the given {@link MouseButton} is being pressed 
 	 * down at this update cycle.<br>

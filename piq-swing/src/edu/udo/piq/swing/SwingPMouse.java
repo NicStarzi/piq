@@ -41,6 +41,7 @@ public class SwingPMouse implements PMouse {
 	private final boolean[] btnTriggered;
 	private AwtPCursor currentCursor = DEFAULT_CURSOR_MAP.get(PCursorType.NORMAL);
 	private int x, y, dx, dy;
+	private int clickCount;
 	private boolean compAtMouseCacheValid;
 	private PComponent compAtMouseCache;
 	
@@ -57,26 +58,33 @@ public class SwingPMouse implements PMouse {
 		
 		base.addMouseListener(new MouseListener() {
 			public void mouseReleased(MouseEvent e) {
+				clickCount = e.getClickCount();
 				onRelease(getButtonID(e));
 			}
 			public void mousePressed(MouseEvent e) {
+				clickCount = e.getClickCount();
 				onPress(getButtonID(e));
 			}
 			public void mouseExited(MouseEvent e) {
+				clickCount = e.getClickCount();
 				setPosition(e.getX(), e.getY());
 			}
 			public void mouseEntered(MouseEvent e) {
+				clickCount = e.getClickCount();
 				setPosition(e.getX(), e.getY());
 			}
 			public void mouseClicked(MouseEvent e) {
+				clickCount = e.getClickCount();
 			}
 		});
 		base.addMouseMotionListener(new MouseMotionListener() {
 			public void mouseMoved(MouseEvent e) {
+				clickCount = e.getClickCount();
 				setPosition(e.getX(), e.getY());
 				invalidateCompAtMouseCache();
 			}
 			public void mouseDragged(MouseEvent e) {
+				clickCount = e.getClickCount();
 				setPosition(e.getX(), e.getY());
 				invalidateCompAtMouseCache();
 			}
@@ -174,6 +182,10 @@ public class SwingPMouse implements PMouse {
 	
 	public int getDeltaY() {
 		return dy;
+	}
+	
+	public int getClickCount() {
+		return clickCount;
 	}
 	
 	public boolean isPressed(MouseButton btn) {

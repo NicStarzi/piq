@@ -23,7 +23,7 @@ public class PLabel extends AbstractPComponent {
 	protected final ObserverList<PTextModelObs> modelObsList
 		= PCompUtil.createDefaultObserverList();
 	private final PTextModelObs modelObs = new PTextModelObs() {
-		public void textChanged(PTextModel model) {
+		public void onTextChanged(PTextModel model) {
 			firePreferredSizeChangedEvent();
 			fireReRenderEvent();
 		}

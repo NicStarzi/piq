@@ -9,6 +9,16 @@ import edu.udo.piq.PComponent;
 
 public class PGuiUtil {
 	
+	private static PExceptionHandler excHndlr;
+	
+	public static void setGlobalExceptionHandler(PExceptionHandler exceptionHandler) {
+		excHndlr = exceptionHandler;
+	}
+	
+	public static PExceptionHandler getGlobalExceptionHandler() {
+		return excHndlr;
+	}
+	
 	public static String componentToString(PComponent comp) {
 		return comp.toString();
 	}

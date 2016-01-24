@@ -37,9 +37,7 @@ public class DefaultPRadioButtonModel implements PRadioButtonModel {
 	}
 	
 	protected void fireChangeEvent() {
-		for (PRadioButtonModelObs obs : obsList) {
-			obs.onChange(this);
-		}
+		obsList.sendNotify((obs) -> obs.onChange(this));
 	}
 	
 }

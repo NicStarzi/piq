@@ -55,9 +55,7 @@ public class DefaultPProgressBarModel implements PProgressBarModel {
 	}
 	
 	protected void fireValueChangedEvent() {
-		for (PProgressBarModelObs obs : obsList) {
-			obs.valueChanged(this);
-		}
+		obsList.sendNotify((obs) -> obs.onValueChanged(this));
 	}
 	
 }

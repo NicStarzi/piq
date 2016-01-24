@@ -201,7 +201,7 @@ public class PCompUtil {
 		if (current == null) {
 			return null;
 		}
-		// Will always stop because in each step we go down 1 level in the GUI
+		// Will always stop because in each step we go down 1 level in the GUI tree
 		while (true) {
 			PComponent child = current.getChildAt(x, y);
 			if (child == null) {

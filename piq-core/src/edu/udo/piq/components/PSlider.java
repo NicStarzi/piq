@@ -110,10 +110,10 @@ public class PSlider extends AbstractPInputComponent {
 	protected final ObserverList<PSliderModelObs> modelObsList
 		= PCompUtil.createDefaultObserverList();
 	protected final PSliderModelObs modelObs = new PSliderModelObs() {
-		public void rangeChanged(PSliderModel model) {
+		public void onRangeChanged(PSliderModel model) {
 			fireReRenderEvent();
 		}
-		public void valueChanged(PSliderModel model) {
+		public void onValueChanged(PSliderModel model) {
 			fireReRenderEvent();
 		}
 	};

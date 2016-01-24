@@ -49,9 +49,7 @@ public class DefaultPCheckBoxModel implements PCheckBoxModel {
 	}
 	
 	protected void fireChangeEvent() {
-		for (PCheckBoxModelObs obs : obsList) {
-			obs.onChange(this);
-		}
+		obsList.sendNotify((obs) -> obs.onChange(this));
 	}
 	
 }

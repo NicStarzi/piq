@@ -16,7 +16,7 @@ public class PBarChart extends AbstractPComponent {
 	};
 	
 	private final PBarChartModelObs modelObs = new PBarChartModelObs() {
-		public void barValueChanged(int index) {
+		public void onBarValueChanged(PBarChartModel model, int index) {
 			firePreferredSizeChangedEvent();
 			fireReRenderEvent();
 		}

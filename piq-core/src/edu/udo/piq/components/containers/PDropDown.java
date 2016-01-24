@@ -244,15 +244,11 @@ public class PDropDown extends AbstractPLayoutOwner {
 	}
 	
 	protected void fireShowEvent() {
-		for (PDropDownObs obs : obsList) {
-			obs.onBodyShown(this);
-		}
+		obsList.sendNotify((obs) -> obs.onBodyShown(this));
 	}
 	
 	protected void fireHideEvent() {
-		for (PDropDownObs obs : obsList) {
-			obs.onBodyHidden(this);
-		}
+		obsList.sendNotify((obs) -> obs.onBodyHidden(this));
 	}
 	
 	protected static class PDropDownContainer extends AbstractPLayoutOwner {

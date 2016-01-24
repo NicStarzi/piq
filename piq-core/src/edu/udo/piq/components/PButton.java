@@ -251,13 +251,7 @@ public class PButton extends AbstractPInputLayoutOwner implements PGlobalEventGe
 	}
 	
 	protected void fireClickEvent() {
-		for (PButtonObs obs : obsList) {
-			try {
-				obs.onClick(this);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
+		obsList.sendNotify((obs) -> obs.onClick(this));
 		fireGlobalEvent();
 	}
 	

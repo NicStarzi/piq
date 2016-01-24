@@ -19,9 +19,7 @@ public abstract class AbstractPPictureModel implements PPictureModel {
 	}
 	
 	protected void fireImagePathChanged() {
-		for (PPictureModelObs obs : obsList) {
-			obs.imagePathChanged(this);
-		}
+		obsList.sendNotify((obs) -> obs.onImagePathChanged(this));
 	}
 	
 }

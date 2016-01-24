@@ -136,9 +136,7 @@ public class PRadioButton extends AbstractPComponent {
 	}
 	
 	protected void fireClickEvent() {
-		for (PRadioButtonObs obs : obsList) {
-			obs.onClick(this);
-		}
+		obsList.sendNotify((obs) -> obs.onClick(this));
 	}
 	
 }

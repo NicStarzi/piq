@@ -196,27 +196,19 @@ public abstract class AbstractPLayout implements PLayout {
 	}
 	
 	protected void fireAddEvent(PComponent child, Object constraint) {
-		for (PLayoutObs obs : obsList) {
-			obs.childAdded(this, child, constraint);
-		}
+		obsList.sendNotify((obs) -> obs.childAdded(this, child, constraint));
 	}
 	
 	protected void fireRemoveEvent(PComponent child, Object constraint) {
-		for (PLayoutObs obs : obsList) {
-			obs.childRemoved(this, child, constraint);
-		}
+		obsList.sendNotify((obs) -> obs.childRemoved(this, child, constraint));
 	}
 	
 	protected void fireLaidOutEvent(PComponent child, Object constraint) {
-		for (PLayoutObs obs : obsList) {
-			obs.childLaidOut(this, child, constraint);
-		}
+		obsList.sendNotify((obs) -> obs.childLaidOut(this, child, constraint));
 	}
 	
 	protected void fireInvalidateEvent() {
-		for (PLayoutObs obs : obsList) {
-			obs.layoutInvalidated(this);
-		}
+		obsList.sendNotify((obs) -> obs.layoutInvalidated(this));
 	}
 	
 	public String toString() {

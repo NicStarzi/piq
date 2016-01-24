@@ -305,10 +305,10 @@ public class SwingPTest {
 			}
 		});
 		sld.getModel().addObs(new PSliderModelObs() {
-			public void valueChanged(PSliderModel model) {
+			public void onValueChanged(PSliderModel model) {
 				lblSld.getModel().setValue(null);
 			}
-			public void rangeChanged(PSliderModel model) {
+			public void onRangeChanged(PSliderModel model) {
 				lblSld.getModel().setValue(null);
 			}
 		});
@@ -343,7 +343,7 @@ public class SwingPTest {
 			}
 		});
 		prgBar.getModel().addObs(new PProgressBarModelObs() {
-			public void valueChanged(PProgressBarModel model) {
+			public void onValueChanged(PProgressBarModel model) {
 				if (model.getValue() == model.getMaxValue()) {
 //					PDialog dlg = prgBar.getRoot().createDialog();
 //					new MyLittleDialog(dlg);

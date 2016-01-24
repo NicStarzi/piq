@@ -41,23 +41,18 @@ public abstract class AbstractPSelection implements PSelection {
 	}
 	
 	protected void fireSelectionAdded(PModelIndex index) {
-		for (PSelectionObs obs : obsList) {
-			obs.onSelectionAdded(this, index);
-		}
+		obsList.sendNotify((obs) -> obs.onSelectionAdded(this, index));
 	}
 	
 	protected void fireSelectionRemoved(PModelIndex index) {
-		for (PSelectionObs obs : obsList) {
-			obs.onSelectionRemoved(this, index);
-		}
+		obsList.sendNotify((obs) -> obs.onSelectionRemoved(this, index));
 	}
 	
 	protected void fireLastSelectionChanged(PModelIndex prevLastIndex, 
 			PModelIndex newLastIndex) 
 	{
-		for (PSelectionObs obs : obsList) {
-			obs.onLastSelectedChanged(this, prevLastIndex, newLastIndex);
-		}
+		obsList.sendNotify((obs) -> obs.onLastSelectedChanged(this, 
+				prevLastIndex, newLastIndex));
 	}
 	
 	public static class SingletonList<K> extends AbstractList<K> {

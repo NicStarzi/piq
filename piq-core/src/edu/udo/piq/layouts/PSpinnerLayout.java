@@ -12,7 +12,7 @@ public class PSpinnerLayout extends AbstractEnumPLayout<Constraint> {
 	
 	protected final MutablePSize prefSize = new MutablePSize();
 	
-	protected PSpinnerLayout(PComponent component) {
+	public PSpinnerLayout(PComponent component) {
 		super(component, Constraint.class);
 	}
 	

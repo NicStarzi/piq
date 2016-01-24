@@ -172,7 +172,15 @@ public class ArrayObsList<E> implements ObserverList<E> {
 		msgCount++;
 		for (int i = 0; i < arr.length; i++) {
 			if (arr[i] != null && modTimeStamp[i] <= modCountNow) {
-				msg.notifyObs((E) arr[i]);
+				try {
+					msg.notifyObs((E) arr[i]);
+				} catch (Exception e) {
+					if (PGuiUtil.getGlobalExceptionHandler() != null) {
+						PGuiUtil.getGlobalExceptionHandler().onException(e);
+					} else {
+						e.printStackTrace();
+					}
+				}
 			}
 		}
 		msgCount--;

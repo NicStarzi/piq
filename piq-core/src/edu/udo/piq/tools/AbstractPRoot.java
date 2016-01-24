@@ -325,21 +325,17 @@ public abstract class AbstractPRoot implements PRoot {
 	protected void fireSizeChanged() {
 		reRender(this);
 		reLayOut(this);
-		for (PComponentObs obs : compObsList) {
-			obs.onPreferredSizeChanged(this);
-		}
+		compObsList.sendNotify((obs) -> obs.onPreferredSizeChanged(this));
 	}
 	
 	protected void fireFocusGainedEvent(PComponent oldFocusOwner) {
-		for (PFocusObs obs : focusObsList) {
-			obs.onFocusGained(oldFocusOwner, getFocusOwner());
-		}
+		focusObsList.sendNotify((obs) -> obs.onFocusGained(
+				oldFocusOwner, getFocusOwner()));
 	}
 	
 	protected void fireFocusLostEvent(PComponent oldFocusOwner) {
-		for (PFocusObs obs : focusObsList) {
-			obs.onFocusLost(oldFocusOwner);
-		}
+		focusObsList.sendNotify((obs) -> obs.onFocusLost(
+				oldFocusOwner));
 	}
 	
 	/*
@@ -396,13 +392,7 @@ public abstract class AbstractPRoot implements PRoot {
 	public void fireGlobalEvent(PComponent source, Object eventData)
 			throws NullPointerException 
 	{
-		for (PGlobalEventObs obs : globalObsList) {
-			try {
-				obs.onGlobalEvent(source, eventData);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
+		globalObsList.sendNotify((obs) -> obs.onGlobalEvent(source, eventData));
 	}
 	
 	public void addObs(PGlobalEventObs obs) throws NullPointerException {

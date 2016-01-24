@@ -31,9 +31,7 @@ public class DefaultPButtonModel implements PButtonModel {
 	}
 	
 	protected void fireChangeEvent() {
-		for (PButtonModelObs obs : obsList) {
-			obs.onChange(this);
-		}
+		obsList.sendNotify((obs) -> obs.onChange(this));
 	}
 	
 }

@@ -54,7 +54,15 @@ public class CoWALObserverList<E> implements ObserverList<E> {
 	public void sendNotify(Message<E> msg) {
 		for (int i = 0; i < internalList.size(); i++) {
 			E obs = internalList.get(i);
-			msg.notifyObs(obs);
+			try {
+				msg.notifyObs(obs);
+			} catch (Exception e) {
+				if (PGuiUtil.getGlobalExceptionHandler() != null) {
+					PGuiUtil.getGlobalExceptionHandler().onException(e);
+				} else {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 	

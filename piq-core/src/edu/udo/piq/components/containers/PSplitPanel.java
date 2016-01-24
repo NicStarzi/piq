@@ -56,7 +56,7 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 		}
 	};
 	private final PSplitPanelModelObs modelObs = new PSplitPanelModelObs() {
-		public void positionChanged(PSplitPanelModel model) {
+		public void onPositionChanged(PSplitPanelModel model) {
 			getLayoutInternal().setSplitPosition(model.getSplitPosition());
 			fireReRenderEvent();
 		}
@@ -163,21 +163,15 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 	}
 	
 	protected void fireDividerTouchedEvent() {
-		for (PSplitPanelObs obs : obsList) {
-			obs.dividerTouched(this);
-		}
+		obsList.sendNotify((obs) -> obs.onDividerTouched(this));
 	}
 	
 	protected void fireDividerReleasedEvent() {
-		for (PSplitPanelObs obs : obsList) {
-			obs.dividerReleased(this);
-		}
+		obsList.sendNotify((obs) -> obs.onDividerReleased(this));
 	}
 	
 	protected void fireDividerMovedEvent() {
-		for (PSplitPanelObs obs : obsList) {
-			obs.dividerMoved(this);
-		}
+		obsList.sendNotify((obs) -> obs.onDividerMoved(this));
 	}
 	
 }

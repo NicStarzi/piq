@@ -134,9 +134,7 @@ public class PCheckBox extends AbstractPComponent {
 	}
 	
 	protected void fireClickEvent() {
-		for (PCheckBoxObs obs : obsList) {
-			obs.onClick(this);
-		}
+		obsList.sendNotify((obs) -> obs.onClick(this));
 	}
 	
 }

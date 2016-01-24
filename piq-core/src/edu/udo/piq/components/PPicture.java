@@ -16,7 +16,7 @@ public class PPicture extends AbstractPComponent {
 	protected final ObserverList<PPictureModelObs> modelObsList
 		= PCompUtil.createDefaultObserverList();
 	private final PPictureModelObs modelObs = new PPictureModelObs() {
-		public void imagePathChanged(PPictureModel model) {
+		public void onImagePathChanged(PPictureModel model) {
 			firePreferredSizeChangedEvent();
 			fireReRenderEvent();
 		}

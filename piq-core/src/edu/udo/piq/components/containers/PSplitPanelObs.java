@@ -2,10 +2,10 @@ package edu.udo.piq.components.containers;
 
 public interface PSplitPanelObs {
 	
-	public void dividerTouched(PSplitPanel splitPanel);
+	public void onDividerTouched(PSplitPanel splitPanel);
 	
-	public void dividerReleased(PSplitPanel splitPanel);
+	public void onDividerReleased(PSplitPanel splitPanel);
 	
-	public void dividerMoved(PSplitPanel splitPanel);
+	public void onDividerMoved(PSplitPanel splitPanel);
 	
 }

@@ -120,15 +120,11 @@ public class DefaultPSliderModel implements PSliderModel {
 	}
 	
 	protected void fireValueChangedEvent() {
-		for (PSliderModelObs obs : obsList) {
-			obs.valueChanged(this);
-		}
+		obsList.sendNotify((obs) -> obs.onValueChanged(this));
 	}
 	
 	protected void fireBoundsChangedEvent() {
-		for (PSliderModelObs obs : obsList) {
-			obs.rangeChanged(this);
-		}
+		obsList.sendNotify((obs) -> obs.onRangeChanged(this));
 	}
 	
 }

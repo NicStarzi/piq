@@ -21,21 +21,21 @@ public class PLineChart extends AbstractPComponent {
 	};
 	
 	private final PLineChartModelObs modelObs = new PLineChartModelObs() {
-		public void dataPointAdded(PLineChartModel model, int index) {
+		public void onDataPointAdded(PLineChartModel model, int index) {
 			if (maxDataIndex < 0 || model.getDataPoint(maxDataIndex) < model.getDataPoint(index)) {
 				maxDataIndex = index;
 			}
 			firePreferredSizeChangedEvent();
 			fireReRenderEvent();
 		}
-		public void dataPointRemoved(PLineChartModel model, int index) {
+		public void onDataPointRemoved(PLineChartModel model, int index) {
 			if (maxDataIndex == index) {
 				maxDataIndex = getHighestDataIndex();
 			}
 			firePreferredSizeChangedEvent();
 			fireReRenderEvent();
 		}
-		public void dataPointChanged(PLineChartModel model, int index) {
+		public void onDataPointChanged(PLineChartModel model, int index) {
 			if (maxDataIndex == index) {
 				maxDataIndex = getHighestDataIndex();
 			} else if (maxDataIndex < 0 || model.getDataPoint(maxDataIndex) < model.getDataPoint(index)) {

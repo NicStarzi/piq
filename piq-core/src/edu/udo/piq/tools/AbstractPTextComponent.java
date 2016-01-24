@@ -1,4 +1,4 @@
-package edu.udo.piq.components.textbased;
+package edu.udo.piq.tools;
 
 import edu.udo.piq.PColor;
 import edu.udo.piq.PFontResource;
@@ -8,7 +8,13 @@ import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.components.collections.PSelectionObs;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.components.defaults.DefaultPTextSelection;
-import edu.udo.piq.tools.AbstractPComponent;
+import edu.udo.piq.components.textbased.PCaretRenderTimer;
+import edu.udo.piq.components.textbased.PTextComponent;
+import edu.udo.piq.components.textbased.PTextInput;
+import edu.udo.piq.components.textbased.PTextModel;
+import edu.udo.piq.components.textbased.PTextModelObs;
+import edu.udo.piq.components.textbased.PTextSelection;
+import edu.udo.piq.components.textbased.PTextSelector;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
 

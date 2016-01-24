@@ -7,6 +7,7 @@ import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.collections.PListIndex;
+import edu.udo.piq.tools.AbstractPTextComponent;
 import edu.udo.piq.tools.ImmutablePSize;
 
 public class PTextArea extends AbstractPTextComponent {

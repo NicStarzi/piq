@@ -10,6 +10,7 @@ import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.collections.PListIndex;
+import edu.udo.piq.tools.AbstractPTextComponent;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.tools.MutablePSize;

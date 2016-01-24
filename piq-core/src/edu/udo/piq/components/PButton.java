@@ -13,6 +13,7 @@ import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
+import edu.udo.piq.PTimer;
 import edu.udo.piq.components.defaults.DefaultPButtonModel;
 import edu.udo.piq.components.util.PInput;
 import edu.udo.piq.layouts.PCentricLayout;
@@ -65,11 +66,18 @@ public class PButton extends AbstractPInputLayoutOwner implements PGlobalEventGe
 		= PCompUtil.createDefaultObserverList();
 	protected final PButtonModelObs modelObs = new PButtonModelObs() {
 		public void onChange(PButtonModel model) {
+			if (repeatTimer != null) {
+				repeatTimer.setDelay(repeatTimerInitialDelay);
+				repeatTimer.setStarted(getModel().isPressed());
+			}
 			fireReRenderEvent();
 		}
 	};
+	protected PTimer repeatTimer;
 	protected PButtonModel model;
 	private PGlobalEventProvider globalEventProv;
+	private int repeatTimerInitialDelay;
+	private int repeatTimerDelay;
 	
 	public PButton() {
 		super();
@@ -86,7 +94,9 @@ public class PButton extends AbstractPInputLayoutOwner implements PGlobalEventGe
 		setModel(defaultModel);
 		addObs(new PMouseObs() {
 			public void onButtonTriggered(PMouse mouse, MouseButton btn) {
-				if (isEnabled() && btn == MouseButton.LEFT && getModel() != null && isMouseOverThisOrChild()) {
+				if (isEnabled() && btn == MouseButton.LEFT 
+						&& getModel() != null && isMouseOverThisOrChild()) 
+				{
 					getModel().setPressed(true);
 				}
 			}
@@ -125,6 +135,27 @@ public class PButton extends AbstractPInputLayoutOwner implements PGlobalEventGe
 	
 	public PComponent getContent() {
 		return getLayoutInternal().getContent();
+	}
+	
+	public void setRepeatTimer(int initialDelay, int delayBetweenEvents) {
+		repeatTimerInitialDelay = initialDelay;
+		repeatTimerDelay = delayBetweenEvents;
+		if (repeatTimer == null) {
+			repeatTimer = new PTimer(this, () -> {
+				repeatTimer.setDelay(repeatTimerDelay);
+				if (isEnabled()) {
+					fireClickEvent();
+				} else {
+					repeatTimer.stop();
+				}
+			});
+			repeatTimer.setRepeating(true);
+		}
+		if (repeatTimer.isStarted()) {
+			repeatTimer.setDelay(repeatTimerDelay);
+		} else {
+			repeatTimer.setDelay(repeatTimerInitialDelay);
+		}
 	}
 	
 	public void setModel(PButtonModel model) {

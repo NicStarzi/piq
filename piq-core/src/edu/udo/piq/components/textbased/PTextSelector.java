@@ -59,13 +59,17 @@ public class PTextSelector {
 				int to = from;
 				
 				String text = owner.getModel().getText();
-				char charAtIndex = text.charAt(from);
-				boolean isWS = Character.isWhitespace(charAtIndex);
-				while (from > 0 && Character.isWhitespace(text.charAt(from - 1)) == isWS) {
-					from--;
-				}
-				while (to < text.length() && Character.isWhitespace(text.charAt(to)) == isWS) {
-					to++;
+				if (from < text.length()) {
+					char charAtIndex = text.charAt(from);
+					boolean isWS = Character.isWhitespace(charAtIndex);
+					while (from > 0 && Character.isWhitespace(text.charAt(from - 1)) == isWS) {
+						from--;
+					}
+					while (to < text.length() && Character.isWhitespace(text.charAt(to)) == isWS) {
+						to++;
+					}
+				} else {
+					from = 0;
 				}
 				owner.getSelection().clearSelection();
 				owner.getSelection().addSelection(new PListIndex(from));

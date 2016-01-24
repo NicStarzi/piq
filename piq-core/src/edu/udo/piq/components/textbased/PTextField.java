@@ -2,14 +2,19 @@ package edu.udo.piq.components.textbased;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
+import edu.udo.piq.PComponent;
+import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PFontResource;
 import edu.udo.piq.PInsets;
+import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.collections.PListIndex;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.tools.MutablePSize;
+import edu.udo.piq.util.ObserverList;
+import edu.udo.piq.util.PCompUtil;
 
 public class PTextField extends AbstractPTextComponent {
 	
@@ -17,9 +22,12 @@ public class PTextField extends AbstractPTextComponent {
 	protected static final PColor DEFAULT_BACKGROUND_COLOR = PColor.WHITE;
 	protected static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(200, 24);
 	
+	protected final ObserverList<PTextFieldObs> obsList = 
+			PCompUtil.createDefaultObserverList();
 	protected final MutablePSize prefSize = new MutablePSize(200, 22);
 	protected PTextIndexTableSingleLine idxTab = new PTextIndexTableSingleLine();
 	protected PInsets insets;
+	private boolean contentsWereChanged = false;
 	
 	public PTextField(PTextModel model) {
 		this();
@@ -34,6 +42,17 @@ public class PTextField extends AbstractPTextComponent {
 	public PTextField() {
 		super();
 		setInsets(DEFAULT_INSETS);
+		
+		setTextInput(new PTextInput(this) {
+			protected void keyNewLine(PKeyboard kb) {
+				fireConfirmEvent();
+			}
+		});
+		addObs(new PFocusObs() {
+			public void onFocusLost(PComponent oldOwner) {
+				fireConfirmEvent();
+			}
+		});
 	}
 	
 	public void setModel(PTextModel model) {
@@ -56,6 +75,7 @@ public class PTextField extends AbstractPTextComponent {
 	}
 	
 	protected void onTextChanged() {
+		contentsWereChanged = true;
 		idxTab.setLastIndexInRow(getText().length());
 	}
 	
@@ -183,7 +203,7 @@ public class PTextField extends AbstractPTextComponent {
 			} else {
 				String selected = text.substring(selectedFrom, selectedTo);
 				txtX = renderText(renderer, font, txtX, txtY, txtH, selected, 
-						getDefaultTextSelectedColor(), textColor);
+						getDefaultTextSelectedColor(), getDefaultSelectionBackgroundColor());
 				
 				renderText(renderer, font, txtX, txtY, txtH, afterSelected, textColor, null);
 			}
@@ -234,4 +254,18 @@ public class PTextField extends AbstractPTextComponent {
 		return DEFAULT_BACKGROUND_COLOR;
 	}
 	
+	public void addObs(PTextFieldObs obs) {
+		obsList.add(obs);
+	}
+	
+	public void removeObs(PTextFieldObs obs) {
+		obsList.remove(obs);
+	}
+	
+	protected void fireConfirmEvent() {
+		if (contentsWereChanged) {
+			obsList.sendNotify((obs) -> obs.onConfirm(this));
+			contentsWereChanged = false;
+		}
+	}
 }

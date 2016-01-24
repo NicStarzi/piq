@@ -63,6 +63,10 @@ public class PTextInput {
 		if (!owner.isEditable()) {
 			return;
 		}
+		if (typedString.equals("\n")) {
+			keyNewLine(keyboard);
+			return;
+		}
 		PTextSelection selection = getSelection();
 		int from = selection.getLowestSelectedIndex().getIndexValue();
 		int to = selection.getHighestSelectedIndex().getIndexValue();
@@ -85,6 +89,19 @@ public class PTextInput {
 		if (response != null) {
 			response.reactTo(keyboard, this);
 		}
+	}
+	
+	protected void keyNewLine(PKeyboard kb) {
+		PTextSelection selection = getSelection();
+		int from = selection.getLowestSelectedIndex().getIndexValue();
+		int to = selection.getHighestSelectedIndex().getIndexValue();
+		
+		PTextModel model = getModel();
+		String oldText = model.getText();
+		String newText = oldText.substring(0, from) + "\n" + oldText.substring(to);
+		model.setValue(newText);
+		selection.clearSelection();
+		selection.addSelection(new PListIndex(from + 1));
 	}
 	
 	protected void keyBackspace(PKeyboard kb) {

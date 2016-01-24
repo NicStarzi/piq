@@ -71,4 +71,22 @@ public interface PLayout extends PReadOnlyLayout {
 	 */
 	public void clearChildren();
 	
+	public default int max(int a, int b) {
+		return Math.max(a, b);
+	}
+	
+	public default int min(int a, int b) {
+		return Math.min(a, b);
+	}
+	
+	public default int limit(int value, int min, int max) {
+		if (value <= min) {
+			return min;
+		}
+		if (value >= max) {
+			return max;
+		}
+		return value;
+	}
+	
 }

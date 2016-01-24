@@ -1,14 +1,13 @@
 package edu.udo.piq.layouts;
 
+import edu.udo.piq.layouts.PBorderLayout.Constraint;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractEnumPLayout;
 import edu.udo.piq.tools.MutablePSize;
 
-public class PBorderLayout extends 
-	AbstractEnumPLayout<edu.udo.piq.layouts.PBorderLayout.Constraint> 
-{
+public class PBorderLayout extends AbstractEnumPLayout<Constraint> {
 	
 	/**
 	 * To save memory the preferred size of the layout 

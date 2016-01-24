@@ -196,6 +196,14 @@ public class PTimer {
 		return delayInMillis;
 	}
 	
+	public void setStarted(boolean isStarted) {
+		if (isStarted) {
+			start();
+		} else {
+			stop();
+		}
+	}
+	
 	/**
 	 * Sets the started flag of this timer to true.<br>
 	 * A started timer will count down the {@link #getDelay() delay} 

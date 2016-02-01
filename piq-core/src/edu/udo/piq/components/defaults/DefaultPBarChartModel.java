@@ -37,7 +37,7 @@ public class DefaultPBarChartModel implements PBarChartModel {
 	}
 	
 	protected void fireChangeEvent(int index) {
-		obsList.sendNotify((obs) -> obs.onBarValueChanged(this, index));
+		obsList.fireEvent((obs) -> obs.onBarValueChanged(this, index));
 	}
 	
 }

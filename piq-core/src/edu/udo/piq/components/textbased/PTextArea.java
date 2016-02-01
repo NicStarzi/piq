@@ -129,6 +129,7 @@ public class PTextArea extends AbstractPTextComponent {
 	}
 	
 	public void defaultRender(PRenderer renderer) {
+//		System.out.println("PTextArea.defaultRender()");
 		PFontResource font = getDefaultFont();
 		PBounds bounds = getBounds();
 		int x = bounds.getX();

@@ -30,7 +30,7 @@ public class PProgressBar extends AbstractPComponent {
 		= PCompUtil.createDefaultObserverList();
 	private final PProgressBarModelObs modelObs = new PProgressBarModelObs() {
 		public void onValueChanged(PProgressBarModel model) {
-			fireReRenderEvent();
+			PProgressBar.this.onModelValueChanged();
 		}
 	};
 	private PProgressBarModel model;
@@ -173,6 +173,10 @@ public class PProgressBar extends AbstractPComponent {
 		if (getModel() != null) {
 			getModel().removeObs(obs);
 		}
+	}
+	
+	protected void onModelValueChanged() {
+		fireReRenderEvent();
 	}
 	
 }

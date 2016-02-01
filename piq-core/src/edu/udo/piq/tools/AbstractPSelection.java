@@ -41,17 +41,17 @@ public abstract class AbstractPSelection implements PSelection {
 	}
 	
 	protected void fireSelectionAdded(PModelIndex index) {
-		obsList.sendNotify((obs) -> obs.onSelectionAdded(this, index));
+		obsList.fireEvent((obs) -> obs.onSelectionAdded(this, index));
 	}
 	
 	protected void fireSelectionRemoved(PModelIndex index) {
-		obsList.sendNotify((obs) -> obs.onSelectionRemoved(this, index));
+		obsList.fireEvent((obs) -> obs.onSelectionRemoved(this, index));
 	}
 	
 	protected void fireLastSelectionChanged(PModelIndex prevLastIndex, 
 			PModelIndex newLastIndex) 
 	{
-		obsList.sendNotify((obs) -> obs.onLastSelectedChanged(this, 
+		obsList.fireEvent((obs) -> obs.onLastSelectedChanged(this, 
 				prevLastIndex, newLastIndex));
 	}
 	

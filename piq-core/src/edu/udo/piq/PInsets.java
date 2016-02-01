@@ -10,6 +10,34 @@ package edu.udo.piq;
  */
 public interface PInsets {
 	
+	public static final PInsets ZERO_INSETS = new PInsets() {
+		public int getFromTop() {
+			return 0;
+		}
+		public int getFromBottom() {
+			return 0;
+		}
+		public int getFromLeft() {
+			return 0;
+		}
+		public int getFromRight() {
+			return 0;
+		}
+		public boolean equals(Object obj) {
+			if (obj == null || !(obj instanceof PInsets)) {
+				return false;
+			}
+			PInsets other = (PInsets) obj;
+			return getFromTop() == other.getFromTop() 
+					&& getFromBottom() == other.getFromBottom() 
+					&& getFromLeft() == other.getFromLeft() 
+					&& getFromRight() == other.getFromRight();
+		}
+		public String toString() {
+			return "ZERO_SIZE_INSETS";
+		}
+	};
+	
 	/**
 	 * Returns the distance from the top.<br>
 	 * The distance should never be a negative value.<br>

@@ -21,7 +21,7 @@ public class PBoxLayout extends AbstractMapPLayout {
 		super(owner);
 		
 		addObs(new PLayoutObs() {
-			public void childAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
+			public void onChildAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
 				Box box = (Box) constraint;
 				if (box.isBox()) {
 					throw new IllegalArgumentException("constraint.isBox()=true");

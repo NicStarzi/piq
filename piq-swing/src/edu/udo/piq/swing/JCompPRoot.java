@@ -27,11 +27,13 @@ import javax.swing.SwingUtilities;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
+import edu.udo.piq.PCursor;
 import edu.udo.piq.PDesign;
 import edu.udo.piq.PDesignSheet;
 import edu.udo.piq.PDialog;
 import edu.udo.piq.PDnDManager;
 import edu.udo.piq.PFontResource;
+import edu.udo.piq.PRootOverlay;
 import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.PImageMeta;
 import edu.udo.piq.PImageResource;
@@ -113,8 +115,12 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 		super.setDesignSheet(designSheet);
 	}
 	
-	public JPanel getPanel() {
+	public JPanel getJPanel() {
 		return panel;
+	}
+	
+	public void mouseOverCursorChanged(PComponent component) {
+		mouse.mouseOverCursorChanged(component);
 	}
 	
 	public void update() {
@@ -205,6 +211,11 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 		return res;
 	}
 	
+	public PCursor createCustomCursor(PImageResource image, int offsetX,
+			int offsetY) throws IllegalArgumentException {
+		return null;
+	}
+	
 	public PBounds getBounds() {
 		return bounds;
 	}
@@ -234,10 +245,9 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 		/*
 		 * If the root is to be rendered we will re-render everything.
 		 */
+		PRootOverlay overlay = getOverlay();
 		if (reRenderSet.containsRoot()) {
-			for (PComponent child : getLayout().getChildren()) {
-				stack.addFirst(new StackInfo(child, true, 0, 0, rootFx, rootFy));
-			}
+			stack.addLast(new StackInfo(getBody(), true, 0, 0, rootFx, rootFy));
 		} else {
 			// these are filled by PCompUtil.fillClippedBounds(...)
 			// This is used to cut down on the number of objects created
@@ -262,12 +272,15 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 					stack.addFirst(new StackInfo(child, true, clipX, clipY, clipFx, clipFy));
 				}
 			}
-			// The overlay must be rendered last whenever the rest of the GUI is rendered
-			if (getLayout().getOverlay() != null) {
-				PComponent overlay = (PComponent) getLayout().getOverlay();
-				stack.addLast(new StackInfo(overlay, true, 0, 0, rootFx, rootFy));
+		}
+//		System.out.println("STACK1="+stack);
+		// The overlay must be rendered last whenever the rest of the GUI is rendered
+		if (overlay != null) {
+			for (PComponent overlayComp : overlay.getChildren()) {
+				stack.addFirst(new StackInfo(overlayComp, true, 0, 0, rootFx, rootFy));
 			}
 		}
+//		System.out.println("STACK2="+stack);
 		while (!stack.isEmpty()) {
 			StackInfo info = stack.pollLast();
 //			StackInfo info = stack.pop();
@@ -336,10 +349,10 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 			this.clipFx = clipFx;
 			this.clipFy = clipFy;
 		}
-	}
-
-	public boolean isElusive() {
-		return false;
+		
+		public String toString() {
+			return child.toString();
+		}
 	}
 	
 }

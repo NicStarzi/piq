@@ -29,7 +29,7 @@ public class PSplitLayout extends AbstractMapPLayout {
 	public PSplitLayout(PComponent component) {
 		super(component);
 		addObs(new PLayoutObs() {
-			public void childAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
+			public void onChildAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
 				if (constraint == Constraint.FIRST) {
 					first = child;
 				} else if (constraint == Constraint.SECOND) {
@@ -38,7 +38,7 @@ public class PSplitLayout extends AbstractMapPLayout {
 					divider = child;
 				}
 			}
-			public void childRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
+			public void onChildRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
 				if (child == first) {
 					first = null;
 				} else if (child == second) {

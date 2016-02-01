@@ -4,7 +4,23 @@ import edu.udo.piq.components.util.PModelHistory;
 
 public interface PCheckBoxModel {
 	
-	public void setChecked(boolean value);
+	public default void setValue(Object obj) {
+		if (Boolean.TRUE.equals(obj)) {
+			if (!isChecked()) {
+				toggleChecked();
+			}
+		} else if (Boolean.FALSE.equals(obj)) {
+			if (isChecked()) {
+				toggleChecked();
+			}
+		}
+	}
+	
+	public default Object getValue() {
+		return Boolean.valueOf(isChecked());
+	}
+	
+	public void toggleChecked();
 	
 	public boolean isChecked();
 	
@@ -15,7 +31,9 @@ public interface PCheckBoxModel {
 	 * 
 	 * @return an instance of {@link PModelHistory} or null
 	 */
-	public PModelHistory getHistory();
+	public default PModelHistory getHistory() {
+		return null;
+	}
 	
 	public void addObs(PCheckBoxModelObs obs);
 	

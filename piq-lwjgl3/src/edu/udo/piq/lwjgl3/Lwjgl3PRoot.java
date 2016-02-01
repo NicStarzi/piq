@@ -33,6 +33,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWWindowPosCallback;
 import org.lwjgl.glfw.GLFWWindowSizeCallback;
@@ -56,7 +57,7 @@ import edu.udo.piq.util.PGuiTreeIterator;
 
 public class Lwjgl3PRoot extends AbstractPRoot implements PRoot {
 	
-	private final GLFWErrorCallback errorCB = GLFWErrorCallback.createPrint(System.err);
+	private final GLFWErrorCallback errorCB;
 	private final GLFWWindowSizeCallback sizeCB = new GLFWWindowSizeCallback() {
 		public void invoke(long window, int width, int height) {
 			updateSize(width, height);
@@ -87,6 +88,7 @@ public class Lwjgl3PRoot extends AbstractPRoot implements PRoot {
 	private boolean needReRender = true;
 	
 	public Lwjgl3PRoot(int x, int y, int w, int h) {
+		errorCB = Callbacks.errorCallbackPrint();
 		glfwSetErrorCallback(errorCB);
 		if (glfwInit() != GL11.GL_TRUE) {
 			throw new IllegalStateException("glfwInit == false");
@@ -105,7 +107,7 @@ public class Lwjgl3PRoot extends AbstractPRoot implements PRoot {
 		glfwMakeContextCurrent(wndHnd);
 		glfwSwapInterval(1);
 		glfwShowWindow(wndHnd);
-		GL.createCapabilities();
+		GL.createCapabilities(false);
 		
 		setClearColor(PColor.GREY75);
 		

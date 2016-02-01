@@ -17,8 +17,7 @@ public class PPicture extends AbstractPComponent {
 		= PCompUtil.createDefaultObserverList();
 	private final PPictureModelObs modelObs = new PPictureModelObs() {
 		public void onImagePathChanged(PPictureModel model) {
-			firePreferredSizeChangedEvent();
-			fireReRenderEvent();
+			PPicture.this.onImagePathChanged();
 		}
 	};
 	private PPictureModel model;
@@ -123,6 +122,11 @@ public class PPicture extends AbstractPComponent {
 	
 	public void removeObs(PPictureModelObs obs) {
 		modelObsList.remove(obs);
+	}
+	
+	protected void onImagePathChanged() {
+		firePreferredSizeChangedEvent();
+		fireReRenderEvent();
 	}
 	
 }

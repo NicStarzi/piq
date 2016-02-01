@@ -40,7 +40,7 @@ public class SwingPTest_DockLayout {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		root = new JCompPRoot();
-		frame.setContentPane(root.getPanel());
+		frame.setContentPane(root.getJPanel());
 		
 		Timer updateTimer = new Timer(10, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -71,7 +71,7 @@ public class SwingPTest_DockLayout {
 		
 		PPicture pic1 = new PPicture();
 		pic1.getModel().setImagePath("Tex.png");
-		pnl.addChild(pic1, new PDockLayout.Constraint(643, 25));
+		pnl.addChild(pic1, new PDockLayout.Constraint(643, 0));
 	}
 	
 }

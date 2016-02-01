@@ -1,15 +1,20 @@
 package edu.udo.piq.components.containers;
 
 import edu.udo.piq.PComponent;
+import edu.udo.piq.PInsets;
 import edu.udo.piq.layouts.PTupleLayout;
 import edu.udo.piq.layouts.PTupleLayout.Constraint;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
+import edu.udo.piq.tools.ImmutablePInsets;
 
 public class PTuple extends AbstractPLayoutOwner {
+	
+	public static final PInsets DEFAULT_INSETS = new ImmutablePInsets(2);
 	
 	public PTuple(PComponent first, PComponent second) {
 		super();
 		setLayout(new PTupleLayout(this));
+		getLayout().setInsets(DEFAULT_INSETS);
 		setFirstComponent(first);
 		setSecondComponent(second);
 	}
@@ -27,7 +32,7 @@ public class PTuple extends AbstractPLayoutOwner {
 	}
 	
 	public PComponent getFirstComponent() {
-		return getLayout().getAt(Constraint.FIRST);
+		return getLayout().getFirst();
 	}
 	
 	public void setSecondComponent(PComponent component) {
@@ -39,7 +44,7 @@ public class PTuple extends AbstractPLayoutOwner {
 	}
 	
 	public PComponent getSecondComponent() {
-		return getLayout().getAt(Constraint.SECOND);
+		return getLayout().getSecond();
 	}
 	
 	public boolean defaultFillsAllPixels() {

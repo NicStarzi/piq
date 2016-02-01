@@ -35,11 +35,11 @@ public class PMatrixLayout extends AbstractMapPLayout {
 		prefSize = new MutablePSize();
 		
 		addObs(new PLayoutObs() {
-			public void childAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
+			public void onChildAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
 				MatrixConstraint cell = (MatrixConstraint) constraint;
 				grid[gridID(cell.getX(), cell.getY())] = child;
 			}
-			public void childRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
+			public void onChildRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
 				MatrixConstraint cell = (MatrixConstraint) constraint;
 				grid[gridID(cell.getX(), cell.getY())] = null;
 			}

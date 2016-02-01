@@ -2,6 +2,8 @@ package edu.udo.piq.components;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
+import edu.udo.piq.PGlobalEventGenerator;
+import edu.udo.piq.PGlobalEventProvider;
 import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
@@ -14,7 +16,7 @@ import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
 
-public class PRadioButton extends AbstractPComponent {
+public class PRadioButton extends AbstractPComponent implements PGlobalEventGenerator {
 	
 	private static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(12, 12);
 	
@@ -22,21 +24,14 @@ public class PRadioButton extends AbstractPComponent {
 		= PCompUtil.createDefaultObserverList();
 	protected final ObserverList<PRadioButtonObs> obsList
 		= PCompUtil.createDefaultObserverList();
-	private final PMouseObs mouseObs = new PMouseObs() {
+	protected final PMouseObs mouseObs = new PMouseObs() {
 		public void onButtonTriggered(PMouse mouse, MouseButton btn) {
-			if (btn == MouseButton.LEFT && isMouseOver()) {
-				setSelected();
-				fireClickEvent();
-			}
+			PRadioButton.this.onMouseButtonTriggered(mouse, btn);
 		}
 	};
-	protected final PRadioButtonModelObs modelObs = new PRadioButtonModelObs() {
-		public void onChange(PRadioButtonModel model) {
-			firePreferredSizeChangedEvent();
-			fireReRenderEvent();
-		}
-	};
+	protected final PRadioButtonModelObs modelObs = (mdl) -> onModelChange();
 	protected PRadioButtonModel model;
+	private PGlobalEventProvider globEvProv;
 	
 	public PRadioButton() {
 		super();
@@ -49,6 +44,14 @@ public class PRadioButton extends AbstractPComponent {
 		
 		setModel(defaultModel);
 		addObs(mouseObs);
+	}
+	
+	public void setGlobalEventProvider(PGlobalEventProvider provider) {
+		globEvProv = provider;
+	}
+	
+	public PGlobalEventProvider getGlobalEventProvider() {
+		return globEvProv;
 	}
 	
 	public void setModel(PRadioButtonModel model) {
@@ -92,8 +95,6 @@ public class PRadioButton extends AbstractPComponent {
 		int y = bnds.getY();
 		int w = bnds.getWidth();
 		int h = bnds.getHeight();
-//		int fx = bnds.getFinalX();
-//		int fy = bnds.getFinalY();
 		
 		renderer.setColor(PColor.BLACK);
 		renderer.drawEllipse(x, y, w, h);
@@ -136,7 +137,20 @@ public class PRadioButton extends AbstractPComponent {
 	}
 	
 	protected void fireClickEvent() {
-		obsList.sendNotify((obs) -> obs.onClick(this));
+		obsList.fireEvent((obs) -> obs.onClick(this));
+		fireGlobalEvent();
+	}
+	
+	protected void onMouseButtonTriggered(PMouse mouse, MouseButton btn) {
+		if (btn == MouseButton.LEFT && isMouseOver()) {
+			setSelected();
+			fireClickEvent();
+		}
+	}
+	
+	protected void onModelChange() {
+		firePreferredSizeChangedEvent();
+		fireReRenderEvent();
 	}
 	
 }

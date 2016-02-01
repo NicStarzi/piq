@@ -43,7 +43,7 @@ public class DefaultPSplitPanelModel implements PSplitPanelModel {
 	}
 	
 	protected void firePositionChangedEvent() {
-		obsList.sendNotify((obs) -> obs.onPositionChanged(this));
+		obsList.fireEvent((obs) -> obs.onPositionChanged(this));
 	}
 	
 }

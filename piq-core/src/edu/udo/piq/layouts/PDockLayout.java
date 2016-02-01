@@ -25,11 +25,11 @@ public class PDockLayout extends AbstractMapPLayout {
 	public PDockLayout(PComponent component) {
 		super(component);
 		addObs(new PLayoutObs() {
-			public void childAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
+			public void onChildAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
 				Constraint constr = (Constraint) constraint;
 				addToRow(child, constr);
 			}
-			public void childRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
+			public void onChildRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
 				Constraint constr = (Constraint) constraint;
 				removeFromRow(child, constr);
 			}

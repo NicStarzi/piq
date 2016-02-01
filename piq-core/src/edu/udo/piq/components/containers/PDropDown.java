@@ -4,7 +4,6 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PComponentObs;
-import edu.udo.piq.PInsets;
 import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
@@ -12,57 +11,46 @@ import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRootOverlay;
 import edu.udo.piq.PSize;
+import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PButtonModel;
 import edu.udo.piq.components.PButtonModelObs;
+import edu.udo.piq.components.PButtonObs;
 import edu.udo.piq.components.defaults.DefaultPButtonModel;
 import edu.udo.piq.layouts.PCentricLayout;
 import edu.udo.piq.layouts.PFreeLayout;
 import edu.udo.piq.layouts.PFreeLayout.FreeConstraint;
+import edu.udo.piq.layouts.PTupleLayout;
+import edu.udo.piq.layouts.PTupleLayout.Constraint;
+import edu.udo.piq.layouts.PTupleLayout.Distribution;
+import edu.udo.piq.layouts.PTupleLayout.Orientation;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.tools.ImmutablePInsets;
+import edu.udo.piq.tools.ImmutablePSize;
+import edu.udo.piq.tools.MutablePSize;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
 
 public class PDropDown extends AbstractPLayoutOwner {
 	
-	private static final int TRIANGLE_MIN_W = 12;
+//	private static final int TRIANGLE_MIN_W = 12;
 	
 	protected final ObserverList<PDropDownObs> obsList
 		= PCompUtil.createDefaultObserverList();
 	private final PMouseObs mouseObs = new PMouseObs() {
 		public void onButtonTriggered(PMouse mouse, MouseButton btn) {
-			if (btn == MouseButton.LEFT && getModel() != null && isMouseOverThisOrChild()) {
-				getModel().setPressed(true);
-//				setPressed(true);
-			}
+			PDropDown.this.onMouseButtonTriggered(mouse, btn);
 		}
 		public void onButtonReleased(PMouse mouse, MouseButton btn) {
-			if (btn == MouseButton.LEFT && getModel() != null) {
-				boolean oldPressed = isPressed();
-//				setPressed(false);
-				getModel().setPressed(false);
-				if (oldPressed && isMouseOverThisOrChild()) {
-					if (bodyShown) {
-						hideDropDown();
-					} else {
-						showDropDown();
-					}
-				}
-			}
+			PDropDown.this.onMouseButtonReleased(mouse, btn);
 		}
 	};
 	private final PComponentObs containerObs = new PComponentObs() {
 		public void onPreferredSizeChanged(PComponent component) {
-			if (bodyShown) {
-				repositionDropDownContainer();
-			}
+			PDropDown.this.onPreferredSizeChanged();
 		}
 	};
-	private final PButtonModelObs modelObs = new PButtonModelObs() {
-		public void onChange(PButtonModel model) {
-			fireReRenderEvent();
-		}
-	};
+	private final PButtonModelObs modelObs = (mdl) -> PDropDown.this.onModelChange();
+	private final PButtonObs btnObs = (btn) -> onButtonClick();
 	private final PDropDownContainer dropDownContainer;
 	private PButtonModel model;
 	private boolean bodyShown = false;
@@ -78,23 +66,46 @@ public class PDropDown extends AbstractPLayoutOwner {
 			defaultModel = (PButtonModel) modelFac.getModelFor(this, defaultModel);
 		}
 		
-		setLayout(new PCentricLayout(this));
-		getLayoutInternal().setInsets(new ImmutablePInsets(4, 4, 4, TRIANGLE_MIN_W + 2 + 2 + 4));
+		setLayout(new PTupleLayout(this));
+		getLayoutInternal().setOrientation(Orientation.LEFT_TO_RIGHT);
+		getLayoutInternal().setInsets(new ImmutablePInsets(4));
+		getLayoutInternal().setDistribution(Distribution.RESPECT_SECOND);
+		getLayoutInternal().setSecondaryDistribution(Distribution.RESPECT_NONE);
+		setButton(new PDropDownButton());
+		
 		setModel(defaultModel);
 		
 		addObs(mouseObs);
 	}
 	
-	protected PCentricLayout getLayoutInternal() {
-		return (PCentricLayout) super.getLayout();
+	protected PTupleLayout getLayoutInternal() {
+		return (PTupleLayout) super.getLayout();
 	}
 	
 	public void setPreview(PComponent component) {
-		getLayoutInternal().setContent(component);
+		if (getPreview() != null) {
+			getLayoutInternal().removeChild(Constraint.FIRST);
+		}
+		getLayoutInternal().addChild(component, Constraint.FIRST);
 	}
 	
 	public PComponent getPreview() {
-		return getLayoutInternal().getContent();
+		return getLayoutInternal().getFirst();
+	}
+	
+	public void setButton(PDropDownButton button) {
+		if (getButton() != null) {
+			getButton().removeObs(btnObs);
+			getLayoutInternal().removeChild(Constraint.SECOND);
+		}
+		getLayoutInternal().addChild(button, Constraint.SECOND);
+		if (getButton() != null) {
+			getButton().addObs(btnObs);
+		}
+	}
+	
+	public PDropDownButton getButton() {
+		return (PDropDownButton) getLayoutInternal().getSecond();
 	}
 	
 	public void setBody(PComponent component) {
@@ -153,44 +164,13 @@ public class PDropDown extends AbstractPLayoutOwner {
 			renderer.setColor(PColor.GREY75);
 			renderer.drawQuad(x + 1, y + 1, fx - 1, fy - 1);
 		}
-		
-		PInsets insets = getLayoutInternal().getInsets();
-		int btnX = fx - (insets.getFromRight() - 2);
-		int btnY = y + insets.getFromTop();
-		int btnFx = btnX + (insets.getFromRight() - 2 - insets.getFromLeft());
-		int btnFy = fy - insets.getFromBottom();
-		
-		if (isPressed()) {
-			renderer.setColor(PColor.GREY25);
-			renderer.strokeQuad(btnX, btnY, btnFx, btnFy);
-			renderer.setColor(PColor.GREY75);
-			renderer.drawQuad(btnX + 1, btnY + 1, btnFx - 1, btnFy - 1);
-		} else {
-			renderer.setColor(PColor.BLACK);
-			renderer.strokeBottom(btnX, btnY, btnFx, btnFy);
-			renderer.strokeRight(btnX, btnY, btnFx, btnFy);
-			renderer.setColor(PColor.WHITE);
-			renderer.strokeTop(btnX, btnY, btnFx, btnFy);
-			renderer.strokeLeft(btnX, btnY, btnFx, btnFy);
-			renderer.setColor(PColor.GREY75);
-			renderer.drawQuad(btnX + 1, btnY + 1, btnFx - 1, btnFy - 1);
-		}
-		
-		int triaX1 = btnX + 4;
-		int triaY1 = btnY + 4;
-		int triaX2 = btnX + (btnFx - btnX) / 2;
-		int triaY2 = btnFy - 4;
-		int triaX3 = btnFx - 4;
-		int triaY3 = triaY1;
-		renderer.setColor(PColor.BLACK);
-		renderer.drawTriangle(triaX1, triaY1, triaX2, triaY2, triaX3, triaY3);
 	}
 	
 	public PSize getDefaultPreferredSize() {
 		return getLayout().getPreferredSize();
 	}
 	
-	private void showDropDown() {
+	protected void showDropDown() {
 		if (getBody() != null) {
 			FreeConstraint constraint = new FreeConstraint(0, 0);
 			getRoot().getOverlay().getLayout().addChild(dropDownContainer, constraint);
@@ -201,13 +181,13 @@ public class PDropDown extends AbstractPLayoutOwner {
 		}
 	}
 	
-	private void hideDropDown() {
+	protected void hideDropDown() {
 		dropDownContainer.getRoot().getOverlay().getLayout().removeChild(dropDownContainer);
 		bodyShown = false;
 		fireHideEvent();
 	}
 	
-	private void repositionDropDownContainer() {
+	protected void repositionDropDownContainer() {
 		PSize ownSize = PCompUtil.getPreferredSizeOf(dropDownContainer);
 		int ownX = getBounds().getX();
 		int ownY = getBounds().getFinalY();
@@ -235,6 +215,39 @@ public class PDropDown extends AbstractPLayoutOwner {
 		overlayLayout.updateConstraint(dropDownContainer, constr);
 	}
 	
+	protected void onMouseButtonTriggered(PMouse mouse, MouseButton btn) {
+		if (btn == MouseButton.LEFT && getModel() != null && isMouseOverThisOrChild()) {
+			getModel().setPressed(true);
+		}
+	}
+	
+	protected void onMouseButtonReleased(PMouse mouse, MouseButton btn) {
+		boolean oldPressed = isPressed();
+		if (btn == MouseButton.LEFT && oldPressed) {
+			getModel().setPressed(false);
+			if (isMouseOverThisOrChild()) {
+				if (isBodyVisible()) {
+					hideDropDown();
+				} else {
+					showDropDown();
+				}
+			}
+		}
+	}
+	
+	protected void onPreferredSizeChanged() {
+		if (isBodyVisible()) {
+			repositionDropDownContainer();
+		}
+	}
+	
+	protected void onModelChange() {
+		fireReRenderEvent();
+	}
+	
+	protected void onButtonClick() {
+	}
+	
 	public void addObs(PDropDownObs obs) {
 		obsList.add(obs);
 	}
@@ -244,11 +257,11 @@ public class PDropDown extends AbstractPLayoutOwner {
 	}
 	
 	protected void fireShowEvent() {
-		obsList.sendNotify((obs) -> obs.onBodyShown(this));
+		obsList.fireEvent((obs) -> obs.onBodyShown(this));
 	}
 	
 	protected void fireHideEvent() {
-		obsList.sendNotify((obs) -> obs.onBodyHidden(this));
+		obsList.fireEvent((obs) -> obs.onBodyHidden(this));
 	}
 	
 	protected static class PDropDownContainer extends AbstractPLayoutOwner {
@@ -295,6 +308,62 @@ public class PDropDown extends AbstractPLayoutOwner {
 			return getLayout().getPreferredSize();
 		}
 		
+	}
+	
+	protected static class PDropDownButton extends PButton {
+		
+		public static final PSize DEFAULT_PREF_SIZE = new ImmutablePSize(14, 14);
+		private MutablePSize prefSize = null;
+		
+		public void defaultRender(PRenderer renderer) {
+			PBounds bnds = getBounds();
+			int x = bnds.getX();
+			int y = bnds.getY();
+			int fx = bnds.getFinalX();
+			int fy = bnds.getFinalY();
+			
+			if (isPressed()) {
+				renderer.setColor(PColor.GREY25);
+				renderer.strokeQuad(x, y, fx, fy);
+				renderer.setColor(PColor.GREY75);
+				renderer.drawQuad(x + 1, y + 1, fx - 1, fy - 1);
+			} else {
+				renderer.setColor(PColor.BLACK);
+				renderer.strokeBottom(x, y, fx, fy);
+				renderer.strokeRight(x, y, fx, fy);
+				renderer.setColor(PColor.WHITE);
+				renderer.strokeTop(x, y, fx, fy);
+				renderer.strokeLeft(x, y, fx, fy);
+				renderer.setColor(PColor.GREY75);
+				renderer.drawQuad(x + 1, y + 1, fx - 1, fy - 1);
+			}
+			
+			int triaX1 = x + 4;
+			int triaY1 = y + 4;
+			int triaX2 = x + (fx - x) / 2;
+			int triaY2 = fy - 4;
+			int triaX3 = fx - 4;
+			int triaY3 = triaY1;
+			renderer.setColor(PColor.BLACK);
+			renderer.drawTriangle(triaX1, triaY1, triaX2, triaY2, triaX3, triaY3);
+		}
+		
+		public PSize getDefaultPreferredSize() {
+			PBounds bnds = getBounds();
+			if (bnds != null && (bnds.getWidth() > DEFAULT_PREF_SIZE.getWidth() 
+					|| bnds.getHeight() > DEFAULT_PREF_SIZE.getHeight())) 
+			{
+				if (prefSize == null) {
+					prefSize = new MutablePSize(DEFAULT_PREF_SIZE);
+				}
+				int max = Math.max(bnds.getWidth(), bnds.getHeight());
+				prefSize.setWidth(max);
+				prefSize.setHeight(max);
+				return prefSize;
+			} else {
+				return DEFAULT_PREF_SIZE;
+			}
+		}
 	}
 	
 }

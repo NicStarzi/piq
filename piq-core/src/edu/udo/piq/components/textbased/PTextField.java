@@ -3,10 +3,12 @@ package edu.udo.piq.components.textbased;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
+import edu.udo.piq.PCursor;
 import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PFontResource;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PKeyboard;
+import edu.udo.piq.PMouse;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.collections.PListIndex;
@@ -251,6 +253,10 @@ public class PTextField extends AbstractPTextComponent {
 		return true;
 	}
 	
+	public PCursor getMouseOverCursor(PMouse mouse) {
+		return mouse.getCursorText();
+	}
+	
 	protected PColor getDefaultBackgroundColor() {
 		return DEFAULT_BACKGROUND_COLOR;
 	}
@@ -265,7 +271,7 @@ public class PTextField extends AbstractPTextComponent {
 	
 	protected void fireConfirmEvent() {
 		if (contentsWereChanged) {
-			obsList.sendNotify((obs) -> obs.onConfirm(this));
+			obsList.fireEvent((obs) -> obs.onConfirm(this));
 			contentsWereChanged = false;
 		}
 	}

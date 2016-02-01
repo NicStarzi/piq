@@ -27,10 +27,10 @@ public class PFreeLayout extends AbstractMapPLayout {
 	public PFreeLayout(PComponent owner) {
 		super(owner);
 		addObs(new PLayoutObs() {
-			public void childRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
+			public void onChildRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
 				sortedChildren.remove(child);
 			}
-			public void childAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
+			public void onChildAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
 				addChildSorted(child, (FreeConstraint) constraint);
 			}
 		});

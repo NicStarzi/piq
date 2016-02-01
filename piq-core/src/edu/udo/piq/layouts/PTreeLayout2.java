@@ -52,13 +52,13 @@ public class PTreeLayout2 extends AbstractMapPLayout implements PReadOnlyLayout 
 		super(component);
 		
 		addObs(new PLayoutObs() {
-			public void childAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
+			public void onChildAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
 				PTreeIndex index = (PTreeIndex) constraint;
-				onChildAdded(child, index);
+				PTreeLayout2.this.onChildAdded(child, index);
 			}
-			public void childRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
+			public void onChildRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
 				PTreeIndex index = (PTreeIndex) constraint;
-				onChildRemoved(child, index);
+				PTreeLayout2.this.onChildRemoved(child, index);
 			}
 		});
 	}

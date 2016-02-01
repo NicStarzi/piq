@@ -52,7 +52,7 @@ public class PListLayout extends AbstractMapPLayout {
 		prefSize = new MutablePSize();
 		
 		addObs(new PLayoutObs() {
-			public void childAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
+			public void onChildAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
 				if (constraint == null) {
 					compList.add(child);
 				} else {
@@ -64,7 +64,7 @@ public class PListLayout extends AbstractMapPLayout {
 					setChildConstraint(compList.get(i), con);
 				}
 			}
-			public void childRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
+			public void onChildRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
 				int index = compList.indexOf(child);
 				compList.remove(index);
 				for (int i = index; i < compList.size(); i++) {

@@ -35,13 +35,13 @@ public class PScrollPanel extends AbstractPLayoutOwner {
 		}
 	};
 	private final PLayoutObs layoutObs = new PLayoutObs() {
-		public void childAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
+		public void onChildAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
 			setChild(child, (Constraint) constraint);
 		}
-		public void childRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
+		public void onChildRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
 			setChild(null, (Constraint) constraint);
 		}
-		public void childLaidOut(PReadOnlyLayout layout, PComponent child, Object constraint) {
+		public void onChildLaidOut(PReadOnlyLayout layout, PComponent child, Object constraint) {
 			if (constraint == Constraint.BODY) {
 				refreshSize();
 			}

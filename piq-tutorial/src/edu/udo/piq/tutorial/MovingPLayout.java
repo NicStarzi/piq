@@ -22,7 +22,7 @@ public class MovingPLayout extends AbstractMapPLayout {
 		}
 	});
 	private final PComponentObs ownerObs = new PComponentObs() {
-		public void rootChanged(PComponent component, PRoot currentRoot) {
+		public void onRootChanged(PComponent component, PRoot currentRoot) {
 			if (currentRoot == null) {
 				timer.stop();
 			} else {
@@ -37,10 +37,10 @@ public class MovingPLayout extends AbstractMapPLayout {
 	public MovingPLayout(PComponent component) {
 		super(component);
 		addObs(new PLayoutObs() {
-			public void childAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
+			public void onChildAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
 				content = child;
 			}
-			public void childRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
+			public void onChildRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
 				content = null;
 			}
 		});

@@ -38,7 +38,7 @@ public abstract class AbstractSwingPTest {
 		frame.setSize(w, h);
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		frame.setContentPane(root.getPanel());
+		frame.setContentPane(root.getJPanel());
 		
 		final Timer updateTimer = new Timer(10, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {

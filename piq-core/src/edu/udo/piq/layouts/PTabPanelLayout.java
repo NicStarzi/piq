@@ -38,7 +38,7 @@ public class PTabPanelLayout extends AbstractMapPLayout {
 		super(component);
 		
 		addObs(new PLayoutObs() {
-			public void childAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
+			public void onChildAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
 				if (constraint == Constraint.TAB) {
 					tabList.add(child);
 				} else if (constraint == Constraint.TAB_BACKGROUND) {
@@ -54,7 +54,7 @@ public class PTabPanelLayout extends AbstractMapPLayout {
 					sortedChildList.add(tabBgCmp);
 				}
 			}
-			public void childRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
+			public void onChildRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
 				if (constraint == Constraint.TAB) {
 					tabList.remove(child);
 				} else if (constraint == Constraint.TAB_BACKGROUND) {

@@ -141,6 +141,8 @@ public interface PRoot extends PComponent {
 	 */
 	public void reRender(PComponent component);
 	
+	public void mouseOverCursorChanged(PComponent component);
+	
 	/**
 	 * Registers that a {@link PComponent} needs a refresh for its {@link PLayout} in the near future.<br>
 	 * The refresh should happen soon but not necessarily immediately to have the possibility of combining 
@@ -221,6 +223,22 @@ public interface PRoot extends PComponent {
 	 */
 	public PImageResource createImageResource(int width, int height, PImageMeta metaInfo) 
 			throws IllegalArgumentException;
+	
+	/**
+	 * Constructs and returns an instance of {@link PCursor} that uses the given 
+	 * image as its graphic. The offset is a translation of the image relative to 
+	 * the mouse location.<br>
+	 * 
+	 * @param image		an {@link PImageResource image resource} to be used for the cursors graphic
+	 * @param offsetX	a translation on the X-axis in pixels relative to the mouse location, negative values go to the left
+	 * @param offsetY	a translation on the Y-axis in pixels relative to the mouse location, negative values go to the left
+	 * @return a newly constructed custom {@link PCursor}
+	 * @throws IllegalArgumentException if image is null
+	 * @see PComponent#getMouseOverCursor(PMouse)
+	 * @see #fetchImageResource(String imgPath)
+	 * @see #createImageResource(int width, int height, PImageMeta metaInfo)
+	 */
+	public PCursor createCustomCursor(PImageResource image, int offsetX, int offsetY) throws IllegalArgumentException;
 	
 	/**
 	 * Returns an implementation of {@link PMouse}.<br>

@@ -53,6 +53,7 @@ public class Lwjgl3PMouse implements PMouse {
 	private final boolean[] btnTriggered;
 	private Lwjgl3PCursor currentCursor = DEFAULT_CURSOR_MAP.get(PCursorType.NORMAL);
 	private int x, y, dx, dy;
+	private int clickCount = 1;
 	private boolean compAtMouseCacheValid;
 	private PComponent compAtMouseCache;
 	
@@ -166,6 +167,10 @@ public class Lwjgl3PMouse implements PMouse {
 		return dy;
 	}
 	
+	public int getClickCount() {
+		return clickCount;
+	}
+	
 	public boolean isPressed(MouseButton btn) {
 		return btnPressed[getMouseButtonID(btn)];
 	}
@@ -202,11 +207,11 @@ public class Lwjgl3PMouse implements PMouse {
 		setCursor(DEFAULT_CURSOR_MAP.get(cursorType));
 	}
 	
-	public PCursor getCursor() {
+	public PCursor getCurrentCursor() {
 		return currentCursor;
 	}
 	
-	public PCursor getCustomCursor(PImageResource image, int offsetX, int offsetY) {
+	public PCursor fetchCustomCursor(PImageResource image, int offsetX, int offsetY) {
 		// TODO:
 		return DEFAULT_CURSOR_MAP.get(PCursorType.NORMAL);
 	}

@@ -2,6 +2,8 @@ package edu.udo.piq.components;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
+import edu.udo.piq.PGlobalEventGenerator;
+import edu.udo.piq.PGlobalEventProvider;
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PKeyboard.Modifier;
@@ -12,13 +14,14 @@ import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.defaults.DefaultPSliderModel;
+import edu.udo.piq.components.defaults.ReRenderPFocusObs;
 import edu.udo.piq.components.util.PInput;
 import edu.udo.piq.tools.AbstractPInputComponent;
 import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
 
-public class PSlider extends AbstractPInputComponent {
+public class PSlider extends AbstractPInputComponent implements PGlobalEventGenerator {
 	
 	protected static final int DEFAULT_SLIDER_WIDTH = 8;
 	protected static final int DEFAULT_SLIDER_HEIGHT = 12;
@@ -53,71 +56,33 @@ public class PSlider extends AbstractPInputComponent {
 	protected final PInput pressCtrlRightInput = new PSliderPInput(Key.RIGHT, true);
 	protected final PInput pressCtrlDownInput = new PSliderPInput(Key.DOWN, true);
 	protected final PInput pressCtrlLeftInput = new PSliderPInput(Key.LEFT, true);
-	protected final Runnable addReaction = new Runnable() {
-		public void run() {
-			getModel().setValue(getModel().getValue() + 1);
-		}
+	protected final Runnable addReaction = () -> getModel().setValue(getModel().getValue() + 1);
+	protected final Runnable subReaction = () -> getModel().setValue(getModel().getValue() - 1);
+	protected final Runnable addFastReaction = () -> {
+		PSliderModel model = getModel();
+		int max = model.getMaxValue();
+		int add = (int) Math.ceil(max * 0.1);
+		model.setValue(model.getValue() + add);
 	};
-	protected final Runnable subReaction = new Runnable() {
-		public void run() {
-			getModel().setValue(getModel().getValue() - 1);
-		}
-	};
-	protected final Runnable addFastReaction = new Runnable() {
-		public void run() {
-			PSliderModel model = getModel();
-			int max = model.getMaxValue();
-			int add = (int) Math.ceil(max * 0.1);
-			model.setValue(model.getValue() + add);
-		}
-	};
-	protected final Runnable subFastReaction = new Runnable() {
-		public void run() {
-			PSliderModel model = getModel();
-			int max = model.getMaxValue();
-			int sub = (int) Math.ceil(max * 0.1);
-			model.setValue(model.getValue() - sub);
-		}
+	protected final Runnable subFastReaction = () -> {
+		PSliderModel model = getModel();
+		int max = model.getMaxValue();
+		int sub = (int) Math.ceil(max * 0.1);
+		model.setValue(model.getValue() - sub);
 	};
 	
-	private final PMouseObs mouseObs = new PMouseObs() {
-		public void onMouseMoved(PMouse mouse) {
-			if (mouse.isPressed(MouseButton.LEFT) && getModel().isPressed()) {
-				updatePosition(mouse);
-			}
-		}
-		public void onButtonTriggered(PMouse mouse, MouseButton btn) {
-			if (btn == MouseButton.LEFT && !getModel().isPressed()
-					&& isMouseWithinClippedBounds()) {
-				
-				getModel().setPressed(true);
-				takeFocus();
-				updatePosition(mouse);
-			}
-		}
-		public void onButtonReleased(PMouse mouse, MouseButton btn) {
-			if (btn == MouseButton.LEFT && getModel().isPressed()) {
-				getModel().setPressed(false);
-			}
-		}
-		public void updatePosition(PMouse mouse) {
-			int mx = mouse.getX();
-			PBounds bnds = getBounds();
-			double valuePercent = (mx - bnds.getX()) / (double) bnds.getWidth();
-			getModel().setValuePercent(valuePercent);
-		}
-	};
 	protected final ObserverList<PSliderModelObs> modelObsList
 		= PCompUtil.createDefaultObserverList();
 	protected final PSliderModelObs modelObs = new PSliderModelObs() {
 		public void onRangeChanged(PSliderModel model) {
-			fireReRenderEvent();
+			PSlider.this.onModelRangeChanged();
 		}
 		public void onValueChanged(PSliderModel model) {
-			fireReRenderEvent();
+			PSlider.this.onModelValueChanged();
 		}
 	};
 	protected PSliderModel model;
+	protected PGlobalEventProvider globEvProv;
 	
 	public PSlider() {
 		super();
@@ -130,7 +95,21 @@ public class PSlider extends AbstractPInputComponent {
 		
 		setModel(defaultModel);
 		
-		addObs(mouseObs);
+		addObs(new PMouseObs() {
+			public void onMouseMoved(PMouse mouse) {
+				PSlider.this.onMouseMoved(mouse);
+			}
+			public void onButtonTriggered(PMouse mouse, MouseButton btn) {
+				PSlider.this.onMouseButtonTriggered(mouse, btn);
+			}
+			public void onButtonPressed(PMouse mouse, MouseButton btn) {
+				PSlider.this.onMouseButtonPressed(mouse, btn);
+			}
+			public void onButtonReleased(PMouse mouse, MouseButton btn) {
+				PSlider.this.onMouseButtonReleased(mouse, btn);
+			}
+		});
+		addObs(new ReRenderPFocusObs());
 		
 		defineInput("up",			pressUpInput,			addReaction);
 		defineInput("right",		pressRightInput,		addReaction);
@@ -140,6 +119,26 @@ public class PSlider extends AbstractPInputComponent {
 		defineInput("ctrlRight",	pressCtrlRightInput,	addFastReaction);
 		defineInput("ctrlDown",		pressCtrlDownInput,		subFastReaction);
 		defineInput("ctrlLeft",		pressCtrlLeftInput,		subFastReaction);
+	}
+	
+	public PSlider(PSliderModel model) {
+		this();
+		setModel(model);
+	}
+	
+	public PSlider(int value, int min, int max) {
+		this();
+		getModel().setMinValue(min);
+		getModel().setMaxValue(max);
+		getModel().setValue(value);
+	}
+	
+	public void setGlobalEventProvider(PGlobalEventProvider provider) {
+		globEvProv = provider;
+	}
+	
+	public PGlobalEventProvider getGlobalEventProvider() {
+		return globEvProv;
 	}
 	
 	public void setModel(PSliderModel model) {
@@ -225,6 +224,47 @@ public class PSlider extends AbstractPInputComponent {
 		if (getModel() != null) {
 			getModel().removeObs(obs);
 		}
+	}
+	
+	protected void onMouseMoved(PMouse mouse) {
+		if (mouse.isPressed(MouseButton.LEFT) && getModel().isPressed()) {
+			updateModelValue(mouse);
+		}
+	}
+	
+	protected void onMouseButtonTriggered(PMouse mouse, MouseButton btn) {
+		if (btn == MouseButton.LEFT && !getModel().isPressed()
+				&& isMouseWithinClippedBounds()) 
+		{
+			getModel().setPressed(true);
+			takeFocus();
+			updateModelValue(mouse);
+		}
+	}
+	
+	protected void onMouseButtonPressed(PMouse mouse, MouseButton btn) {
+	}
+	
+	protected void onMouseButtonReleased(PMouse mouse, MouseButton btn) {
+		if (btn == MouseButton.LEFT && getModel().isPressed()) {
+			getModel().setPressed(false);
+		}
+	}
+	
+	protected void updateModelValue(PMouse mouse) {
+		int mx = mouse.getX();
+		PBounds bnds = getBounds();
+		double valuePercent = (mx - bnds.getX()) / (double) bnds.getWidth();
+		getModel().setValuePercent(valuePercent);
+		fireGlobalEvent();
+	}
+	
+	protected void onModelRangeChanged() {
+		fireReRenderEvent();
+	}
+	
+	protected void onModelValueChanged() {
+		fireReRenderEvent();
 	}
 	
 }

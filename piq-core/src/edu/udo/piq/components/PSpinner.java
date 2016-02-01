@@ -15,6 +15,7 @@ import edu.udo.piq.layouts.PSpinnerLayout;
 import edu.udo.piq.layouts.PSpinnerLayout.Constraint;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.tools.ImmutablePSize;
+import edu.udo.piq.util.PCompUtil;
 import edu.udo.piq.util.ThrowException;
 
 public class PSpinner extends AbstractPLayoutOwner {
@@ -43,17 +44,23 @@ public class PSpinner extends AbstractPLayoutOwner {
 	protected void setLayout(PLayout layout) {
 		ThrowException.ifTypeCastFails(layout, PSpinnerLayout.class, 
 				"! layout instanceof PSpinnerLayout");
-		if (getLayout() != null) {
-			getLayout().removeObs(layoutObs);
-		}
 		super.setLayout(layout);
-		if (getLayout() != null) {
-			getLayout().addObs(layoutObs);
-		}
 	}
 	
 	protected PSpinnerLayout getLayoutInternal() {
 		return (PSpinnerLayout) super.getLayout();
+	}
+	
+	public PSpinnerEditor getEditor() {
+		return (PSpinnerEditor) getLayoutInternal().getEditor();
+	}
+	
+	public PSpinnerButton getNextButton() {
+		return (PSpinnerButton) getLayoutInternal().getNextButton();
+	}
+	
+	public PSpinnerButton getPrevButton() {
+		return (PSpinnerButton) getLayoutInternal().getPrevButton();
 	}
 	
 	public void setModel(PSpinnerModel model) {
@@ -71,6 +78,18 @@ public class PSpinner extends AbstractPLayoutOwner {
 	
 	public PSpinnerModel getModel() {
 		return model;
+	}
+	
+	public void defaultRender(PRenderer renderer) {
+	}
+	
+	public boolean defaultFillsAllPixels() {
+		PComponent editor = getEditor();
+		PComponent btnNext = getNextButton();
+		PComponent btnPrev = getPrevButton();
+		return editor != null && PCompUtil.fillsAllPixels(editor)
+				&& btnNext != null && PCompUtil.fillsAllPixels(btnNext)
+				&& btnPrev != null && PCompUtil.fillsAllPixels(btnPrev);
 	}
 	
 	public static class PSpinnerEditor extends PTextField implements PSpinnerPart {

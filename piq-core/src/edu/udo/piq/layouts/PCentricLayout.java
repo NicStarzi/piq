@@ -17,12 +17,12 @@ public class PCentricLayout extends AbstractArrayPLayout {
 	 * and returned by the {@link #getPreferredSize()} 
 	 * method.<br>
 	 */
-	protected final MutablePSize prefSize;
+	protected final MutablePSize prefSize = new MutablePSize();
 	protected PInsets insets = new ImmutablePInsets(4);
+	protected boolean growContent = false;
 	
 	public PCentricLayout(PComponent component) {
 		super(component, 1);
-		prefSize = new MutablePSize();
 	}
 	
 	public void setInsets(PInsets insets) {
@@ -40,6 +40,14 @@ public class PCentricLayout extends AbstractArrayPLayout {
 			return (PInsets) maybeInsets;
 		}
 		return insets;
+	}
+	
+	public void setGrowContent(boolean isGrowContent) {
+		growContent = isGrowContent;
+	}
+	
+	public boolean isGrowContent() {
+		return growContent;
 	}
 	
 	public void setContent(PComponent component) {
@@ -68,30 +76,33 @@ public class PCentricLayout extends AbstractArrayPLayout {
 			int w = (ob.getFinalX() - insets.getFromRight()) - x;
 			int h = (ob.getFinalY() - insets.getFromBottom()) - y;
 			
-			PSize prefSize = getPreferredSizeOf(content);
-			int prefW = prefSize.getWidth();
-			int prefH = prefSize.getHeight();
-			
-			int compX;
-			int compY;
-			int compW;
-			int compH;
-			if (prefW > w) {
-				compX = x;
-				compW = w;
+			if (isGrowContent()) {
+				setChildBounds(content, x, y, w, h);
 			} else {
-				compX = x + w / 2 - prefW / 2;
-				compW = prefW;
+				PSize prefSize = getPreferredSizeOf(content);
+				int prefW = prefSize.getWidth();
+				int prefH = prefSize.getHeight();
+				
+				int compX;
+				int compY;
+				int compW;
+				int compH;
+				if (prefW > w) {
+					compX = x;
+					compW = w;
+				} else {
+					compX = x + w / 2 - prefW / 2;
+					compW = prefW;
+				}
+				if (prefH > h) {
+					compY = y;
+					compH = h;
+				} else {
+					compY = y + h / 2 - prefH / 2;
+					compH = prefH;
+				}
+				setChildBounds(content, compX, compY, compW, compH);
 			}
-			if (prefH > h) {
-				compY = y;
-				compH = h;
-			} else {
-				compY = y + h / 2 - prefH / 2;
-				compH = prefH;
-			}
-			
-			setChildBounds(content, compX, compY, compW, compH);
 		}
 	}
 	

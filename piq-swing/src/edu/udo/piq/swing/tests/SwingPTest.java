@@ -87,7 +87,7 @@ public class SwingPTest {
 //				}
 //			}
 //		});
-		frame.setContentPane(root.getPanel());
+		frame.setContentPane(root.getJPanel());
 		root.addObs(new PGlobalEventObs() {
 			public void onGlobalEvent(PComponent source, Object eventData) {
 				if ("CreateNew".equals(eventData)) {

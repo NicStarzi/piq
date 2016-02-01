@@ -18,43 +18,13 @@ public class PInputMap {
 		owner = component;
 		owner.addObs(new PKeyboardObs() {
 			public void onKeyPressed(PKeyboard keyboard, Key key) {
-				if (!owner.hasFocus()) {
-					return;
-				}
-				for (InputReactionTuple tuple : inputMap.values()) {
-					if (tuple.input.getKeyInputType() == KeyInputType.PRESS
-							&& tuple.input.getInputKey() == key 
-							&& tuple.input.canBeUsed(keyboard)) {
-						
-						tuple.reaction.run();
-					}
-				}
+				PInputMap.this.onKeyPressed(keyboard, key);
 			}
 			public void onKeyTriggered(PKeyboard keyboard, Key key) {
-				if (!owner.hasFocus()) {
-					return;
-				}
-				for (InputReactionTuple tuple : inputMap.values()) {
-					if (tuple.input.getKeyInputType() == KeyInputType.TRIGGER 
-							&& tuple.input.getInputKey() == key 
-							&& tuple.input.canBeUsed(keyboard)) {
-						
-						tuple.reaction.run();
-					}
-				}
+				PInputMap.this.onKeyTriggered(keyboard, key);
 			}
 			public void onKeyReleased(PKeyboard keyboard, Key key) {
-				if (!owner.hasFocus()) {
-					return;
-				}
-				for (InputReactionTuple tuple : inputMap.values()) {
-					if (tuple.input.getKeyInputType() == KeyInputType.RELEASE 
-							&& tuple.input.getInputKey() == key 
-							&& tuple.input.canBeUsed(keyboard)) {
-						
-						tuple.reaction.run();
-					}
-				}
+				PInputMap.this.onKeyReleased(keyboard, key);
 			}
 		});
 	}
@@ -66,6 +36,52 @@ public class PInputMap {
 	
 	public void undefine(Object identifier) {
 		inputMap.remove(identifier);
+	}
+	
+	public PComponent getOwner() {
+		return owner;
+	}
+	
+	protected void onKeyPressed(PKeyboard keyboard, Key key) {
+		if (!getOwner().hasFocus()) {
+			return;
+		}
+		for (InputReactionTuple tuple : inputMap.values()) {
+			if (tuple.input.getKeyInputType() == KeyInputType.PRESS
+					&& tuple.input.getInputKey() == key 
+					&& tuple.input.canBeUsed(keyboard)) {
+				
+				tuple.reaction.run();
+			}
+		}
+	}
+	
+	protected void onKeyTriggered(PKeyboard keyboard, Key key) {
+		if (!getOwner().hasFocus()) {
+			return;
+		}
+		for (InputReactionTuple tuple : inputMap.values()) {
+			if (tuple.input.getKeyInputType() == KeyInputType.TRIGGER 
+					&& tuple.input.getInputKey() == key 
+					&& tuple.input.canBeUsed(keyboard)) {
+				
+				tuple.reaction.run();
+			}
+		}
+	}
+	
+	protected void onKeyReleased(PKeyboard keyboard, Key key) {
+		if (!getOwner().hasFocus()) {
+			return;
+		}
+		for (InputReactionTuple tuple : inputMap.values()) {
+			if (tuple.input.getKeyInputType() == KeyInputType.RELEASE 
+					&& tuple.input.getInputKey() == key 
+					&& tuple.input.canBeUsed(keyboard)) {
+				
+				tuple.reaction.run();
+			}
+		}
 	}
 	
 	protected static class InputReactionTuple {

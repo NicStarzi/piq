@@ -38,7 +38,7 @@ public class PTreeLayout extends AbstractMapPLayout implements PReadOnlyLayout {
 		super(component);
 		
 		addObs(new PLayoutObs() {
-			public void childAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
+			public void onChildAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
 				if (child == rootComp) {
 					return;
 				}
@@ -54,7 +54,7 @@ public class PTreeLayout extends AbstractMapPLayout implements PReadOnlyLayout {
 				}
 				sibblings.add(index, child);
 			}
-			public void childRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
+			public void onChildRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
 				if (child == rootComp) {
 					rootComp = null;
 					return;

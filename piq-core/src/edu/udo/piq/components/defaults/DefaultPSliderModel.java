@@ -2,7 +2,6 @@ package edu.udo.piq.components.defaults;
 
 import edu.udo.piq.components.PSliderModel;
 import edu.udo.piq.components.PSliderModelObs;
-import edu.udo.piq.components.util.PModelHistory;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
 
@@ -23,27 +22,8 @@ public class DefaultPSliderModel implements PSliderModel {
 		}
 	}
 	
-	public void setValuePercent(double value) {
-		if (value < 0) {
-			value = 0;
-		} else if (value > 1) {
-			value = 1;
-		}
-		int min = getMinValue();
-		int max = getMaxValue();
-		int inValue = min + (int) (value * (max - min) + 0.5);
-		setValue(inValue);
-	}
-	
 	public int getValue() {
 		return value;
-	}
-	
-	public double getValuePercent() {
-		int min = getMinValue();
-		double value = getValue() - min;
-		double max = getMaxValue() - min;
-		return value / max;
 	}
 	
 	public void setMinValue(int value) {
@@ -107,10 +87,6 @@ public class DefaultPSliderModel implements PSliderModel {
 		return pressed;
 	}
 	
-	public PModelHistory getHistory() {
-		return null;
-	}
-	
 	public void addObs(PSliderModelObs obs) {
 		obsList.add(obs);
 	}
@@ -120,11 +96,11 @@ public class DefaultPSliderModel implements PSliderModel {
 	}
 	
 	protected void fireValueChangedEvent() {
-		obsList.sendNotify((obs) -> obs.onValueChanged(this));
+		obsList.fireEvent((obs) -> obs.onValueChanged(this));
 	}
 	
 	protected void fireBoundsChangedEvent() {
-		obsList.sendNotify((obs) -> obs.onRangeChanged(this));
+		obsList.fireEvent((obs) -> obs.onRangeChanged(this));
 	}
 	
 }

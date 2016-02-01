@@ -19,7 +19,7 @@ public abstract class AbstractPSpinnerModel implements PSpinnerModel {
 	}
 	
 	protected void fireValueChangedEvent(Object oldValue) {
-		obsList.sendNotify((obs) -> obs.onValueChanged(this, oldValue));
+		obsList.fireEvent((obs) -> obs.onValueChanged(this, oldValue));
 	}
 	
 }

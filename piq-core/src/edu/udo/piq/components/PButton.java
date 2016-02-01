@@ -15,6 +15,7 @@ import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PTimer;
 import edu.udo.piq.components.defaults.DefaultPButtonModel;
+import edu.udo.piq.components.defaults.ReRenderPFocusObs;
 import edu.udo.piq.components.util.PInput;
 import edu.udo.piq.layouts.PCentricLayout;
 import edu.udo.piq.tools.AbstractPInputLayoutOwner;
@@ -35,11 +36,10 @@ public class PButton extends AbstractPInputLayoutOwner implements PGlobalEventGe
 			return isEnabled() && getModel() != null;
 		}
 	};
-	protected final Runnable pressEnterReaction = new Runnable() {
-		public void run() {
-			getModel().setPressed(true);
-		}
+	protected final Runnable pressEnterReaction = () -> {
+		getModel().setPressed(true);
 	};
+
 	protected final PInput releaseEnterInput = new PInput() {
 		public Key getInputKey() {
 			return Key.ENTER;
@@ -51,12 +51,10 @@ public class PButton extends AbstractPInputLayoutOwner implements PGlobalEventGe
 			return isEnabled() && getModel() != null;
 		}
 	};
-	protected final Runnable releaseEnterReaction = new Runnable() {
-		public void run() {
-			if (isPressed()) {
-				getModel().setPressed(false);
-				fireClickEvent();
-			}
+	protected final Runnable releaseEnterReaction = () -> {
+		if (isPressed() && isEnabled()) {
+			getModel().setPressed(false);
+			fireClickEvent();
 		}
 	};
 	
@@ -64,20 +62,13 @@ public class PButton extends AbstractPInputLayoutOwner implements PGlobalEventGe
 		= PCompUtil.createDefaultObserverList();
 	protected final ObserverList<PButtonObs> obsList
 		= PCompUtil.createDefaultObserverList();
-	protected final PButtonModelObs modelObs = new PButtonModelObs() {
-		public void onChange(PButtonModel model) {
-			if (repeatTimer != null) {
-				repeatTimer.setDelay(repeatTimerInitialDelay);
-				repeatTimer.setStarted(getModel().isPressed());
-			}
-			fireReRenderEvent();
-		}
-	};
+	protected final PButtonModelObs modelObs = (mdl) -> onModelChange();
 	protected PTimer repeatTimer;
 	protected PButtonModel model;
-	private PGlobalEventProvider globalEventProv;
-	private int repeatTimerInitialDelay;
-	private int repeatTimerDelay;
+	protected PGlobalEventProvider globEvProv;
+	protected boolean ignoreClickOnChildren = false;
+	protected int repeatTimerInitialDelay;
+	protected int repeatTimerDelay;
 	
 	public PButton() {
 		super();
@@ -93,39 +84,35 @@ public class PButton extends AbstractPInputLayoutOwner implements PGlobalEventGe
 		setLayout(defaultLayout);
 		setModel(defaultModel);
 		addObs(new PMouseObs() {
+			public void onMouseMoved(PMouse mouse) {
+				PButton.this.onMouseMoved(mouse);
+			}
 			public void onButtonTriggered(PMouse mouse, MouseButton btn) {
-				if (isEnabled() && btn == MouseButton.LEFT 
-						&& getModel() != null && isMouseOverThisOrChild()) 
-				{
-					getModel().setPressed(true);
-				}
+				PButton.this.onMouseButtonTriggered(mouse, btn);
+			}
+			public void onButtonPressed(PMouse mouse, MouseButton btn) {
+				PButton.this.onMouseButtonPressed(mouse, btn);
 			}
 			public void onButtonReleased(PMouse mouse, MouseButton btn) {
-				if (btn == MouseButton.LEFT && getModel() != null) {
-					boolean oldPressed = isPressed();
-					getModel().setPressed(false);
-					if (oldPressed && isEnabled() && isMouseOverThisOrChild()) {
-						takeFocus();
-						fireClickEvent();
-					}
-				}
+				PButton.this.onMouseButtonReleased(mouse, btn);
 			}
 		});
+		addObs(new ReRenderPFocusObs());
 		
 		defineInput("enterPress", pressEnterInput, pressEnterReaction);
 		defineInput("enterRelease", releaseEnterInput, releaseEnterReaction);
 	}
 	
-	protected PCentricLayout getLayoutInternal() {
-		return (PCentricLayout) super.getLayout();
-	}
-	
 	public void setGlobalEventProvider(PGlobalEventProvider provider) {
-		globalEventProv = provider;
+		globEvProv = provider;
 	}
 	
 	public PGlobalEventProvider getGlobalEventProvider() {
-		return globalEventProv;
+		return globEvProv;
+	}
+	
+	protected PCentricLayout getLayoutInternal() {
+		return (PCentricLayout) super.getLayout();
 	}
 	
 	public void setContent(PComponent component) {
@@ -135,6 +122,14 @@ public class PButton extends AbstractPInputLayoutOwner implements PGlobalEventGe
 	
 	public PComponent getContent() {
 		return getLayoutInternal().getContent();
+	}
+	
+	public void setIgnoreClickOnChildren(boolean isIgnoreClickOnChildren) {
+		ignoreClickOnChildren = isIgnoreClickOnChildren;
+	}
+	
+	public boolean isIgnoreClickOnChildren() {
+		return ignoreClickOnChildren;
 	}
 	
 	public void setRepeatTimer(int initialDelay, int delayBetweenEvents) {
@@ -228,6 +223,42 @@ public class PButton extends AbstractPInputLayoutOwner implements PGlobalEventGe
 		return true;
 	}
 	
+	protected void onModelChange() {
+		if (repeatTimer != null) {
+			repeatTimer.setDelay(repeatTimerInitialDelay);
+			repeatTimer.setStarted(getModel().isPressed());
+		}
+		fireReRenderEvent();
+	}
+	
+	protected void onMouseMoved(PMouse mouse) {
+	}
+	
+	protected void onMouseButtonPressed(PMouse mouse, MouseButton btn) {
+	}
+	
+	protected void onMouseButtonTriggered(PMouse mouse, MouseButton btn) {
+		if (isEnabled() && btn == MouseButton.LEFT 
+//				&& getModel() != null && isMouseOver())
+				&& getModel() != null && isMouseOverThisOrChild())
+		{
+			getModel().setPressed(true);
+		}
+	}
+	
+	protected void onMouseButtonReleased(PMouse mouse, MouseButton btn) {
+		boolean oldPressed = isPressed();
+		if (btn == MouseButton.LEFT && oldPressed) {
+			getModel().setPressed(false);
+			if (isEnabled() && isIgnoreClickOnChildren() ?
+					isMouseOver() : isMouseOverThisOrChild()) 
+			{
+				takeFocus();
+				fireClickEvent();
+			}
+		}
+	}
+	
 	public void addObs(PButtonObs obs) {
 		obsList.add(obs);
 	}
@@ -251,7 +282,7 @@ public class PButton extends AbstractPInputLayoutOwner implements PGlobalEventGe
 	}
 	
 	protected void fireClickEvent() {
-		obsList.sendNotify((obs) -> obs.onClick(this));
+		obsList.fireEvent((obs) -> obs.onClick(this));
 		fireGlobalEvent();
 	}
 	

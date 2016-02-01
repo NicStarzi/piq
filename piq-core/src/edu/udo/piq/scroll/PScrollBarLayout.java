@@ -28,11 +28,11 @@ public class PScrollBarLayout extends AbstractMapPLayout implements PLayout {
 		super(component);
 		
 		addObs(new PLayoutObs() {
-			public void childAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
+			public void onChildAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
 				Constraint cnstr = (Constraint) constraint;
 				comps[cnstr.ordinal()] = child;
 			}
-			public void childRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
+			public void onChildRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
 				Constraint cnstr = (Constraint) constraint;
 				comps[cnstr.ordinal()] = null;
 			}

@@ -147,6 +147,28 @@ public interface PComponent {
 	}
 	
 	/**
+	 * Returns the mouse cursor to be used when the mouse is over 
+	 * this component.<br>
+	 * @param mouse		a non-null mouse that belongs to the root of this components GUI tree
+	 * @return			a non-null instance of PCursor compatible with the given mouse
+	 * @see PMouse#getCursorDefault()
+	 * @see PMouse#getCursorText()
+	 * @see PMouse#getCursorBusy()
+	 * @see PMouse#getCursorHand()
+	 * @see PMouse#getCursorScroll()
+	 * @see PRoot#createCustomCursor(PImageResource, int, int)
+	 */
+	public default PCursor getMouseOverCursor(PMouse mouse) {
+		return mouse.getCursorDefault();
+	}
+	
+	/**
+	 * @param cursor
+	 * @see PRoot#mouseOverCursorChanged(PComponent)
+	 */
+	public void setMouseOverCursor(PCursor cursor);
+	
+	/**
 	 * This method returns the default preferred size for this component 
 	 * used by the default rendering mechanism.<br>
 	 * This method should return a size as small as possible for rendering 

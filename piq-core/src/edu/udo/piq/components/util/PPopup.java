@@ -200,11 +200,11 @@ public class PPopup {
 	}
 	
 	protected void fireShowEvent() {
-		obsList.sendNotify((obs) -> obs.onPopupShown(this, popupComp));
+		obsList.fireEvent((obs) -> obs.onPopupShown(this, popupComp));
 	}
 	
 	protected void fireHideEvent() {
-		obsList.sendNotify((obs) -> obs.onPopupHidden(this, popupComp));
+		obsList.fireEvent((obs) -> obs.onPopupHidden(this, popupComp));
 	}
 	
 }

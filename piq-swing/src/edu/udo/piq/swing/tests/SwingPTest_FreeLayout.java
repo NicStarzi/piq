@@ -51,7 +51,7 @@ public class SwingPTest_FreeLayout {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		root = new JCompPRoot();
-		frame.setContentPane(root.getPanel());
+		frame.setContentPane(root.getJPanel());
 		
 		Timer updateTimer = new Timer(10, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {

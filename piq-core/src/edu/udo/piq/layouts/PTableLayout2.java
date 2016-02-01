@@ -19,12 +19,12 @@ public class PTableLayout2 extends AbstractMapPLayout {
 		super(component);
 		
 		addObs(new PLayoutObs() {
-			public void childAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
+			public void onChildAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
 				Constraint cnstr = (Constraint) constraint;
 				cnstr.comp = child;
 				table[cnstr.col + cnstr.row * cols] = cnstr;
 			}
-			public void childRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
+			public void onChildRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
 				Constraint cnstr = (Constraint) constraint;
 				cnstr.comp = null;
 				table[cnstr.col + cnstr.row * cols] = null;

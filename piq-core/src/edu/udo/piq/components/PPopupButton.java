@@ -2,7 +2,6 @@ package edu.udo.piq.components;
 
 import edu.udo.piq.PColor;
 import edu.udo.piq.PMouse;
-import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.components.util.PPopupComponent;
 import edu.udo.piq.components.util.PPopupComponentObs;
@@ -20,11 +19,6 @@ public class PPopupButton extends PButton implements PPopupComponent {
 	
 	public PPopupButton() {
 		super();
-		addObs(new PMouseObs() {
-			public void onMouseMoved(PMouse mouse) {
-				setHighlighted(isMouseOverThisOrChild());
-			}
-		});
 		getLayoutInternal().setInsets(new ImmutablePInsets(1));
 	}
 	
@@ -72,7 +66,11 @@ public class PPopupButton extends PButton implements PPopupComponent {
 	}
 	
 	protected void firePopupCloseEvent() {
-		obsList.sendNotify((obs) -> obs.onClosePopup(this));
+		obsList.fireEvent((obs) -> obs.onClosePopup(this));
+	}
+	
+	protected void onMouseMoved(PMouse mouse) {
+		setHighlighted(isMouseOverThisOrChild());
 	}
 	
 }

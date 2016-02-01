@@ -33,15 +33,15 @@ public abstract class AbstractPLineChartModel implements PLineChartModel {
 	}
 	
 	protected void fireDataAddedEvent(int index) {
-		obsList.sendNotify((obs) -> obs.onDataPointAdded(this, index));
+		obsList.fireEvent((obs) -> obs.onDataPointAdded(this, index));
 	}
 	
 	protected void fireDataRemovedEvent(int index) {
-		obsList.sendNotify((obs) -> obs.onDataPointRemoved(this, index));
+		obsList.fireEvent((obs) -> obs.onDataPointRemoved(this, index));
 	}
 	
 	protected void fireDataChangedEvent(int index) {
-		obsList.sendNotify((obs) -> obs.onDataPointChanged(this, index));
+		obsList.fireEvent((obs) -> obs.onDataPointChanged(this, index));
 	}
 	
 }

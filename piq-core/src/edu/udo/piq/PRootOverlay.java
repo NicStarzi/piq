@@ -1,5 +1,7 @@
 package edu.udo.piq;
 
+import java.util.Collection;
+
 import edu.udo.piq.components.containers.PGlassPanel;
 import edu.udo.piq.layouts.PFreeLayout;
 
@@ -35,6 +37,10 @@ public interface PRootOverlay {
 	 * @return a layout of type {@link PFreeLayout} or a subclass of it
 	 */
 	public PFreeLayout getLayout();
+	
+	public default Collection<PComponent> getChildren() {
+		return getLayout().getChildren();
+	}
 	
 	/**
 	 * Returns the {@link PBounds} for this overlay. This might be useful to certain components 

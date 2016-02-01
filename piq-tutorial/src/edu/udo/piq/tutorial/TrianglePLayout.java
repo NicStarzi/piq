@@ -2,34 +2,17 @@ package edu.udo.piq.tutorial;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PLayoutObs;
-import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PSize;
-import edu.udo.piq.tools.AbstractMapPLayout;
+import edu.udo.piq.tools.AbstractEnumPLayout;
 import edu.udo.piq.tools.MutablePSize;
+import edu.udo.piq.tutorial.TrianglePLayout.Pos;
 
-public class TrianglePLayout extends AbstractMapPLayout {
+public class TrianglePLayout extends AbstractEnumPLayout<Pos> {
 	
 	protected final MutablePSize prefSize = new MutablePSize();
-	private PComponent[] comps = new PComponent[Pos.values().length];
 	
 	public TrianglePLayout(PComponent component) {
-		super(component);
-		addObs(new PLayoutObs() {
-			public void childAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
-				Pos pos = (Pos) constraint;
-				comps[pos.ordinal()] = child;
-			}
-			public void childRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
-				Pos pos = (Pos) constraint;
-				comps[pos.ordinal()] = null;
-			}
-		});
-	}
-	
-	protected boolean canAdd(PComponent component, Object constraint) {
-		return constraint != null && constraint instanceof Pos 
-				&& getChildForConstraint(constraint) == null;
+		super(component, Pos.class);
 	}
 	
 	public void layOut() {

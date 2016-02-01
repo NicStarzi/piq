@@ -19,7 +19,7 @@ public abstract class AbstractPTextModel implements PTextModel {
 	}
 	
 	protected void fireTextChangeEvent() {
-		obsList.sendNotify((obs) -> obs.onTextChanged(this));
+		obsList.fireEvent((obs) -> obs.onTextChanged(this));
 	}
 	
 }

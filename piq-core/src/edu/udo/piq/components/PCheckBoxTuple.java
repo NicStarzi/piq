@@ -3,25 +3,23 @@ package edu.udo.piq.components;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PFocusObs;
+import edu.udo.piq.PGlobalEventGenerator;
+import edu.udo.piq.PGlobalEventProvider;
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PKeyboard.Key;
-import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
-import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PRenderer;
+import edu.udo.piq.components.defaults.ReRenderPFocusObs;
 import edu.udo.piq.components.util.PInput;
-import edu.udo.piq.components.util.PPopupComponent;
-import edu.udo.piq.components.util.PPopupComponentObs;
 import edu.udo.piq.layouts.PTupleLayout;
 import edu.udo.piq.layouts.PTupleLayout.Constraint;
 import edu.udo.piq.tools.AbstractPInputLayoutOwner;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
 
-public class PCheckBoxTuple extends AbstractPInputLayoutOwner implements PPopupComponent {
+public class PCheckBoxTuple extends AbstractPInputLayoutOwner implements PGlobalEventGenerator {
 	
 	protected final PInput pressEnterInput = new PInput() {
 		public Key getInputKey() {
@@ -34,70 +32,47 @@ public class PCheckBoxTuple extends AbstractPInputLayoutOwner implements PPopupC
 			return isEnabled() && getCheckBox() != null && getCheckBox().getModel() != null;
 		}
 	};
-	protected final Runnable pressEnterReaction = new Runnable() {
-		public void run() {
-			getCheckBox().toggleChecked();
-		}
-	};
-	protected final ObserverList<PPopupComponentObs> obsList
+	protected final Runnable pressEnterReaction = () -> getCheckBox().toggleChecked();
+	
+	protected final ObserverList<PCheckBoxObs> obsList
 		= PCompUtil.createDefaultObserverList();
-	private final PMouseObs mouseObs = new PMouseObs() {
-		public void onButtonTriggered(PMouse mouse, MouseButton btn) {
-			PComponent scndCmp = getSecondComponent();
-			if (scndCmp != null && scndCmp.isMouseOver()) {
-				if (!scndCmp.isFocusable()) {
-					getCheckBox().toggleChecked();
-					takeFocus();
-					firePopupCloseEvent();
-				}
-			} else if (isMouseOver()) {
-				getCheckBox().toggleChecked();
-				takeFocus();
-				firePopupCloseEvent();
-			}
-		}
-	};
-	private final PCheckBoxObs chkBxObs = new PCheckBoxObs() {
-		public void onClick(PCheckBox checkBox) {
-			takeFocus();
-			firePopupCloseEvent();
-		}
-	};
-	private final PLayoutObs layoutObs = new PLayoutObs() {
-		public void childAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
-			if (constraint == Constraint.FIRST) {
-				if (!(child instanceof PCheckBox)) {
-					throw new IllegalArgumentException("child="+child);
-				}
-				((PCheckBox) child).addObs(chkBxObs);
-			}
-		}
-		public void childRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
-			if (constraint == Constraint.FIRST) {
-				((PCheckBox) child).removeObs(chkBxObs);
-			}
-		}
-	};
+	private final PCheckBoxObs chkBxObs = (chkBx) -> PCheckBoxTuple.this.onCheckBoxClick();
+	private PGlobalEventProvider globEvProv;
 	
 	public PCheckBoxTuple() {
 		super();
 		setLayout(new PTupleLayout(this));
 		getLayoutInternal().addChild(new PCheckBox(), Constraint.FIRST);
-		addObs(mouseObs);
-		addObs(new PFocusObs() {
-			public void onFocusGained(PComponent oldOwner, PComponent newOwner) {
-				fireReRenderEvent();
+		addObs(new PMouseObs() {
+			public void onButtonTriggered(PMouse mouse, MouseButton btn) {
+				PCheckBoxTuple.this.onMouseButtonTriggered(mouse, btn);
 			}
-			public void onFocusLost(PComponent oldOwner) {
-				fireReRenderEvent();
+			public void onButtonPressed(PMouse mouse, MouseButton btn) {
+				PCheckBoxTuple.this.onMouseButtonPressed(mouse, btn);
+			}
+			public void onButtonReleased(PMouse mouse, MouseButton btn) {
+				PCheckBoxTuple.this.onMouseButtonReleased(mouse, btn);
+			}
+			public void onMouseMoved(PMouse mouse) {
+				PCheckBoxTuple.this.onMouseMoved(mouse);
 			}
 		});
+		addObs(new ReRenderPFocusObs());
+		
 		defineInput("enter", pressEnterInput, pressEnterReaction);
 	}
 	
 	public PCheckBoxTuple(PComponent secondComponent) {
 		this();
 		setSecondComponent(secondComponent);
+	}
+	
+	public void setGlobalEventProvider(PGlobalEventProvider provider) {
+		globEvProv = provider;
+	}
+	
+	public PGlobalEventProvider getGlobalEventProvider() {
+		return globEvProv;
 	}
 	
 	protected void setLayout(PTupleLayout layout) {
@@ -123,11 +98,11 @@ public class PCheckBoxTuple extends AbstractPInputLayoutOwner implements PPopupC
 	}
 	
 	public PComponent getSecondComponent() {
-		return getLayoutInternal().getAt(Constraint.SECOND);
+		return getLayoutInternal().getSecond();
 	}
 	
 	public PCheckBox getCheckBox() {
-		return (PCheckBox) getLayoutInternal().getAt(Constraint.FIRST);
+		return (PCheckBox) getLayoutInternal().getFirst();
 	}
 	
 	public boolean isChecked() {
@@ -157,11 +132,11 @@ public class PCheckBoxTuple extends AbstractPInputLayoutOwner implements PPopupC
 	}
 	
 	public void addObs(PCheckBoxObs obs) {
-		getCheckBox().addObs(obs);
+		obsList.add(obs);
 	}
 	
 	public void removeObs(PCheckBoxObs obs) {
-		getCheckBox().removeObs(obs);
+		obsList.remove(obs);
 	} 
 	
 	public void addObs(PCheckBoxModelObs obs) {
@@ -172,16 +147,47 @@ public class PCheckBoxTuple extends AbstractPInputLayoutOwner implements PPopupC
 		getCheckBox().removeObs(obs);
 	}
 	
-	public void addObs(PPopupComponentObs obs) {
-		obsList.add(obs);
+	protected void onMouseMoved(PMouse mouse) {
 	}
 	
-	public void removeObs(PPopupComponentObs obs) {
-		obsList.remove(obs);
+	protected void onMouseButtonPressed(PMouse mouse, MouseButton btn) {
 	}
 	
-	protected void firePopupCloseEvent() {
-		obsList.sendNotify((obs) -> obs.onClosePopup(this));
+	protected void onMouseButtonTriggered(PMouse mouse, MouseButton btn) {
+		PComponent scndCmp = getSecondComponent();
+		if (scndCmp != null && scndCmp.isMouseOver()) {
+			if (!scndCmp.isFocusable()) {
+				getCheckBox().toggleChecked();
+				takeFocus();
+			}
+		} else if (isMouseOver()) {
+			getCheckBox().toggleChecked();
+			takeFocus();
+		}
+	}
+	
+	protected void onMouseButtonReleased(PMouse mouse, MouseButton btn) {
+	}
+	
+	protected void onChildAdded(PComponent child, Object constraint) {
+		if (constraint == Constraint.FIRST) {
+			if (!(child instanceof PCheckBox)) {
+				throw new IllegalArgumentException("child="+child);
+			}
+			((PCheckBox) child).addObs(chkBxObs);
+		}
+	}
+	
+	protected void onChildRemoved(PComponent child, Object constraint) {
+		if (constraint == Constraint.FIRST) {
+			((PCheckBox) child).removeObs(chkBxObs);
+		}
+	}
+	
+	protected void onCheckBoxClick() {
+		takeFocus();
+		obsList.fireEvent((obs) -> obs.onClick(getCheckBox()));
+		fireGlobalEvent();
 	}
 	
 }

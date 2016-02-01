@@ -42,7 +42,7 @@ public class SwingPTest_PRadioButton {
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
 		root = new JCompPRoot();
-		frame.setContentPane(root.getPanel());
+		frame.setContentPane(root.getJPanel());
 		
 		final Timer updateTimer = new Timer(10, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {

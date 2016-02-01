@@ -39,15 +39,15 @@ public abstract class AbstractPModel implements PModel {
 	}
 	
 	protected void fireAddEvent(PModelIndex index, Object content) {
-		obsList.sendNotify((obs) -> obs.onContentAdded(this, index, content));
+		obsList.fireEvent((obs) -> obs.onContentAdded(this, index, content));
 	}
 	
 	protected void fireRemoveEvent(PModelIndex index, Object content) {
-		obsList.sendNotify((obs) -> obs.onContentRemoved(this, index, content));
+		obsList.fireEvent((obs) -> obs.onContentRemoved(this, index, content));
 	}
 	
 	public void fireChangeEvent(PModelIndex index, Object content) {
-		obsList.sendNotify((obs) -> obs.onContentChanged(this, index, content));
+		obsList.fireEvent((obs) -> obs.onContentChanged(this, index, content));
 	}
 	
 }

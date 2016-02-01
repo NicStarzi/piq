@@ -30,7 +30,7 @@ public class PTableLayout3 extends AbstractMapPLayout {
 		super(component);
 		
 		addObs(new PLayoutObs() {
-			public void childAdded(PReadOnlyLayout layout, 
+			public void onChildAdded(PReadOnlyLayout layout, 
 					PComponent child, Object constraint) 
 			{
 				DefaultPCellComponent cell = (DefaultPCellComponent) child;
@@ -47,7 +47,7 @@ public class PTableLayout3 extends AbstractMapPLayout {
 				}
 				table.set(col, index.getRow(), child);
 			}
-			public void childRemoved(PReadOnlyLayout layout, 
+			public void onChildRemoved(PReadOnlyLayout layout, 
 					PComponent child, Object constraint) 
 			{
 				System.out.println("PTableLayout3.childRemoved cnstr="+constraint+", child="+child);

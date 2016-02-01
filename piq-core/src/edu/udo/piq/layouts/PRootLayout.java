@@ -1,44 +1,39 @@
 package edu.udo.piq.layouts;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PReadOnlyLayout;
-import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PRootOverlay;
 import edu.udo.piq.PSize;
-import edu.udo.piq.tools.AbstractMapPLayout;
+import edu.udo.piq.layouts.PRootLayout.Constraint;
+import edu.udo.piq.tools.AbstractEnumPLayout;
 
-public class PRootLayout extends AbstractMapPLayout {
+public class PRootLayout extends AbstractEnumPLayout<Constraint> {
 	
 	private final PRoot owner;
-	private final List<PComponent> components = Arrays.asList(new PComponent[Constraint.values().length]);
+//	private final List<PComponent> components = Arrays.asList(new PComponent[Constraint.values().length]);
 	
 	public PRootLayout(PRoot owner) {
-		super(owner);
+		super(owner, Constraint.class);
 		this.owner = owner;
-		addObs(new PLayoutObs() {
-			public void childAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
-				Constraint pos = (Constraint) constraint;
-				if (pos == Constraint.OVERLAY && !(child instanceof PRootOverlay)) {
-					throw new IllegalArgumentException("child="+child+", constraint="+constraint);
-				}
-				components.set(pos.ordinal(), child);
-			}
-			public void childRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
-				Constraint pos = (Constraint) constraint;
-				components.set(pos.ordinal(), null);
-			}
-		});
+//		addObs(new PLayoutObs() {
+//			public void childAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
+//				Constraint pos = (Constraint) constraint;
+//				if (pos == Constraint.OVERLAY && !(child instanceof PRootOverlay)) {
+//					throw new IllegalArgumentException("child="+child+", constraint="+constraint);
+//				}
+//				components.set(pos.ordinal(), child);
+//			}
+//			public void childRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
+//				Constraint pos = (Constraint) constraint;
+//				components.set(pos.ordinal(), null);
+//			}
+//		});
 	}
-	
-	protected boolean canAdd(PComponent cmp, Object constraint) {
-		return constraint != null && constraint instanceof Constraint && getChildForConstraint(constraint) == null;
-	}
+//	
+//	protected boolean canAdd(PComponent cmp, Object constraint) {
+//		return constraint != null && constraint instanceof Constraint && getChildForConstraint(constraint) == null;
+//	}
 	
 	public void layOut() {
 		PBounds ob = getOwner().getBounds();
@@ -56,11 +51,13 @@ public class PRootLayout extends AbstractMapPLayout {
 	}
 	
 	public PRootOverlay getOverlay() {
-		return (PRootOverlay) components.get(Constraint.OVERLAY.ordinal());
+		return (PRootOverlay) getChildForConstraint(Constraint.OVERLAY);
+//		return (PRootOverlay) components.get(Constraint.OVERLAY.ordinal());
 	}
 	
 	public PComponent getBody() {
-		return components.get(Constraint.BODY.ordinal());
+		return getChildForConstraint(Constraint.BODY);
+//		return components.get(Constraint.BODY.ordinal());
 	}
 	
 	public PComponent getChildAt(int x, int y) {
@@ -77,10 +74,10 @@ public class PRootLayout extends AbstractMapPLayout {
 		}
 		return null;
 	}
-	
-	public Collection<PComponent> getChildren() {
-		return components;
-	}
+//	
+//	public Collection<PComponent> getChildren() {
+//		return components;
+//	}
 	
 	public static enum Constraint {
 		BODY,

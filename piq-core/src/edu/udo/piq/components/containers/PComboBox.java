@@ -1,16 +1,22 @@
 package edu.udo.piq.components.containers;
 
+import edu.udo.piq.PInsets;
+import edu.udo.piq.PMouse;
+import edu.udo.piq.PRenderer;
+import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.components.collections.PList;
 import edu.udo.piq.components.collections.PListIndex;
+import edu.udo.piq.components.collections.PListModel;
 import edu.udo.piq.components.collections.PListSingleSelection;
 import edu.udo.piq.components.collections.PModel;
 import edu.udo.piq.components.collections.PModelIndex;
 import edu.udo.piq.components.collections.PModelObs;
 import edu.udo.piq.components.collections.PSelection;
 import edu.udo.piq.components.collections.PSelectionObs;
-import edu.udo.piq.components.textbased.PLabel;
+import edu.udo.piq.components.textbased.PTextField;
+import edu.udo.piq.components.textbased.PTextFieldObs;
 
-public class PDropDownList extends PDropDown {
+public class PComboBox extends PDropDown {
 	
 	private final PSelectionObs listSelectObs = new PSelectionObs() {
 		public void onSelectionAdded(PSelection selection, PModelIndex index) {
@@ -19,11 +25,6 @@ public class PDropDownList extends PDropDown {
 		public void onSelectionRemoved(PSelection selection, PModelIndex index) {
 			if (index.equals(displayedIndex)) {
 				setDisplayedIndex(null);
-//				if (list.getModel().getSize() > 0) {
-//					list.getSelection().addSelection(new PListIndex(0));
-//				} else {
-//					setDisplayedIndex(null);
-//				}
 			}
 		}
 	};
@@ -53,12 +54,16 @@ public class PDropDownList extends PDropDown {
 			}
 		}
 	};
-	private final PLabel label;
+	private final PTextField txtField;
 	private final PList list;
+	private StringEncoder strEnc;
 	private PModelIndex displayedIndex = null;
 	
-	public PDropDownList() {
+	public PComboBox() {
 		super();
+		getLayoutInternal().setInsets(PInsets.ZERO_INSETS);
+		getLayoutInternal().setGap(0);
+		
 		list = new PList();
 		list.setDragAndDropSupport(null);
 		list.setSelection(new PListSingleSelection());
@@ -66,8 +71,10 @@ public class PDropDownList extends PDropDown {
 		list.addObs(listSelectObs);
 		setBody(list);
 		
-		label = new PLabel();
-		setPreview(label);
+		txtField = new PTextField();
+		setPreview(txtField);
+		
+		txtField.addObs((PTextFieldObs) (cmp) -> onTextFieldInput());
 		
 		addObs(new PDropDownObs() {
 			public void onBodyShown(PDropDown dropDown) {
@@ -76,8 +83,20 @@ public class PDropDownList extends PDropDown {
 		});
 	}
 	
+	public PTextField getTextField() {
+		return txtField;
+	}
+	
 	public PList getList() {
 		return list;
+	}
+	
+	public void setStringEncoder(StringEncoder stringEncoder) {
+		strEnc = stringEncoder;
+	}
+	
+	public StringEncoder getStringEncoder() {
+		return strEnc;
 	}
 	
 	public void setDisplayedIndex(int indexVal) {
@@ -87,10 +106,51 @@ public class PDropDownList extends PDropDown {
 	public void setDisplayedIndex(PModelIndex index) {
 		displayedIndex = index;
 		if (displayedIndex == null) {
-			label.getModel().setValue(null);
+			txtField.getModel().setValue(null);
 		} else {
-			label.getModel().setValue(list.getModel().get(displayedIndex));
+			txtField.getModel().setValue(list.getModel().get(displayedIndex));
 		}
+	}
+	
+	public void defaultRender(PRenderer renderer) {
+	}
+	
+	protected void onTextFieldInput() {
+		StringEncoder strEnc = getStringEncoder();
+		if (strEnc == null) {
+			return;
+		}
+		String txt = txtField.getText().toLowerCase();
+		
+		PListModel mdl = getList().getModel();
+		for (int i = 0; i < mdl.getSize(); i++) {
+			Object obj = mdl.get(i);
+			String objStr = strEnc.getStringFor(obj).toLowerCase();
+			if (objStr.contains(txt)) {
+				getList().getSelection().clearSelection();
+				getList().getSelection().addSelection(new PListIndex(i));
+				return;
+			}
+		}
+		setDisplayedIndex(displayedIndex);
+	}
+	
+	protected void onMouseButtonTriggered(PMouse mouse, MouseButton btn) {
+	}
+	
+	protected void onMouseButtonReleased(PMouse mouse, MouseButton btn) {
+	}
+	
+	protected void onButtonClick() {
+		if (isBodyVisible()) {
+			hideDropDown();
+		} else {
+			showDropDown();
+		}
+	}
+	
+	public static interface StringEncoder {
+		public String getStringFor(Object obj);
 	}
 	
 }

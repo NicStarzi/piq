@@ -163,15 +163,15 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 	}
 	
 	protected void fireDividerTouchedEvent() {
-		obsList.sendNotify((obs) -> obs.onDividerTouched(this));
+		obsList.fireEvent((obs) -> obs.onDividerTouched(this));
 	}
 	
 	protected void fireDividerReleasedEvent() {
-		obsList.sendNotify((obs) -> obs.onDividerReleased(this));
+		obsList.fireEvent((obs) -> obs.onDividerReleased(this));
 	}
 	
 	protected void fireDividerMovedEvent() {
-		obsList.sendNotify((obs) -> obs.onDividerMoved(this));
+		obsList.fireEvent((obs) -> obs.onDividerMoved(this));
 	}
 	
 }

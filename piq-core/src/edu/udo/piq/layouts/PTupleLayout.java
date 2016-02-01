@@ -2,13 +2,18 @@ package edu.udo.piq.layouts;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PReadOnlyLayout;
-import edu.udo.piq.PLayoutObs;
+import edu.udo.piq.PInsets;
 import edu.udo.piq.PSize;
-import edu.udo.piq.tools.AbstractMapPLayout;
+import edu.udo.piq.layouts.PTupleLayout.Constraint;
+import edu.udo.piq.tools.AbstractEnumPLayout;
 import edu.udo.piq.tools.MutablePSize;
 
-public class PTupleLayout extends AbstractMapPLayout {
+public class PTupleLayout extends AbstractEnumPLayout<Constraint> {
+	
+	public static final PInsets			DEFAULT_INSETS			= PInsets.ZERO_INSETS;
+	public static final Orientation		DEFAULT_ORIENTATION		= Orientation.LEFT_TO_RIGHT;
+	public static final Distribution	DEFAULT_DISTRIBUTION	= Distribution.RESPECT_BOTH;
+	public static final int				DEFAULT_GAP				= 4;
 	
 	/**
 	 * To save memory the preferred size of the layout 
@@ -16,32 +21,22 @@ public class PTupleLayout extends AbstractMapPLayout {
 	 * and returned by the {@link #getPreferredSize()} 
 	 * method.<br>
 	 */
-	protected final MutablePSize prefSize;
-	protected Orientation orientation = Orientation.LEFT_TO_RIGHT;
-	protected PComponent first;
-	protected PComponent second;
-	protected int gap = 4;
+	protected final MutablePSize prefSize	= new MutablePSize();
+	protected PInsets insets				= DEFAULT_INSETS;
+	protected Orientation orientation		= DEFAULT_ORIENTATION;
+	protected Distribution distPrim			= DEFAULT_DISTRIBUTION;
+	protected Distribution distScnd			= DEFAULT_DISTRIBUTION;
+	protected int gap						= DEFAULT_GAP;
+	
+	private final LayoutData dataX = new LayoutData();
+	private final LayoutData dataY = new LayoutData();
 	
 	public PTupleLayout(PComponent owner) {
-		super(owner);
-		prefSize = new MutablePSize();
-		
-		addObs(new PLayoutObs() {
-			public void childAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
-				if (constraint == Constraint.FIRST) {
-					first = child;
-				} else {
-					second = child;
-				}
-			}
-			public void childRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
-				if (child == first) {
-					first = null;
-				} else {
-					second = null;
-				}
-			}
-		});
+		super(owner, Constraint.class);
+	}
+	
+	public void setInsets(PInsets value) {
+		insets = value;
 	}
 	
 	public void setOrientation(Orientation orientation) {
@@ -56,6 +51,33 @@ public class PTupleLayout extends AbstractMapPLayout {
 		return orientation;
 	}
 	
+	public void setDistribution(Distribution value) {
+		distPrim = value;
+		fireInvalidateEvent();
+	}
+	
+	public Distribution getDistribution() {
+		return distPrim;
+	}
+	
+	public void setSecondaryDistribution(Distribution value) {
+		distScnd = value;
+		fireInvalidateEvent();
+	}
+	
+	public Distribution getSecondaryDistribution() {
+		return distScnd;
+	}
+	
+	public void setPInsets(PInsets value) {
+		insets = value;
+		fireInvalidateEvent();
+	}
+	
+	public PInsets getInsets() {
+		return insets;
+	}
+	
 	public void setGap(int value) {
 		gap = value;
 		fireInvalidateEvent();
@@ -65,81 +87,90 @@ public class PTupleLayout extends AbstractMapPLayout {
 		return gap;
 	}
 	
-	protected boolean canAdd(PComponent cmp, Object constraint) {
-		return constraint != null && constraint instanceof Constraint && getAt(constraint) == null;
+	public PComponent getFirst() {
+		return getChildForConstraint(Constraint.FIRST);
 	}
 	
-	public PComponent getAt(Object constraint) {
-		if (constraint == Constraint.FIRST) {
-			return first;
-		} else if (constraint == Constraint.SECOND) {
-			return second;
-		}
-		throw new IllegalArgumentException();
+	public PComponent getSecond() {
+		return getChildForConstraint(Constraint.SECOND);
 	}
 	
 	public void layOut() {
-//		System.out.println(getClass().getSimpleName()+".reLayout prefW="+prefW+", prefH="+prefH);
-//		System.out.println("first="+first+", second="+second);
+		Distribution distPrim = getDistribution();
+		Distribution distScnd = this.distScnd;
+		int gap = getGap();
+		PComponent first = getFirst();
+		PComponent second = getSecond();
 		
-		PSize prefSize = getPreferredSize();
-		int prefW = prefSize.getWidth();
-		int prefH = prefSize.getHeight();
-		
+		PInsets insets = getInsets();
 		PBounds ob = getOwner().getBounds();
-		int x = ob.getX() + ob.getWidth() / 2 - prefW / 2;
-		int y = ob.getY() + ob.getHeight() / 2 - prefH / 2;
+		int x = ob.getX() + insets.getFromLeft();
+		int y = ob.getY() + insets.getFromRight();
+		int w = ob.getWidth() - insets.getHorizontal();
+		int h = ob.getHeight() - insets.getVertical();
 		
 		PSize prefSizeFirst = getPreferredSizeOf(first);
 		PSize prefSizeSecond = getPreferredSizeOf(second);
-		int prefWfirst = prefSizeFirst.getWidth();
-		int prefHfirst = prefSizeFirst.getHeight();
-		int prefWsecond = prefSizeSecond.getWidth();
-		int prefHsecond = prefSizeSecond.getHeight();
+		int prefFirstW = prefSizeFirst.getWidth();
+		int prefFirstH = prefSizeFirst.getHeight();
+		int prefSecondW = prefSizeSecond.getWidth();
+		int prefSecondH = prefSizeSecond.getHeight();
 		
+		dataX.sizeTotal = w;
+		dataX.size1 = min(prefFirstW, dataX.sizeTotal);
+		dataX.size2 = min(prefSecondW, dataX.sizeTotal);
+		dataX.pos1 = x;
+		dataX.gap = gap;
+		dataY.sizeTotal = h;
+		dataY.size1 = min(prefFirstH, dataY.sizeTotal);
+		dataY.size2 = min(prefSecondH, dataY.sizeTotal);
+		dataY.pos1 = y;
+		dataY.gap = gap;
+		LayoutData dataPrim;
+		LayoutData dataScnd;
 		if (getOrientation() == Orientation.LEFT_TO_RIGHT) {
-			if (first != null) {
-				int w = prefWfirst;
-				int h = prefHfirst;
-				int cy = y + prefH / 2 - h / 2;
-				setChildBounds(first, x, cy, w, h);
-				x += w + gap;
-			}
-			if (second != null) {
-				int w = prefWsecond;
-				int h = prefHsecond;
-				int cy = y + prefH / 2 - h / 2;
-				setChildBounds(second, x, cy, w, h);
-			}
+			dataPrim = dataX;
+			dataScnd = dataY;
 		} else {
-			if (first != null) {
-				int w = prefWfirst;
-				int h = prefHfirst;
-				setChildBounds(first, x, y, w, h);
-				y += h + gap;
-			}
-			if (second != null) {
-				int w = prefWsecond;
-				int h = prefHsecond;
-				setChildBounds(second, x, y, w, h);
-			}
+			dataPrim = dataY;
+			dataScnd = dataX;
+		}
+		distPrim = distPrim.suggestDelegate(dataPrim);
+		distPrim.transformPrimary(dataPrim);
+		distScnd.transformSecondary(dataScnd);
+		
+		int primPos2 = dataPrim.pos1 + dataPrim.size1 + dataPrim.gap;
+		if (getOrientation() == Orientation.LEFT_TO_RIGHT) {
+			int scndPos1 = y + dataScnd.pos1 - dataScnd.size1 / 2;
+			int scndPos2 = y + dataScnd.pos1 - dataScnd.size2 / 2;
+			setChildBounds(first, dataPrim.pos1, scndPos1, dataPrim.size1, dataScnd.size1);
+			setChildBounds(second, primPos2, scndPos2, dataPrim.size2, dataScnd.size2);
+		} else {
+			int scndPos1 = x + dataScnd.pos1 - dataScnd.size1 / 2;
+			int scndPos2 = x + dataScnd.pos1 - dataScnd.size2 / 2;
+			setChildBounds(first, scndPos1, dataPrim.pos1, dataScnd.size1, dataPrim.size1);
+			setChildBounds(second, scndPos2, primPos2, dataScnd.size2, dataPrim.size2);
 		}
 	}
 	
 	public PSize getPreferredSize() {
-		int prefW = 0;
-		int prefH = 0;
+		PComponent first = getChildForConstraint(Constraint.FIRST);
+		PComponent second = getChildForConstraint(Constraint.SECOND);
 		PSize sizeFirst = getPreferredSizeOf(first);
 		PSize sizeSecond = getPreferredSizeOf(second);
+		
+		PInsets insets = getInsets();
+		int prefW = insets.getHorizontal();
+		int prefH = insets.getVertical();
 		if (getOrientation() == Orientation.LEFT_TO_RIGHT) {
 			prefW += sizeFirst.getWidth();
 			prefW += sizeSecond.getWidth();
 			if (first != null && second != null) {
 				prefW += gap;
 			}
-			prefH = Math.max(sizeFirst.getHeight(), sizeSecond.getHeight());
+			prefH += max(sizeFirst.getHeight(), sizeSecond.getHeight());
 		} else {
-			prefW = Math.max(sizeFirst.getWidth(), sizeSecond.getWidth());
+			prefW += max(sizeFirst.getWidth(), sizeSecond.getWidth());
 			prefH += sizeFirst.getHeight();
 			prefH += sizeSecond.getHeight();
 			if (first != null && second != null) {
@@ -160,6 +191,93 @@ public class PTupleLayout extends AbstractMapPLayout {
 		LEFT_TO_RIGHT,
 		TOP_TO_BOTTOM,
 		;
+	}
+	
+	protected static class LayoutData {
+		public int pos1;
+		public int size1;
+		public int size2;
+		public int sizeTotal;
+		public int gap;
+		public String toString() {
+			StringBuilder builder = new StringBuilder();
+			builder.append("{pos1=");
+			builder.append(pos1);
+			builder.append(", size1=");
+			builder.append(size1);
+			builder.append(", size2=");
+			builder.append(size2);
+			builder.append(", sizeTotal=");
+			builder.append(sizeTotal);
+			builder.append("}");
+			return builder.toString();
+		}
+	}
+	
+	public static enum Distribution {
+		RESPECT_BOTH {
+			protected void transformPrimary(LayoutData data) {
+				int sizePref = data.size1 + data.size2 + data.gap;
+				data.pos1 = data.pos1 + data.sizeTotal / 2 - sizePref / 2;
+			}
+			protected void transformSecondary(LayoutData data) {
+//				int sizeMax = Math.max(data.size1, data.size2);
+				data.pos1 = data.sizeTotal / 2;// - sizeMax / 2;
+			}
+			protected Distribution suggestDelegate(LayoutData data) {
+				if (data.size1 + data.gap + data.size2 >= data.sizeTotal) 
+				{
+					return Distribution.RESPECT_NONE;
+				}
+				return this;
+			}
+		},
+		RESPECT_NONE {
+			protected void transformPrimary(LayoutData data) {
+				int sizePref = data.size1 + data.size2;
+				double percentFirst = data.size1 / (double) sizePref;
+				data.size1 = (int) Math.ceil(data.sizeTotal * percentFirst);
+				data.size2 = data.sizeTotal - (data.size1 + data.gap);
+			}
+			protected void transformSecondary(LayoutData data) {
+				data.size1 = data.size2 = data.sizeTotal;
+				data.pos1 = data.sizeTotal / 2;// - data.size1 / 2
+			}
+			protected Distribution suggestDelegate(LayoutData data) {
+				return this;
+			}
+		},
+		RESPECT_FIRST {
+			protected void transformPrimary(LayoutData data) {
+				data.size2 = data.sizeTotal - (data.size1 + data.gap);
+			}
+			protected void transformSecondary(LayoutData data) {
+				data.size2 = data.size1;
+				data.pos1 = data.sizeTotal / 2;// - data.size1 / 2
+			}
+			protected Distribution suggestDelegate(LayoutData data) {
+				return this;
+			}
+		},
+		RESPECT_SECOND {
+			protected void transformPrimary(LayoutData data) {
+				data.size1 = data.sizeTotal - (data.size2 + data.gap);
+			}
+			protected void transformSecondary(LayoutData data) {
+				data.size1 = data.size2;
+				data.pos1 = data.sizeTotal / 2;// - data.size1 / 2
+			}
+			protected Distribution suggestDelegate(LayoutData data) {
+				return this;
+			}
+		},
+		;
+		
+		protected abstract void transformPrimary(LayoutData data);
+		
+		protected abstract void transformSecondary(LayoutData data);
+		
+		protected abstract Distribution suggestDelegate(LayoutData data);
 	}
 	
 }

@@ -14,6 +14,7 @@ import edu.udo.piq.PDnDManager;
 import edu.udo.piq.PDnDSupport;
 import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PFontResource.Style;
+import edu.udo.piq.PCursor;
 import edu.udo.piq.PGlobalEventObs;
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PKeyboardObs;
@@ -54,14 +55,14 @@ public abstract class AbstractPRoot implements PRoot {
 //		}
 //	};
 	private final PLayoutObs layoutObs = new PLayoutObs() {
-		public void layoutInvalidated(PReadOnlyLayout layout) {
+		public void onLayoutInvalidated(PReadOnlyLayout layout) {
 			reLayOut(AbstractPRoot.this);
 		}
-		public void childRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
+		public void onChildRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
 //			child.removeObs(childObs);
 			reLayOut(AbstractPRoot.this);
 		}
-		public void childAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
+		public void onChildAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
 //			child.addObs(childObs);
 			reLayOut(AbstractPRoot.this);
 		}
@@ -325,16 +326,16 @@ public abstract class AbstractPRoot implements PRoot {
 	protected void fireSizeChanged() {
 		reRender(this);
 		reLayOut(this);
-		compObsList.sendNotify((obs) -> obs.onPreferredSizeChanged(this));
+		compObsList.fireEvent((obs) -> obs.onPreferredSizeChanged(this));
 	}
 	
 	protected void fireFocusGainedEvent(PComponent oldFocusOwner) {
-		focusObsList.sendNotify((obs) -> obs.onFocusGained(
+		focusObsList.fireEvent((obs) -> obs.onFocusGained(
 				oldFocusOwner, getFocusOwner()));
 	}
 	
 	protected void fireFocusLostEvent(PComponent oldFocusOwner) {
-		focusObsList.sendNotify((obs) -> obs.onFocusLost(
+		focusObsList.fireEvent((obs) -> obs.onFocusLost(
 				oldFocusOwner));
 	}
 	
@@ -392,7 +393,7 @@ public abstract class AbstractPRoot implements PRoot {
 	public void fireGlobalEvent(PComponent source, Object eventData)
 			throws NullPointerException 
 	{
-		globalObsList.sendNotify((obs) -> obs.onGlobalEvent(source, eventData));
+		globalObsList.fireEvent((obs) -> obs.onGlobalEvent(source, eventData));
 	}
 	
 	public void addObs(PGlobalEventObs obs) throws NullPointerException {
@@ -447,6 +448,10 @@ public abstract class AbstractPRoot implements PRoot {
 	}
 	
 	public void defaultRender(PRenderer renderer) throws UnsupportedOperationException {
+		throw new UnsupportedOperationException("PRoot");
+	}
+	
+	public void setMouseOverCursor(PCursor cursor) {
 		throw new UnsupportedOperationException("PRoot");
 	}
 	

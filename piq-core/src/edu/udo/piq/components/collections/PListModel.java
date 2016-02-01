@@ -12,6 +12,14 @@ public interface PListModel extends PModel {
 	
 	public void add(int index, Object content);
 	
+	public default boolean canAdd(Object content) {
+		return canAdd(getSize(), content);
+	}
+	
+	public default void add(Object content) {
+		add(getSize(), content);
+	}
+	
 	public boolean canRemove(int index);
 	
 	public void remove(int index);

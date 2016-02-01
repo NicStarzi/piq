@@ -2,6 +2,8 @@ package edu.udo.piq.components;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
+import edu.udo.piq.PGlobalEventGenerator;
+import edu.udo.piq.PGlobalEventProvider;
 import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
@@ -14,7 +16,7 @@ import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
 
-public class PCheckBox extends AbstractPComponent {
+public class PCheckBox extends AbstractPComponent implements PGlobalEventGenerator {
 	
 	private static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(12, 12);
 	
@@ -24,19 +26,12 @@ public class PCheckBox extends AbstractPComponent {
 		= PCompUtil.createDefaultObserverList();
 	private final PMouseObs mouseObs = new PMouseObs() {
 		public void onButtonTriggered(PMouse mouse, MouseButton btn) {
-			if (btn == MouseButton.LEFT && isMouseOver()) {
-				toggleChecked();
-				fireClickEvent();
-			}
+			PCheckBox.this.onMouseButtonTriggered(mouse, btn);
 		}
 	};
-	protected final PCheckBoxModelObs modelObs = new PCheckBoxModelObs() {
-		public void onChange(PCheckBoxModel model) {
-			firePreferredSizeChangedEvent();
-			fireReRenderEvent();
-		}
-	};
+	protected final PCheckBoxModelObs modelObs = (mdl) -> PCheckBox.this.onModelChange();
 	protected PCheckBoxModel model;
+	private PGlobalEventProvider globEvProv;
 	
 	public PCheckBox() {
 		super();
@@ -49,6 +44,14 @@ public class PCheckBox extends AbstractPComponent {
 		
 		setModel(defaultModel);
 		addObs(mouseObs);
+	}
+	
+	public void setGlobalEventProvider(PGlobalEventProvider provider) {
+		globEvProv = provider;
+	}
+	
+	public PGlobalEventProvider getGlobalEventProvider() {
+		return globEvProv;
 	}
 	
 	public void setModel(PCheckBoxModel model) {
@@ -82,7 +85,7 @@ public class PCheckBox extends AbstractPComponent {
 	
 	protected void toggleChecked() {
 		if (getModel() != null) {
-			getModel().setChecked(!getModel().isChecked());
+			getModel().toggleChecked();
 		}
 	}
 	
@@ -134,7 +137,21 @@ public class PCheckBox extends AbstractPComponent {
 	}
 	
 	protected void fireClickEvent() {
-		obsList.sendNotify((obs) -> obs.onClick(this));
+		obsList.fireEvent((obs) -> obs.onClick(this));
+		fireGlobalEvent();
+	}
+	
+	protected void onModelChange() {
+		fireGlobalEvent();
+		firePreferredSizeChangedEvent();
+		fireReRenderEvent();
+	}
+	
+	protected void onMouseButtonTriggered(PMouse mouse, MouseButton btn) {
+		if (btn == MouseButton.LEFT && isMouseOver()) {
+			toggleChecked();
+			fireClickEvent();
+		}
 	}
 	
 }

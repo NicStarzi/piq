@@ -6,8 +6,10 @@ import java.util.LinkedList;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PDesign;
+import edu.udo.piq.PLayout;
 import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PRoot;
+import edu.udo.piq.PRootOverlay;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.ImmutablePBounds;
 import edu.udo.piq.tools.MutablePBounds;
@@ -213,6 +215,22 @@ public class PCompUtil {
 				return child;
 			}
 		}
+	}
+	
+	public static boolean isAncestorOfOverlay(PComponent comp) {
+		PRoot root = comp.getRoot();
+		if (root == null) {
+			return false;
+		}
+		PRootOverlay overlay = root.getOverlay();
+		if (overlay == null) {
+			return false;
+		}
+		PLayout overlayLayout = overlay.getLayout();
+		while (comp != null && comp.getLayout() != overlayLayout) {
+			comp = comp.getParent();
+		}
+		return comp != null && comp.getLayout() == overlayLayout;
 	}
 	
 }

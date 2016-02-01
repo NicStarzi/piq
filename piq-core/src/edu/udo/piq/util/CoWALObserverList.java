@@ -51,7 +51,7 @@ public class CoWALObserverList<E> implements ObserverList<E> {
 		}
 	}
 	
-	public void sendNotify(Message<E> msg) {
+	public void fireEvent(Message<E> msg) {
 		for (int i = 0; i < internalList.size(); i++) {
 			E obs = internalList.get(i);
 			try {

@@ -5,7 +5,9 @@ import java.util.Collection;
 import java.util.Deque;
 import java.util.Iterator;
 
+import edu.udo.piq.PBorder;
 import edu.udo.piq.PComponent;
+import edu.udo.piq.PLayout;
 
 public class PGuiUtil {
 	
@@ -17,6 +19,18 @@ public class PGuiUtil {
 	
 	public static PExceptionHandler getGlobalExceptionHandler() {
 		return excHndlr;
+	}
+	
+	public static void addBorderTo(PComponent comp, PBorder border) {
+		PComponent parent = comp.getParent();
+		if (parent != null) {
+			PLayout layout = ThrowException.ifTypeCastFails(parent.getLayout(), 
+					PLayout.class, "Parent layout is read-only");
+			Object cnstr = parent.getLayout().getChildConstraint(comp);
+			layout.removeChild(cnstr);
+			layout.addChild(border, cnstr);
+		}
+		border.setContent(comp);
 	}
 	
 	public static String componentToString(PComponent comp) {

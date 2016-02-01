@@ -12,7 +12,7 @@ public interface ObserverList<E> extends Iterable<E> {
 	 * 
 	 * @param obs						a non-null instance of E
 	 * @throws NullPointerException		if obs is null
-	 * @see #sendNotify(Message)
+	 * @see #fireEvent(Message)
 	 */
 	public void add(E obs);
 	
@@ -21,13 +21,13 @@ public interface ObserverList<E> extends Iterable<E> {
 	 * The observer will only be removed once from this list, if it was added more 
 	 * then once it might still be contained in this list after this method has 
 	 * returned.<br>
-	 * A removed observer will no longer be notified when {@link #sendNotify(Message)} 
+	 * A removed observer will no longer be notified when {@link #fireEvent(Message)} 
 	 * is called, but any messages that are being sent right now will still notify 
 	 * the removed observer.<br>
 	 * 
 	 * @param obs
 	 * @throws NullPointerException		if obs is null
-	 * @see #sendNotify(Message)
+	 * @see #fireEvent(Message)
 	 */
 	public void remove(E obs);
 	
@@ -59,7 +59,7 @@ public interface ObserverList<E> extends Iterable<E> {
 	 * @param msg						the message that will be sent to all observers
 	 * @throws NullPointerException		if msg is null
 	 */
-	public void sendNotify(Message<E> msg);
+	public void fireEvent(Message<E> msg);
 	
 	/**
 	 * This functional interface represents the message that is to be sent to all 

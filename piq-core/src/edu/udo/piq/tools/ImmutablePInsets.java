@@ -2,7 +2,7 @@ package edu.udo.piq.tools;
 
 import edu.udo.piq.PInsets;
 
-public class ImmutablePInsets implements PInsets {
+public class ImmutablePInsets extends AbstractPInsets implements PInsets {
 	
 	private final int fromTop;
 	private final int fromBtm;
@@ -49,29 +49,6 @@ public class ImmutablePInsets implements PInsets {
 	
 	public int getFromRight() {
 		return fromRgt;
-	}
-	
-	public int getHorizontal() {
-		return getFromLeft() + getFromRight();
-	}
-	
-	public int getVertical() {
-		return getFromTop() + getFromBottom();
-	}
-	
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append(getClass().getSimpleName());
-		builder.append(" [top=");
-		builder.append(fromTop);
-		builder.append(", btm=");
-		builder.append(fromBtm);
-		builder.append(", lft=");
-		builder.append(fromLft);
-		builder.append(", rgt=");
-		builder.append(fromRgt);
-		builder.append("]");
-		return builder.toString();
 	}
 	
 }

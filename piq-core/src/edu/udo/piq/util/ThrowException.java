@@ -2,8 +2,6 @@ package edu.udo.piq.util;
 
 import java.util.Collection;
 
-import javax.naming.OperationNotSupportedException;
-
 public class ThrowException {
 	
 	public static void ifNull(Object obj, String optionalMsg) 
@@ -189,12 +187,12 @@ public class ThrowException {
 	}
 	
 	public static void always(String optionalMsg) 
-			throws OperationNotSupportedException 
+			throws IllegalOperationException 
 	{
-		if (optionalMsg != null) {
-			throw new OperationNotSupportedException(optionalMsg);
+		if (optionalMsg == null) {
+			throw new IllegalOperationException();
 		}
-		throw new OperationNotSupportedException();
+		throw new IllegalOperationException(optionalMsg);
 	}
 	
 	@SuppressWarnings("unchecked") // this is safe because of the instanceof check
@@ -210,6 +208,9 @@ public class ThrowException {
 	}
 	
 	private static void iae(String msg) throws IllegalArgumentException {
+		if (msg == null) {
+			throw new IllegalArgumentException();
+		}
 		throw new IllegalArgumentException(msg);
 	}
 	
@@ -219,6 +220,9 @@ public class ThrowException {
 	 * @throws IllegalStateException
 	 */
 	private static void ise(String msg) throws IllegalStateException {
+		if (msg == null) {
+			throw new IllegalStateException();
+		}
 		throw new IllegalStateException(msg);
 	}
 	
@@ -239,6 +243,18 @@ public class ThrowException {
 			sb.append(optionalMsg);
 		}
 		return sb.toString();
+	}
+	
+	public static class IllegalOperationException extends RuntimeException {
+		private static final long serialVersionUID = -101150367304790537L;
+		
+		public IllegalOperationException() {
+			super();
+		}
+		
+		public IllegalOperationException(String msg) {
+			super(msg);
+		}
 	}
 	
 }

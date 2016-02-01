@@ -298,7 +298,7 @@ public class SwingPTest {
 				root.reRender(root);
 			}
 		});
-		chkBxTpl.getCheckBox().addObs(new PCheckBoxObs() {
+		chkBxTpl.addObs(new PCheckBoxObs() {
 			public void onClick(PCheckBox checkBox) {
 				lblChkBx.getModel().setValue(null);
 				lblSld.getModel().setValue(null);

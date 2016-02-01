@@ -4,6 +4,7 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PComponentObs;
+import edu.udo.piq.PCursor;
 import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
@@ -314,6 +315,10 @@ public class PDropDown extends AbstractPLayoutOwner {
 		
 		public static final PSize DEFAULT_PREF_SIZE = new ImmutablePSize(14, 14);
 		private MutablePSize prefSize = null;
+		
+		public PCursor getMouseOverCursor(PMouse mouse) {
+			return mouse.getCursorHand();
+		}
 		
 		public void defaultRender(PRenderer renderer) {
 			PBounds bnds = getBounds();

@@ -3,28 +3,31 @@ package edu.udo.piq.components.containers;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
+import edu.udo.piq.PCursor;
 import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
+import edu.udo.piq.PSize;
 import edu.udo.piq.components.defaults.DefaultPSplitPanelModel;
 import edu.udo.piq.layouts.PSplitLayout;
 import edu.udo.piq.layouts.PSplitLayout.Constraint;
 import edu.udo.piq.layouts.PSplitLayout.Orientation;
+import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
+import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
 
 public class PSplitPanel extends AbstractPLayoutOwner {
 	
-	protected final PDivider divider;
+	protected final PSplitPanelDivider divider;
 	protected final ObserverList<PSplitPanelObs> obsList
 		= PCompUtil.createDefaultObserverList();
 	private final PMouseObs mouseObs = new PMouseObs() {
 		public void onMouseMoved(PMouse mouse) {
 			if (pressed) {
-//				mouse.setCursor(PCursorType.SCROLL);
 				PBounds bounds = getBounds();
 				int mousePos;
 				double maxPos;
@@ -42,14 +45,12 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 		}
 		public void onButtonReleased(PMouse mouse, MouseButton btn) {
 			if (pressed && btn == MouseButton.LEFT) {
-//				mouse.setCursor(PCursorType.NORMAL);
 				pressed = false;
 				fireDividerReleasedEvent();
 			}
 		}
 		public void onButtonTriggered(PMouse mouse, MouseButton btn) {
 			if (!pressed && btn == MouseButton.LEFT && divider.isMouseOver()) {
-//				mouse.setCursor(PCursorType.SCROLL);
 				pressed = true;
 				fireDividerTouchedEvent();
 			}
@@ -76,7 +77,7 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 		setModel(defaultModel);
 		
 		setLayout(new PSplitLayout(this));
-		divider = new PDivider();
+		divider = new PSplitPanelDivider();
 		getLayoutInternal().addChild(divider, Constraint.DIVIDER);
 		addObs(mouseObs);
 	}
@@ -172,6 +173,41 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 	
 	protected void fireDividerMovedEvent() {
 		obsList.fireEvent((obs) -> obs.onDividerMoved(this));
+	}
+	
+	public static class PSplitPanelDivider extends AbstractPComponent {
+		
+		private static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(6, 6);
+		
+		public PCursor getMouseOverCursor(PMouse mouse) {
+			return mouse.getCursorScroll();
+		}
+		
+		public void defaultRender(PRenderer renderer) {
+			PBounds bounds = getBounds();
+			int x = bounds.getX();
+			int y = bounds.getY();
+			int fx = bounds.getFinalX();
+			int fy = bounds.getFinalY();
+			
+			renderer.setColor(PColor.WHITE);
+			renderer.strokeTop(x, y, fx, fy);
+			renderer.strokeLeft(x, y, fx, fy);
+			renderer.setColor(PColor.BLACK);
+			renderer.strokeRight(x, y, fx, fy);
+			renderer.strokeBottom(x, y, fx, fy);
+			renderer.setColor(PColor.GREY75);
+			renderer.drawQuad(x + 1, y + 1, fx - 1, fy - 1);
+		}
+		
+		public PSize getDefaultPreferredSize() {
+			return DEFAULT_PREFERRED_SIZE;
+		}
+		
+		public boolean isFocusable() {
+			return false;
+		}
+		
 	}
 	
 }

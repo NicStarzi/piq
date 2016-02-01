@@ -158,11 +158,11 @@ public class PCheckBoxTuple extends AbstractPInputLayoutOwner implements PGlobal
 		if (scndCmp != null && scndCmp.isMouseOver()) {
 			if (!scndCmp.isFocusable()) {
 				getCheckBox().toggleChecked();
-				takeFocus();
+				onCheckBoxClick();
 			}
 		} else if (isMouseOver()) {
 			getCheckBox().toggleChecked();
-			takeFocus();
+			onCheckBoxClick();
 		}
 	}
 	

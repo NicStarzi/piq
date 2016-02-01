@@ -17,8 +17,8 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PDesign;
 import edu.udo.piq.PDialog;
 import edu.udo.piq.PKeyboard;
-import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PMouse;
+import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.tools.AbstractPDialog;
 
@@ -35,7 +35,7 @@ public class SwingPDialog extends AbstractPDialog implements PDialog {
 		}
 	};
 	private final SwingPRenderer renderer = new SwingPRenderer();
-	private final SwingPMouse mouse = new SwingPMouse(null, panel);
+	private final SwingPMouse mouse = new SwingPMouse(this, panel);
 	private final SwingPKeyboard keyboard = new SwingPKeyboard(panel);
 	private final JPanelPBounds bounds = new JPanelPBounds(panel);
 	
@@ -117,6 +117,10 @@ public class SwingPDialog extends AbstractPDialog implements PDialog {
 		return keyboard;
 	}
 	
+	public void mouseOverCursorChanged(PComponent component) {
+		mouse.mouseOverCursorChanged(component);
+	}
+	
 	private void render(Graphics2D g) {
 		renderer.setGraphics(g);
 		
@@ -166,5 +170,4 @@ public class SwingPDialog extends AbstractPDialog implements PDialog {
 			}
 		}
 	}
-	
 }

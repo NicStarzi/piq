@@ -1,4 +1,4 @@
-//package edu.udo.piq.layouts;
+package edu.udo.piq.layouts;
 //
 //import java.util.Arrays;
 //
@@ -11,7 +11,8 @@
 //import edu.udo.piq.tools.AbstractPLayout;
 //import edu.udo.piq.tools.MutablePSize;
 //
-//public class PTableLayout extends AbstractPLayout {
+public class PTableLayout {// extends AbstractPLayout {
+}
 //	
 //	protected static final int DEFAULT_COLUMN_SIZE = 150;
 //	protected static final int DEFAULT_ROW_SIZE = 20;

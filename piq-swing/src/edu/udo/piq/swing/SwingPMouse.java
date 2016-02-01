@@ -69,11 +69,13 @@ public class SwingPMouse implements PMouse {
 				clickCount = e.getClickCount();
 				setPosition(e.getX(), e.getY());
 				invalidateCompAtMouseCache();
+				refreshCursor();
 			}
 			public void mouseDragged(MouseEvent e) {
 				clickCount = e.getClickCount();
 				setPosition(e.getX(), e.getY());
 				invalidateCompAtMouseCache();
+				refreshCursor();
 			}
 		});
 	}
@@ -85,12 +87,18 @@ public class SwingPMouse implements PMouse {
 	}
 	
 	protected void refreshCursor() {
-		if (compAtMouseCache == null || !compAtMouseCacheValid) {
+//		System.out.println("SwingPMouse.refreshCursor()");
+		PComponent comp = getComponentAtMouse();
+//		if (compAtMouseCache == null || !compAtMouseCacheValid) {
+//			base.setCursor(null);
+//			return;
+//		}
+		if (comp == null) {
 			base.setCursor(null);
 			return;
 		}
 		AwtPCursor cursor = ThrowException.ifTypeCastFails(
-				compAtMouseCache.getMouseOverCursor(this), 
+				comp.getMouseOverCursor(this), 
 				AwtPCursor.class, "!(cursor instanceof AwtPCursor)");
 		if (cursor != currentCursor) {
 			currentCursor = cursor;
@@ -108,8 +116,8 @@ public class SwingPMouse implements PMouse {
 	
 	private void invalidateCompAtMouseCache() {
 		compAtMouseCacheValid = false;
-		compAtMouseCache = null;
-		refreshCursor();
+//		compAtMouseCache = null;
+//		refreshCursor();
 	}
 	
 	private void onPress(MouseButton btn) {

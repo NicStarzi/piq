@@ -4,6 +4,7 @@ import edu.udo.piq.PDialog;
 import edu.udo.piq.PFontResource;
 import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.PComponent;
+import edu.udo.piq.PCursor;
 import edu.udo.piq.PDesignSheet;
 import edu.udo.piq.PGlobalEventObs;
 import edu.udo.piq.PImageMeta;
@@ -50,6 +51,11 @@ public abstract class AbstractPDialog extends AbstractPRoot implements PDialog {
 	{
 		throwExceptionIfDisposed();
 		return getSuperRoot().createImageResource(width, height, metaInfo);
+	}
+	
+	public PCursor createCustomCursor(PImageResource image, int offsetX, int offsetY) {
+		throwExceptionIfDisposed();
+		return getSuperRoot().createCustomCursor(image, offsetX, offsetY);
 	}
 	
 	protected void setDesignSheet(PDesignSheet designSheet) {

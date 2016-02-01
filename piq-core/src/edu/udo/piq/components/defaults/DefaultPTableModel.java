@@ -5,6 +5,7 @@ package edu.udo.piq.components.defaults;
 //import java.util.Iterator;
 //import java.util.List;
 //
+public class DefaultPTableModel {}
 //public class DefaultPTableModel extends AbstractPModel implements PTableModel {
 //	
 //	private final List<Object[]> rows = new ArrayList<>();

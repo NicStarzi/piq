@@ -2,14 +2,9 @@ package edu.udo.piq;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.ConcurrentModificationException;
 
-import edu.udo.piq.components.containers.PGlassPanel;
 import edu.udo.piq.components.util.PFocusTraversal;
-import edu.udo.piq.tools.AbstractPComponent;
-import edu.udo.piq.tools.MutablePBounds;
 import edu.udo.piq.util.PCompUtil;
-import edu.udo.piq.util.PGuiUtil;
 import edu.udo.piq.util.ThrowException;
 
 /**
@@ -144,6 +139,14 @@ public interface PComponent {
 	 */
 	public default boolean defaultFillsAllPixels() {
 		return false;
+	}
+	
+	public default boolean fillsAllPixels() {
+		PDesign design = getDesign();
+		if (design == null) {
+			return defaultFillsAllPixels();
+		}
+		return design.fillsAllPixels(this);
 	}
 	
 	/**

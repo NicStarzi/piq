@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PLayout;
 import edu.udo.piq.util.LinkedArray;
@@ -60,6 +61,15 @@ public abstract class AbstractArrayPLayout extends AbstractPLayout implements PL
 		removeInfoInternal(info);
 		child.setParent(null);
 		fireRemoveEvent(child, constraint);
+	}
+	
+	public PBounds getChildBounds(Object constraint) 
+			throws IllegalStateException, IllegalArgumentException 
+	{
+		int index = getIndexFor(constraint);
+		ThrowException.ifNotWithin(0, cap, index, getErrorMsgIndexIllegal(index));
+		ThrowException.ifNull(infoArray.get(index), "getChildForConstraint(constraint) == null");
+		return infoArray.get(index).bounds;
 	}
 	
 	public PComponent getChildForConstraint(Object constraint) {

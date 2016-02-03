@@ -113,6 +113,16 @@ public abstract class AbstractPLayout implements PLayout {
 		return null;
 	}
 	
+	public PBounds getChildBounds(Object constraint) 
+			throws IllegalStateException, IllegalArgumentException 
+	{
+		PComponent child = getChildForConstraint(constraint);
+		if (child == null) {
+			throw new IllegalStateException("getChildForConstraint(constraint) == null");
+		}
+		return getChildBounds(child);
+	}
+	
 	public PBounds getChildBounds(PComponent child) throws NullPointerException, IllegalArgumentException {
 		ThrowException.ifNull(child, "child == null");
 		PCompInfo info = getInfoFor(child);

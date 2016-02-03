@@ -1,10 +1,6 @@
 package edu.udo.piq;
 
 import java.util.Collection;
-import java.util.ConcurrentModificationException;
-
-import edu.udo.piq.tools.AbstractMapPLayout;
-import edu.udo.piq.util.PCompUtil;
 
 /**
  * A layout defines how components are added to a container in a GUI.<br>
@@ -69,6 +65,19 @@ public interface PReadOnlyLayout extends PDisposable {
 			throws IllegalArgumentException;
 	
 	/**
+	 * Returns the {@link PBounds} within this layout for the child with the given 
+	 * constraint.<br>
+	 * The returned bounds are never null.<br>
+	 * 
+	 * @param constraint					a valid constraint for this layout. Can be null.
+	 * @return 								the {@link PBounds} for the child
+	 * @throws IllegalStateException		if there is no child for the given constraint
+	 * @throws IllegalArgumentException		if the constraint is not valid for this layout
+	 */
+	public PBounds getChildBounds(Object constraint) 
+			throws IllegalStateException, IllegalArgumentException;
+	
+	/**
 	 * Returns the {@link PBounds} within this layout for the given child.<br>
 	 * The returned bounds are determined by this layout based on the Constraint 
 	 * and other PComponents.<br>
@@ -98,6 +107,20 @@ public interface PReadOnlyLayout extends PDisposable {
 	 */
 	public Object getChildConstraint(PComponent child) 
 			throws NullPointerException, IllegalArgumentException;
+	
+	/**
+	 * Returns the child of this {@link PReadOnlyLayout} registered with the given constraint.<br>
+	 * If no such child exists null is returned. If the constraint is not a valid constraint 
+	 * for this layout an exception is thrown.<br>
+	 * If more then one such child exists the layout is allowed to decide which one should be 
+	 * returned.<br>
+	 * 
+	 * @param constraint					a valid constraint for this layout. This can be null.
+	 * @return								a {@link PComponent} registered with the constraint, or null if no such component exists.
+	 * @throws IllegalArgumentException		if the given constraint is not valid for this layout.
+	 */
+	public PComponent getChildForConstraint(Object constraint)
+			throws IllegalArgumentException;
 	
 	/**
 	 * Returns the child of this {@link PReadOnlyLayout} that contains the given coordinates.<br>

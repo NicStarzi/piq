@@ -2,13 +2,11 @@ package edu.udo.piq.layouts;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PReadOnlyLayout;
-import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PSize;
-import edu.udo.piq.tools.AbstractMapPLayout;
+import edu.udo.piq.tools.AbstractEnumPLayout;
 import edu.udo.piq.tools.MutablePSize;
 
-public class PSplitLayout extends AbstractMapPLayout {
+public class PSplitLayout extends AbstractEnumPLayout<PSplitLayout.Constraint> {
 	
 	public static final Orientation DEFAULT_ORIENTATION = Orientation.HORIZONTAL;
 	public static final double DEFAULT_SPLIT_POSITON = 0.5;
@@ -22,32 +20,9 @@ public class PSplitLayout extends AbstractMapPLayout {
 	protected final MutablePSize prefSize = new MutablePSize();
 	protected Orientation ori = DEFAULT_ORIENTATION;
 	protected double splitPos = DEFAULT_SPLIT_POSITON;
-	protected PComponent first;
-	protected PComponent second;
-	protected PComponent divider;
 	
 	public PSplitLayout(PComponent component) {
-		super(component);
-		addObs(new PLayoutObs() {
-			public void onChildAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
-				if (constraint == Constraint.FIRST) {
-					first = child;
-				} else if (constraint == Constraint.SECOND) {
-					second = child;
-				} else {
-					divider = child;
-				}
-			}
-			public void onChildRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
-				if (child == first) {
-					first = null;
-				} else if (child == second) {
-					second = null;
-				} else {
-					divider = null;
-				}
-			}
-		});
+		super(component, Constraint.class);
 	}
 	
 	public void setOrientation(Orientation orientation) {
@@ -80,27 +55,6 @@ public class PSplitLayout extends AbstractMapPLayout {
 		return splitPos;
 	}
 	
-	public PComponent getChildForConstraint(Object constraint) {
-		if (constraint == null || !(constraint instanceof Constraint)) {
-			throw new IllegalArgumentException();
-		}
-		Constraint constr = (Constraint) constraint;
-		if (constr == Constraint.FIRST) {
-			return first;
-		} else if (constr == Constraint.SECOND) {
-			return second;
-		} else if (constr == Constraint.DIVIDER) {
-			return divider;
-		} else {
-			throw new IllegalArgumentException("constr="+constr);
-		}
-	}
-	
-	protected boolean canAdd(PComponent component, Object constraint) {
-		return constraint != null && constraint instanceof Constraint 
-				&& getChildForConstraint(constraint) == null;
-	}
-	
 	public void layOut() {
 		PBounds ob = getOwner().getBounds();
 		int x = ob.getX();
@@ -108,6 +62,9 @@ public class PSplitLayout extends AbstractMapPLayout {
 		int w = ob.getWidth();
 		int h = ob.getHeight();
 		
+		PComponent first = getChildForConstraint(Constraint.FIRST);
+		PComponent divider = getChildForConstraint(Constraint.DIVIDER);
+		PComponent second = getChildForConstraint(Constraint.SECOND);
 		if (getOrientation() == Orientation.HORIZONTAL) {
 			int dividerW = getPreferredSizeOf(divider).getWidth();
 			int compW = w - dividerW;
@@ -126,11 +83,13 @@ public class PSplitLayout extends AbstractMapPLayout {
 			setChildBounds(first, x, y, w, firstH);
 			setChildBounds(second, x, y + firstH + dividerH, w, secondH);
 			setChildBounds(divider, x, y + firstH, w, dividerH);
-//			System.out.println("PSplitLayout.layOut()="+getChildBounds(second));
 		}
 	}
 	
 	public PSize getPreferredSize() {
+		PComponent first = getChildForConstraint(Constraint.FIRST);
+		PComponent divider = getChildForConstraint(Constraint.DIVIDER);
+		PComponent second = getChildForConstraint(Constraint.SECOND);
 		PSize firstSize = getPreferredSizeOf(first);
 		PSize secondSize = getPreferredSizeOf(second);
 		PSize dividerSize = getPreferredSizeOf(divider);

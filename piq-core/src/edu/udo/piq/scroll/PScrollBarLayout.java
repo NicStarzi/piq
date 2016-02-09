@@ -1,42 +1,54 @@
 package edu.udo.piq.scroll;
 
+import java.util.EnumMap;
+import java.util.Map;
+
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PLayout;
-import edu.udo.piq.PLayoutObs;
-import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PSize;
-import edu.udo.piq.tools.AbstractMapPLayout;
+import edu.udo.piq.tools.AbstractEnumPLayout;
 import edu.udo.piq.tools.MutablePSize;
 
-public class PScrollBarLayout extends AbstractMapPLayout implements PLayout {
+public class PScrollBarLayout 
+	extends AbstractEnumPLayout<PScrollBarLayout.Constraint> 
+	implements PLayout 
+{
 	
-	private static final Class<?>[] compClasses = new Class<?>[Constraint.values().length];
+	private static final Map<Constraint, Class<?>> compClassMap = new EnumMap<>(Constraint.class);
 	static {
-		compClasses[Constraint.BTN1.ordinal()] = PScrollBarButton.class;
-		compClasses[Constraint.BTN2.ordinal()] = PScrollBarButton.class;
-		compClasses[Constraint.BG1.ordinal()] = PScrollBarBackground.class;
-		compClasses[Constraint.BG2.ordinal()] = PScrollBarBackground.class;
-		compClasses[Constraint.THUMB.ordinal()] = PScrollBarThumb.class;
+		compClassMap.put(Constraint.BTN1, PScrollBarButton.class);
+		compClassMap.put(Constraint.BTN2, PScrollBarButton.class);
+		compClassMap.put(Constraint.BG1, PScrollBarBackground.class);
+		compClassMap.put(Constraint.BG2, PScrollBarBackground.class);
+		compClassMap.put(Constraint.THUMB, PScrollBarThumb.class);
 	}
+//	private static final Class<?>[] compClasses = new Class<?>[Constraint.values().length];
+//	static {
+//		compClasses[Constraint.BTN1.ordinal()] = PScrollBarButton.class;
+//		compClasses[Constraint.BTN2.ordinal()] = PScrollBarButton.class;
+//		compClasses[Constraint.BG1.ordinal()] = PScrollBarBackground.class;
+//		compClasses[Constraint.BG2.ordinal()] = PScrollBarBackground.class;
+//		compClasses[Constraint.THUMB.ordinal()] = PScrollBarThumb.class;
+//	}
 	
-	private final PComponent[] comps = new PComponent[Constraint.values().length];
+//	private final PComponent[] comps = new PComponent[Constraint.values().length];
 	private final MutablePSize prefSize = new MutablePSize();
 	private Orientation ori;
 	
 	public PScrollBarLayout(PComponent component) {
-		super(component);
+		super(component, Constraint.class);
 		
-		addObs(new PLayoutObs() {
-			public void onChildAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
-				Constraint cnstr = (Constraint) constraint;
-				comps[cnstr.ordinal()] = child;
-			}
-			public void onChildRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
-				Constraint cnstr = (Constraint) constraint;
-				comps[cnstr.ordinal()] = null;
-			}
-		});
+//		addObs(new PLayoutObs() {
+//			public void onChildAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
+//				Constraint cnstr = (Constraint) constraint;
+//				comps[cnstr.ordinal()] = child;
+//			}
+//			public void onChildRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
+//				Constraint cnstr = (Constraint) constraint;
+//				comps[cnstr.ordinal()] = null;
+//			}
+//		});
 	}
 	
 	public PScrollBar getOwner() {
@@ -51,11 +63,11 @@ public class PScrollBarLayout extends AbstractMapPLayout implements PLayout {
 	public Orientation getOrientation() {
 		return ori;
 	}
-	
-	public PComponent getChildForConstraint(Object constraint) {
-		Constraint cnstr = (Constraint) constraint;
-		return comps[cnstr.ordinal()];
-	}
+//	
+//	public PComponent getChildForConstraint(Object constraint) {
+//		Constraint cnstr = (Constraint) constraint;
+//		return comps[cnstr.ordinal()];
+//	}
 	
 	public PScrollBarButton getFirstButton() {
 		return (PScrollBarButton) getChildForConstraint(Constraint.BTN1);
@@ -78,12 +90,14 @@ public class PScrollBarLayout extends AbstractMapPLayout implements PLayout {
 	}
 	
 	protected boolean canAdd(PComponent component, Object constraint) {
-		if (constraint == null || !(constraint instanceof Constraint)) {
-			return false;
-		}
-		Constraint cnstr = (Constraint) constraint;
-		int id = cnstr.ordinal();
-		return component.getClass() == compClasses[id] && comps[id] == null;
+//		if (!super.canAdd(component, constraint)) {
+//			return false;
+//		}
+//		Constraint cnstr = (Constraint) constraint;
+//		int id = cnstr.ordinal();
+//		return component.getClass() == compClasses[id];
+		return super.canAdd(component, constraint) 
+				&& compClassMap.get(constraint) == component.getClass();
 	}
 	
 	public void layOut() {
@@ -235,8 +249,7 @@ public class PScrollBarLayout extends AbstractMapPLayout implements PLayout {
 		int prefW = 0;
 		int prefH = 0;
 		boolean horizontal = getOrientation() == Orientation.HORIZONTAL;
-		for (int i = 0; i < comps.length; i++) {
-			PComponent child = comps[i];
+		for (PComponent child : getChildren()) {
 			if (child != null) {
 				PSize childPrefSize = getPreferredSizeOf(child);
 				int childPrefW = childPrefSize.getWidth();

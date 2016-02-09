@@ -18,7 +18,7 @@ public class SwingPKeyboard implements PKeyboard {
 	private final List<PKeyboardObs> obsList = new CopyOnWriteArrayList<>();
 	private final Map<Key, Key> ctrlMetaMap = new EnumMap<>(Key.class);
 	private final boolean[] nowPressed = new boolean[Key.values().length];
-	private final boolean[] prevPressed = new boolean[Key.values().length];
+	private final boolean[] prevPressed = new boolean[nowPressed.length];
 	private final boolean[] modState = new boolean[Modifier.values().length];
 	private boolean capsLockDown;
 	

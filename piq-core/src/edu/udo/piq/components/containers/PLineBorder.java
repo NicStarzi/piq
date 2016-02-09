@@ -20,7 +20,7 @@ public class PLineBorder extends AbstractPBorder {
 	}
 	
 	public PLineBorder(PComponent content) {
-		super(content);
+		this(content, 1);
 	}
 	
 	public PLineBorder(PComponent content, int lineThickness) {

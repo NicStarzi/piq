@@ -24,14 +24,14 @@ public class PCheckBox extends AbstractPComponent implements PGlobalEventGenerat
 		= PCompUtil.createDefaultObserverList();
 	protected final ObserverList<PCheckBoxObs> obsList
 		= PCompUtil.createDefaultObserverList();
-	private final PMouseObs mouseObs = new PMouseObs() {
+	protected final PMouseObs mouseObs = new PMouseObs() {
 		public void onButtonTriggered(PMouse mouse, MouseButton btn) {
 			PCheckBox.this.onMouseButtonTriggered(mouse, btn);
 		}
 	};
 	protected final PCheckBoxModelObs modelObs = (mdl) -> PCheckBox.this.onModelChange();
 	protected PCheckBoxModel model;
-	private PGlobalEventProvider globEvProv;
+	protected PGlobalEventProvider globEvProv;
 	
 	public PCheckBox() {
 		super();

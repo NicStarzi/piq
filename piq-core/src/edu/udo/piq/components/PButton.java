@@ -70,6 +70,11 @@ public class PButton extends AbstractPInputLayoutOwner implements PGlobalEventGe
 	protected int repeatTimerInitialDelay;
 	protected int repeatTimerDelay;
 	
+	public PButton(PComponent content) {
+		this();
+		setContent(content);
+	}
+	
 	public PButton() {
 		super();
 		

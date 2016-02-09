@@ -18,7 +18,6 @@ import edu.udo.piq.components.PButtonObs;
 import edu.udo.piq.components.PCheckBox;
 import edu.udo.piq.components.PCheckBoxObs;
 import edu.udo.piq.components.PCheckBoxTuple;
-import edu.udo.piq.components.PPopupButton;
 import edu.udo.piq.components.PPicture;
 import edu.udo.piq.components.PProgressBar;
 import edu.udo.piq.components.PProgressBarModel;
@@ -36,11 +35,13 @@ import edu.udo.piq.components.containers.PSplitPanel;
 import edu.udo.piq.components.containers.PToolTip;
 import edu.udo.piq.components.defaults.DefaultPListModel;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
+import edu.udo.piq.components.popup.PPopup;
+import edu.udo.piq.components.popup.PPopupButton;
+import edu.udo.piq.components.popup.PPopupCheckBox;
+import edu.udo.piq.components.popup.PPopupObs;
+import edu.udo.piq.components.popup.PPopupOptionsProvider;
 import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.components.textbased.PTextArea;
-import edu.udo.piq.components.util.PPopup;
-import edu.udo.piq.components.util.PPopupObs;
-import edu.udo.piq.components.util.PPopupOptionsProvider;
 import edu.udo.piq.designs.standard.PStandardDesignSheet;
 import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
@@ -187,32 +188,31 @@ public class SwingPTest {
 			}
 		});
 		popupTxtAr.setOptionsProvider(new PPopupOptionsProvider() {
+			boolean chkBxVal = false;
 			public List<PComponent> createOptions(PComponent component) {
 				List<PComponent> result = new ArrayList<>();
 				
-				PPopupButton btnNew = new PPopupButton();
+				PPopupButton btnNew = new PPopupButton("New");
 				btnNew.setGlobalEventProvider((btn) -> "CreateNew");
-				btnNew.setContent(new PLabel("New"));
 				btnNew.addObs((PButton btn) -> System.out.println("New!"));
 				result.add(btnNew);
 				
 				PStraightLine sep1 = new PStraightLine(LineOrientation.HORIZONTAL);
 				result.add(sep1);
 				
-				PPopupButton btnEdit = new PPopupButton();
-				btnEdit.setContent(new PLabel("Edit"));
+				PPopupButton btnEdit = new PPopupButton("Edit");
 				btnEdit.addObs((PButton btn) -> System.out.println("Edit!"));
 				result.add(btnEdit);
 				
-				PCheckBoxTuple chkRmb = new PCheckBoxTuple();
-				chkRmb.setSecondComponent(new PLabel("Remember"));
+				PPopupCheckBox chkRmb = new PPopupCheckBox("Remember");
+				chkRmb.getCheckBox().getModel().setValue(chkBxVal);
+				chkRmb.addObs((PCheckBoxObs) (chkBx) -> chkBxVal = !chkBxVal);
 				result.add(chkRmb);
 				
 				PStraightLine sep2 = new PStraightLine(LineOrientation.HORIZONTAL);
 				result.add(sep2);
 				
-				PPopupButton btnDelete = new PPopupButton();
-				btnDelete.setContent(new PLabel("Delete"));
+				PPopupButton btnDelete = new PPopupButton("Delete");
 				btnDelete.addObs((PButton btn) -> System.out.println("Delete!"));
 				result.add(btnDelete);
 				

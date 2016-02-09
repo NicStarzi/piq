@@ -1,4 +1,4 @@
-package edu.udo.piq.components.util;
+package edu.udo.piq.components.popup;
 
 public interface PPopupComponentObs {
 	

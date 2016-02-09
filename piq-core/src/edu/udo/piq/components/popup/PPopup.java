@@ -1,4 +1,4 @@
-package edu.udo.piq.components.util;
+package edu.udo.piq.components.popup;
 
 import java.util.List;
 
@@ -6,15 +6,15 @@ import edu.udo.piq.PBorder;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PMouse;
+import edu.udo.piq.PMouse.MouseButton;
+import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PRootOverlay;
 import edu.udo.piq.PSize;
-import edu.udo.piq.PMouse.MouseButton;
-import edu.udo.piq.PMouseObs;
-import edu.udo.piq.components.containers.PLineBorder;
+import edu.udo.piq.components.containers.PBevelBorder;
 import edu.udo.piq.components.containers.PPanel;
-import edu.udo.piq.layouts.PListLayout;
 import edu.udo.piq.layouts.PFreeLayout.FreeConstraint;
+import edu.udo.piq.layouts.PListLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
 import edu.udo.piq.tools.AbstractPContainer;
 import edu.udo.piq.tools.ImmutablePInsets;
@@ -31,11 +31,7 @@ public class PPopup {
 			onMouseTrigger(mouse, btn);
 		}
 	};
-	private final PPopupComponentObs compObs = new PPopupComponentObs() {
-		public void onClosePopup(PPopupComponent comp) {
-			hidePopup();
-		}
-	};
+	private final PPopupComponentObs compObs = (cmp) -> hidePopup();
 	private final PComponent owner;
 	private PPopupBodyProvider bodyProvider;
 	private PPopupBorderProvider borderProvider;
@@ -46,7 +42,7 @@ public class PPopup {
 	public PPopup(PComponent component) {
 		owner = component;
 		setBodyProvider((comp) -> new PPanel());
-		setBorderProvider((comp) -> new PLineBorder(1));
+		setBorderProvider((comp) -> new PBevelBorder());
 	}
 	
 	public PComponent getOwner() {

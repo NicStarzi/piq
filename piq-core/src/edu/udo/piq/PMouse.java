@@ -1,7 +1,7 @@
 package edu.udo.piq;
 
 import edu.udo.piq.components.collections.PSelectionComponent;
-import edu.udo.piq.components.util.PPopup;
+import edu.udo.piq.components.popup.PPopup;
 import edu.udo.piq.util.PCompUtil;
 
 public interface PMouse {

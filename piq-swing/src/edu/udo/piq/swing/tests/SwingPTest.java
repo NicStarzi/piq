@@ -40,6 +40,7 @@ import edu.udo.piq.components.popup.PPopupButton;
 import edu.udo.piq.components.popup.PPopupCheckBox;
 import edu.udo.piq.components.popup.PPopupObs;
 import edu.udo.piq.components.popup.PPopupOptionsProvider;
+import edu.udo.piq.components.popup.PPopupSubMenu;
 import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.components.textbased.PTextArea;
 import edu.udo.piq.designs.standard.PStandardDesignSheet;
@@ -126,7 +127,7 @@ public class SwingPTest {
 		
 		PPicture pic = new PPicture();
 		pic.setID("Picture");
-		pic.getModel().setImagePath("Tex.png");
+		pic.getModel().setImageID("Tex.png");
 		pic.setStretchToSize(true);
 		splitH.setFirstComponent(pic);
 		
@@ -208,6 +209,9 @@ public class SwingPTest {
 				chkRmb.getCheckBox().getModel().setValue(chkBxVal);
 				chkRmb.addObs((PCheckBoxObs) (chkBx) -> chkBxVal = !chkBxVal);
 				result.add(chkRmb);
+				
+				PPopupSubMenu subMn = new PPopupSubMenu("Sub-Menu");
+				result.add(subMn);
 				
 				PStraightLine sep2 = new PStraightLine(LineOrientation.HORIZONTAL);
 				result.add(sep2);

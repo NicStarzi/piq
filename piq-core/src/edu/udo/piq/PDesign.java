@@ -81,9 +81,10 @@ public interface PDesign {
 	 * For a component which is translucent or has transparent parts 
 	 * this method should always return false.<br>
 	 * 
-	 * @return true if the given component is completely opaque when rendered with this design
-	 * @throws NullPointerException if component is null
-	 * @throws IllegalArgumentException if this design is not intended to be used with the given component
+	 * @param component						the component which may or may not fill all its pixels
+	 * @return								true if the given component is completely opaque when rendered with this design
+	 * @throws NullPointerException			if component is null
+	 * @throws IllegalArgumentException		if this design is not intended to be used with the given component
 	 * @see #render(PRenderer, PComponent)
 	 * @see PRenderer
 	 * @see PComponent#defaultFillsAllPixels()

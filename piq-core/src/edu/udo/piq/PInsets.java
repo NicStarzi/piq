@@ -23,6 +23,15 @@ public interface PInsets {
 		public int getFromRight() {
 			return 0;
 		}
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + getFromTop();
+			result = prime * result + getFromBottom();
+			result = prime * result + getFromLeft();
+			result = prime * result + getFromRight();
+			return result;
+		}
 		public boolean equals(Object obj) {
 			if (obj == null || !(obj instanceof PInsets)) {
 				return false;

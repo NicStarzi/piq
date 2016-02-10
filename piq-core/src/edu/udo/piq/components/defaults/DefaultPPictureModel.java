@@ -5,15 +5,17 @@ import edu.udo.piq.tools.AbstractPPictureModel;
 
 public class DefaultPPictureModel extends AbstractPPictureModel implements PPictureModel {
 	
-	private String imgPath = null;
+	private Object imgId = null;
 	
-	public void setImagePath(String path) {
-		imgPath = path;
-		fireImagePathChanged();
+	public void setImageID(Object obj) {
+		if (imgId == null ? imgId != obj : !imgId.equals(obj)) {
+			imgId = obj;
+			fireImageIDChanged();
+		}
 	}
 	
-	public String getImagePath() {
-		return imgPath;
+	public Object getImageID() {
+		return imgId;
 	}
 	
 }

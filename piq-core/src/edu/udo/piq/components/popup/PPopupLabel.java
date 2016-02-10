@@ -1,12 +1,14 @@
 package edu.udo.piq.components.popup;
 
 import edu.udo.piq.PColor;
+import edu.udo.piq.PRenderer;
 import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.components.textbased.PTextModel;
 
 public class PPopupLabel extends PLabel implements PPopupComponent {
 	
-	public static final PColor HIGHLIGHT_TEXT_COLOR = PColor.WHITE;
+	public static final PColor DEFAULT_HIGHLIGHT_BACKGROUND_COLOR = PColor.BLUE;
+	public static final PColor DEFAULT_HIGHLIGHT_TEXT_COLOR = PColor.WHITE;
 	
 	protected boolean highlighted;
 	
@@ -33,9 +35,21 @@ public class PPopupLabel extends PLabel implements PPopupComponent {
 		return highlighted;
 	}
 	
-	public PColor getDefaultTextColor() {
+	public void defaultRender(PRenderer renderer) {
 		if (isHighlighted()) {
-			return HIGHLIGHT_TEXT_COLOR;
+			renderer.setColor(DEFAULT_HIGHLIGHT_BACKGROUND_COLOR);
+			renderer.drawQuad(getBounds());
+		}
+		super.defaultRender(renderer);
+	}
+	
+	public boolean defaultFillsAllPixels() {
+		return isHighlighted() || super.defaultFillsAllPixels();
+	}
+	
+	protected PColor getDefaultTextColor() {
+		if (isHighlighted()) {
+			return DEFAULT_HIGHLIGHT_TEXT_COLOR;
 		}
 		return super.getDefaultTextColor();
 	}

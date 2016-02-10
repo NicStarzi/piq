@@ -2,7 +2,9 @@ package edu.udo.piq.components.textbased;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
+import edu.udo.piq.PCursor;
 import edu.udo.piq.PFontResource;
+import edu.udo.piq.PMouse;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
@@ -289,6 +291,10 @@ public class PTextArea extends AbstractPTextComponent {
 			prefH += lineH;
 		}
 		return new ImmutablePSize(prefW, prefH);
+	}
+	
+	public PCursor getMouseOverCursor(PMouse mouse) {
+		return mouse.getCursorText();
 	}
 	
 	protected PColor getDefaultBackgroundColor() {

@@ -10,7 +10,7 @@ import edu.udo.piq.tools.ImmutablePInsets;
 
 public class PBevelBorder extends AbstractPBorder {
 	
-	protected static final PInsets BEVEL_INSETS = new ImmutablePInsets(2, 1, 2, 1);
+	protected static final PInsets BEVEL_INSETS = new ImmutablePInsets(2, 2, 2, 2);
 	
 	public PBevelBorder() {
 		super();
@@ -25,21 +25,28 @@ public class PBevelBorder extends AbstractPBorder {
 	public void defaultRender(PRenderer renderer) {
 		PBounds bnds = getBounds();
 		PInsets insets = getLayout().getInsets();
-		int x = bnds.getX() + insets.getFromLeft();
-		int y = bnds.getY() + insets.getFromTop();
-		int fx = bnds.getFinalX() - insets.getFromRight();
-		int fy = bnds.getFinalY() - insets.getFromBottom();
+		int top = insets.getFromTop();
+		int btm = insets.getFromBottom();
+		int lft = insets.getFromLeft();
+		int rgt = insets.getFromRight();
 		
-		renderer.setColor(PColor.RED);
-//		renderer.setColor(PColor.BLACK);
-		renderer.strokeBottom(x, y, fx, fy);
-		renderer.strokeRight(x, y, fx, fy);
-//		renderer.setColor(PColor.GREY75);
-		renderer.strokeTop(x, y, fx, fy);
-		renderer.strokeLeft(x, y, fx, fy);
-//		renderer.setColor(PColor.WHITE);
-		renderer.strokeTop(x, y + 1, fx - 2, fy);
-		renderer.strokeLeft(x + 1, y, fx, fy - 2);
+		int x = bnds.getX();
+		int y = bnds.getY();
+		int fx = bnds.getFinalX();
+		int fy = bnds.getFinalY();
+		
+		renderer.setColor(PColor.GREY50);
+		renderer.strokeBottom(x, y, fx, fy, btm);
+		renderer.strokeRight(x, y, fx, fy, rgt);
+		renderer.setColor(PColor.BLACK);
+		renderer.strokeBottom(x, y, fx, fy, 1);
+		renderer.strokeRight(x, y, fx, fy, 1);
+		renderer.setColor(PColor.WHITE);
+		renderer.strokeTop(x, y, fx - 2, fy - 2, top);
+		renderer.strokeLeft(x, y, fx - 2, fy - 2, lft);
+		renderer.setColor(PColor.GREY75);
+		renderer.strokeTop(x, y, fx - 1, fy - 1, 1);
+		renderer.strokeLeft(x, y, fx - 1, fy - 1, 1);
 	}
 	
 	public boolean defaultFillsAllPixels() {

@@ -18,8 +18,8 @@ public abstract class AbstractPPictureModel implements PPictureModel {
 		obsList.remove(obs);
 	}
 	
-	protected void fireImagePathChanged() {
-		obsList.fireEvent((obs) -> obs.onImagePathChanged(this));
+	protected void fireImageIDChanged() {
+		obsList.fireEvent((obs) -> obs.onImageIDChanged(this));
 	}
 	
 }

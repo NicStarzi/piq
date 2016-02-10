@@ -68,6 +68,7 @@ public interface ObserverList<E> extends Iterable<E> {
 	 * element within the {@link ObserverList}.<br>
 	 * No assumptions should be made about the order in which observers will be 
 	 * notified.<br>
+	 * @param <E>						the type of the observer
 	 */
 	public static interface Message<E> {
 		/**

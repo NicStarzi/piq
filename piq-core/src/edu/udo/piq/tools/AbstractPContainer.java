@@ -22,6 +22,9 @@ public abstract class AbstractPContainer extends AbstractPLayoutOwner {
 	/**
 	 * Delegates to the layout of this container.<br> 
 	 * This method exists solely for convenience.<br>
+	 * @param component		the component that will be added as a child
+	 * @param constraint	the constraint used to add the child. 
+	 * 						Valid constraints depend on the layout being used.
 	 * @see #getLayout()
 	 * @see PLayout#addChild(PComponent, Object)
 	 */

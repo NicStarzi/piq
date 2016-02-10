@@ -207,17 +207,20 @@ public interface PRoot extends PComponent {
 	 * arguments.<br>
 	 * This method should never return null.<br>
 	 * 
-	 * @param imgPath the path from which the image source is loaded
-	 * @return an instance of {@link PImageResource}
-	 * @throws NullPointerException if imgPath is null
+	 * @param imgID					a platform dependent object used to identify the image resource
+	 * @return						an instance of {@link PImageResource}
+	 * @throws NullPointerException	if imgID is null
 	 */
-	public PImageResource fetchImageResource(String imgPath) 
+	public PImageResource fetchImageResource(Object imgID) 
 			throws NullPointerException;
 	
 	/**
 	 * 
 	 * @param width				the width of the image, must be positive (> 0)
 	 * @param height			the height of the image, must be positive (> 0)
+	 * @param metaInfo			platform dependent meta information needed to create an image. 
+	 * 							<code>null</code> is always a valid input which will result in a 
+	 * 							default value being used.
 	 * @return					a newly created {@link PImageResource}
 	 * @throws IllegalArgumentException		if either width or height are less then or equal to 0
 	 */

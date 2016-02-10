@@ -23,16 +23,18 @@ public interface PLayoutObs {
 	 * This even is fired when a {@link PComponent} was removed from a 
 	 * {@link PReadOnlyLayout}.<br>
 	 * 
-	 * @param layout the layout that the component was removed from
-	 * @param child the component that was removed
+	 * @param layout		the layout that the component was removed from
+	 * @param child			the component that was removed
+	 * @param constraint	the constraint used for the removed component
 	 */
 	public default void onChildRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {}
 	
 	/**
 	 * This event is fired when a {@link PComponent} was laid out by this {@link PReadOnlyLayout}.<br>
 	 * 
-	 * @param layout the layout that laid out the component
-	 * @param child the component that was laid out
+	 * @param layout		the layout that laid out the component
+	 * @param child			the component that was laid out
+	 * @param constraint	the constraint of the laid out component
 	 */
 	public default void onChildLaidOut(PReadOnlyLayout layout, PComponent child, Object constraint) {}
 	

@@ -33,7 +33,8 @@ public abstract class AbstractPBorder extends AbstractPLayoutOwner implements PB
 	}
 	
 	public boolean defaultFillsAllPixels() {
-		return false;
+		PComponent content = getContent();
+		return getLayout().isGrowContent() && content != null && content.defaultFillsAllPixels();
 	}
 	
 }

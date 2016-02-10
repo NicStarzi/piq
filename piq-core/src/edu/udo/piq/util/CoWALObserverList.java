@@ -8,6 +8,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * An implementation of {@link ObserverList} that uses a 
  * {@link CopyOnWriteArrayList} internally.<br>
  * 
+ * @param <E>	the type of the observers
+ * 
  * @author NicStarzi
  */
 public class CoWALObserverList<E> implements ObserverList<E> {

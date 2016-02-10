@@ -104,7 +104,7 @@ public class SwingPTest_ScrollBar {
 		bodyPnl2.addChild(scrlPnl2, new PFreeLayout.FreeConstraint(31, 46, 256, 256));
 		
 		PPicture content = new PPicture();
-		content.getModel().setImagePath("Tex3.png");
+		content.getModel().setImageID("Tex3.png");
 		content.setStretchToSize(false);
 		scrlPnl2.setBody(content);
 	}

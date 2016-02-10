@@ -26,18 +26,18 @@ public class PPopup {
 	
 	protected final ObserverList<PPopupObs> obsList
 		= PCompUtil.createDefaultObserverList();
-	private final PMouseObs mouseObs = new PMouseObs() {
+	protected final PMouseObs mouseObs = new PMouseObs() {
 		public void onButtonTriggered(PMouse mouse, MouseButton btn) {
-			onMouseTrigger(mouse, btn);
+			PPopup.this.onMouseTrigger(mouse, btn);
 		}
 	};
-	private final PPopupComponentObs compObs = (cmp) -> hidePopup();
-	private final PComponent owner;
-	private PPopupBodyProvider bodyProvider;
-	private PPopupBorderProvider borderProvider;
-	private PPopupOptionsProvider optionsProvider;
-	private PComponent popupComp;
-	private boolean enabled;
+	protected final PPopupComponentObs compObs = (cmp) -> hidePopup();
+	protected final PComponent owner;
+	protected PPopupBodyProvider bodyProvider;
+	protected PPopupBorderProvider borderProvider;
+	protected PPopupOptionsProvider optionsProvider;
+	protected PComponent popupComp;
+	protected boolean enabled;
 	
 	public PPopup(PComponent component) {
 		owner = component;
@@ -92,7 +92,10 @@ public class PPopup {
 		return popupComp != null;
 	}
 	
-	private void onMouseTrigger(PMouse mouse, MouseButton btn) {
+	protected void onMouseTrigger(PMouse mouse, MouseButton btn) {
+		if (!isEnabled()) {
+			return;
+		}
 		if (isShown() && popupComp.isMouseOverThisOrChild()) {
 			return;
 		}
@@ -106,7 +109,7 @@ public class PPopup {
 		}
 	}
 	
-	private void showPopup(int x, int y) {
+	protected void showPopup(int x, int y) {
 		if (isShown()) {
 			return;
 		}
@@ -174,7 +177,7 @@ public class PPopup {
 		fireShowEvent();
 	}
 	
-	private void hidePopup() {
+	protected void hidePopup() {
 		if (isShown()) {
 			for (PComponent optionsComp : popupComp.getChildren()) {
 				if (optionsComp instanceof PPopupComponent) {

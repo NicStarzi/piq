@@ -43,6 +43,7 @@ import edu.udo.piq.tools.AbstractPRoot;
 import edu.udo.piq.tools.MutablePBounds;
 import edu.udo.piq.tools.ReRenderSet;
 import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.ThrowException;
 
 public class JCompPRoot extends AbstractPRoot implements PRoot {
 	
@@ -183,11 +184,15 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 		return awtStyle;
 	}
 	
-	public PImageResource fetchImageResource(String imgPath) 
+	public PImageResource fetchImageResource(Object imgID) 
 			throws NullPointerException 
 	{
-		if (imgPath == null) {
-			throw new NullPointerException("imgPath="+imgPath);
+		ThrowException.ifNull(imgID, "imgID == null");
+		String imgPath;
+		if (imgID instanceof String) {
+			imgPath = (String) imgID;
+		} else {
+			imgPath = imgID.toString();
 		}
 		BufferedPImageResource imgRes = imgMap.get(imgPath);
 		if (imgRes == null) {

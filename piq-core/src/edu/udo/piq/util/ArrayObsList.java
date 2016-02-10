@@ -12,6 +12,8 @@ import java.util.NoSuchElementException;
  * This implementation tries to be much more efficient as 
  * the {@link CoWALObserverList} implementation.<br>
  * 
+ * @param <E>	the type of the observers
+ * 
  * @author NicStarzi
  */
 public class ArrayObsList<E> implements ObserverList<E> {

@@ -1,8 +1,6 @@
 package edu.udo.piq.swing.tests;
 
 import edu.udo.piq.components.PSpinner;
-import edu.udo.piq.components.PSpinnerModel;
-import edu.udo.piq.components.PSpinnerModelObs;
 import edu.udo.piq.components.containers.PComboBox;
 import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.components.defaults.PSpinnerModelInt;
@@ -54,7 +52,17 @@ public class SwingPTest_TextField extends AbstractSwingPTest {
 			Farbe f = Farbe.ROT;
 			public void setValue(Object obj) {
 				if (obj instanceof String) {
-					obj = Farbe.valueOf(Farbe.class, (String) obj);
+					String name = ((String) obj).toUpperCase();
+					obj = null;
+					for (Farbe tmpF : Farbe.values()) {
+						if (tmpF.name().contains(name)) {
+							obj = tmpF;
+							break;
+						}
+					}
+					if (obj == null) {
+						return;
+					}
 				}
 				
 				Farbe o = f;
@@ -63,7 +71,7 @@ public class SwingPTest_TextField extends AbstractSwingPTest {
 			}
 			
 			public Object getValue() {
-				return f;
+				return f.name().toLowerCase();
 			}
 			
 			public Object getPrevious() {

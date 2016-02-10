@@ -279,7 +279,7 @@ public class DefaultPDnDSupport implements PDnDSupport {
 	
 	protected PComponent createVisibleRepresentation(PModel data) {
 		PPicture pic = new PPicture();
-		pic.getModel().setImagePath("DragAndDrop.png");
+		pic.getModel().setImageID("DragAndDrop.png");
 		pic.setStretchToSize(true);
 		pic.setElusive(true);
 		return pic;

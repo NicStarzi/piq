@@ -74,7 +74,7 @@ public interface PDialog extends PRoot, PDisposable {
 	/**
 	 * Delegates to the {@link PRoot} that created this {@link PDialog}.<br>
 	 */
-	public PImageResource fetchImageResource(String imgPath) throws NullPointerException;
+	public PImageResource fetchImageResource(Object imageID) throws NullPointerException;
 	
 	/**
 	 * Delegates to the {@link PRoot} that created this {@link PDialog}.<br>

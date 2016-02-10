@@ -5,6 +5,8 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.components.PButton;
+import edu.udo.piq.components.PIconLabel;
+import edu.udo.piq.components.PPicture;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
@@ -16,6 +18,11 @@ public class PPopupButton extends PButton implements PPopupComponent {
 	protected final ObserverList<PPopupComponentObs> obsList
 			= PCompUtil.createDefaultObserverList();
 	private boolean highlighted;
+	
+	public PPopupButton(Object iconImgID, Object labelModelValue) {
+		this(new PIconLabel(new PPicture(iconImgID), 
+				new PPopupLabel(labelModelValue)));
+	}
 	
 	public PPopupButton(Object labelModelValue) {
 		this(new PPopupLabel(labelModelValue));

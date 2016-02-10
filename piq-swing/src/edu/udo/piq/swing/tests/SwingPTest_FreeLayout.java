@@ -11,7 +11,6 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PDesign;
-import edu.udo.piq.PDesignFactory;
 import edu.udo.piq.PDesignSheet;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.components.PButton;

@@ -32,4 +32,8 @@ public interface PImageResource extends PDisposable {
 		return new DoNothingRenderer();
 	}
 	
+	public default boolean fillsAllPixels() {
+		return false;
+	}
+	
 }

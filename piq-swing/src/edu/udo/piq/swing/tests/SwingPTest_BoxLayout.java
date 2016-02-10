@@ -67,22 +67,22 @@ public class SwingPTest_BoxLayout {
 		Box c4 = b3.getBottom();
 		
 		PPicture pic1 = new PPicture();
-		pic1.getModel().setImagePath("Tex.png");
+		pic1.getModel().setImageID("Tex.png");
 		pic1.setStretchToSize(true);
 		pnl.getLayout().addChild(pic1, c1);
 		
 		PPicture pic2 = new PPicture();
-		pic2.getModel().setImagePath("Tex.png");
+		pic2.getModel().setImageID("Tex.png");
 		pic2.setStretchToSize(true);
 		pnl.getLayout().addChild(pic2, c2);
 		
 		PPicture pic3 = new PPicture();
-		pic3.getModel().setImagePath("Tex.png");
+		pic3.getModel().setImageID("Tex.png");
 		pic3.setStretchToSize(true);
 		pnl.getLayout().addChild(pic3, c3);
 		
 		PPicture pic4 = new PPicture();
-		pic4.getModel().setImagePath("Tex.png");
+		pic4.getModel().setImageID("Tex.png");
 		pic4.setStretchToSize(true);
 		pnl.getLayout().addChild(pic4, c4);
 	}

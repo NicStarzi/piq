@@ -70,7 +70,7 @@ public class SwingPTest_DockLayout {
 		pnl.addChild(lbl1, new PDockLayout.Constraint(0, 1));
 		
 		PPicture pic1 = new PPicture();
-		pic1.getModel().setImagePath("Tex.png");
+		pic1.getModel().setImageID("Tex.png");
 		pnl.addChild(pic1, new PDockLayout.Constraint(643, 0));
 	}
 	

@@ -8,13 +8,13 @@ import java.util.TreeSet;
 import edu.udo.piq.PClipboard;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PComponentObs;
+import edu.udo.piq.PCursor;
 import edu.udo.piq.PDesign;
 import edu.udo.piq.PDesignSheet;
 import edu.udo.piq.PDnDManager;
 import edu.udo.piq.PDnDSupport;
 import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PFontResource.Style;
-import edu.udo.piq.PCursor;
 import edu.udo.piq.PGlobalEventObs;
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PKeyboardObs;
@@ -27,7 +27,7 @@ import edu.udo.piq.PRoot;
 import edu.udo.piq.PRootOverlay;
 import edu.udo.piq.PSize;
 import edu.udo.piq.PTimer;
-import edu.udo.piq.components.containers.PGlassPanel;
+import edu.udo.piq.components.containers.DefaultPRootOverlay;
 import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.components.util.DefaultPFocusTraversal;
 import edu.udo.piq.components.util.PFocusTraversal;
@@ -101,7 +101,7 @@ public abstract class AbstractPRoot implements PRoot {
 		PPanel body = new PPanel();
 		body.setLayout(new PBorderLayout(body));
 		getLayout().addChild(body, Constraint.BODY);
-		getLayout().addChild(new PGlassPanel(), Constraint.OVERLAY);
+		getLayout().addChild(new DefaultPRootOverlay(), Constraint.OVERLAY);
 	}
 	
 	/*

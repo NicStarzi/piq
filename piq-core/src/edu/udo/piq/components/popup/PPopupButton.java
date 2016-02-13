@@ -2,22 +2,30 @@ package edu.udo.piq.components.popup;
 
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
+import edu.udo.piq.PGlobalEventGenerator;
+import edu.udo.piq.PGlobalEventProvider;
 import edu.udo.piq.PMouse;
+import edu.udo.piq.PMouse.MouseButton;
+import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
-import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PIconLabel;
 import edu.udo.piq.components.PPicture;
+import edu.udo.piq.layouts.PCentricLayout;
+import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
 
-public class PPopupButton extends PButton implements PPopupComponent {
+public class PPopupButton extends AbstractPLayoutOwner implements PPopupComponent, PGlobalEventGenerator {
 	
 	public static final PColor DEFAULT_HIGHLIGHT_COLOR = PColor.BLUE;
 	
 	protected final ObserverList<PPopupComponentObs> obsList
 			= PCompUtil.createDefaultObserverList();
-	private boolean highlighted;
+	protected PGlobalEventProvider globEvProv;
+	protected boolean enabled = true;
+	protected boolean pressed;
+	protected boolean highlighted;
 	
 	public PPopupButton(Object iconImgID, Object labelModelValue) {
 		this(new PIconLabel(new PPicture(iconImgID), 
@@ -35,7 +43,45 @@ public class PPopupButton extends PButton implements PPopupComponent {
 	
 	public PPopupButton() {
 		super();
+		setLayout(new PCentricLayout(this));
 		getLayoutInternal().setInsets(new ImmutablePInsets(1));
+		
+		addObs(new PMouseObs() {
+			public void onMouseMoved(PMouse mouse) {
+				PPopupButton.this.onMouseMoved(mouse);
+			}
+			public void onButtonTriggered(PMouse mouse, MouseButton btn) {
+				PPopupButton.this.onMouseButtonTriggered(mouse, btn);
+			}
+			public void onButtonPressed(PMouse mouse, MouseButton btn) {
+				PPopupButton.this.onMouseButtonPressed(mouse, btn);
+			}
+			public void onButtonReleased(PMouse mouse, MouseButton btn) {
+				PPopupButton.this.onMouseButtonReleased(mouse, btn);
+			}
+		});
+	}
+	
+	public void setGlobalEventProvider(PGlobalEventProvider provider) {
+		globEvProv = provider;
+	}
+	
+	public PGlobalEventProvider getGlobalEventProvider() {
+		return globEvProv;
+	}
+	
+	protected PCentricLayout getLayoutInternal() {
+		return (PCentricLayout) super.getLayout();
+	}
+	
+	public void setContent(PComponent component) {
+		getLayoutInternal().clearChildren();
+		getLayoutInternal().addChild(component, null);
+		highlightContent();
+	}
+	
+	public PComponent getContent() {
+		return getLayoutInternal().getContent();
 	}
 	
 	protected void highlightContent() {
@@ -44,11 +90,6 @@ public class PPopupButton extends PButton implements PPopupComponent {
 			PPopupComponent popupContent = (PPopupComponent) content;
 			popupContent.setHighlighted(isHighlighted());
 		}
-	}
-	
-	public void setContent(PComponent component) {
-		super.setContent(component);
-		highlightContent();
 	}
 	
 	public void setHighlighted(boolean value) {
@@ -63,6 +104,37 @@ public class PPopupButton extends PButton implements PPopupComponent {
 	
 	public boolean isHighlighted() {
 		return highlighted;
+	}
+	
+	protected void setPressed(boolean isPressed) {
+		if (pressed != isPressed) {
+			pressed = isPressed;
+			fireReRenderEvent();
+		}
+	}
+	
+	public boolean isPressed() {
+		return pressed;
+	}
+	
+	public void setEnabled(boolean isEnabled) {
+		if (enabled != isEnabled) {
+			enabled = isEnabled;
+			fireReRenderEvent();
+			
+			PComponent content = getContent();
+			if (content != null && content instanceof PPopupComponent) {
+				((PPopupComponent) content).setEnabled(isEnabled());
+			}
+		}
+	}
+	
+	public boolean isEnabled() {
+		return enabled;
+	}
+	
+	public boolean isFocusable() {
+		return false;
 	}
 	
 	public void defaultRender(PRenderer renderer) {
@@ -81,13 +153,29 @@ public class PPopupButton extends PButton implements PPopupComponent {
 		return DEFAULT_HIGHLIGHT_COLOR;
 	}
 	
-	protected void fireClickEvent() {
-		super.fireClickEvent();
-		firePopupCloseEvent();
-	}
-	
 	protected void onMouseMoved(PMouse mouse) {
 		setHighlighted(isEnabled() && isMouseOverThisOrChild());
+	}
+	
+	protected void onMouseButtonPressed(PMouse mouse, MouseButton btn) {
+	}
+	
+	protected void onMouseButtonTriggered(PMouse mouse, MouseButton btn) {
+		if (isEnabled() && btn == MouseButton.LEFT 
+				&& isMouseOverThisOrChild())
+		{
+			setPressed(true);
+		}
+	}
+	
+	protected void onMouseButtonReleased(PMouse mouse, MouseButton btn) {
+		boolean oldPressed = isPressed();
+		if (btn == MouseButton.LEFT && oldPressed) {
+			setPressed(false);
+			if (isEnabled() && isMouseOverThisOrChild()) {
+				fireClickEvent();
+			}
+		}
 	}
 	
 	protected void onChildAdded(PComponent child, Object constraint) {
@@ -122,6 +210,10 @@ public class PPopupButton extends PButton implements PPopupComponent {
 			popupChild.removeObs(obs);
 		}
 		obsList.remove(obs);
+	}
+	
+	protected void fireClickEvent() {
+		firePopupCloseEvent();
 	}
 	
 	protected void firePopupCloseEvent() {

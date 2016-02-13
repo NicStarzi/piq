@@ -8,6 +8,10 @@ public interface PPopupComponent extends PComponent {
 	
 	public boolean isHighlighted();
 	
+	public void setEnabled(boolean value);
+	
+	public boolean isEnabled();
+	
 	public void addObs(PPopupComponentObs obs);
 	
 	public void removeObs(PPopupComponentObs obs);

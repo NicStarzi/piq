@@ -11,8 +11,8 @@ import javax.swing.Timer;
 
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PGlobalEventObs;
 import edu.udo.piq.PFontResource.Style;
+import edu.udo.piq.PGlobalEventObs;
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PButtonObs;
 import edu.udo.piq.components.PCheckBox;
@@ -188,6 +188,8 @@ public class SwingPTest {
 				System.out.println("onPopupHidden");
 			}
 		});
+//		popupTxtAr.setBodyProvider((comp) -> new PGlassPanel());
+//		popupTxtAr.setBorderProvider((comp) -> null);
 		popupTxtAr.setOptionsProvider(new PPopupOptionsProvider() {
 			boolean chkBxVal = false;
 			public List<PComponent> createOptions(PComponent component) {
@@ -195,14 +197,14 @@ public class SwingPTest {
 				
 				PPopupButton btnNew = new PPopupButton("New");
 				btnNew.setGlobalEventProvider((btn) -> "CreateNew");
-				btnNew.addObs((PButton btn) -> System.out.println("New!"));
+//				btnNew.addObs((PButton btn) -> System.out.println("New!"));
 				result.add(btnNew);
 				
 				PStraightLine sep1 = new PStraightLine(LineOrientation.HORIZONTAL);
 				result.add(sep1);
 				
 				PPopupButton btnEdit = new PPopupButton("Edit");
-				btnEdit.addObs((PButton btn) -> System.out.println("Edit!"));
+//				btnEdit.addObs((PButton btn) -> System.out.println("Edit!"));
 				result.add(btnEdit);
 				
 				PPopupCheckBox chkRmb = new PPopupCheckBox("Remember");
@@ -217,7 +219,8 @@ public class SwingPTest {
 				result.add(sep2);
 				
 				PPopupButton btnDelete = new PPopupButton("Delete");
-				btnDelete.addObs((PButton btn) -> System.out.println("Delete!"));
+				btnDelete.setEnabled(false);
+//				btnDelete.addObs((PButton btn) -> System.out.println("Delete!"));
 				result.add(btnDelete);
 				
 				return result;

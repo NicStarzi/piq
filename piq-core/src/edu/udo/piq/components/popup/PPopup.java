@@ -24,6 +24,9 @@ import edu.udo.piq.util.ThrowException;
 
 public class PPopup {
 	
+	public static final PPopupBorderProvider DEFAULT_BORDER_PROVIDER = (comp) -> new PBevelBorder();
+	public static final PPopupBodyProvider DEFAULT_BODY_PROVIDER = (comp) -> new PPanel();
+	
 	protected final ObserverList<PPopupObs> obsList
 		= PCompUtil.createDefaultObserverList();
 	protected final PMouseObs mouseObs = new PMouseObs() {
@@ -41,8 +44,8 @@ public class PPopup {
 	
 	public PPopup(PComponent component) {
 		owner = component;
-		setBodyProvider((comp) -> new PPanel());
-		setBorderProvider((comp) -> new PBevelBorder());
+		setBodyProvider(DEFAULT_BODY_PROVIDER);
+		setBorderProvider(DEFAULT_BORDER_PROVIDER);
 	}
 	
 	public PComponent getOwner() {

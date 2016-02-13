@@ -9,7 +9,9 @@ public class PPopupLabel extends PLabel implements PPopupComponent {
 	
 	public static final PColor DEFAULT_HIGHLIGHT_BACKGROUND_COLOR = PColor.BLUE;
 	public static final PColor DEFAULT_HIGHLIGHT_TEXT_COLOR = PColor.WHITE;
+	public static final PColor DEFAULT_DISABLED_TEXT_COLOR = PColor.GREY50;
 	
+	protected boolean enabled = true;
 	protected boolean highlighted;
 	
 	public PPopupLabel(Object defaultModelValue) {
@@ -24,6 +26,17 @@ public class PPopupLabel extends PLabel implements PPopupComponent {
 		super();
 	}
 	
+	public void setEnabled(boolean value) {
+		if (enabled != value) {
+			enabled = value;
+			fireReRenderEvent();
+		}
+	}
+	
+	public boolean isEnabled() {
+		return enabled;
+	}
+	
 	public void setHighlighted(boolean value) {
 		if (highlighted != value) {
 			highlighted = value;
@@ -32,7 +45,7 @@ public class PPopupLabel extends PLabel implements PPopupComponent {
 	}
 	
 	public boolean isHighlighted() {
-		return highlighted;
+		return highlighted && isEnabled();
 	}
 	
 	public void defaultRender(PRenderer renderer) {
@@ -48,6 +61,9 @@ public class PPopupLabel extends PLabel implements PPopupComponent {
 	}
 	
 	protected PColor getDefaultTextColor() {
+		if (!isEnabled()) {
+			return DEFAULT_DISABLED_TEXT_COLOR;
+		}
 		if (isHighlighted()) {
 			return DEFAULT_HIGHLIGHT_TEXT_COLOR;
 		}

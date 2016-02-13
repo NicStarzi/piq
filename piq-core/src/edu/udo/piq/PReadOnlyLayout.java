@@ -1,6 +1,10 @@
 package edu.udo.piq;
 
 import java.util.Collection;
+import java.util.ConcurrentModificationException;
+
+import edu.udo.piq.tools.AbstractMapPLayout;
+import edu.udo.piq.util.PCompUtil;
 
 /**
  * A layout defines how components are added to a container in a GUI.<br>

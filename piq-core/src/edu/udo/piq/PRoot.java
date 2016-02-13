@@ -238,7 +238,7 @@ public interface PRoot extends PComponent {
 	 * @return a newly constructed custom {@link PCursor}
 	 * @throws IllegalArgumentException if image is null
 	 * @see PComponent#getMouseOverCursor(PMouse)
-	 * @see #fetchImageResource(String imgPath)
+	 * @see #fetchImageResource(Object imgID)
 	 * @see #createImageResource(int width, int height, PImageMeta metaInfo)
 	 */
 	public PCursor createCustomCursor(PImageResource image, int offsetX, int offsetY) throws IllegalArgumentException;

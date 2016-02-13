@@ -1,18 +1,19 @@
 package edu.udo.piq.tools;
 
-import edu.udo.piq.components.util.PInput;
-import edu.udo.piq.components.util.PInputMap;
+import edu.udo.piq.PComponentAction;
+import edu.udo.piq.components.util.PKeyInputMap;
+import edu.udo.piq.components.util.PKeyInput;
 
 public class AbstractPInputLayoutOwner extends AbstractPLayoutOwner {
 	
-	protected final PInputMap inputMap = new PInputMap(this);
+	protected final PKeyInputMap inputMap = new PKeyInputMap(this);
 	protected boolean enabled = true;
 	
-	public void defineInput(PInput input, Runnable reaction) {
+	public void defineInput(PKeyInput input, PComponentAction reaction) {
 		defineInput(input.getDefaultIdentifier(), input, reaction);
 	}
 	
-	public void defineInput(Object identifier, PInput input, Runnable reaction) {
+	public void defineInput(Object identifier, PKeyInput input, PComponentAction reaction) {
 		inputMap.defineInput(identifier, input, reaction);
 	}
 	

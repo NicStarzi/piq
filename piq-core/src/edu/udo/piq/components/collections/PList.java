@@ -8,6 +8,7 @@ import java.util.List;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
+import edu.udo.piq.PComponentAction;
 import edu.udo.piq.PDnDSupport;
 import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PKeyboard;
@@ -20,12 +21,14 @@ import edu.udo.piq.PRenderer;
 import edu.udo.piq.components.defaults.DefaultPCellFactory;
 import edu.udo.piq.components.defaults.DefaultPDnDSupport;
 import edu.udo.piq.components.defaults.DefaultPListModel;
-import edu.udo.piq.components.util.PInput;
+import edu.udo.piq.components.util.AbstractPKeyInput;
+import edu.udo.piq.components.util.PKeyInput;
 import edu.udo.piq.layouts.PListLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
 import edu.udo.piq.tools.AbstractPInputLayoutOwner;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.ThrowException;
 
 public class PList extends AbstractPInputLayoutOwner 
 	implements PDropComponent 
@@ -36,48 +39,25 @@ public class PList extends AbstractPInputLayoutOwner
 	protected static final PColor DROP_HIGHLIGHT_COLOR = PColor.RED;
 	protected static final int DRAG_AND_DROP_DISTANCE = 20;
 	
-	private final PInput moveUpInput = new PInput() {
-		public Key getInputKey() {
-			return Key.UP;
-		}
-		public KeyInputType getKeyInputType() {
-			return KeyInputType.PRESS;
-		}
-		public boolean canBeUsed(PKeyboard keyboard) {
-			return isEnabled() && getModel() != null 
-					&& getSelection() != null 
-					&& getSelection().getLastSelected() != null;
-		}
-	};
-	private final Runnable moveUpReaction = new Runnable() {
-		public void run() {
-			onUpKeyTriggered();
-		}
-	};
-	private final PInput moveDownInput = new PInput() {
-		public Key getInputKey() {
-			return Key.DOWN;
-		}
-		public KeyInputType getKeyInputType() {
-			return KeyInputType.PRESS;
-		}
-		public boolean canBeUsed(PKeyboard keyboard) {
-			return isEnabled() && getModel() != null 
-					&& getSelection() != null 
-					&& getSelection().getLastSelected() != null;
-		}
-	};
-	private final Runnable moveDownReaction = new Runnable() {
-		public void run() {
-			onDownKeyTriggered();
-		}
-	};
+	public static final PKeyInput INPUT_MOVE_UP = new AbstractPKeyInput(Key.UP, (comp) -> {
+		PList list = ThrowException.ifTypeCastFails(comp, PList.class, "!(comp instanceof PList)");
+		return list.isEnabled() && list.getModel() != null 
+				&& list.getSelection() != null 
+				&& list.getSelection().getLastSelected() != null;
+	});
+	public static final PKeyInput INPUT_MOVE_DOWN = new AbstractPKeyInput(Key.DOWN, INPUT_MOVE_UP.getOptionalCondition());
+	public static final PComponentAction REACTION_MOVE_UP = (comp) -> 
+		ThrowException.ifTypeCastFails(comp, PList.class, "!(comp instanceof PList)").onUpKeyTriggered();
+	public static final PComponentAction REACTION_MOVE_DOWN = (comp) -> 
+		ThrowException.ifTypeCastFails(comp, PList.class, "!(comp instanceof PList)").onDownKeyTriggered();
+	public static final String INPUT_ID_MOVE_UP = "moveUp";
+	public static final String INPUT_ID_MOVE_DOWN = "moveDown";
 	
 	protected final ObserverList<PModelObs> modelObsList
 		= PCompUtil.createDefaultObserverList();
 	protected final ObserverList<PSelectionObs> selectionObsList
 		= PCompUtil.createDefaultObserverList();
-	private final PSelectionObs selectionObs = new PSelectionObs() {
+	protected final PSelectionObs selectionObs = new PSelectionObs() {
 		public void onSelectionAdded(PSelection selection, PModelIndex index) {
 			selectionAdded((PListIndex) index);
 		}
@@ -92,7 +72,7 @@ public class PList extends AbstractPInputLayoutOwner
 			}
 		}
 	};
-	private final PModelObs modelObs = new PModelObs() {
+	protected final PModelObs modelObs = new PModelObs() {
 		public void onContentAdded(PModel model, PModelIndex index, Object newContent) {
 			getSelection().clearSelection();
 			contentAdded((PListIndex) index, newContent);
@@ -151,8 +131,8 @@ public class PList extends AbstractPInputLayoutOwner
 			}
 		});
 		
-		defineInput(moveUpInput.getDefaultIdentifier(), moveUpInput, moveUpReaction);
-		defineInput(moveDownInput.getDefaultIdentifier(), moveDownInput, moveDownReaction);
+		defineInput(INPUT_ID_MOVE_UP, INPUT_MOVE_UP, REACTION_MOVE_UP);
+		defineInput(INPUT_ID_MOVE_DOWN, INPUT_MOVE_DOWN, REACTION_MOVE_DOWN);
 	}
 	
 	protected void onMouseButtonTriggred(PMouse mouse, MouseButton btn) {

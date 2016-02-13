@@ -3,16 +3,18 @@ package edu.udo.piq.components;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
+import edu.udo.piq.PComponentAction;
 import edu.udo.piq.PGlobalEventGenerator;
 import edu.udo.piq.PGlobalEventProvider;
-import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.components.defaults.ReRenderPFocusObs;
-import edu.udo.piq.components.util.PInput;
+import edu.udo.piq.components.util.AbstractPKeyInput;
+import edu.udo.piq.components.util.PKeyInput;
+import edu.udo.piq.components.util.PKeyInput.KeyInputType;
 import edu.udo.piq.layouts.PTupleLayout;
 import edu.udo.piq.layouts.PTupleLayout.Constraint;
 import edu.udo.piq.tools.AbstractPInputLayoutOwner;
@@ -22,18 +24,19 @@ import edu.udo.piq.util.ThrowException;
 
 public class PRadioButtonTuple extends AbstractPInputLayoutOwner implements PGlobalEventGenerator {
 	
-	protected final PInput pressEnterInput = new PInput() {
-		public Key getInputKey() {
-			return Key.ENTER;
-		}
-		public KeyInputType getKeyInputType() {
-			return KeyInputType.TRIGGER;
-		}
-		public boolean canBeUsed(PKeyboard keyboard) {
-			return isEnabled() && getRadioButton() != null && getRadioButton().getModel() != null;
-		}
+	public static final PKeyInput INPUT_TRIGGER_ENTER = new AbstractPKeyInput(
+			KeyInputType.TRIGGER, Key.ENTER, (comp) -> 
+	{
+		PRadioButtonTuple btn = ThrowException.ifTypeCastFails(comp, PRadioButtonTuple.class, 
+				"!(comp instanceof PRadioButtonTuple)");
+		return btn.isEnabled() && btn.getRadioButton() != null && btn.getRadioButton().getModel() != null;
+	});
+	public static final PComponentAction REACTION_TRIGGER_ENTER = (comp) -> {
+		PRadioButtonTuple btn = ThrowException.ifTypeCastFails(comp, PRadioButtonTuple.class, 
+				"!(comp instanceof PRadioButtonTuple)");
+		btn.getRadioButton().setSelected();
 	};
-	protected final Runnable pressEnterReaction = () -> getRadioButton().setSelected();
+	public static final String INPUT_IDENTIFIER_TRIGGER_ENTER = "triggerEnter";
 	
 	protected final ObserverList<PRadioButtonObs> obsList
 		= PCompUtil.createDefaultObserverList();
@@ -59,7 +62,8 @@ public class PRadioButtonTuple extends AbstractPInputLayoutOwner implements PGlo
 			}
 		});
 		addObs(new ReRenderPFocusObs());
-		defineInput("enter", pressEnterInput, pressEnterReaction);
+		
+		defineInput(INPUT_IDENTIFIER_TRIGGER_ENTER, INPUT_TRIGGER_ENTER, REACTION_TRIGGER_ENTER);
 	}
 	
 	public PRadioButtonTuple(PComponent secondComponent) {

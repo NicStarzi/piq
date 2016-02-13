@@ -3,10 +3,10 @@ package edu.udo.piq.components;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
+import edu.udo.piq.PComponentAction;
 import edu.udo.piq.PGlobalEventGenerator;
 import edu.udo.piq.PGlobalEventProvider;
 import edu.udo.piq.PInsets;
-import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PMouse;
@@ -16,47 +16,41 @@ import edu.udo.piq.PRenderer;
 import edu.udo.piq.PTimer;
 import edu.udo.piq.components.defaults.DefaultPButtonModel;
 import edu.udo.piq.components.defaults.ReRenderPFocusObs;
-import edu.udo.piq.components.util.PInput;
+import edu.udo.piq.components.util.AbstractPKeyInput;
+import edu.udo.piq.components.util.PKeyInput;
+import edu.udo.piq.components.util.PKeyInput.KeyInputType;
 import edu.udo.piq.layouts.PCentricLayout;
 import edu.udo.piq.tools.AbstractPInputLayoutOwner;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.ThrowException;
 
 public class PButton extends AbstractPInputLayoutOwner implements PGlobalEventGenerator {
 	
-	protected final PInput pressEnterInput = new PInput() {
-		public Key getInputKey() {
-			return Key.ENTER;
-		}
-		public KeyInputType getKeyInputType() {
-			return KeyInputType.TRIGGER;
-		}
-		public boolean canBeUsed(PKeyboard keyboard) {
-			return isEnabled() && getModel() != null;
+	public static final PKeyInput INPUT_PRESS_ENTER = new AbstractPKeyInput(
+			KeyInputType.TRIGGER, Key.ENTER, (comp) -> 
+	{
+		PButton btn = (PButton) comp;
+		return btn.isEnabled() && btn.getModel() != null;
+	});
+	public static final PKeyInput INPUT_RELEASE_ENTER = new AbstractPKeyInput(
+			KeyInputType.RELEASE, Key.ENTER, INPUT_PRESS_ENTER.getOptionalCondition());
+	public static final PComponentAction REACTION_PRESS_ENTER = (comp) -> {
+		PButton btn = ThrowException.ifTypeCastFails(comp, PButton.class, 
+				"!(comp instanceof PButton)");
+		btn.getModel().setPressed(true);
+	};
+	public static final PComponentAction REACTION_RELEASE_ENTER = (comp) -> {
+		PButton btn = ThrowException.ifTypeCastFails(comp, PButton.class, 
+				"!(comp instanceof PButton)");
+		if (btn.isPressed() && btn.isEnabled()) {
+			btn.getModel().setPressed(false);
+			btn.fireClickEvent();
 		}
 	};
-	protected final Runnable pressEnterReaction = () -> {
-		getModel().setPressed(true);
-	};
-
-	protected final PInput releaseEnterInput = new PInput() {
-		public Key getInputKey() {
-			return Key.ENTER;
-		}
-		public KeyInputType getKeyInputType() {
-			return KeyInputType.RELEASE;
-		}
-		public boolean canBeUsed(PKeyboard keyboard) {
-			return isEnabled() && getModel() != null;
-		}
-	};
-	protected final Runnable releaseEnterReaction = () -> {
-		if (isPressed() && isEnabled()) {
-			getModel().setPressed(false);
-			fireClickEvent();
-		}
-	};
+	public static final String INPUT_IDENTIFIER_PRESS_ENTER = "pressEnter";
+	public static final String INPUT_IDENTIFIER_RELEASE_ENTER = "releaseEnter";
 	
 	protected final ObserverList<PButtonModelObs> modelObsList
 		= PCompUtil.createDefaultObserverList();
@@ -104,8 +98,8 @@ public class PButton extends AbstractPInputLayoutOwner implements PGlobalEventGe
 		});
 		addObs(new ReRenderPFocusObs());
 		
-		defineInput("enterPress", pressEnterInput, pressEnterReaction);
-		defineInput("enterRelease", releaseEnterInput, releaseEnterReaction);
+		defineInput(INPUT_IDENTIFIER_PRESS_ENTER, INPUT_PRESS_ENTER, REACTION_PRESS_ENTER);
+		defineInput(INPUT_IDENTIFIER_RELEASE_ENTER, INPUT_RELEASE_ENTER, REACTION_RELEASE_ENTER);
 	}
 	
 	public void setGlobalEventProvider(PGlobalEventProvider provider) {

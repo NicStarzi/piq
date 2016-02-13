@@ -2,9 +2,10 @@ package edu.udo.piq.components;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
+import edu.udo.piq.PComponent;
+import edu.udo.piq.PComponentAction;
 import edu.udo.piq.PGlobalEventGenerator;
 import edu.udo.piq.PGlobalEventProvider;
-import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PKeyboard.Modifier;
 import edu.udo.piq.PModelFactory;
@@ -15,11 +16,12 @@ import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.defaults.DefaultPSliderModel;
 import edu.udo.piq.components.defaults.ReRenderPFocusObs;
-import edu.udo.piq.components.util.PInput;
+import edu.udo.piq.components.util.PKeyInput;
 import edu.udo.piq.tools.AbstractPInputComponent;
 import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.ThrowException;
 
 public class PSlider extends AbstractPInputComponent implements PGlobalEventGenerator {
 	
@@ -27,49 +29,26 @@ public class PSlider extends AbstractPInputComponent implements PGlobalEventGene
 	protected static final int DEFAULT_SLIDER_HEIGHT = 12;
 	protected static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(100, DEFAULT_SLIDER_HEIGHT + 2);
 	
-	protected class PSliderPInput implements PInput {
-		protected final Key key;
-		protected final boolean ctrlDown;
-		public PSliderPInput(Key key) {
-			this(key, false);
-		}
-		public PSliderPInput(Key key, boolean requiresCtrl) {
-			this.key = key;
-			ctrlDown = requiresCtrl;
-		}
-		public Key getInputKey() {
-			return key;
-		}
-		public KeyInputType getKeyInputType() {
-			return KeyInputType.PRESS;
-		}
-		public boolean canBeUsed(PKeyboard keyboard) {
-			return isEnabled() && getModel() != null 
-					&& keyboard.isModifierToggled(Modifier.CTRL) == ctrlDown;
-		}
-	}
-	protected final PInput pressUpInput = new PSliderPInput(Key.UP);
-	protected final PInput pressRightInput = new PSliderPInput(Key.RIGHT);
-	protected final PInput pressDownInput = new PSliderPInput(Key.DOWN);
-	protected final PInput pressLeftInput = new PSliderPInput(Key.LEFT);
-	protected final PInput pressCtrlUpInput = new PSliderPInput(Key.UP, true);
-	protected final PInput pressCtrlRightInput = new PSliderPInput(Key.RIGHT, true);
-	protected final PInput pressCtrlDownInput = new PSliderPInput(Key.DOWN, true);
-	protected final PInput pressCtrlLeftInput = new PSliderPInput(Key.LEFT, true);
-	protected final Runnable addReaction = () -> getModel().setValue(getModel().getValue() + 1);
-	protected final Runnable subReaction = () -> getModel().setValue(getModel().getValue() - 1);
-	protected final Runnable addFastReaction = () -> {
-		PSliderModel model = getModel();
-		int max = model.getMaxValue();
-		int add = (int) Math.ceil(max * 0.1);
-		model.setValue(model.getValue() + add);
-	};
-	protected final Runnable subFastReaction = () -> {
-		PSliderModel model = getModel();
-		int max = model.getMaxValue();
-		int sub = (int) Math.ceil(max * 0.1);
-		model.setValue(model.getValue() - sub);
-	};
+	public static final PKeyInput INPUT_PRESS_UP = new PSliderKeyInput(Key.UP);
+	public static final PKeyInput INPUT_PRESS_RIGHT = new PSliderKeyInput(Key.RIGHT);
+	public static final PKeyInput INPUT_PRESS_DOWN = new PSliderKeyInput(Key.DOWN);
+	public static final PKeyInput INPUT_PRESS_LEFT = new PSliderKeyInput(Key.LEFT);
+	public static final PKeyInput INPUT_PRESS_CTRL_UP = new PSliderKeyInput(Key.UP, true);
+	public static final PKeyInput INPUT_PRESS_CTRL_RIGHT = new PSliderKeyInput(Key.RIGHT, true);
+	public static final PKeyInput INPUT_PRESS_CTRL_DOWN = new PSliderKeyInput(Key.DOWN, true);
+	public static final PKeyInput INPUT_PRESS_CTRL_LEFT = new PSliderKeyInput(Key.LEFT, true);
+	public static final PComponentAction REACTION_ADD = new PSliderAction(1, 0);
+	public static final PComponentAction REACTION_SUB = new PSliderAction(-1, 0);
+	public static final PComponentAction REACTION_ADD_FAST = new PSliderAction(0, 0.1);
+	public static final PComponentAction REACTION_SUB_FAST = new PSliderAction(0, -0.1);
+	public static final String INPUT_ID_PRESS_UP = "up";
+	public static final String INPUT_ID_PRESS_DOWN = "down";
+	public static final String INPUT_ID_PRESS_LEFT = "left";
+	public static final String INPUT_ID_PRESS_RIGHT = "right";
+	public static final String INPUT_ID_PRESS_CTRL_UP = "ctrlUp";
+	public static final String INPUT_ID_PRESS_CTRL_DOWN = "ctrlDown";
+	public static final String INPUT_ID_PRESS_CTRL_LEFT = "ctrlLeft";
+	public static final String INPUT_ID_PRESS_CTRL_RIGHT = "ctrlRight";
 	
 	protected final ObserverList<PSliderModelObs> modelObsList
 		= PCompUtil.createDefaultObserverList();
@@ -111,14 +90,14 @@ public class PSlider extends AbstractPInputComponent implements PGlobalEventGene
 		});
 		addObs(new ReRenderPFocusObs());
 		
-		defineInput("up",			pressUpInput,			addReaction);
-		defineInput("right",		pressRightInput,		addReaction);
-		defineInput("down",			pressDownInput,			subReaction);
-		defineInput("left",			pressLeftInput,			subReaction);
-		defineInput("ctrlUp",		pressCtrlUpInput,		addFastReaction);
-		defineInput("ctrlRight",	pressCtrlRightInput,	addFastReaction);
-		defineInput("ctrlDown",		pressCtrlDownInput,		subFastReaction);
-		defineInput("ctrlLeft",		pressCtrlLeftInput,		subFastReaction);
+		defineInput(INPUT_ID_PRESS_UP, INPUT_PRESS_UP, REACTION_ADD);
+		defineInput(INPUT_ID_PRESS_RIGHT, INPUT_PRESS_RIGHT, REACTION_ADD);
+		defineInput(INPUT_ID_PRESS_DOWN, INPUT_PRESS_DOWN, REACTION_SUB);
+		defineInput(INPUT_ID_PRESS_LEFT, INPUT_PRESS_LEFT, REACTION_SUB);
+		defineInput(INPUT_ID_PRESS_CTRL_UP, INPUT_PRESS_CTRL_UP, REACTION_ADD_FAST);
+		defineInput(INPUT_ID_PRESS_CTRL_RIGHT, INPUT_PRESS_CTRL_RIGHT, REACTION_ADD_FAST);
+		defineInput(INPUT_ID_PRESS_CTRL_DOWN, INPUT_PRESS_CTRL_DOWN, REACTION_SUB_FAST);
+		defineInput(INPUT_ID_PRESS_CTRL_LEFT, INPUT_PRESS_CTRL_LEFT, REACTION_SUB_FAST);
 	}
 	
 	public PSlider(PSliderModel model) {
@@ -265,6 +244,64 @@ public class PSlider extends AbstractPInputComponent implements PGlobalEventGene
 	
 	protected void onModelValueChanged() {
 		fireReRenderEvent();
+	}
+	
+	protected static class PSliderKeyInput implements PKeyInput {
+		
+		protected final Key key;
+		protected final boolean ctrlDown;
+		
+		public PSliderKeyInput(Key key) {
+			this(key, false);
+		}
+		
+		public PSliderKeyInput(Key key, boolean requiresCtrl) {
+			this.key = key;
+			ctrlDown = requiresCtrl;
+		}
+		
+		public Key getKey() {
+			return key;
+		}
+		
+		public KeyInputType getKeyInputType() {
+			return KeyInputType.PRESS;
+		}
+		
+		public OptionalCondition getOptionalCondition() {
+			return (comp) -> {
+				PSlider sld = ThrowException.ifTypeCastFails(comp, 
+						PSlider.class, "!(comp instanceof PSlider)");
+				return sld.isEnabled() && sld.getModel() != null;
+			};
+		}
+		
+		public int getModifierCount() {
+			return ctrlDown ? 1 : 0;
+		}
+		
+		public Modifier getModifier(int index) {
+			return Modifier.CTRL;
+		}
+	}
+	
+	protected static class PSliderAction implements PComponentAction {
+		
+		protected final int bonus;
+		protected final double percent;
+		
+		public PSliderAction(int modValue, double factor) {
+			bonus = modValue;
+			percent = factor;
+		}
+		
+		public void act(PComponent comp) {
+			PSlider sld = ThrowException.ifTypeCastFails(comp, 
+					PSlider.class, "!(comp instanceof PSlider)");
+			PSliderModel model = sld.getModel();
+			int newVal = model.getValue() + bonus + (int) Math.ceil(model.getValue() * percent);
+			model.setValue(newVal);
+		}
 	}
 	
 }

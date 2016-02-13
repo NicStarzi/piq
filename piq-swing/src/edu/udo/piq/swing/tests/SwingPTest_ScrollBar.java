@@ -8,7 +8,7 @@ import javax.swing.JFrame;
 import javax.swing.Timer;
 
 import edu.udo.piq.components.PButton;
-import edu.udo.piq.components.PButtonObs;
+import edu.udo.piq.components.PClickObs;
 import edu.udo.piq.components.PPicture;
 import edu.udo.piq.components.collections.PList;
 import edu.udo.piq.components.collections.PListModel;
@@ -81,16 +81,8 @@ public class SwingPTest_ScrollBar {
 		list = new PList();
 		scrlPnl.setBody(list);
 		
-		btnAdd.addObs(new PButtonObs() {
-			public void onClick(PButton button) {
-				addElement();
-			}
-		});
-		btnRemove.addObs(new PButtonObs() {
-			public void onClick(PButton button) {
-				removeElement();
-			}
-		});
+		btnAdd.addObs((PClickObs) (cmp) -> addElement());
+		btnRemove.addObs((PClickObs) (cmp) -> removeElement());
 		
 		for (int i = 0; i < 25 + 1; i++) {
 			addElement();

@@ -16,13 +16,13 @@ import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
 
-public class PCheckBox extends AbstractPComponent implements PGlobalEventGenerator {
+public class PCheckBox extends AbstractPComponent implements PClickable, PGlobalEventGenerator {
 	
 	private static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(12, 12);
 	
 	protected final ObserverList<PCheckBoxModelObs> modelObsList
 		= PCompUtil.createDefaultObserverList();
-	protected final ObserverList<PCheckBoxObs> obsList
+	protected final ObserverList<PClickObs> obsList
 		= PCompUtil.createDefaultObserverList();
 	protected final PMouseObs mouseObs = new PMouseObs() {
 		public void onButtonTriggered(PMouse mouse, MouseButton btn) {
@@ -114,11 +114,11 @@ public class PCheckBox extends AbstractPComponent implements PGlobalEventGenerat
 		return DEFAULT_PREFERRED_SIZE;
 	}
 	
-	public void addObs(PCheckBoxObs obs) {
+	public void addObs(PClickObs obs) {
 		obsList.add(obs);
 	}
 	
-	public void removeObs(PCheckBoxObs obs) {
+	public void removeObs(PClickObs obs) {
 		obsList.remove(obs);
 	} 
 	

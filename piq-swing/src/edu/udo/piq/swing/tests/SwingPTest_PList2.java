@@ -13,7 +13,7 @@ import javax.swing.Timer;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.components.PButton;
-import edu.udo.piq.components.PButtonObs;
+import edu.udo.piq.components.PClickObs;
 import edu.udo.piq.components.collections.PCellComponent;
 import edu.udo.piq.components.collections.PCellFactory;
 import edu.udo.piq.components.collections.PList;
@@ -138,12 +138,10 @@ public class SwingPTest_PList2 {
 				
 				PButton btn = new PButton();
 				btn.setContent(new PLabel("Click here!"));
-				btn.addObs(new PButtonObs() {
-					public void onClick(PButton button) {
+				btn.addObs((PClickObs) (cmp) -> {
 						p.setName(p.getName() + "*");
 						lblName.getModel().setValue(p);
-					}
-				});
+					});
 				
 				PersonCellComp cellComp = new PersonCellComp() {
 					public void setElement(PModel model, PModelIndex index) {
@@ -198,14 +196,11 @@ public class SwingPTest_PList2 {
 				"S", "T", "U", "V", "W", "X", "Y", "Z",
 		}));
 		
-		btnAdd.addObs(new PButtonObs() {
-			public void onClick(PButton button) {
+		btnAdd.addObs((PClickObs) (cmp) -> {
 				int index = (int) (Math.random() * names.size());
 				list1.getModel().add(new PListIndex(0), names.remove(index));
-			}
-		});
-		btnRemove.addObs(new PButtonObs() {
-			public void onClick(PButton button) {
+			});
+		btnRemove.addObs((PClickObs) (cmp) -> {
 				PModel model = list1.getModel();
 				PSelection select = list1.getSelection();
 				List<PModelIndex> indices = select.getAllSelected();
@@ -215,8 +210,7 @@ public class SwingPTest_PList2 {
 						model.remove(index);
 					}
 				}
-			}
-		});
+			});
 	}
 	
 	public static class Person {

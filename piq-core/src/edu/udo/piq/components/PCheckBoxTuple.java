@@ -22,7 +22,7 @@ import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
 import edu.udo.piq.util.ThrowException;
 
-public class PCheckBoxTuple extends AbstractPInputLayoutOwner implements PGlobalEventGenerator {
+public class PCheckBoxTuple extends AbstractPInputLayoutOwner implements PClickable, PGlobalEventGenerator {
 	
 	public static final PKeyInput INPUT_TRIGGER_ENTER = new AbstractPKeyInput(
 			KeyInputType.TRIGGER, Key.ENTER, (comp) -> 
@@ -38,9 +38,9 @@ public class PCheckBoxTuple extends AbstractPInputLayoutOwner implements PGlobal
 	};
 	public static final String INPUT_IDENTIFIER_TRIGGER_ENTER = "triggerEnter";
 	
-	protected final ObserverList<PCheckBoxObs> obsList
+	protected final ObserverList<PClickObs> obsList
 		= PCompUtil.createDefaultObserverList();
-	private final PCheckBoxObs chkBxObs = (chkBx) -> PCheckBoxTuple.this.onCheckBoxClick();
+	private final PClickObs chkBxObs = (chkBx) -> PCheckBoxTuple.this.onCheckBoxClick();
 	private PGlobalEventProvider globEvProv;
 	
 	public PCheckBoxTuple() {
@@ -135,11 +135,11 @@ public class PCheckBoxTuple extends AbstractPInputLayoutOwner implements PGlobal
 		return false;
 	}
 	
-	public void addObs(PCheckBoxObs obs) {
+	public void addObs(PClickObs obs) {
 		obsList.add(obs);
 	}
 	
-	public void removeObs(PCheckBoxObs obs) {
+	public void removeObs(PClickObs obs) {
 		obsList.remove(obs);
 	} 
 	

@@ -7,7 +7,7 @@ import java.util.Map;
 
 import edu.udo.piq.PModelFactory;
 import edu.udo.piq.components.PButton;
-import edu.udo.piq.components.PButtonObs;
+import edu.udo.piq.components.PClickObs;
 import edu.udo.piq.components.collections.PList;
 import edu.udo.piq.components.collections.PModelIndex;
 import edu.udo.piq.components.containers.PDropDownList;
@@ -37,17 +37,17 @@ public class SwingPTest_Translation extends AbstractSwingPTest {
 	
 	public void buildGUI() {
 //		EnumPDictionary<Term> dict = new EnumPDictionary<>(Term.class);
-//		dict.setTranslation(Term.CONFIRM, "Bestätigen");
+//		dict.setTranslation(Term.CONFIRM, "Bestï¿½tigen");
 		PModelFactory.setGlobalModelFactory(new MyModelFactory());
 		
 		germanLanguageDictionary = new EnumMap<>(Term.class);
-		germanLanguageDictionary.put(Term.CONFIRM, "Bestätigen");
+		germanLanguageDictionary.put(Term.CONFIRM, "Bestï¿½tigen");
 		germanLanguageDictionary.put(Term.CANCEL, "Abbrechen");
 		germanLanguageDictionary.put(Term.ENGLISH, "Englisch");
 		germanLanguageDictionary.put(Term.GERMAN, "Deutsch");
 		germanLanguageDictionary.put(Term.GIBBERISH, "Unsinn");
 		germanLanguageDictionary.put(Term.GREETINGS, "Willkommen!");
-		germanLanguageDictionary.put(Term.SELECT_LANGUAGE, "Wähle deine Sprache: ");
+		germanLanguageDictionary.put(Term.SELECT_LANGUAGE, "Wï¿½hle deine Sprache: ");
 		germanLanguageDictionary.put(Term.NO_TERM, "<Kein Text>");
 		
 		englishLanguageDictionary = new EnumMap<>(Term.class);
@@ -100,11 +100,7 @@ public class SwingPTest_Translation extends AbstractSwingPTest {
 		bodyPnl.addChild(btnPnl, PBorderLayout.Constraint.BOTTOM);
 		
 		PButton btnConfirm = new PButton();
-		btnConfirm.addObs(new PButtonObs() {
-			public void onClick(PButton button) {
-				changeTranslation();
-			}
-		});
+		btnConfirm.addObs((PClickObs) (cmp) -> changeTranslation());
 		btnConfirm.setContent(new PLabel(Term.CONFIRM));
 		btnPnl.addChild(btnConfirm, null);
 	}

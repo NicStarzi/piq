@@ -15,7 +15,7 @@ import edu.udo.piq.PSize;
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PButtonModel;
 import edu.udo.piq.components.PButtonModelObs;
-import edu.udo.piq.components.PButtonObs;
+import edu.udo.piq.components.PClickObs;
 import edu.udo.piq.components.defaults.DefaultPButtonModel;
 import edu.udo.piq.layouts.PCentricLayout;
 import edu.udo.piq.layouts.PFreeLayout;
@@ -51,7 +51,7 @@ public class PDropDown extends AbstractPLayoutOwner {
 		}
 	};
 	private final PButtonModelObs modelObs = (mdl) -> PDropDown.this.onModelChange();
-	private final PButtonObs btnObs = (btn) -> onButtonClick();
+	private final PClickObs btnObs = (btn) -> onButtonClick();
 	private final PDropDownContainer dropDownContainer;
 	private PButtonModel model;
 	private boolean bodyShown = false;

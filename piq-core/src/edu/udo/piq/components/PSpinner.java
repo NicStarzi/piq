@@ -153,7 +153,7 @@ public class PSpinner extends AbstractPLayoutOwner {
 			super();
 			setSpinnerButtonOrientation(direction);
 			setLayout(null);
-			addObs((PButtonObs) (btn) -> onClick());
+			addObs((PClickObs) (btn) -> onClick());
 			setRepeatTimer(20, 5);
 		}
 		

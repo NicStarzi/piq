@@ -1,9 +1,9 @@
 package edu.udo.piq.swing.tests;
 
 import edu.udo.piq.components.PButton;
-import edu.udo.piq.components.PButtonObs;
 import edu.udo.piq.components.PCheckBoxModelObs;
 import edu.udo.piq.components.PCheckBoxTuple;
+import edu.udo.piq.components.PClickObs;
 import edu.udo.piq.components.PSpinner;
 import edu.udo.piq.components.containers.PLineBorder;
 import edu.udo.piq.components.containers.PPanel;
@@ -71,8 +71,8 @@ public class SwingPTest_Tuple extends AbstractSwingPTest {
 				t1.getLayout().setOrientation(Orientation.LEFT_TO_RIGHT);
 			}
 		});
-		p1.addObs((PButtonObs) (btn) -> System.out.println("BTN 1"));
-		p2.addObs((PButtonObs) (btn) -> System.out.println("BTN 2"));
+		p1.addObs((PClickObs) (btn) -> System.out.println("BTN 1"));
+		p2.addObs((PClickObs) (btn) -> System.out.println("BTN 2"));
 	}
 	
 }

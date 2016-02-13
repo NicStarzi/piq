@@ -14,10 +14,9 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.PGlobalEventObs;
 import edu.udo.piq.components.PButton;
-import edu.udo.piq.components.PButtonObs;
-import edu.udo.piq.components.PCheckBox;
-import edu.udo.piq.components.PCheckBoxObs;
 import edu.udo.piq.components.PCheckBoxTuple;
+import edu.udo.piq.components.PClickObs;
+import edu.udo.piq.components.PClickable;
 import edu.udo.piq.components.PPicture;
 import edu.udo.piq.components.PProgressBar;
 import edu.udo.piq.components.PProgressBarModel;
@@ -151,8 +150,8 @@ public class SwingPTest {
 		tipPic.setTooltipComponent(pic);
 		PButton tipPicBtn = new PButton();
 		tipPicBtn.setContent(new PLabel(new DefaultPTextModel("Tooltip Button")));
-		tipPicBtn.addObs(new PButtonObs() {
-			public void onClick(PButton button) {
+		tipPicBtn.addObs(new PClickObs() {
+			public void onClick(PClickable button) {
 				System.out.println("You clicked a button inside a tooltip!");
 			}
 		});
@@ -209,7 +208,7 @@ public class SwingPTest {
 				
 				PPopupCheckBox chkRmb = new PPopupCheckBox("Remember");
 				chkRmb.getCheckBox().getModel().setValue(chkBxVal);
-				chkRmb.addObs((PCheckBoxObs) (chkBx) -> chkBxVal = !chkBxVal);
+				chkRmb.addObs((PClickObs) (chkBx) -> chkBxVal = !chkBxVal);
 				result.add(chkRmb);
 				
 				PPopupSubMenu subMn = new PPopupSubMenu("Sub-Menu");
@@ -274,7 +273,7 @@ public class SwingPTest {
 		}
 		btnPnl.addChild(ddl, null);
 		
-		btnChange.addObs(new PButtonObs() {
+		btnChange.addObs(new PClickObs() {
 			boolean increment = true;
 			
 			PColor[] fontColors = new PColor[] {
@@ -285,7 +284,7 @@ public class SwingPTest {
 			int currentStyle = 0;
 			int currentColor = 0;
 			
-			public void onClick(PButton button) {
+			public void onClick(PClickable button) {
 				int val = prgBar.getModel().getValue();
 				val = increment ? val + 1 : val - 1;
 				prgBar.getModel().setValue(val);
@@ -305,8 +304,8 @@ public class SwingPTest {
 				root.reRender(root);
 			}
 		});
-		chkBxTpl.addObs(new PCheckBoxObs() {
-			public void onClick(PCheckBox checkBox) {
+		chkBxTpl.addObs(new PClickObs() {
+			public void onClick(PClickable checkBox) {
 				lblChkBx.getModel().setValue(null);
 				lblSld.getModel().setValue(null);
 			}

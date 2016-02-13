@@ -8,6 +8,8 @@ import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
+import edu.udo.piq.components.PClickObs;
+import edu.udo.piq.components.PClickable;
 import edu.udo.piq.components.PIconLabel;
 import edu.udo.piq.components.PPicture;
 import edu.udo.piq.layouts.PCentricLayout;
@@ -16,11 +18,13 @@ import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
 
-public class PPopupButton extends AbstractPLayoutOwner implements PPopupComponent, PGlobalEventGenerator {
+public class PPopupButton extends AbstractPLayoutOwner implements PPopupComponent, PClickable, PGlobalEventGenerator {
 	
 	public static final PColor DEFAULT_HIGHLIGHT_COLOR = PColor.BLUE;
 	
-	protected final ObserverList<PPopupComponentObs> obsList
+	protected final ObserverList<PClickObs> obsListClick
+			= PCompUtil.createDefaultObserverList();
+	protected final ObserverList<PPopupComponentObs> obsListPopup
 			= PCompUtil.createDefaultObserverList();
 	protected PGlobalEventProvider globEvProv;
 	protected boolean enabled = true;
@@ -181,7 +185,7 @@ public class PPopupButton extends AbstractPLayoutOwner implements PPopupComponen
 	protected void onChildAdded(PComponent child, Object constraint) {
 		if (child instanceof PPopupComponent) {
 			PPopupComponent popupChild = (PPopupComponent) child;
-			for (PPopupComponentObs obs : obsList) {
+			for (PPopupComponentObs obs : obsListPopup) {
 				popupChild.addObs(obs);
 			}
 		}
@@ -190,14 +194,14 @@ public class PPopupButton extends AbstractPLayoutOwner implements PPopupComponen
 	protected void onChildRemoved(PComponent child, Object constraint) {
 		if (child instanceof PPopupComponent) {
 			PPopupComponent popupChild = (PPopupComponent) child;
-			for (PPopupComponentObs obs : obsList) {
+			for (PPopupComponentObs obs : obsListPopup) {
 				popupChild.removeObs(obs);
 			}
 		}
 	}
 	
 	public void addObs(PPopupComponentObs obs) {
-		obsList.add(obs);
+		obsListPopup.add(obs);
 		if (getContent() != null && getContent() instanceof PPopupComponent) {
 			PPopupComponent popupChild = (PPopupComponent) getContent();
 			popupChild.addObs(obs);
@@ -209,15 +213,24 @@ public class PPopupButton extends AbstractPLayoutOwner implements PPopupComponen
 			PPopupComponent popupChild = (PPopupComponent) getContent();
 			popupChild.removeObs(obs);
 		}
-		obsList.remove(obs);
+		obsListPopup.remove(obs);
+	}
+	
+	public void addObs(PClickObs obs) {
+		obsListClick.add(obs);
+	}
+	
+	public void removeObs(PClickObs obs) {
+		obsListClick.remove(obs);
 	}
 	
 	protected void fireClickEvent() {
+		obsListClick.fireEvent((obs) -> obs.onClick(this));
 		firePopupCloseEvent();
 	}
 	
 	protected void firePopupCloseEvent() {
-		obsList.fireEvent((obs) -> obs.onClosePopup(this));
+		obsListPopup.fireEvent((obs) -> obs.onClosePopup(this));
 	}
 	
 }

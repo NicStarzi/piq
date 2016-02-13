@@ -8,7 +8,7 @@ import javax.swing.JFrame;
 import javax.swing.Timer;
 
 import edu.udo.piq.components.PButton;
-import edu.udo.piq.components.PButtonObs;
+import edu.udo.piq.components.PClickObs;
 import edu.udo.piq.components.PSlider;
 import edu.udo.piq.components.charts.PLineChart;
 import edu.udo.piq.components.containers.PPanel;
@@ -104,18 +104,15 @@ public class SwingPTest_PLineChart {
 		chart.getModel().addDataPoint(i++, 2);
 		cnt.addChild(chart, null);
 		
-		btnAdd.addObs(new PButtonObs() {
-			public void onClick(PButton button) {
+		btnAdd.addObs((PClickObs) (cmp) -> {
 				new Thread(new Runnable() {
 					public void run() {
 						int index = chart.getModel().getDataCount();
 						chart.getModel().addDataPoint(index, sldAdd.getModel().getValue());
 					}
 				}).run();
-			}
-		});
-		btnRmv.addObs(new PButtonObs() {
-			public void onClick(PButton button) {
+			});
+		btnRmv.addObs((PClickObs) (cmp) -> {
 				new Thread(new Runnable() {
 					public void run() {
 						int index = chart.getModel().getDataCount() - 1;
@@ -124,8 +121,7 @@ public class SwingPTest_PLineChart {
 						}
 					}
 				}).run();
-			}
-		});
+			});
 	}
 	
 }

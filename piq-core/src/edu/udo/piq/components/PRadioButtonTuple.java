@@ -22,7 +22,7 @@ import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
 import edu.udo.piq.util.ThrowException;
 
-public class PRadioButtonTuple extends AbstractPInputLayoutOwner implements PGlobalEventGenerator {
+public class PRadioButtonTuple extends AbstractPInputLayoutOwner implements PClickable, PGlobalEventGenerator {
 	
 	public static final PKeyInput INPUT_TRIGGER_ENTER = new AbstractPKeyInput(
 			KeyInputType.TRIGGER, Key.ENTER, (comp) -> 
@@ -38,9 +38,9 @@ public class PRadioButtonTuple extends AbstractPInputLayoutOwner implements PGlo
 	};
 	public static final String INPUT_IDENTIFIER_TRIGGER_ENTER = "triggerEnter";
 	
-	protected final ObserverList<PRadioButtonObs> obsList
+	protected final ObserverList<PClickObs> obsList
 		= PCompUtil.createDefaultObserverList();
-	protected final PRadioButtonObs radBtnObs = (btn) -> onRadioBtnClick();
+	protected final PClickObs radBtnObs = (btn) -> onRadioBtnClick();
 	private PGlobalEventProvider globEvProv;
 	
 	public PRadioButtonTuple() {
@@ -135,11 +135,11 @@ public class PRadioButtonTuple extends AbstractPInputLayoutOwner implements PGlo
 		return false;
 	}
 	
-	public void addObs(PRadioButtonObs obs) {
+	public void addObs(PClickObs obs) {
 		obsList.add(obs);
 	}
 	
-	public void removeObs(PRadioButtonObs obs) {
+	public void removeObs(PClickObs obs) {
 		obsList.remove(obs);
 	} 
 	

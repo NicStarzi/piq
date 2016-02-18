@@ -79,16 +79,6 @@ public class PRadioButtonTuple extends AbstractPInputLayoutOwner implements PCli
 		return globEvProv;
 	}
 	
-	protected void setLayout(PTupleLayout layout) {
-		if (getLayout() != null) {
-			getLayout().removeObs(layoutObs);
-		}
-		super.setLayout(layout);
-		if (getLayout() != null) {
-			getLayout().addObs(layoutObs);
-		}
-	}
-	
 	protected PTupleLayout getLayoutInternal() {
 		return (PTupleLayout) super.getLayout();
 	}

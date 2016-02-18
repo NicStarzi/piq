@@ -18,7 +18,7 @@ import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
-import edu.udo.piq.components.defaults.DefaultPCellFactory;
+import edu.udo.piq.components.defaults.PTreePCellFactory;
 import edu.udo.piq.components.defaults.DefaultPTreeModel;
 import edu.udo.piq.components.defaults.PTreePDnDSupport;
 import edu.udo.piq.components.defaults.ReRenderPFocusObs;
@@ -91,7 +91,7 @@ public class PTree extends AbstractPInputLayoutOwner
 		setLayout(new PTreeLayout(this));
 		setDragAndDropSupport(new PTreePDnDSupport());
 		setSelection(new PTreeSingleSelection());
-		setCellFactory(new DefaultPCellFactory());
+		setCellFactory(new PTreePCellFactory());
 		setModel(defaultModel);
 		
 		addObs(new PMouseObs() {
@@ -240,30 +240,14 @@ public class PTree extends AbstractPInputLayoutOwner
 		return selection.getAllSelected();
 	}
 	
-	protected void addAllSubIndices(Set<PModelIndex> toFill, PTreeIndex index) {
-		Deque<PTreeIndex> stack = new ArrayDeque<>();
-		stack.push(index);
-		while (!stack.isEmpty()) {
-			PTreeIndex current = stack.pop();
-			toFill.add(current);
-			
-			int childCount = getModel().getChildCount(current);
-			for (int i = 0; i < childCount; i++) {
-				stack.push(current.append(i));
-			}
-		}
-	}
-	
 	public void setIndexExpanded(PTreeIndex index, boolean isExpanded) {
 		if (isExpanded) {
 			if (hiddenIdxSet.remove(index)) {
-				firePreferredSizeChangedEvent();
-				fireReRenderEvent();
+				addSubTree(index);
 			}
 		} else {
 			if (hiddenIdxSet.add(index)) {
-				firePreferredSizeChangedEvent();
-				fireReRenderEvent();
+				removeSubTree(index);
 			}
 		}
 	}
@@ -421,8 +405,28 @@ public class PTree extends AbstractPInputLayoutOwner
 		return true;
 	}
 	
+	protected void removeSubTree(PTreeIndex index) {
+		PTreeModel model = getModel();
+		for (int i = model.getChildCount(index) - 1; i >= 0; i--) {
+			PTreeIndex childIndex = index.append(i);
+			getSelection().removeSelection(childIndex);
+			getLayoutInternal().removeChild(childIndex);
+		}
+	}
+	
+	protected void addSubTree(PTreeIndex index) {
+		PTreeModel model = getModel();
+		getSelection().clearSelection();
+		for (int i = 0; i < model.getChildCount(index); i++) {
+			PTreeIndex childIndex = index.append(i);
+			PCellComponent cell = getCellFactory().makeCellComponent(getModel(), childIndex);
+			getLayoutInternal().addChild(cell, childIndex);
+		}
+	}
+	
 	protected void addContent(PTreeIndex index, Object newContent) {
-		if (isIndexExpanded(index)) {
+//		System.out.println("PTree.addContent() idx="+index+", obj="+newContent);
+		if (isParentExpanded(index)) {
 			getSelection().clearSelection();
 			PCellComponent cell = getCellFactory().makeCellComponent(getModel(), index);
 			getLayoutInternal().addChild(cell, index);
@@ -430,17 +434,21 @@ public class PTree extends AbstractPInputLayoutOwner
 	}
 	
 	protected void removeContent(PTreeIndex index, Object oldContent) {
-		System.out.println("PTree.removeContent() idx="+index+", obj="+oldContent+", cell="+getCellComponent(index));
-		if (isIndexExpanded(index)) {
+//		System.out.println("PTree.removeContent() idx="+index+", obj="+oldContent+", cell="+getCellComponent(index));
+		if (isParentExpanded(index)) {
 			getSelection().removeSelection(index);
 			getLayoutInternal().removeChild(getCellComponent(index));
 		}
 	}
 	
 	protected void changeContent(PTreeIndex index, Object oldContent) {
-		if (isIndexExpanded(index)) {
+		if (isParentExpanded(index)) {
 			getCellComponent(index).setElement(getModel(), index);
 		}
+	}
+	
+	protected boolean isParentExpanded(PTreeIndex index) {
+		return index.getDepth() == 0 || isIndexExpanded(index.createParentIndex());
 	}
 	
 	protected void onContentAdded(PTreeIndex index, Object content) {

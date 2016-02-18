@@ -98,9 +98,14 @@ public class PTupleLayout extends AbstractEnumPLayout<Constraint> {
 	public void layOut() {
 		Distribution distPrim = getDistribution();
 		Distribution distScnd = this.distScnd;
-		int gap = getGap();
 		PComponent first = getFirst();
 		PComponent second = getSecond();
+		int gap;
+		if (first == null || second == null) {
+			gap = 0;
+		} else {
+			gap = getGap();
+		}
 		
 		PInsets insets = getInsets();
 		PBounds ob = getOwner().getBounds();

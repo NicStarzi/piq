@@ -22,7 +22,7 @@ import edu.udo.piq.components.defaults.DefaultPCellFactory;
 import edu.udo.piq.components.defaults.DefaultPTreeModel;
 import edu.udo.piq.components.defaults.PTreePDnDSupport;
 import edu.udo.piq.components.defaults.ReRenderPFocusObs;
-import edu.udo.piq.layouts.PTreeLayout2;
+import edu.udo.piq.layouts.PTreeLayout;
 import edu.udo.piq.tools.AbstractPInputLayoutOwner;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
@@ -88,7 +88,7 @@ public class PTree extends AbstractPInputLayoutOwner
 			defaultModel = (PTreeModel) modelFac.getModelFor(this, defaultModel);
 		}
 		
-		setLayout(new PTreeLayout2(this));
+		setLayout(new PTreeLayout(this));
 		setDragAndDropSupport(new PTreePDnDSupport());
 		setSelection(new PTreeSingleSelection());
 		setCellFactory(new DefaultPCellFactory());
@@ -111,8 +111,8 @@ public class PTree extends AbstractPInputLayoutOwner
 		addObs(new ReRenderPFocusObs());
 	}
 	
-	protected PTreeLayout2 getLayoutInternal() {
-		return (PTreeLayout2) super.getLayout();
+	protected PTreeLayout getLayoutInternal() {
+		return (PTreeLayout) super.getLayout();
 	}
 	
 	public void setSelection(PTreeSelection selection) {
@@ -189,7 +189,7 @@ public class PTree extends AbstractPInputLayoutOwner
 		if (getModel() == null) {
 			return null;
 		}
-		PTreeLayout2 layout = getLayoutInternal();
+		PTreeLayout layout = getLayoutInternal();
 		PComponent child = layout.getChildAt(x, y);
 		if (child == null) {
 			return null;
@@ -204,7 +204,7 @@ public class PTree extends AbstractPInputLayoutOwner
 		if (getModel().getRoot() == null) {
 			return new PTreeIndex();
 		}
-		PTreeLayout2 layout = getLayoutInternal();
+		PTreeLayout layout = getLayoutInternal();
 		PComponent child = layout.getChildAt(x, y);
 		if (child == null) {
 			return null;
@@ -308,7 +308,7 @@ public class PTree extends AbstractPInputLayoutOwner
 		renderer.setColor(BACKGROUND_COLOR);
 		renderer.drawQuad(x + 0, y + 0, fx - 0, fy - 0);
 		
-		PTreeLayout2 layout = getLayoutInternal();
+		PTreeLayout layout = getLayoutInternal();
 		PComponent root = layout.getRootComponent();
 		if (root == null) {
 			return;
@@ -321,7 +321,7 @@ public class PTree extends AbstractPInputLayoutOwner
 	protected void defaultRenderParentChildConnections(PRenderer renderer, int boundsX) {
 		// Draw black lines connecting parent and child nodes
 		renderer.setColor(PColor.BLACK);
-		PTreeLayout2 layout = getLayoutInternal();
+		PTreeLayout layout = getLayoutInternal();
 		PComponent root = layout.getRootComponent();
 		
 		Deque<PComponent> stack = new ArrayDeque<>();

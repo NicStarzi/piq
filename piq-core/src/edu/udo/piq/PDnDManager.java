@@ -267,9 +267,7 @@ public class PDnDManager {
 		finishDrag(dropTarget);
 		
 		// Indicates an internal error as this method should only be called after checking if drop is possible
-		if (dropTarget == null) {
-			throw new NullPointerException("getDropTarget("+x+", "+y+")="+dropTarget);
-		}
+		ThrowException.ifNull(dropTarget, "getDropTarget(x, y) == null");
 		PDnDSupport dndSup = dropTarget.getDragAndDropSupport();
 		// can drop has already been invoked by getDropTarget(x, y) and returned true
 		dndSup.drop(dropTarget, transfer, x, y);

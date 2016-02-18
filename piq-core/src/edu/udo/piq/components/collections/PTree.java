@@ -1,9 +1,7 @@
 package edu.udo.piq.components.collections;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
@@ -13,106 +11,95 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PDnDSupport;
-import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PKeyboard.Modifier;
+import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.components.defaults.DefaultPCellFactory;
-import edu.udo.piq.components.defaults.DefaultPDnDSupport;
 import edu.udo.piq.components.defaults.DefaultPTreeModel;
+import edu.udo.piq.components.defaults.PTreePDnDSupport;
+import edu.udo.piq.components.defaults.ReRenderPFocusObs;
 import edu.udo.piq.layouts.PTreeLayout2;
 import edu.udo.piq.tools.AbstractPInputLayoutOwner;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.ThrowException;
 
 public class PTree extends AbstractPInputLayoutOwner 
 	implements PDropComponent 
 {
-	
-	public static final Comparator<PModelIndex> TREE_INDEX_DEPTH_COMPARATOR = 
-	new Comparator<PModelIndex>() {
-		public int compare(PModelIndex o1, PModelIndex o2) {
-			PTreeIndex ti1 = (PTreeIndex) o1;
-			PTreeIndex ti2 = (PTreeIndex) o2;
-			int depthCompare = ti2.getDepth() - ti1.getDepth();
-			if (depthCompare == 0) {
-				return ti2.getLastIndex() - ti1.getLastIndex();
-			}
-			return depthCompare;
-		}
-	};
 	
 	protected static final PColor BACKGROUND_COLOR = PColor.WHITE;
 	protected static final PColor FOCUS_COLOR = PColor.GREY25;
 	protected static final PColor DROP_HIGHLIGHT_COLOR = PColor.RED;
 	protected static final int DRAG_AND_DROP_DISTANCE = 20;
 	
-	protected final ObserverList<PModelObs> modelObsList
+	protected final ObserverList<PModelObs> obsListModel
 		= PCompUtil.createDefaultObserverList();
-	protected final ObserverList<PSelectionObs> selectionObsList
+	protected final ObserverList<PSelectionObs> obsListSelection
 		= PCompUtil.createDefaultObserverList();
-	private final PSelectionObs selectionObs = new PSelectionObs() {
+	protected final Set<PTreeIndex> hiddenIdxSet = new HashSet<>();
+	protected final PSelectionObs selectionObs = new PSelectionObs() {
 		public void onSelectionAdded(PSelection selection, PModelIndex index) {
-			selectionAdded((PTreeIndex) index);
+			PTree.this.onSelectionAdded((PTreeIndex) index);
 		}
 		public void onSelectionRemoved(PSelection selection, PModelIndex index) {
-			selectionRemoved((PTreeIndex) index);
+			PTree.this.onSelectionRemoved((PTreeIndex) index);
 		}
-		public void onLastSelectedChanged(PSelection selection,
-				PModelIndex prevLastSelected, PModelIndex newLastSelected) 
-		{
-			if (hasFocus()) {
-				fireReRenderEvent();
-			}
+		public void onLastSelectedChanged(PSelection sel, PModelIndex oldIdx, PModelIndex newIdx) {
+			PTree.this.onLastSelectedChanged(oldIdx, newIdx);
 		}
 	};
-	private final PModelObs modelObs = new PModelObs() {
+	protected final PModelObs modelObs = new PModelObs() {
 		public void onContentAdded(PModel model, PModelIndex index, Object newContent) {
-			getSelection().clearSelection();
-			contentAdded((PTreeIndex) index, newContent);
-			
-			System.out.println(getModel());
-			getLayoutInternal().debug();
+			PTree.this.onContentAdded((PTreeIndex) index, newContent);
 		}
 		public void onContentRemoved(PModel model, PModelIndex index, Object oldContent) {
-			contentRemoved((PTreeIndex) index, oldContent);
-			getSelection().removeSelection(index);
-			
-			System.out.println(getModel());
-			getLayoutInternal().debug();
+			PTree.this.onContentRemoved((PTreeIndex) index, oldContent);
 		}
 		public void onContentChanged(PModel model, PModelIndex index, Object oldContent) {
-			contentChanged((PTreeIndex) index, oldContent);
+			PTree.this.onContentChanged((PTreeIndex) index, oldContent);
 		}
 	};
-	private PTreeSelection selection;
-	private PTreeModel model;
-	private PCellFactory cellFactory;
-	private PDnDSupport dndSup;
-	private PModelIndex currentDnDHighlightIndex;
-	private PCellComponent currentDnDHighlightComponent;
-	private int lastDragX = -1;
-	private int lastDragY = -1;
-	private boolean isDragTagged = false;
-	
-	public PTree() {
-		this(new DefaultPTreeModel());
-	}
+	protected PTreeSelection	selection;
+	protected PTreeModel		model;
+	protected PCellFactory		cellFact;
+	protected PDnDSupport		dndSup;
+	protected PTreeIndex		currentDnDHighlightIdx;
+	protected PCellComponent	currentDnDHighlightCmp;
+	protected int				lastDragX = -1;
+	protected int				lastDragY = -1;
+	protected boolean			isDragTagged = false;
 	
 	public PTree(PTreeModel model) {
+		this();
+		setModel(model);
+	}
+	
+	public PTree() {
 		super();
+		
+		PModelFactory modelFac = PModelFactory.getGlobalModelFactory();
+		PTreeModel defaultModel = new DefaultPTreeModel();
+		if (modelFac != null) {
+			defaultModel = (PTreeModel) modelFac.getModelFor(this, defaultModel);
+		}
+		
 		setLayout(new PTreeLayout2(this));
-		setDragAndDropSupport(new DefaultPDnDSupport());
+		setDragAndDropSupport(new PTreePDnDSupport());
 		setSelection(new PTreeSingleSelection());
 		setCellFactory(new DefaultPCellFactory());
-		setModel(model);
+		setModel(defaultModel);
 		
 		addObs(new PMouseObs() {
 			public void onButtonTriggered(PMouse mouse, MouseButton btn) {
 				PTree.this.onMouseButtonTriggred(mouse, btn);
+			}
+			public void onButtonPressed(PMouse mouse, MouseButton btn) {
+				PTree.this.onMouseButtonPressed(mouse, btn);
 			}
 			public void onButtonReleased(PMouse mouse, MouseButton btn) {
 				PTree.this.onMouseReleased(mouse, btn);
@@ -121,79 +108,24 @@ public class PTree extends AbstractPInputLayoutOwner
 				PTree.this.onMouseMoved(mouse);
 			}
 		});
-		addObs(new PFocusObs() {
-			public void onFocusGained(PComponent oldOwner, PComponent newOwner) {
-				if (newOwner == PTree.this && getSelection() != null) {
-					fireReRenderEvent();
-				}
-			}
-			public void onFocusLost(PComponent oldOwner) {
-				if (oldOwner == PTree.this && getSelection() != null) {
-					fireReRenderEvent();
-				}
-			}
-		});
-	}
-	
-	protected void onMouseButtonTriggred(PMouse mouse, MouseButton btn) {
-		if (btn == MouseButton.LEFT && isMouseOverThisOrChild()) {
-			PTreeIndex index = getIndexAt(mouse.getX(), mouse.getY());
-			if (index != null) {
-				if (mouse.isPressed(MouseButton.DRAG_AND_DROP)) {
-					lastDragX = mouse.getX();
-					lastDragY = mouse.getY();
-					isDragTagged = true;
-				}
-				
-				PKeyboard keyBoard = getKeyboard();
-				if (keyBoard == null || !keyBoard.isModifierToggled(Modifier.CTRL)) {
-					getSelection().clearSelection();
-				}
-				getSelection().addSelection(index);
-				takeFocus();
-			}
-		}
-	}
-	
-	protected void onMouseReleased(PMouse mouse, MouseButton btn) {
-		if (isDragTagged && mouse.isReleased(MouseButton.DRAG_AND_DROP)) {
-			isDragTagged = false;
-		}
-	}
-	
-	protected void onMouseMoved(PMouse mouse) {
-		PDnDSupport dndSup = getDragAndDropSupport();
-		if (dndSup != null && isDragTagged 
-				&& mouse.isPressed(MouseButton.DRAG_AND_DROP)) 
-		{
-			int mx = mouse.getX();
-			int my = mouse.getY();
-			int disX = Math.abs(lastDragX - mx);
-			int disY = Math.abs(lastDragY - my);
-			int dis = Math.max(disX, disY);
-			if (dis >= DRAG_AND_DROP_DISTANCE) {
-				if (dndSup.canDrag(this, mx, my)) {
-					dndSup.startDrag(this, mx, my);
-				}
-			}
-		}
+		addObs(new ReRenderPFocusObs());
 	}
 	
 	protected PTreeLayout2 getLayoutInternal() {
 		return (PTreeLayout2) super.getLayout();
 	}
 	
-	public void setSelection(PTreeSelection listSelection) {
+	public void setSelection(PTreeSelection selection) {
 		if (getSelection() != null) {
 			getSelection().removeObs(selectionObs);
-			for (PSelectionObs obs : selectionObsList) {
+			for (PSelectionObs obs : obsListSelection) {
 				getSelection().removeObs(obs);
 			}
 		}
-		selection = listSelection;
+		this.selection = selection;
 		if (getSelection() != null) {
 			getSelection().addObs(selectionObs);
-			for (PSelectionObs obs : selectionObsList) {
+			for (PSelectionObs obs : obsListSelection) {
 				getSelection().addObs(obs);
 			}
 		}
@@ -203,24 +135,24 @@ public class PTree extends AbstractPInputLayoutOwner
 		return selection;
 	}
 	
-	public void setModel(PTreeModel listModel) {
+	public void setModel(PTreeModel treeModel) {
 		if (getModel() != null) {
 			getModel().removeObs(modelObs);
-			for (PModelObs obs : modelObsList) {
+			for (PModelObs obs : obsListModel) {
 				getModel().removeObs(obs);
 			}
 		}
-		model = listModel;
+		this.model = treeModel;
 		getLayoutInternal().clearChildren();
 		if (getModel() != null) {
 			PTreeModel model = getModel();
 			
 			model.addObs(modelObs);
-			for (PModelObs obs : modelObsList) {
+			for (PModelObs obs : obsListModel) {
 				model.addObs(obs);
 			}
 			for (PModelIndex index : model) {
-				contentAdded((PTreeIndex) index, model.get(index));
+				addContent((PTreeIndex) index, model.get(index));
 			}
 		}
 	}
@@ -229,34 +161,20 @@ public class PTree extends AbstractPInputLayoutOwner
 		return model;
 	}
 	
-	public List<Object> getAllSelectedContent() {
-		PSelection select = getSelection();
-		PModel model = getModel();
-		List<PModelIndex> indices = select.getAllSelected();
-		if (indices.isEmpty()) {
-			return Collections.emptyList();
-		}
-		List<Object> result = new ArrayList<>(indices.size());
-		for (PModelIndex index : indices) {
-			result.add(model.get(index));
-		}
-		return result;
-	}
-	
 	public void setCellFactory(PCellFactory listCellFactory) {
-		cellFactory = listCellFactory;
+		cellFact = listCellFactory;
 		getLayoutInternal().clearChildren();
 		
 		PTreeModel model = getModel();
 		if (model != null) {
 			for (PModelIndex index : model) {
-				contentAdded((PTreeIndex) index, model.get(index));
+				addContent((PTreeIndex) index, model.get(index));
 			}
 		}
 	}
 	
 	public PCellFactory getCellFactory() {
-		return cellFactory;
+		return cellFact;
 	}
 	
 	public void setDragAndDropSupport(PDnDSupport support) {
@@ -319,18 +237,7 @@ public class PTree extends AbstractPInputLayoutOwner
 		{
 			return Collections.emptyList();
 		}
-		List<PModelIndex> selectedIndices = selection.copyAllSelected();
-		selectedIndices.sort(TREE_INDEX_DEPTH_COMPARATOR);
-		Set<PModelIndex> dragIndexSet = new HashSet<>();
-		
-		for (PModelIndex index : selectedIndices) {
-			if (!dragIndexSet.contains(index)) {
-				addAllSubIndices(dragIndexSet, (PTreeIndex) index);
-			}
-		}
-		List<PModelIndex> dragIndices = new ArrayList<>(dragIndexSet);
-		dragIndices.sort(TREE_INDEX_DEPTH_COMPARATOR);
-		return dragIndices;
+		return selection.getAllSelected();
 	}
 	
 	protected void addAllSubIndices(Set<PModelIndex> toFill, PTreeIndex index) {
@@ -347,54 +254,48 @@ public class PTree extends AbstractPInputLayoutOwner
 		}
 	}
 	
-	public void setDropHighlight(PModelIndex index) {
-		if (currentDnDHighlightComponent != null) {
-			currentDnDHighlightComponent.setDropHighlighted(false);
+	public void setIndexExpanded(PTreeIndex index, boolean isExpanded) {
+		if (isExpanded) {
+			if (hiddenIdxSet.remove(index)) {
+				firePreferredSizeChangedEvent();
+				fireReRenderEvent();
+			}
+		} else {
+			if (hiddenIdxSet.add(index)) {
+				firePreferredSizeChangedEvent();
+				fireReRenderEvent();
+			}
 		}
-		currentDnDHighlightIndex = index;
-		if (index != null) {
-			currentDnDHighlightComponent = getCellComponent((PTreeIndex) index);
-			if (currentDnDHighlightComponent != null) {
-				currentDnDHighlightComponent.setDropHighlighted(true);
+	}
+	
+	public boolean isIndexExpanded(PTreeIndex index) {
+		return !hiddenIdxSet.contains(index);
+	}
+	
+	public void setDropHighlight(PModelIndex index) {
+		if (currentDnDHighlightCmp != null) {
+			currentDnDHighlightCmp.setDropHighlighted(false);
+		}
+		if (index == null) {
+			currentDnDHighlightIdx = null;
+		} else {
+			currentDnDHighlightIdx = ThrowException.ifTypeCastFails(index, PTreeIndex.class, 
+					"!(index instanceof PTreeIndex)");
+			
+			currentDnDHighlightCmp = getCellComponent((PTreeIndex) index);
+			if (currentDnDHighlightCmp != null) {
+				currentDnDHighlightCmp.setDropHighlighted(true);
 			}
 		}
 	}
 	
 	public boolean isDropHighlighted() {
-		return currentDnDHighlightComponent != null 
-				|| currentDnDHighlightIndex != null;
-	}
-	
-	protected void contentAdded(PTreeIndex index, Object newContent) {
-		PCellComponent cell = getCellFactory().makeCellComponent(getModel(), index);
-		getLayoutInternal().addChild(cell, index);
-	}
-	
-	protected void contentRemoved(PTreeIndex index, Object oldContent) {
-		getLayoutInternal().removeChild(getCellComponent(index));
-	}
-	
-	protected void contentChanged(PTreeIndex index, Object oldContent) {
-		getCellComponent(index).setElement(getModel(), index);
-	}
-	
-	protected void selectionAdded(PTreeIndex index) {
-		PCellComponent cellComp = getCellComponent(index);
-		if (cellComp != null) {
-			cellComp.setSelected(true);
-		}
-	}
-	
-	protected void selectionRemoved(PTreeIndex index) {
-		PCellComponent cellComp = getCellComponent(index);
-		if (cellComp != null) {
-			cellComp.setSelected(false);
-		}
+		return currentDnDHighlightCmp != null 
+				|| currentDnDHighlightIdx != null;
 	}
 	
 	public PCellComponent getCellComponent(PTreeIndex index) {
-		return (PCellComponent) getLayoutInternal().
-				getComponentAt(index, index.getDepth());
+		return (PCellComponent) getLayoutInternal().getComponentAt(index);
 	}
 	
 	public void defaultRender(PRenderer renderer) {
@@ -407,14 +308,22 @@ public class PTree extends AbstractPInputLayoutOwner
 		renderer.setColor(BACKGROUND_COLOR);
 		renderer.drawQuad(x + 0, y + 0, fx - 0, fy - 0);
 		
-		// Draw black lines connecting parent and child nodes
-		renderer.setColor(PColor.BLACK);
-		
 		PTreeLayout2 layout = getLayoutInternal();
 		PComponent root = layout.getRootComponent();
 		if (root == null) {
 			return;
 		}
+		defaultRenderParentChildConnections(renderer, x);
+		defaultRenderDropHighlighting(renderer);
+		defaultRenderFocus(renderer);
+	}
+	
+	protected void defaultRenderParentChildConnections(PRenderer renderer, int boundsX) {
+		// Draw black lines connecting parent and child nodes
+		renderer.setColor(PColor.BLACK);
+		PTreeLayout2 layout = getLayoutInternal();
+		PComponent root = layout.getRootComponent();
+		
 		Deque<PComponent> stack = new ArrayDeque<>();
 		stack.push(root);
 		while (!stack.isEmpty()) {
@@ -422,12 +331,12 @@ public class PTree extends AbstractPInputLayoutOwner
 			PBounds parentBnds = current.getBounds();
 			int ph = parentBnds.getHeight();
 			int px = parentBnds.getX() - 6;
-			if (current == layout.getRootComponent() && px < x) {
-				px = x + 1;
+			if (current == layout.getRootComponent() && px < boundsX) {
+				px = boundsX + 1;
 			}
 			int py = parentBnds.getY() + ph / 2;
 			
-			for (PComponent child : layout.getChildrenOf(current)) {
+			for (PComponent child : layout.getChildNodesOf(current)) {
 				PBounds childBnds = child.getBounds();
 				int ch = childBnds.getHeight();
 				int cx = childBnds.getX() - 2;
@@ -439,11 +348,16 @@ public class PTree extends AbstractPInputLayoutOwner
 				stack.push(child);
 			}
 		}
-		// Draw drop highlights for not existing nodes (new indices)
-		if (currentDnDHighlightIndex != null 
-				&& currentDnDHighlightComponent == null) 
+	}
+	
+	protected void defaultRenderDropHighlighting(PRenderer renderer) {
+		// The drop highlight above a node is already handled by the DefaultPCellComponent.
+		// This method only has to draw the drop highlight for nodes that do not exist yet.
+		// Those nodes are always the last children of their parent. 
+		if (currentDnDHighlightIdx != null 
+				&& currentDnDHighlightCmp == null) 
 		{
-			PTreeIndex childIndex = (PTreeIndex) currentDnDHighlightIndex;
+			PTreeIndex childIndex = currentDnDHighlightIdx;
 			PTreeIndex parentIndex = childIndex.createParentIndex();
 			// check if parent has children or not
 			int childCount = getModel().getChildCount(parentIndex);
@@ -454,69 +368,192 @@ public class PTree extends AbstractPInputLayoutOwner
 					PBounds cellBounds = parentCell.getBounds();
 					int cx = cellBounds.getFinalX() + 1;
 					int cy = cellBounds.getY();
-					int cfx = cellBounds.getFinalX() + 3;
+					int cfx = cx + 2;
 					int cfy = cellBounds.getFinalY();
 					
 					renderer.setColor(DROP_HIGHLIGHT_COLOR);
 					renderer.drawQuad(cx, cy, cfx, cfy);
+				} else {
+					System.out.println("DROP="+childIndex);
+					System.out.println("PARENT="+parentIndex);
+					System.out.println();
 				}
 			} else {
 				// highlight below the last child of parent
 				PTreeIndex sibblingIndex = parentIndex.append(childCount - 1);
 				PComponent sibblingCell = layout.getChildForConstraint(sibblingIndex);
-				PBounds cellBounds = sibblingCell.getBounds();
-				int cx = cellBounds.getX();
-				int cy = cellBounds.getFinalY();
-				int cfx = cellBounds.getFinalX();
-				int cfy = cellBounds.getFinalY() + 2;
-				
-				renderer.setColor(DROP_HIGHLIGHT_COLOR);
-				renderer.drawQuad(cx, cy, cfx, cfy);
+				if (sibblingCell != null) {
+					PBounds cellBounds = sibblingCell.getBounds();
+					int cx = cellBounds.getX();
+					int cy = cellBounds.getFinalY();
+					int cfx = cellBounds.getFinalX();
+					int cfy = cy + 2;
+					
+					renderer.setColor(DROP_HIGHLIGHT_COLOR);
+					renderer.drawQuad(cx, cy, cfx, cfy);
+				}
 			}
 		}
-//		if (hasFocus() && getSelection() != null) {
-//			PListIndex lastSelectedIndex = getSelection().getLastSelected();
-//			if (lastSelectedIndex != null) {
-//				PCellComponent cellComp = getCellComponent(lastSelectedIndex);
-//				PBounds cellBounds = cellComp.getBounds();
-//				int cx = cellBounds.getX() - 1;
-//				int cy = cellBounds.getY() - 1;
-//				int cfx = cellBounds.getFinalX() + 1;
-//				int cfy = cellBounds.getFinalY() + 1;
-//				
-//				renderer.setColor(FOCUS_COLOR);
-//				renderer.drawQuad(cx, cy, cfx, cfy);
-//			}
-//		}
+	}
+	
+	protected void defaultRenderFocus(PRenderer renderer) {
+		if (hasFocus() && getSelection() != null) {
+			PTreeIndex lastSelectedIdx = getSelection().getLastSelected();
+			if (lastSelectedIdx != null) {
+				PCellComponent cellComp = getCellComponent(lastSelectedIdx);
+				// In case the last selected index was removed!
+				if (cellComp != null && cellComp.getParent() == this) {
+					PBounds cellBounds = cellComp.getBounds();
+					int cx = cellBounds.getX() - 1;
+					int cy = cellBounds.getY() - 1;
+					int cfx = cellBounds.getFinalX() + 1;
+					int cfy = cellBounds.getFinalY() + 1;
+					
+					renderer.setRenderMode(renderer.getRenderModeOutlineDashed());
+					renderer.setColor(FOCUS_COLOR);
+					renderer.drawQuad(cx, cy, cfx, cfy);
+				}
+			}
+		}
 	}
 	
 	public boolean isFocusable() {
 		return true;
 	}
 	
+	protected void addContent(PTreeIndex index, Object newContent) {
+		if (isIndexExpanded(index)) {
+			getSelection().clearSelection();
+			PCellComponent cell = getCellFactory().makeCellComponent(getModel(), index);
+			getLayoutInternal().addChild(cell, index);
+		}
+	}
+	
+	protected void removeContent(PTreeIndex index, Object oldContent) {
+		System.out.println("PTree.removeContent() idx="+index+", obj="+oldContent+", cell="+getCellComponent(index));
+		if (isIndexExpanded(index)) {
+			getSelection().removeSelection(index);
+			getLayoutInternal().removeChild(getCellComponent(index));
+		}
+	}
+	
+	protected void changeContent(PTreeIndex index, Object oldContent) {
+		if (isIndexExpanded(index)) {
+			getCellComponent(index).setElement(getModel(), index);
+		}
+	}
+	
+	protected void onContentAdded(PTreeIndex index, Object content) {
+		System.out.println("--- ADD --- "+content);
+		addContent(index, content);
+		
+		System.out.println(getModel());
+		getLayoutInternal().debug();
+	}
+	
+	protected void onContentRemoved(PTreeIndex index, Object content) {
+		System.out.println("--- REMOVE --- "+content);
+		removeContent(index, content);
+		
+		System.out.println(getModel());
+		getLayoutInternal().debug();
+	}
+	
+	protected void onContentChanged(PTreeIndex index, Object content) {
+		changeContent(index, content);
+	}
+	
+	protected void onSelectionAdded(PTreeIndex index) {
+		PCellComponent cellComp = getCellComponent(index);
+		if (cellComp != null) {
+			cellComp.setSelected(true);
+		}
+	}
+	
+	protected void onSelectionRemoved(PTreeIndex index) {
+		PCellComponent cellComp = getCellComponent(index);
+		if (cellComp != null) {
+			cellComp.setSelected(false);
+		}
+	}
+	
+	protected void onLastSelectedChanged(PModelIndex oldIdx, PModelIndex newIdx) {
+		if (hasFocus()) {
+			fireReRenderEvent();
+		}
+	}
+	
+	protected void onMouseButtonTriggred(PMouse mouse, MouseButton btn) {
+		if (btn == MouseButton.LEFT && isMouseOverThisOrChild()) {
+			PTreeIndex index = getIndexAt(mouse.getX(), mouse.getY());
+			if (index != null) {
+				if (mouse.isPressed(MouseButton.DRAG_AND_DROP)) {
+					lastDragX = mouse.getX();
+					lastDragY = mouse.getY();
+					isDragTagged = true;
+				}
+				
+				PKeyboard keyBoard = getKeyboard();
+				if (keyBoard == null || !keyBoard.isModifierToggled(Modifier.CTRL)) {
+					getSelection().clearSelection();
+				}
+				getSelection().addSelection(index);
+				takeFocus();
+			}
+		}
+	}
+	
+	protected void onMouseButtonPressed(PMouse mouse, MouseButton btn) {
+	}
+	
+	protected void onMouseReleased(PMouse mouse, MouseButton btn) {
+		if (isDragTagged && mouse.isReleased(MouseButton.DRAG_AND_DROP)) {
+			isDragTagged = false;
+		}
+	}
+	
+	protected void onMouseMoved(PMouse mouse) {
+		if (!isDragTagged) {
+			return;
+		}
+		PDnDSupport dndSup = getDragAndDropSupport();
+		if (dndSup != null && mouse.isPressed(MouseButton.DRAG_AND_DROP)) {
+			int mx = mouse.getX();
+			int my = mouse.getY();
+			int disX = Math.abs(lastDragX - mx);
+			int disY = Math.abs(lastDragY - my);
+			int dis = Math.max(disX, disY);
+			if (dis >= DRAG_AND_DROP_DISTANCE) {
+				if (dndSup.canDrag(this, mx, my)) {
+					dndSup.startDrag(this, mx, my);
+				}
+			}
+		}
+	}
+	
 	public void addObs(PModelObs obs) {
-		modelObsList.add(obs);
+		obsListModel.add(obs);
 		if (getModel() != null) {
 			getModel().addObs(obs);
 		}
 	}
 	
 	public void removeObs(PModelObs obs) {
-		modelObsList.remove(obs);
+		obsListModel.remove(obs);
 		if (getModel() != null) {
 			getModel().removeObs(obs);
 		}
 	}
 	
 	public void addObs(PSelectionObs obs) {
-		selectionObsList.add(obs);
+		obsListSelection.add(obs);
 		if (getSelection() != null) {
 			getSelection().addObs(obs);
 		}
 	}
 	
 	public void removeObs(PSelectionObs obs) {
-		selectionObsList.remove(obs);
+		obsListSelection.remove(obs);
 		if (getSelection() != null) {
 			getSelection().removeObs(obs);
 		}

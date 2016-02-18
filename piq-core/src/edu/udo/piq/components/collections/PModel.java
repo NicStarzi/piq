@@ -109,6 +109,25 @@ public interface PModel extends Iterable<PModelIndex> {
 	public boolean canRemove(PModelIndex index) 
 			throws WrongIndexType, NullPointerException;
 	
+	public default boolean canRemove(Iterable<PModelIndex> indices) {
+		for (PModelIndex index : indices) {
+			if (!canRemove(index)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public default boolean canRemove(PModelIndex ... indices) {
+		for (int i = 0; i < indices.length; i++) {
+			PModelIndex index = indices[i];
+			if (!canRemove(index)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	/**
 	 * Tries to remove content from this model at the given index. If 
 	 * removing is possible the content at index will be removed and 
@@ -127,6 +146,19 @@ public interface PModel extends Iterable<PModelIndex> {
 	 */
 	public void remove(PModelIndex index) 
 			throws WrongIndexType, NullPointerException, RemoveImpossible;
+	
+	public default void removeAll(Iterable<PModelIndex> indices) {
+		for (PModelIndex index : indices) {
+			remove(index);
+		}
+	}
+	
+	public default void removeAll(PModelIndex ... indices) {
+		for (int i = 0; i < indices.length; i++) {
+			PModelIndex index = indices[i];
+			remove(index);
+		}
+	}
 	
 	/**
 	 * Adds the given {@link PModelObs observer} to this model.<br> 
@@ -168,22 +200,5 @@ public interface PModel extends Iterable<PModelIndex> {
 	public default PModelHistory getHistory() {
 		return null;
 	}
-	
-//	/**
-//	 * Returns a new instance of {@link Iterator} that will allow iteration over
-//	 * all indices within this model in the best order for removal.
-//	 * 
-//	 * @return a new Iterator
-//	 */
-//	public Iterator<PModelIndex> removeIterator();
-//	
-//	/**
-//	 * Returns a new instance of {@link Iterator} that will allow iteration over
-//	 * all indices within this model in the best order for insertion into
-//	 * another model.
-//	 * 
-//	 * @return a new Iterator
-//	 */
-//	public Iterator<PModelIndex> insertIterator();
 	
 }

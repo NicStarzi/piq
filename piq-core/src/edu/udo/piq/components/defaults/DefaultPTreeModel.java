@@ -2,6 +2,7 @@ package edu.udo.piq.components.defaults;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.Iterator;
@@ -19,10 +20,6 @@ import edu.udo.piq.util.ThrowException;
 public class DefaultPTreeModel extends AbstractPModel implements PTreeModel {
 	
 	private DefaultPTreeNode rootNode;
-	
-//	protected PModel createEmptyInstance() {
-//		return new DefaultPTreeModel();
-//	}
 	
 	public Object getRoot() {
 		if (rootNode == null) {
@@ -101,14 +98,53 @@ public class DefaultPTreeModel extends AbstractPModel implements PTreeModel {
 	
 	public void remove(PModelIndex index) {
 		DefaultPTreeNode childNode = getNode(index);
+		remove(childNode, index);
+	}
+	
+	protected void remove(DefaultPTreeNode childNode) {
+		PTreeIndex index = getIndex(childNode);
+		remove(childNode, index);
+	}
+	
+	protected void remove(DefaultPTreeNode childNode, PModelIndex index) {
 		if (childNode == rootNode) {
 			rootNode = null;
 			fireRemoveEvent(index, childNode.getContent());
 			return;
 		}
 		DefaultPTreeNode parentNode = childNode.getParent();
+		removeChildrenOf(childNode, (PTreeIndex) index);
 		parentNode.removeChild(childNode);
 		fireRemoveEvent(index, childNode.getContent());
+	}
+	
+	private final void removeChildrenOf(DefaultPTreeNode parentNode, PTreeIndex parentIndex) {
+		for (DefaultPTreeNode childNode : parentNode.children) {
+			childNode.parent = null;
+			fireRemoveEvent(parentIndex.append(0), childNode.getContent());
+		}
+		parentNode.children.clear();
+	}
+	
+	public void removeAll(Iterable<PModelIndex> indices) {
+		Iterator<PModelIndex> iter = indices.iterator();
+		if (!iter.hasNext()) {
+			return;
+		}
+		List<DefaultPTreeNode> toRemove = new ArrayList<>();
+		while (iter.hasNext()) {
+			PTreeIndex idx = (PTreeIndex) iter.next();
+			
+			DefaultPTreeNode node = getNode(idx);
+			toRemove.add(node);
+		}
+		for (DefaultPTreeNode node : toRemove) {
+			remove(node);
+		}
+	}
+	
+	public void removeAll(PModelIndex ... indices) {
+		removeAll(Arrays.asList(indices));
 	}
 	
 	public Iterator<PModelIndex> iterator() {
@@ -158,6 +194,9 @@ public class DefaultPTreeModel extends AbstractPModel implements PTreeModel {
 	}
 	
 	public String toString() {
+		if (getRoot() == null) {
+			return "EMPTY-TREE";
+		}
 		StringBuilder sb = new StringBuilder();
 		
 		class PrintInfo {
@@ -225,6 +264,12 @@ public class DefaultPTreeModel extends AbstractPModel implements PTreeModel {
 		}
 		
 		public PTreeIndex createTreeIndex() {
+			if (parent == null) {
+				return PTreeIndex.ROOT;
+			}
+			if (parent.parent == null) {
+				return new PTreeIndex(parent.children.indexOf(this));
+			}
 			Deque<Integer> indexStack = new ArrayDeque<>();
 			DefaultPTreeNode current = parent;
 			DefaultPTreeNode currentChild = this;

@@ -1,6 +1,5 @@
 package edu.udo.piq.components.collections;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public interface PSelection {
@@ -14,10 +13,6 @@ public interface PSelection {
 	public List<PModelIndex> getAllSelected();
 	
 	public PModelIndex getLastSelected();
-	
-	public default List<PModelIndex> copyAllSelected() {
-		return new ArrayList<>(getAllSelected());
-	}
 	
 	public boolean isSelected(PModelIndex index);
 	

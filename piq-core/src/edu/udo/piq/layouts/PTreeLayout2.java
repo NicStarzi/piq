@@ -1,6 +1,5 @@
 package edu.udo.piq.layouts;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
@@ -14,28 +13,52 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PLayoutDesign;
-import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PLayoutObs;
+import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.collections.PTreeIndex;
 import edu.udo.piq.components.defaults.DefaultPCellComponent;
 import edu.udo.piq.tools.AbstractMapPLayout;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.tools.MutablePSize;
+import edu.udo.piq.util.ThrowException;
 
 public class PTreeLayout2 extends AbstractMapPLayout implements PReadOnlyLayout {
 	
 	public void debug() {
 		System.out.println("### childmap ###");
+		
+		StringBuilder sb = new StringBuilder();
 		for (PComponent cmp : childMap.keySet()) {
 			DefaultPCellComponent cell = (DefaultPCellComponent) cmp;
-			System.out.println("cmp="+cell.getElement()+", cnstr="+getChildConstraint(cmp));
+			
+			sb.delete(0, sb.length());
+			sb.append("obj=");
+			sb.append(cell.getElement());
+			sb.append(", list=");
+			sb.append(toString(getChildNodesOf(cmp)));
+			System.out.println(sb.toString());
 		}
-		System.out.println("### !children! ###");
+		System.out.println("### !content - constraints! ###");
 		for (PComponent cmp : getChildren()) {
 			DefaultPCellComponent cell = (DefaultPCellComponent) cmp;
-			System.out.println("cmp="+cell.getElement()+", cnstr="+getChildConstraint(cmp));
+			System.out.println("obj="+cell.getElement()+", cnstr="+getChildConstraint(cmp));
 		}
+		System.out.println();
+	}
+	
+	private static String toString(List<PComponent> l) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("[");
+		for (PComponent gc : l) {
+			sb.append(((DefaultPCellComponent) gc).getElement());
+			sb.append(", ");
+		}
+		if (sb.length() > 1) {
+			sb.delete(sb.length() - 2, sb.length());
+		}
+		sb.append("]");
+		return sb.toString();
 	}
 	
 	public static final int DEFAULT_INDENT_SIZE = 20;
@@ -63,11 +86,28 @@ public class PTreeLayout2 extends AbstractMapPLayout implements PReadOnlyLayout 
 		});
 	}
 	
-	protected void onChildAdded(PComponent child, PTreeIndex index) {
-		if (rootComp == null) {
-			if (index.getDepth() != 0) {
-				throw new IllegalArgumentException("index.getDepth()=="+index.getDepth());
+	public void removeChild(Object constraint) {
+		PComponent child = getChildForConstraint(constraint);
+		ThrowException.ifNull(child, "containsChild(constraint) == false");
+		removeChild(child);
+	}
+	
+	public void removeChild(PComponent child) {
+		List<PComponent> grandChildren = getChildNodesOf(child);
+		if (grandChildren.size() > 0) {
+			grandChildren = new ArrayList<>(grandChildren);
+			for (PComponent grandChild : grandChildren) {
+				removeChild(grandChild);
 			}
+		}
+		super.removeChild(child);
+	}
+	
+	protected void onChildAdded(PComponent child, PTreeIndex index) {
+		DefaultPCellComponent cell = (DefaultPCellComponent) child;
+		System.out.println("PTreeLayout2.onChildAdded obj="+cell.getElement()+", idx="+index);
+		if (rootComp == null) {
+			ThrowException.ifNotEqual(index.getDepth(), 0, "rootIndex.getDepth() != 0");
 			rootComp = child;
 			return;
 		}
@@ -81,15 +121,21 @@ public class PTreeLayout2 extends AbstractMapPLayout implements PReadOnlyLayout 
 			childMap.put(parent, sibblings);
 		}
 		sibblings.add(indexVal, child);
-		correctChildConstraints(sibblings);
+		if (index.getLastIndex() != sibblings.size() - 1) {
+			correctChildConstraints(sibblings, index.getLastIndex());
+		}
 	}
 	
 	protected void onChildRemoved(PComponent child, PTreeIndex index) {
+		DefaultPCellComponent cell = (DefaultPCellComponent) child;
+		System.out.println("PTreeLayout2.onChildRemoved obj="+cell.getElement()+", idx="+index);
 		if (child == rootComp) {
 			rootComp = null;
 			childMap.clear();
 			return;
 		}
+		childMap.remove(child);
+		
 		PComponent parent = getParentAt(index);
 		List<PComponent> sibblings = childMap.get(parent);
 		if (sibblings == null) {
@@ -100,18 +146,43 @@ public class PTreeLayout2 extends AbstractMapPLayout implements PReadOnlyLayout 
 		if (sibblings.isEmpty()) {
 			childMap.remove(parent);
 		}
-		correctChildConstraints(sibblings);
+		if (index.getLastIndex() != sibblings.size()) {
+			correctChildConstraints(sibblings, index.getLastIndex());
+		}
 	}
 	
-	protected void correctChildConstraints(List<PComponent> children) {
-		for (int i = 0; i < children.size(); i++) {
+	protected void correctChildConstraints(List<PComponent> children, int from) {
+		System.out.println("PTreeLayout2.correctChildConstraints list="+toString(children));
+		for (int i = from; i < children.size(); i++) {
 			PComponent sibbling = children.get(i);
 			PTreeIndex currentIndex = (PTreeIndex) getChildConstraint(sibbling);
 			if (currentIndex.getLastIndex() != i) {
-				PTreeIndex newIndex = currentIndex.replaceIndex(currentIndex.getDepth() - 1, i);
+				PTreeIndex newIndex = currentIndex.replaceLastIndex(i);
 				setChildConstraint(sibbling, newIndex);
+				System.out.println("bad="+currentIndex+", good="+newIndex);
 				
-				//TODO: Correct indices of sub-tree
+				List<PComponent> grandChildren = getChildNodesOf(sibbling);
+				if (!grandChildren.isEmpty()) {
+					correctGrandChildConstraints(grandChildren, newIndex.getDepth() - 1, i);
+				}
+			}
+		}
+	}
+	
+	protected void correctGrandChildConstraints(List<PComponent> children, int level, int value) {
+		System.out.println("PTreeLayout2.correctGrandChildConstraints lvl="+level+", list="+toString(children));
+		for (int i = 0; i < children.size(); i++) {
+			PComponent sibbling = children.get(i);
+			PTreeIndex currentIndex = (PTreeIndex) getChildConstraint(sibbling);
+			if (currentIndex.getChildIndex(level) != value) {
+				PTreeIndex newIndex = currentIndex.replaceIndex(level, value);
+				setChildConstraint(sibbling, newIndex);
+				System.out.println("bad="+currentIndex+", good="+newIndex);
+				
+				List<PComponent> grandChildren = getChildNodesOf(sibbling);
+				if (!grandChildren.isEmpty()) {
+					correctGrandChildConstraints(grandChildren, level, value);
+				}
 			}
 		}
 	}
@@ -165,9 +236,12 @@ public class PTreeLayout2 extends AbstractMapPLayout implements PReadOnlyLayout 
 		}
 		int indexVal = index.getLastIndex();
 		PComponent parent = getParentAt(index);
-		List<PComponent> sibblings = getChildrenOf(parent);
+		if (parent == null) {
+			return false;
+		}
+		List<PComponent> sibblings = getChildNodesOf(parent);
 		
-		return parent != null && indexVal >= 0 && sibblings.size() >= indexVal;
+		return indexVal >= 0 && sibblings.size() >= indexVal;
 	}
 	
 	public PComponent getParentAt(PTreeIndex index) {
@@ -186,7 +260,7 @@ public class PTreeLayout2 extends AbstractMapPLayout implements PReadOnlyLayout 
 				return null;
 			}
 			int childIndex = index.getChildIndex(level++);
-			List<PComponent> children = getChildrenOf(current);
+			List<PComponent> children = getChildNodesOf(current);
 			if (childIndex >= children.size()) {
 				return null;
 			}
@@ -195,51 +269,51 @@ public class PTreeLayout2 extends AbstractMapPLayout implements PReadOnlyLayout 
 		return current;
 	}
 	
-	public List<PComponent> getChildrenOf(PComponent parent) {
-		if (parent == null) {
+	public List<PComponent> getChildNodesOf(PComponent parentInTree) {
+		if (parentInTree == null) {
 			return Collections.emptyList();
 		}
-		List<PComponent> children = childMap.get(parent);
+		List<PComponent> children = childMap.get(parentInTree);
 		if (children == null) {
 			return Collections.emptyList();
 		}
 		return Collections.unmodifiableList(children);
 	}
 	
-	public PComponent getChildAt(int x, int y) {
-		if (!getOwner().getBounds().contains(x, y)) {
-			return null;
-		} if (getRootComponent() == null) {
-			return null;
-		}
-		
-		Deque<StackInfo> stack = new ArrayDeque<>();
-		stack.push(new StackInfo(null, getRootComponent(), 0));
-		while (!stack.isEmpty()) {
-			StackInfo info = stack.pop();
-			PComponent current = info.child;
-			
-			PReadOnlyLayout childLayout = current.getLayout();
-			if (childLayout != null) {
-				PComponent grandChild = childLayout.getChildAt(x, y);
-				if (grandChild != null) {
-					return grandChild;
-				}
-			}
-			if (current.isElusive()) {
-				continue;
-			}
-			PBounds cmpBnds = getChildBounds(current);
-			if (cmpBnds.contains(x, y)) {
-				return current;
-			}
-			
-			for (PComponent child : getChildrenOf(current)) {
-				stack.push(new StackInfo(current, child, info.lvl + 1));
-			}
-		}
-		return null;
-	}
+//	public PComponent getChildAt(int x, int y) {
+//		if (!getOwner().getBounds().contains(x, y)) {
+//			return null;
+//		} if (getRootComponent() == null) {
+//			return null;
+//		}
+//		
+//		Deque<StackInfo> stack = new ArrayDeque<>();
+//		stack.push(new StackInfo(null, getRootComponent(), 0));
+//		while (!stack.isEmpty()) {
+//			StackInfo info = stack.pop();
+//			PComponent current = info.child;
+//			
+////			PReadOnlyLayout childLayout = current.getLayout();
+////			if (childLayout != null) {
+////				PComponent grandChild = childLayout.getChildAt(x, y);
+////				if (grandChild != null) {
+////					return grandChild;
+////				}
+////			}
+//			if (current.isElusive()) {
+//				continue;
+//			}
+//			PBounds cmpBnds = getChildBounds(current);
+//			if (cmpBnds.contains(x, y)) {
+//				return current;
+//			}
+//			
+//			for (PComponent child : getChildrenOf(current)) {
+//				stack.push(new StackInfo(current, child, info.lvl + 1));
+//			}
+//		}
+//		return null;
+//	}
 	
 	public void layOut() {
 		PBounds ob = getOwner().getBounds();
@@ -265,7 +339,7 @@ public class PTreeLayout2 extends AbstractMapPLayout implements PReadOnlyLayout 
 			
 			y += compH + gap;
 			
-			List<PComponent> children = getChildrenOf(current);
+			List<PComponent> children = getChildNodesOf(current);
 			ListIterator<PComponent> iter = children.listIterator(children.size());
 			while (iter.hasPrevious()) {
 				PComponent child = iter.previous();
@@ -301,7 +375,7 @@ public class PTreeLayout2 extends AbstractMapPLayout implements PReadOnlyLayout 
 				prefH += gap;
 			}
 			
-			for (PComponent child : getChildrenOf(current)) {
+			for (PComponent child : getChildNodesOf(current)) {
 				stack.push(new StackInfo(current, child, info.lvl + 1));
 			}
 		}

@@ -1,5 +1,7 @@
 package edu.udo.piq.components.collections;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public interface PSelectionComponent {
@@ -22,7 +24,22 @@ public interface PSelectionComponent {
 		return model.get(index);
 	}
 	
-	public List<Object> getAllSelectedContent();
+	public default List<Object> getAllSelectedContent() {
+		PSelection selection = getSelection();
+		List<PModelIndex> indices = selection.getAllSelected();
+		if (indices.isEmpty()) {
+			return Collections.emptyList();
+		}
+		PModel model = getModel();
+		if (indices.size() == 1) {
+			return Collections.singletonList(model.get(indices.get(0)));
+		}
+		List<Object> result = new ArrayList<>(indices.size());
+		for (PModelIndex index : indices) {
+			result.add(model.get(index));
+		}
+		return result;
+	}
 	
 	public void addObs(PModelObs obs);
 	

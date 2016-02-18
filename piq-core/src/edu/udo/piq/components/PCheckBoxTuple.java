@@ -93,20 +93,30 @@ public class PCheckBoxTuple extends AbstractPInputLayoutOwner implements PClicka
 		return (PTupleLayout) super.getLayout();
 	}
 	
+	protected void setCheckBox(PCheckBox checkBox) {
+		if (getCheckBox() != null) {
+			getLayoutInternal().removeChild(Constraint.FIRST);
+		}
+		if (checkBox != null) {
+			getLayoutInternal().addChild(checkBox, Constraint.FIRST);
+		}
+	}
+	
+	public PCheckBox getCheckBox() {
+		return (PCheckBox) getLayoutInternal().getFirst();
+	}
+	
 	public void setSecondComponent(PComponent component) {
-		if (component == null) {
+		if (getSecondComponent() != null) {
 			getLayoutInternal().removeChild(Constraint.SECOND);
-		} else {
+		}
+		if (component != null) {
 			getLayoutInternal().addChild(component, Constraint.SECOND);
 		}
 	}
 	
 	public PComponent getSecondComponent() {
 		return getLayoutInternal().getSecond();
-	}
-	
-	public PCheckBox getCheckBox() {
-		return (PCheckBox) getLayoutInternal().getFirst();
 	}
 	
 	public boolean isChecked() {

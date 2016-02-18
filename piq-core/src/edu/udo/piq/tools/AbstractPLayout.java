@@ -35,6 +35,10 @@ public abstract class AbstractPLayout implements PLayout {
 	
 	protected abstract void removeInfoInternal(PCompInfo info);
 	
+	public boolean isEmpty() {
+		return getChildren().isEmpty();
+	}
+	
 	public PComponent getOwner() {
 		return owner;
 	}
@@ -98,6 +102,12 @@ public abstract class AbstractPLayout implements PLayout {
 	}
 	
 	public PComponent getChildAt(int x, int y) {
+		if (!getOwner().getBounds().contains(x, y)) {
+			return null;
+		}
+		if (isEmpty()) {
+			return null;
+		}
 		for (PCompInfo info : getAllInfos()) {
 			if (info.comp.isElusive()) {
 				if (info.comp.getLayout() != null) {
@@ -171,10 +181,7 @@ public abstract class AbstractPLayout implements PLayout {
 	}
 	
 	protected boolean constraintsAreEqual(Object constr1, Object constr2) {
-		if (constr1 == null) {
-			return constr2 == null;
-		}
-		return constr1.equals(constr2);
+		return constr1 == null ? constr2 == null : constr1.equals(constr2);
 	}
 	
 	public void setDesign(PLayoutDesign design) {

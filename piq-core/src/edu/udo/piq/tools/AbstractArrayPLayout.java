@@ -35,6 +35,10 @@ public abstract class AbstractArrayPLayout extends AbstractPLayout implements PL
 		return info.comp;
 	}
 	
+	public boolean isEmpty() {
+		return childrenList.isEmpty();
+	}
+	
 	public Collection<PComponent> getChildren() {
 		if (childrenList == null) {
 			childrenList = new CompList(infoArray);

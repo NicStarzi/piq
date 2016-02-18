@@ -16,6 +16,10 @@ public abstract class AbstractMapPLayout extends AbstractPLayout implements PLay
 		super(component);
 	}
 	
+	public boolean isEmpty() {
+		return compMap.isEmpty();
+	}
+	
 	public Collection<PComponent> getChildren() {
 		return Collections.unmodifiableSet(compMap.keySet());
 	}

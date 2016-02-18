@@ -14,6 +14,7 @@ import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PKeyboard.Modifier;
+import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
@@ -95,17 +96,25 @@ public class PList extends AbstractPInputLayoutOwner
 	private int lastDragY = -1;
 	private boolean isDragTagged = false;
 	
-	public PList() {
-		this(new DefaultPListModel());
+	public PList(PListModel model) {
+		this();
+		setModel(model);
 	}
 	
-	public PList(PListModel model) {
+	public PList() {
 		super();
+		
+		PModelFactory modelFac = PModelFactory.getGlobalModelFactory();
+		PListModel defaultModel = new DefaultPListModel();
+		if (modelFac != null) {
+			defaultModel = (PListModel) modelFac.getModelFor(this, defaultModel);
+		}
+		
 		setLayout(new PListLayout(this, ListAlignment.FROM_TOP, 1));
 		setDragAndDropSupport(new DefaultPDnDSupport());
 		setSelection(new PListMultiSelection());
 		setCellFactory(new DefaultPCellFactory());
-		setModel(model);
+		setModel(defaultModel);
 		
 		addObs(new PMouseObs() {
 			public void onButtonTriggered(PMouse mouse, MouseButton btn) {

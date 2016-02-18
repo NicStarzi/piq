@@ -8,8 +8,7 @@ public class ThrowException {
 			throws IllegalArgumentException 
 	{
 		if (obj == null) {
-			iae(createErrorMsg(optionalMsg, obj, 
-					" must not be null but is"));
+			iae(createErrorMsg(optionalMsg));
 		}
 	}
 	
@@ -235,12 +234,12 @@ public class ThrowException {
 	 */
 	private static String createErrorMsg(String optionalMsg, Object ... parts) {
 		StringBuilder sb = new StringBuilder();
+		if (optionalMsg != null) {
+			sb.append(optionalMsg);
+			sb.append("; ");
+		}
 		for (Object obj : parts) {
 			sb.append(obj);
-		}
-		if (optionalMsg != null) {
-			sb.append(": ");
-			sb.append(optionalMsg);
 		}
 		return sb.toString();
 	}

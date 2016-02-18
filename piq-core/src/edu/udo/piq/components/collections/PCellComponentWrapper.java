@@ -93,6 +93,10 @@ public class PCellComponentWrapper extends AbstractPLayoutOwner implements PCell
 		return index;
 	}
 	
+	public Object getElement() {
+		return getElementModel().get(getElementIndex());
+	}
+	
 	public void defaultRender(PRenderer renderer) {
 		if (isSelected()) {
 			renderer.setColor(DEFAULT_BACKGROUND_SELECTED_COLOR);

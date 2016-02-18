@@ -14,4 +14,8 @@ public interface PCellComponent extends PComponent {
 	
 	public void setElement(PModel model, PModelIndex index);
 	
+	public Object getElement();
+	
+	public PModelIndex getElementIndex();
+	
 }

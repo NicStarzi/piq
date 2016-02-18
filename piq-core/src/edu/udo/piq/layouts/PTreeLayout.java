@@ -16,8 +16,8 @@ import edu.udo.piq.PLayoutDesign;
 import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PSize;
+import edu.udo.piq.components.collections.PCellComponent;
 import edu.udo.piq.components.collections.PTreeIndex;
-import edu.udo.piq.components.defaults.DefaultPCellComponent;
 import edu.udo.piq.tools.AbstractMapPLayout;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.tools.MutablePSize;
@@ -30,7 +30,7 @@ public class PTreeLayout extends AbstractMapPLayout implements PReadOnlyLayout {
 		
 		StringBuilder sb = new StringBuilder();
 		for (PComponent cmp : childMap.keySet()) {
-			DefaultPCellComponent cell = (DefaultPCellComponent) cmp;
+			PCellComponent cell = (PCellComponent) cmp;
 			
 			sb.delete(0, sb.length());
 			sb.append("obj=");
@@ -41,7 +41,7 @@ public class PTreeLayout extends AbstractMapPLayout implements PReadOnlyLayout {
 		}
 		System.out.println("### !content - constraints! ###");
 		for (PComponent cmp : getChildren()) {
-			DefaultPCellComponent cell = (DefaultPCellComponent) cmp;
+			PCellComponent cell = (PCellComponent) cmp;
 			System.out.println("obj="+cell.getElement()+", cnstr="+getChildConstraint(cmp));
 		}
 		System.out.println();
@@ -51,7 +51,7 @@ public class PTreeLayout extends AbstractMapPLayout implements PReadOnlyLayout {
 		StringBuilder sb = new StringBuilder();
 		sb.append("[");
 		for (PComponent gc : l) {
-			sb.append(((DefaultPCellComponent) gc).getElement());
+			sb.append(((PCellComponent) gc).getElement());
 			sb.append(", ");
 		}
 		if (sb.length() > 1) {
@@ -104,7 +104,7 @@ public class PTreeLayout extends AbstractMapPLayout implements PReadOnlyLayout {
 	}
 	
 	protected void onChildAdded(PComponent child, PTreeIndex index) {
-		DefaultPCellComponent cell = (DefaultPCellComponent) child;
+		PCellComponent cell = (PCellComponent) child;
 		System.out.println("PTreeLayout2.onChildAdded obj="+cell.getElement()+", idx="+index);
 		if (rootComp == null) {
 			ThrowException.ifNotEqual(index.getDepth(), 0, "rootIndex.getDepth() != 0");
@@ -127,7 +127,7 @@ public class PTreeLayout extends AbstractMapPLayout implements PReadOnlyLayout {
 	}
 	
 	protected void onChildRemoved(PComponent child, PTreeIndex index) {
-		DefaultPCellComponent cell = (DefaultPCellComponent) child;
+		PCellComponent cell = (PCellComponent) child;
 		System.out.println("PTreeLayout2.onChildRemoved obj="+cell.getElement()+", idx="+index);
 		if (child == rootComp) {
 			rootComp = null;

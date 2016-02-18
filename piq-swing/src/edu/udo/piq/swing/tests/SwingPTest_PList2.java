@@ -145,7 +145,11 @@ public class SwingPTest_PList2 {
 				
 				PersonCellComp cellComp = new PersonCellComp() {
 					public void setElement(PModel model, PModelIndex index) {
+						super.setElement(model, index);
 						lblName.setElement(model, index);
+					}
+					public Object getElement() {
+						return lblName.getElement();
 					}
 				};
 				cellComp.setElement(model, index);
@@ -242,6 +246,7 @@ public class SwingPTest_PList2 {
 	
 	public static abstract class PersonCellComp extends PPanel implements PCellComponent {
 		
+		protected PModelIndex index;
 		protected boolean selected = false;
 		protected boolean dropHighLight = false;
 		
@@ -261,6 +266,14 @@ public class SwingPTest_PList2 {
 		
 		public boolean isDropHighlighted() {
 			return dropHighLight;
+		}
+		
+		public void setElement(PModel model, PModelIndex index) {
+			this.index = index;
+		}
+		
+		public PModelIndex getElementIndex() {
+			return index;
 		}
 		
 		public void defaultRender(PRenderer renderer) {

@@ -14,8 +14,9 @@ public class DefaultPCellComponent extends PLabel implements PCellComponent {
 	public static final PColor DEFAULT_BACKGROUND_SELECTED_COLOR	= PColor.DARK_BLUE;
 	public static final PColor DEFAULT_DROP_HIGHLIGHT_COLOR			= PColor.RED;
 	
-	private boolean selected;
-	private boolean highlighted;
+	protected PModelIndex index;
+	protected boolean selected;
+	protected boolean highlighted;
 	
 	public void setSelected(boolean isSelected) {
 		selected = isSelected;
@@ -36,11 +37,16 @@ public class DefaultPCellComponent extends PLabel implements PCellComponent {
 	}
 	
 	public void setElement(PModel model, PModelIndex index) {
+		this.index = index;
 		getModel().setValue(model.get(index));
 	}
 	
 	public Object getElement() {
 		return getModel().getValue();
+	}
+	
+	public PModelIndex getElementIndex() {
+		return index;
 	}
 	
 	public void defaultRender(PRenderer renderer) {

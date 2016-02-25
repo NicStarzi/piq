@@ -23,6 +23,7 @@ public class PTextField extends AbstractPTextComponent {
 	
 	public static final PInsets DEFAULT_INSETS = new ImmutablePInsets(4);
 	protected static final PColor DEFAULT_BACKGROUND_COLOR = PColor.WHITE;
+	protected static final PColor DISABLED_BACKGROUND_COLOR = PColor.GREY75;
 	protected static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(200, 24);
 	
 	protected final ObserverList<PTextFieldObs> obsList = 
@@ -153,7 +154,7 @@ public class PTextField extends AbstractPTextComponent {
 		renderer.strokeRight(x, y, fx, fy);
 		
 		// Render background
-		renderer.setColor(PColor.WHITE);
+		renderer.setColor(getDefaultBackgroundColor());
 		renderer.drawQuad(x + 2, y + 2, fx - 2, fy - 2);
 		
 		PFontResource font = getDefaultFont();
@@ -189,7 +190,7 @@ public class PTextField extends AbstractPTextComponent {
 			
 			txtX = renderText(renderer, font, txtX, txtY, txtH, beforeSelected, textColor, null);
 			if (selectedFrom == selectedTo) {
-				if (hasFocus() && getCaretRenderTimer().isFocusRender()) {
+				if (isEditable() && hasFocus() && getCaretRenderTimer().isFocusRender()) {
 					renderer.setColor(getDefaultSelectionBackgroundColor());
 					char c;
 					if (selectedFrom == text.length()) {
@@ -258,7 +259,10 @@ public class PTextField extends AbstractPTextComponent {
 	}
 	
 	protected PColor getDefaultBackgroundColor() {
-		return DEFAULT_BACKGROUND_COLOR;
+		if (isEditable()) {
+			return DEFAULT_BACKGROUND_COLOR;
+		}
+		return DISABLED_BACKGROUND_COLOR;
 	}
 	
 	public void addObs(PTextFieldObs obs) {

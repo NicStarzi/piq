@@ -6,6 +6,15 @@ public interface PTableModel extends PModel {
 	
 	public int getRowCount();
 	
+	public void set(int column, int row, Object content);
+	
+	public default void set(PModelIndex index, Object content) {
+		PTableIndex ti = asTableIndex(index);
+		int column = ti.getColumn();
+		int row = ti.getRow();
+		set(column, row, content);
+	}
+	
 	public default PTableIndex getIndexOf(Object content) {
 		int colCount = getColumnCount();
 		int rowCount = getRowCount();

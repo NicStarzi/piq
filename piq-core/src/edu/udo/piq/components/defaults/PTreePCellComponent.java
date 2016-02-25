@@ -5,7 +5,7 @@ import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.components.PCheckBox;
-import edu.udo.piq.components.PClickObs;
+import edu.udo.piq.components.PCheckBoxModel;
 import edu.udo.piq.components.collections.PCellComponent;
 import edu.udo.piq.components.collections.PModel;
 import edu.udo.piq.components.collections.PModelIndex;
@@ -15,6 +15,7 @@ import edu.udo.piq.components.collections.PTreeIndex;
 import edu.udo.piq.components.collections.PTreeModel;
 import edu.udo.piq.layouts.PTupleLayout;
 import edu.udo.piq.layouts.PTupleLayout.Constraint;
+import edu.udo.piq.tools.AbstractPCheckBoxModel;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.util.ThrowException;
 
@@ -31,14 +32,11 @@ public class PTreePCellComponent extends AbstractPLayoutOwner implements PCellCo
 			PTreePCellComponent.this.onContentChanged(model, index, oldContent);
 		}
 	};
-	protected final PClickObs chkBxObs = (chkBx) -> PTreePCellComponent.this.onCheckBoxClick();
 	protected PTreeModel model;
-	protected PTreeIndex index;
 	
 	public PTreePCellComponent() {
 		super();
 		setLayout(new PTupleLayout(this));
-		setSecondComponent(new DefaultPCellComponent());
 	}
 	
 	protected PTupleLayout getLayoutInternal() {
@@ -46,8 +44,8 @@ public class PTreePCellComponent extends AbstractPLayoutOwner implements PCellCo
 	}
 	
 	public void setSecondComponent(PComponent comp) {
-		ThrowException.ifTypeCastFails(comp, DefaultPCellComponent.class, 
-				"!(comp instanceof DefaultPCellComponent)");
+		ThrowException.ifTypeCastFails(comp, PCellComponent.class, 
+				"!(comp instanceof PCellComponent)");
 		if (getSecondComponent() != null) {
 			getLayoutInternal().removeChild(Constraint.SECOND);
 		}
@@ -56,8 +54,8 @@ public class PTreePCellComponent extends AbstractPLayoutOwner implements PCellCo
 		}
 	}
 	
-	public DefaultPCellComponent getSecondComponent() {
-		return (DefaultPCellComponent) getLayoutInternal().getSecond();
+	public PCellComponent getSecondComponent() {
+		return (PCellComponent) getLayoutInternal().getSecond();
 	}
 	
 	protected void setCheckBox(PCheckBox checkBox) {
@@ -106,9 +104,8 @@ public class PTreePCellComponent extends AbstractPLayoutOwner implements PCellCo
 		if (getElementModel() != null) {
 			getElementModel().addObs(modelObs);
 		}
-		this.index = (PTreeIndex) index;
 		getSecondComponent().setElement(model, index);
-		toggleCheckBoxOnOrOff(index);
+		setCheckBoxShown(getElementModel().getChildCount((PTreeIndex) index) > 0);
 	}
 	
 	public PTreeModel getElementModel() {
@@ -120,26 +117,11 @@ public class PTreePCellComponent extends AbstractPLayoutOwner implements PCellCo
 	}
 	
 	public PTreeIndex getElementIndex() {
-		return index;
-	}
-	
-	protected void onCheckBoxClick() {
-		PTree tree = (PTree) getParent();
-		boolean isExpanded = !getCheckBox().isChecked();
-		tree.setIndexExpanded(getElementIndex(), isExpanded);
-	}
-	
-	protected void onChildAdded(PComponent child, Object constraint) {
-		if (constraint == Constraint.FIRST) {
-			ThrowException.ifTypeCastFails(child, PCheckBox.class, "!(child instanceof PCheckBox)");
-			((PCheckBox) child).addObs(chkBxObs);
+		PTree parent = (PTree) getParent();
+		if (parent == null) {
+			return null;
 		}
-	}
-	
-	protected void onChildRemoved(PComponent child, Object constraint) {
-		if (constraint == Constraint.FIRST) {
-			((PCheckBox) child).removeObs(chkBxObs);
-		}
+		return (PTreeIndex) parent.getLayout().getChildConstraint(this);
 	}
 	
 	protected void onContentAdded(PModel model, PModelIndex index, Object newContent) {
@@ -173,7 +155,8 @@ public class PTreePCellComponent extends AbstractPLayoutOwner implements PCellCo
 	protected void setCheckBoxShown(boolean isCheckBoxShown) {
 		if (isCheckBoxShown) {
 			if (getCheckBox() == null) {
-				setCheckBox(new PTreeCellCheckbox());
+				setCheckBox(new PTreeCellCheckbox(
+						new NodeExpandedPCheckBoxModel(this)));
 			}
 		} else {
 			setCheckBox(null);
@@ -181,6 +164,11 @@ public class PTreePCellComponent extends AbstractPLayoutOwner implements PCellCo
 	}
 	
 	public static class PTreeCellCheckbox extends PCheckBox {
+		
+		public PTreeCellCheckbox(PCheckBoxModel model) {
+			super();
+			setModel(model);
+		}
 		
 		public void defaultRender(PRenderer renderer) {
 			PBounds bnds = getBounds();
@@ -214,6 +202,26 @@ public class PTreePCellComponent extends AbstractPLayoutOwner implements PCellCo
 		public boolean isFocusable() {
 			return false;
 		}
+	}
+	
+	public static class NodeExpandedPCheckBoxModel extends AbstractPCheckBoxModel {
+		
+		protected final PTreePCellComponent owner;
+		
+		public NodeExpandedPCheckBoxModel(PTreePCellComponent cellComp) {
+			owner = cellComp;
+		}
+		
+		public void toggleChecked() {
+			PTree tree = (PTree) owner.getParent();
+			tree.setIndexExpanded(owner.getElementIndex(), isChecked());
+		}
+		
+		public boolean isChecked() {
+			PTree tree = (PTree) owner.getParent();
+			return !tree.isIndexExpanded(owner.getElementIndex());
+		}
+		
 	}
 	
 }

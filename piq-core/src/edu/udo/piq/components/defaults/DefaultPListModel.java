@@ -13,6 +13,7 @@ import edu.udo.piq.components.collections.PModelIndex;
 import edu.udo.piq.components.collections.RemoveImpossible;
 import edu.udo.piq.components.collections.WrongIndexType;
 import edu.udo.piq.tools.AbstractPModel;
+import edu.udo.piq.util.ThrowException;
 
 public class DefaultPListModel extends AbstractPModel implements PListModel {
 	
@@ -35,6 +36,18 @@ public class DefaultPListModel extends AbstractPModel implements PListModel {
 	
 	public int getSize() {
 		return list.size();
+	}
+	
+	public void set(PModelIndex index, Object content) {
+		int indexVal = asListIndex(index);
+		if (!withinBounds(indexVal, 0)) {
+			throw new IllegalIndex(index);
+		}
+		set(indexVal, content);
+	}
+	
+	public void set(int indexVal, Object content) {
+		list.set(indexVal, content);
 	}
 	
 	public Object get(PModelIndex index) {
@@ -114,9 +127,7 @@ public class DefaultPListModel extends AbstractPModel implements PListModel {
 	}
 	
 	protected int asListIndex(PModelIndex index) {
-		if (index == null) {
-			throw new NullPointerException("index == null");
-		}
+		ThrowException.ifNull(index, "index == null");
 		if (index instanceof PListIndex) {
 			return ((PListIndex) index).getIndexValue();
 		}

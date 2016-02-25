@@ -6,6 +6,8 @@ import edu.udo.piq.components.util.PModelHistory;
 
 public interface PModel extends Iterable<PModelIndex> {
 	
+	public void set(PModelIndex index, Object content);
+	
 	/**
 	 * Returns the object that is stored within this model at the 
 	 * given {@link PModelIndex index}. This value can be null if 

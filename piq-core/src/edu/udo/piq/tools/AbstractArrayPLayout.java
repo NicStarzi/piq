@@ -36,7 +36,7 @@ public abstract class AbstractArrayPLayout extends AbstractPLayout implements PL
 	}
 	
 	public boolean isEmpty() {
-		return childrenList.isEmpty();
+		return childrenList == null || childrenList.isEmpty();
 	}
 	
 	public Collection<PComponent> getChildren() {

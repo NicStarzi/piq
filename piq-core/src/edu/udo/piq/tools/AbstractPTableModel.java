@@ -13,6 +13,10 @@ public abstract class AbstractPTableModel extends AbstractPModel implements PTab
 	
 	protected abstract Object getAndSet(int column, int row, Object newContent);
 	
+	public void set(int column, int row, Object content) {
+		getAndSet(column, row, content);
+	}
+	
 	public void add(PModelIndex index, Object content) {
 		if (!canAdd(index, content)) {
 			throw new AddImpossible(this, index, content);

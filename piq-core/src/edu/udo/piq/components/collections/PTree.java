@@ -33,6 +33,7 @@ public class PTree extends AbstractPInputLayoutOwner
 {
 	
 	protected static final PColor BACKGROUND_COLOR = PColor.WHITE;
+	protected static final PColor PARENT_CHILD_LINE_COLOR = PColor.GREY75;
 	protected static final PColor FOCUS_COLOR = PColor.GREY25;
 	protected static final PColor DROP_HIGHLIGHT_COLOR = PColor.RED;
 	protected static final int DRAG_AND_DROP_DISTANCE = 20;
@@ -151,7 +152,7 @@ public class PTree extends AbstractPInputLayoutOwner
 			for (PModelObs obs : obsListModel) {
 				model.addObs(obs);
 			}
-			for (PModelIndex index : model) {
+			for (PModelIndex index : model.createBreadthOrderIterator()) {
 				addContent((PTreeIndex) index, model.get(index));
 			}
 		}
@@ -167,7 +168,7 @@ public class PTree extends AbstractPInputLayoutOwner
 		
 		PTreeModel model = getModel();
 		if (model != null) {
-			for (PModelIndex index : model) {
+			for (PModelIndex index : model.createBreadthOrderIterator()) {
 				addContent((PTreeIndex) index, model.get(index));
 			}
 		}
@@ -240,6 +241,32 @@ public class PTree extends AbstractPInputLayoutOwner
 		return selection.getAllSelected();
 	}
 	
+	public void setAllIndicesExpanded(boolean isExpanded) {
+		if (isExpanded) {
+			if (!hiddenIdxSet.isEmpty()) {
+				hiddenIdxSet.clear();
+				addSubTree(PTreeIndex.ROOT);				
+			}
+		} else {
+			setIndexExpanded(PTreeIndex.ROOT, false);
+		}
+	}
+	
+	public void makeIndexVisible(PTreeIndex index) {
+		for (PTreeIndex ancestorIndex : getModel().createAncestorIterator(index)) {
+			setIndexExpanded(ancestorIndex, true);
+		}
+	}
+	
+	public boolean isIndexVisible(PTreeIndex index) {
+		for (PTreeIndex ancestorIndex : getModel().createAncestorIterator(index)) {
+			if (!isIndexExpanded(ancestorIndex)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	public void setIndexExpanded(PTreeIndex index, boolean isExpanded) {
 		if (isExpanded) {
 			if (hiddenIdxSet.remove(index)) {
@@ -304,7 +331,7 @@ public class PTree extends AbstractPInputLayoutOwner
 	
 	protected void defaultRenderParentChildConnections(PRenderer renderer, int boundsX) {
 		// Draw black lines connecting parent and child nodes
-		renderer.setColor(PColor.BLACK);
+		renderer.setColor(PARENT_CHILD_LINE_COLOR);
 		PTreeLayout layout = getLayoutInternal();
 		PComponent root = layout.getRootComponent();
 		
@@ -407,8 +434,13 @@ public class PTree extends AbstractPInputLayoutOwner
 	
 	protected void removeSubTree(PTreeIndex index) {
 		PTreeModel model = getModel();
-		for (int i = model.getChildCount(index) - 1; i >= 0; i--) {
-			PTreeIndex childIndex = index.append(i);
+		for (PTreeIndex childIndex : model.createPostOrderIterator(index)) {
+			if (index == childIndex) {
+				continue;
+			}
+			if (!getLayout().containsChild(childIndex)) {
+				continue;
+			}
 			getSelection().removeSelection(childIndex);
 			getLayoutInternal().removeChild(childIndex);
 		}
@@ -417,8 +449,13 @@ public class PTree extends AbstractPInputLayoutOwner
 	protected void addSubTree(PTreeIndex index) {
 		PTreeModel model = getModel();
 		getSelection().clearSelection();
-		for (int i = 0; i < model.getChildCount(index); i++) {
-			PTreeIndex childIndex = index.append(i);
+		for (PTreeIndex childIndex : model.createBreadthOrderIterator(index)) {
+			if (index == childIndex) {
+				continue;
+			}
+			if (!isIndexVisible(childIndex)) {
+				continue;
+			}
 			PCellComponent cell = getCellFactory().makeCellComponent(getModel(), childIndex);
 			getLayoutInternal().addChild(cell, childIndex);
 		}
@@ -448,11 +485,11 @@ public class PTree extends AbstractPInputLayoutOwner
 	}
 	
 	protected boolean isParentExpanded(PTreeIndex index) {
-		return index.getDepth() == 0 || isIndexExpanded(index.createParentIndex());
+		return index.getDepth() == 0 || isIndexVisible(index);
 	}
 	
 	protected void onContentAdded(PTreeIndex index, Object content) {
-		System.out.println("--- ADD --- "+content);
+		System.out.println("--- ADD --- "+content+", idx="+index);
 		addContent(index, content);
 		
 		System.out.println(getModel());
@@ -460,7 +497,7 @@ public class PTree extends AbstractPInputLayoutOwner
 	}
 	
 	protected void onContentRemoved(PTreeIndex index, Object content) {
-		System.out.println("--- REMOVE --- "+content);
+		System.out.println("--- REMOVE --- "+content+", idx="+index);
 		removeContent(index, content);
 		
 		System.out.println(getModel());

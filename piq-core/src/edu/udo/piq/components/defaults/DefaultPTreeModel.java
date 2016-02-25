@@ -33,6 +33,15 @@ public class DefaultPTreeModel extends AbstractPModel implements PTreeModel {
 		return parentNode == null ? 0 : parentNode.getChildCount();
 	}
 	
+	public void set(PModelIndex index, Object content) {
+		DefaultPTreeNode node = getNode(index);
+		if (node == null) {
+			throw new IllegalIndex(index);
+		}
+		node.content = content;
+		fireChangeEvent(index, content);
+	}
+	
 	public Object get(PModelIndex index) {
 		DefaultPTreeNode node = getNode(index);
 		if (node == null) {
@@ -147,10 +156,6 @@ public class DefaultPTreeModel extends AbstractPModel implements PTreeModel {
 		removeAll(Arrays.asList(indices));
 	}
 	
-	public Iterator<PModelIndex> iterator() {
-		return new DefaultPTreeModelIterator(rootNode);
-	}
-	
 	protected PTreeIndex getIndex(DefaultPTreeNode node) {
 		Deque<Integer> indices = new ArrayDeque<>();
 		DefaultPTreeNode current = node;
@@ -231,12 +236,16 @@ public class DefaultPTreeModel extends AbstractPModel implements PTreeModel {
 	
 	protected static class DefaultPTreeNode {
 		
-		private final List<DefaultPTreeNode> children = new ArrayList<>();
-		private final Object content;
-		private DefaultPTreeNode parent;
+		protected final List<DefaultPTreeNode> children = new ArrayList<>();
+		protected Object content;
+		protected DefaultPTreeNode parent;
 		
 		public DefaultPTreeNode(Object content) {
 			this.content = content;
+		}
+		
+		public void setContent(Object value) {
+			content = value;
 		}
 		
 		public Object getContent() {
@@ -295,30 +304,6 @@ public class DefaultPTreeModel extends AbstractPModel implements PTreeModel {
 			}
 			children.remove(node);
 			node.parent = null;
-		}
-		
-	}
-	
-	protected static class DefaultPTreeModelIterator implements Iterator<PModelIndex> {
-		
-		private final Deque<DefaultPTreeNode> stack = new ArrayDeque<>();
-		
-		public DefaultPTreeModelIterator(DefaultPTreeNode root) {
-			if (root != null) {
-				stack.push(root);
-			}
-		}
-		
-		public boolean hasNext() {
-			return !stack.isEmpty();
-		}
-		
-		public PModelIndex next() {
-			DefaultPTreeNode node = stack.pop();
-			for (int i = 0; i < node.getChildCount(); i++) {
-				stack.addLast(node.getChild(i));
-			}
-			return node.createTreeIndex();
 		}
 		
 	}

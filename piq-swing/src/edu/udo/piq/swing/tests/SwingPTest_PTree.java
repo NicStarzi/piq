@@ -1,11 +1,21 @@
 package edu.udo.piq.swing.tests;
 
+import edu.udo.piq.components.collections.PCellComponent;
+import edu.udo.piq.components.collections.PCellComponentWrapper;
+import edu.udo.piq.components.collections.PCellFactory;
 import edu.udo.piq.components.collections.PList;
+import edu.udo.piq.components.collections.PModel;
+import edu.udo.piq.components.collections.PModelIndex;
 import edu.udo.piq.components.collections.PTree;
 import edu.udo.piq.components.collections.PTreeIndex;
+import edu.udo.piq.components.collections.PTreeModel;
 import edu.udo.piq.components.containers.PSplitPanel;
 import edu.udo.piq.components.defaults.DefaultPListModel;
 import edu.udo.piq.components.defaults.DefaultPTreeModel;
+import edu.udo.piq.components.defaults.PTreePCellComponent;
+import edu.udo.piq.components.textbased.PTextField;
+import edu.udo.piq.components.textbased.PTextFieldObs;
+import edu.udo.piq.scroll.PScrollPanel;
 
 public class SwingPTest_PTree extends AbstractSwingPTest {
 	
@@ -22,7 +32,8 @@ public class SwingPTest_PTree extends AbstractSwingPTest {
 		root.setBody(splitPnl);
 		
 		PTree tree = new PTree();
-		splitPnl.setFirstComponent(tree);
+		PScrollPanel scroll = new PScrollPanel(tree);
+		splitPnl.setFirstComponent(scroll);
 		
 		DefaultPTreeModel model = new DefaultPTreeModel();
 		model.add(PTreeIndex.ROOT, "Root");
@@ -40,6 +51,29 @@ public class SwingPTest_PTree extends AbstractSwingPTest {
 		
 		PList list = new PList(new DefaultPListModel("T1", "T2", "T3"));
 		splitPnl.setSecondComponent(list);
+		
+		
+		tree.setCellFactory(new PCellFactory() {
+			public PCellComponent makeCellComponent(PModel model, PModelIndex index) {
+				PTextField txtF = new PTextField();
+				PCellComponentWrapper wrapper = new PCellComponentWrapper(txtF);
+				wrapper.setContentDelegator((c, element, m, i) -> {
+						txtF.getModel().setValue(element);
+					});
+				
+				PTreePCellComponent cell = new PTreePCellComponent();
+				cell.setSecondComponent(wrapper);
+				cell.setElement(model, index);
+				
+				txtF.addObs((PTextFieldObs) (textField) -> {
+						PTreeModel modelInner = cell.getElementModel();
+						PTreeIndex indexInner = cell.getElementIndex();
+						modelInner.set(indexInner, txtF.getText());
+						cell.setElement(modelInner, indexInner);
+					});
+				
+				return cell;
+			}
+		});
 	}
-	
 }

@@ -121,6 +121,12 @@ public class PTreeIndex implements PModelIndex {
 	}
 	
 	public PTreeIndex createParentIndex() {
+		if (getDepth() == 0) {
+			return null;
+		}
+		if (getDepth() == 1) {
+			return ROOT;
+		}
 		return new PTreeIndex(indices, depth - 1);
 	}
 	
@@ -196,6 +202,9 @@ public class PTreeIndex implements PModelIndex {
 	}
 	
 	public String toString() {
+		if (getDepth() == 0) {
+			return getClass().getSimpleName() + "[ROOT]";
+		}
 		StringBuilder sb = new StringBuilder();
 		sb.append(getClass().getSimpleName());
 		sb.append("[");

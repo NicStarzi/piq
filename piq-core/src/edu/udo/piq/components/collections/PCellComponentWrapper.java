@@ -15,7 +15,7 @@ public class PCellComponentWrapper extends AbstractPLayoutOwner implements PCell
 	
 	private WrapperContentDelegator contentDel;
 	private PModel model;
-	private PModelIndex index;
+	private Object element;
 	private boolean selected;
 	private boolean dropHL;
 	
@@ -34,9 +34,10 @@ public class PCellComponentWrapper extends AbstractPLayoutOwner implements PCell
 	}
 	
 	public void setContent(PComponent content) {
-		if (content == null) {
-			getLayoutInternal().removeChild(content);
-		} else {
+		if (!getLayoutInternal().isEmpty()) {
+			getLayoutInternal().removeChild(null);
+		}
+		if (content != null) {
 			getLayoutInternal().addChild(content, null);
 		}
 	}
@@ -77,11 +78,11 @@ public class PCellComponentWrapper extends AbstractPLayoutOwner implements PCell
 	
 	public void setElement(PModel model, PModelIndex index) {
 		this.model = model;
-		this.index = index;
+		element = getElementModel().get(index);
 		WrapperContentDelegator contentDel = getContentDelegator();
 		if (contentDel != null) {
 			PComponent content = getContent();
-			contentDel.setElement(content, model, index);
+			contentDel.setElement(content, element, model, index);
 		}
 	}
 	
@@ -89,12 +90,8 @@ public class PCellComponentWrapper extends AbstractPLayoutOwner implements PCell
 		return model;
 	}
 	
-	public PModelIndex getElementIndex() {
-		return index;
-	}
-	
 	public Object getElement() {
-		return getElementModel().get(getElementIndex());
+		return element;
 	}
 	
 	public void defaultRender(PRenderer renderer) {
@@ -119,7 +116,7 @@ public class PCellComponentWrapper extends AbstractPLayoutOwner implements PCell
 	}
 	
 	public static interface WrapperContentDelegator {
-		public void setElement(PComponent content, PModel model, PModelIndex index);
+		public void setElement(PComponent content, Object element, PModel model, PModelIndex index);
 	}
 	
 }

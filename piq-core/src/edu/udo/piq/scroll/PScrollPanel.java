@@ -51,6 +51,10 @@ public class PScrollPanel extends AbstractPLayoutOwner {
 	private PScrollBar currentBarV = null;
 	
 	public PScrollPanel() {
+		this(null);
+	}
+	
+	public PScrollPanel(PComponent body) {
 		super();
 		setLayout(new PScrollPanelLayout(this));
 		
@@ -62,6 +66,7 @@ public class PScrollPanel extends AbstractPLayoutOwner {
 				refreshSize();
 			}
 		});
+		setBody(body);
 	}
 	
 	protected void setLayout(PScrollPanelLayout layout) {

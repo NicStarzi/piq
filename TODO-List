@@ -1,11 +1,15 @@
 TODO:
- - PTree drag and drop support + copy, cut, paste support
- - PTextArea drag and drop support + copy, cut, paste support
+ - PTree copy, cut, paste support
+ - PTextArea drag and drop support
  - PTable overhaul + drag and drop support
- - PTextField
+ - PTextField scroll
  - PPasswordField
- - PSpinner
- - PScrollPanel
+ - PScrollPanel scroll bars
  - PMouse: press and trigger is the same right now
+ - PKeyObsMode: ALWAYS, WHEN_FOCUSED
+ - PMouseObsMode: ALWAYS, WHEN_MOUSE_OVER, WHEN_MOUSE_OVER_THIS_OR_DESCENDANT
  - Consistent use of models (constructor, PModelFactory, etc) for all components that have models
- - Improve Drag&Drop / Copy-Cut-Paste to support structural information about the moved indices
+ - PPopups
+ - PClickable (PButton, PCheckBox, PRadioButton, etc)
+ - PButtonModel: Change model data from "isPressed" to "isEnabled"
+ - GridLayout

@@ -11,8 +11,12 @@ import javax.swing.Timer;
 
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
+import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.PGlobalEventObs;
+import edu.udo.piq.PKeyboard;
+import edu.udo.piq.PKeyboard.Key;
+import edu.udo.piq.PKeyboardObs;
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PCheckBoxTuple;
 import edu.udo.piq.components.PClickObs;
@@ -42,6 +46,7 @@ import edu.udo.piq.components.popup.PPopupOptionsProvider;
 import edu.udo.piq.components.popup.PPopupSubMenu;
 import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.components.textbased.PTextArea;
+import edu.udo.piq.components.util.DefaultPFocusTraversal2;
 import edu.udo.piq.designs.standard.PStandardDesignSheet;
 import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
@@ -50,6 +55,7 @@ import edu.udo.piq.layouts.PWrapLayout;
 import edu.udo.piq.scroll.PScrollPanel;
 import edu.udo.piq.swing.JCompPRoot;
 import edu.udo.piq.tools.AbstractPTextModel;
+import edu.udo.piq.util.PGuiUtil;
 
 public class SwingPTest {
 	
@@ -78,16 +84,22 @@ public class SwingPTest {
 		
 		root = new JCompPRoot();
 		root.setDesignSheet(sDs);
-//		root.addObs(new PKeyboardObs() {
-//			public void keyTriggered(PKeyboard keyboard, Key key) {
-//				if (key == Key.TAB) {
-//					root.getFocusTraversal().focusNext();
+		root.setFocusTraversal(new DefaultPFocusTraversal2(root));
+		root.addObs(new PKeyboardObs() {
+			public void onKeyTriggered(PKeyboard keyboard, Key key) {
+				if (key == Key.TAB) {
+					root.getFocusTraversal().focusNext();
 //					System.out.println("###############################################");
 //					System.out.println("# FocusOwner="+root.getFocusOwner()+" #");
 //					System.out.println("###############################################");
-//				}
-//			}
-//		});
+				}
+			}
+		});
+		root.addObs(new PFocusObs() {
+			public void onFocusGained(PComponent oldOwner, PComponent newOwner) {
+				System.out.println("SwingPTest.onFocusGained="+newOwner);
+			}
+		});
 		frame.setContentPane(root.getJPanel());
 		root.addObs(new PGlobalEventObs() {
 			public void onGlobalEvent(PComponent source, Object eventData) {
@@ -356,6 +368,8 @@ public class SwingPTest {
 				}
 			}
 		});
+		
+		System.out.println(PGuiUtil.guiTreeToString(root));
 	}
 //	public static class MyLittleDialog {
 //		
@@ -391,5 +405,4 @@ public class SwingPTest {
 //		}
 //		
 //	}
-	
 }

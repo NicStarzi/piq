@@ -4,8 +4,6 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PLayoutDesign;
-import edu.udo.piq.PReadOnlyLayout;
-import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractMapPLayout;
 import edu.udo.piq.tools.ImmutablePInsets;
@@ -19,16 +17,14 @@ public class PBoxLayout extends AbstractMapPLayout {
 	
 	public PBoxLayout(PComponent owner) {
 		super(owner);
-		
-		addObs(new PLayoutObs() {
-			public void onChildAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
-				Box box = (Box) constraint;
-				if (box.isBox()) {
-					throw new IllegalArgumentException("constraint.isBox()=true");
-				}
-			}
-		});
 		rootBox = new Box();
+	}
+	
+	protected void onChildAdded(PComponent child, Object constraint) {
+		Box box = (Box) constraint;
+		if (box.isBox()) {
+			throw new IllegalArgumentException("constraint.isBox()=true");
+		}
 	}
 	
 	public void setInsets(PInsets value) {
@@ -36,7 +32,7 @@ public class PBoxLayout extends AbstractMapPLayout {
 			throw new IllegalArgumentException("insets="+value);
 		}
 		insets = new ImmutablePInsets(value);
-		fireInvalidateEvent();
+		invalidate();
 	}
 	
 	public PInsets getInsets() {
@@ -146,12 +142,12 @@ public class PBoxLayout extends AbstractMapPLayout {
 	
 	public static class Box {
 		
-		double weightOfFirst;
-		int gap;
-		boolean horizontal;
-		Box parent;
-		Box one;
-		Box other;
+		protected double weightOfFirst;
+		protected int gap;
+		protected boolean horizontal;
+		protected Box parent;
+		protected Box one;
+		protected Box other;
 		
 		public void splitHorizontal(double weight) {
 			splitHorizontal(weight, 0);

@@ -31,7 +31,7 @@ public class PSplitLayout extends AbstractEnumPLayout<PSplitLayout.Constraint> {
 		}
 		if (ori != orientation) {
 			ori = orientation;
-			fireInvalidateEvent();
+			invalidate();
 		}
 	}
 	
@@ -47,7 +47,7 @@ public class PSplitLayout extends AbstractEnumPLayout<PSplitLayout.Constraint> {
 		}
 		if (splitPos != value) {
 			splitPos = value;
-			fireInvalidateEvent();
+			invalidate();
 		}
 	}
 	

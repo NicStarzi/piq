@@ -64,6 +64,7 @@ public abstract class AbstractArrayPLayout extends AbstractPLayout implements PL
 		PComponent child = info.comp;
 		removeInfoInternal(info);
 		child.setParent(null);
+		onChildRemoved(child, constraint);
 		fireRemoveEvent(child, constraint);
 	}
 	

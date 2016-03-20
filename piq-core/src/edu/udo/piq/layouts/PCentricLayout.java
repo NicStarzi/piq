@@ -27,7 +27,7 @@ public class PCentricLayout extends AbstractArrayPLayout {
 	
 	public void setInsets(PInsets insets) {
 		this.insets = insets;
-		fireInvalidateEvent();
+		invalidate();
 	}
 	
 	public PInsets getInsets() {

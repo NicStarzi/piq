@@ -44,7 +44,7 @@ public class PTupleLayout extends AbstractEnumPLayout<Constraint> {
 			throw new IllegalArgumentException();
 		}
 		this.orientation = orientation;
-		fireInvalidateEvent();
+		invalidate();
 	}
 	
 	public Orientation getOrientation() {
@@ -53,7 +53,7 @@ public class PTupleLayout extends AbstractEnumPLayout<Constraint> {
 	
 	public void setDistribution(Distribution value) {
 		distPrim = value;
-		fireInvalidateEvent();
+		invalidate();
 	}
 	
 	public Distribution getDistribution() {
@@ -62,7 +62,7 @@ public class PTupleLayout extends AbstractEnumPLayout<Constraint> {
 	
 	public void setSecondaryDistribution(Distribution value) {
 		distScnd = value;
-		fireInvalidateEvent();
+		invalidate();
 	}
 	
 	public Distribution getSecondaryDistribution() {
@@ -71,7 +71,7 @@ public class PTupleLayout extends AbstractEnumPLayout<Constraint> {
 	
 	public void setPInsets(PInsets value) {
 		insets = value;
-		fireInvalidateEvent();
+		invalidate();
 	}
 	
 	public PInsets getInsets() {
@@ -80,7 +80,7 @@ public class PTupleLayout extends AbstractEnumPLayout<Constraint> {
 	
 	public void setGap(int value) {
 		gap = value;
-		fireInvalidateEvent();
+		invalidate();
 	}
 	
 	public int getGap() {

@@ -3,11 +3,11 @@ package edu.udo.piq.tools;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PLayout;
 
-public abstract class AbstractEnumPLayout<E extends Enum<E>> extends AbstractArrayPLayout implements PLayout {
+public abstract class AbstractEnumPLayout<K extends Enum<K>> extends AbstractArrayPLayout implements PLayout {
 	
-	private final Class<E> enumClass;
+	private final Class<K> enumClass;
 	
-	protected AbstractEnumPLayout(PComponent component, Class<E> enumClass) {
+	protected AbstractEnumPLayout(PComponent component, Class<K> enumClass) {
 		super(component, enumClass.getEnumConstants().length);
 		this.enumClass = enumClass;
 	}
@@ -32,7 +32,7 @@ public abstract class AbstractEnumPLayout<E extends Enum<E>> extends AbstractArr
 	protected int getOrdinal(Object constr) {
 		if (enumClass.isInstance(constr)) {
 			@SuppressWarnings("unchecked")
-			Enum<? extends E> e = (Enum<? extends E>) constr;
+			Enum<? extends K> e = (Enum<? extends K>) constr;
 			return e.ordinal();
 		}
 		return -1;

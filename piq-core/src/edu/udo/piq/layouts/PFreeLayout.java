@@ -7,8 +7,6 @@ import java.util.List;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PReadOnlyLayout;
-import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractMapPLayout;
 import edu.udo.piq.tools.MutablePSize;
@@ -26,14 +24,14 @@ public class PFreeLayout extends AbstractMapPLayout {
 	
 	public PFreeLayout(PComponent owner) {
 		super(owner);
-		addObs(new PLayoutObs() {
-			public void onChildRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
-				sortedChildren.remove(child);
-			}
-			public void onChildAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
-				addChildSorted(child, (FreeConstraint) constraint);
-			}
-		});
+	}
+	
+	protected void onChildAdded(PComponent child, Object constraint) {
+		addChildSorted(child, (FreeConstraint) constraint);
+	}
+	
+	protected void onChildRemoved(PComponent child, Object constraint) {
+		sortedChildren.remove(child);
 	}
 	
 	protected boolean canAdd(PComponent cmp, Object constraint) {
@@ -149,7 +147,7 @@ public class PFreeLayout extends AbstractMapPLayout {
 		sortedChildren.remove(child);
 		addChildSorted(child, con);
 //		System.out.println("PFreeLayout.updateConstraint("+child+") => "+sortedChildren);
-		fireInvalidateEvent();
+		invalidate();
 	}
 	
 	public static class FreeConstraint {

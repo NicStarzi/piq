@@ -92,8 +92,8 @@ public class AbstractPComponent implements PComponent {
 	protected final PLayoutObs parentLayoutObs = new PLayoutObs() {
 		public void onChildLaidOut(PReadOnlyLayout layout, PComponent child, Object constraint) {
 			if (child == AbstractPComponent.this) {
+				cachedBoundsInvalid = true;
 				checkForBoundsChange();
-//				System.out.println(AbstractPComponent.this+".wasLayedOut: bounds="+getBounds());
 			}
 		}
 	};
@@ -149,6 +149,8 @@ public class AbstractPComponent implements PComponent {
 	 * change of the parents root is noticed.<br>
 	 */
 	private PRoot cachedRoot;
+	private PBounds cachedBounds;
+	private boolean cachedBoundsInvalid = true;
 	private PCursor mouseOverCursor = null;
 	/**
 	 * These fields are used to store the previous preferred size of this component.<br>
@@ -203,6 +205,7 @@ public class AbstractPComponent implements PComponent {
 		} if (parent != null && isDescendantOf(parent)) {
 			throw new IllegalArgumentException(this+" is descendant of "+parent);
 		}
+		cachedBoundsInvalid = true;
 		PComponent oldParent = this.parent;
 		if (oldParent != null) {
 			oldParent.getLayout().removeObs(parentLayoutObs);
@@ -283,6 +286,14 @@ public class AbstractPComponent implements PComponent {
 	
 	public PComponent getParent() {
 		return parent;
+	}
+	
+	public PBounds getBounds() {
+		if (cachedBoundsInvalid) {
+			cachedBounds = PComponent.super.getBounds();
+			cachedBoundsInvalid = false; 
+		}
+		return cachedBounds;
 	}
 	
 	public void setDesign(PDesign design) {

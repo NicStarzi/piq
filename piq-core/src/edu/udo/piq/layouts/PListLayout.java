@@ -7,8 +7,6 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PLayoutDesign;
-import edu.udo.piq.PReadOnlyLayout;
-import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractMapPLayout;
 import edu.udo.piq.tools.ImmutablePInsets;
@@ -51,31 +49,30 @@ public class PListLayout extends AbstractMapPLayout {
 		compList = new ArrayList<>();
 		prefSize = new MutablePSize();
 		
-		addObs(new PLayoutObs() {
-			public void onChildAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
-				if (constraint == null) {
-					compList.add(child);
-				} else {
-					compList.add((Integer) constraint, child);
-				}
-				int index = compList.indexOf(child);
-				for (int i = index; i < compList.size(); i++) {
-					Integer con = Integer.valueOf(i);
-					setChildConstraint(compList.get(i), con);
-				}
-			}
-			public void onChildRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
-				int index = compList.indexOf(child);
-				compList.remove(index);
-				for (int i = index; i < compList.size(); i++) {
-					Integer con = Integer.valueOf(i);
-					setChildConstraint(compList.get(i), con);
-				}
-			}
-		});
-		
 		setAlignment(alignment);
 		setGap(gap);
+	}
+	
+	protected void onChildAdded(PComponent child, Object constraint) {
+		if (constraint == null) {
+			compList.add(child);
+		} else {
+			compList.add((Integer) constraint, child);
+		}
+		int index = compList.indexOf(child);
+		for (int i = index; i < compList.size(); i++) {
+			Integer con = Integer.valueOf(i);
+			setChildConstraint(compList.get(i), con);
+		}
+	}
+	
+	protected void onChildRemoved(PComponent child, Object constraint) {
+		int index = compList.indexOf(child);
+		compList.remove(index);
+		for (int i = index; i < compList.size(); i++) {
+			Integer con = Integer.valueOf(i);
+			setChildConstraint(compList.get(i), con);
+		}
 	}
 	
 	public void setGap(int value) {
@@ -83,7 +80,7 @@ public class PListLayout extends AbstractMapPLayout {
 			throw new IllegalArgumentException("value="+gap);
 		}
 		gap = value;
-		fireInvalidateEvent();
+		invalidate();
 	}
 	
 	public int getGap() {
@@ -95,7 +92,7 @@ public class PListLayout extends AbstractMapPLayout {
 			throw new NullPointerException();
 		}
 		align = alignment;
-		fireInvalidateEvent();
+		invalidate();
 	}
 	
 	public ListAlignment getAlignment() {
@@ -107,7 +104,7 @@ public class PListLayout extends AbstractMapPLayout {
 			throw new NullPointerException();
 		}
 		this.insets = new ImmutablePInsets(insets);
-		fireInvalidateEvent();
+		invalidate();
 	}
 	
 	public PInsets getInsets() {

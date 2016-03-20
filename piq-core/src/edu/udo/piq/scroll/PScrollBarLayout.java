@@ -57,7 +57,7 @@ public class PScrollBarLayout
 	
 	public void setOrientation(Orientation orientation) {
 		ori = orientation;
-		fireInvalidateEvent();
+		invalidate();
 	}
 	
 	public Orientation getOrientation() {

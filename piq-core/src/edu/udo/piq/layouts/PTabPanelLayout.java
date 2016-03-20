@@ -7,8 +7,6 @@ import java.util.List;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PLayoutObs;
-import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractMapPLayout;
 import edu.udo.piq.tools.MutablePSize;
@@ -36,35 +34,34 @@ public class PTabPanelLayout extends AbstractMapPLayout {
 	
 	public PTabPanelLayout(PComponent component) {
 		super(component);
-		
-		addObs(new PLayoutObs() {
-			public void onChildAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
-				if (constraint == Constraint.TAB) {
-					tabList.add(child);
-				} else if (constraint == Constraint.TAB_BACKGROUND) {
-					tabBgCmp = child;
-				} else {
-					bodyList.add(child);
-				}
-				if (constraint != Constraint.TAB_BACKGROUND && tabBgCmp != null) {
-					sortedChildList.remove(tabBgCmp);
-				}
-				sortedChildList.add(child);
-				if (constraint != Constraint.TAB_BACKGROUND && tabBgCmp != null) {
-					sortedChildList.add(tabBgCmp);
-				}
-			}
-			public void onChildRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
-				if (constraint == Constraint.TAB) {
-					tabList.remove(child);
-				} else if (constraint == Constraint.TAB_BACKGROUND) {
-					tabBgCmp = null;
-				} else {
-					bodyList.remove(child);
-				}
-				sortedChildList.remove(child);
-			}
-		});
+	}
+	
+	protected void onChildAdded(PComponent child, Object constraint) {
+		if (constraint == Constraint.TAB) {
+			tabList.add(child);
+		} else if (constraint == Constraint.TAB_BACKGROUND) {
+			tabBgCmp = child;
+		} else {
+			bodyList.add(child);
+		}
+		if (constraint != Constraint.TAB_BACKGROUND && tabBgCmp != null) {
+			sortedChildList.remove(tabBgCmp);
+		}
+		sortedChildList.add(child);
+		if (constraint != Constraint.TAB_BACKGROUND && tabBgCmp != null) {
+			sortedChildList.add(tabBgCmp);
+		}
+	}
+	
+	protected void onChildRemoved(PComponent child, Object constraint) {
+		if (constraint == Constraint.TAB) {
+			tabList.remove(child);
+		} else if (constraint == Constraint.TAB_BACKGROUND) {
+			tabBgCmp = null;
+		} else {
+			bodyList.remove(child);
+		}
+		sortedChildList.remove(child);
 	}
 	
 //	private void sortChildList() {
@@ -87,7 +84,7 @@ public class PTabPanelLayout extends AbstractMapPLayout {
 			throw new IllegalArgumentException("value="+value+", max="+(bodyList.size() -1));
 		}
 		selectedIndex = value;
-		fireInvalidateEvent();
+		invalidate();
 	}
 	
 	public int getSelectedIndex() {

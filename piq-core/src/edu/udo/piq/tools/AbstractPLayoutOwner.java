@@ -82,7 +82,7 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 	}
 	
 	protected void onChildLaidOut(PComponent child, Object constraint) {
-		fireReRenderEvent();
+//		fireReRenderEvent();
 	}
 	
 	protected void onLayoutInvalidated() {

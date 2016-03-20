@@ -18,7 +18,7 @@ public class MovingPLayout extends AbstractMapPLayout {
 	protected final PTimer timer = new PTimer(new PTimerCallback() {
 		public void onTimerEvent() {
 			time++;
-			fireInvalidateEvent();
+			invalidate();
 		}
 	});
 	private final PComponentObs ownerObs = new PComponentObs() {
@@ -58,7 +58,7 @@ public class MovingPLayout extends AbstractMapPLayout {
 	
 	public void setRadius(int value) {
 		radius = value;
-		fireInvalidateEvent();
+		invalidate();
 	}
 	
 	public int getRadius() {

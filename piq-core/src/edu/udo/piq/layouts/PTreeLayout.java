@@ -13,7 +13,6 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PLayoutDesign;
-import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.collections.PCellComponent;
@@ -73,17 +72,6 @@ public class PTreeLayout extends AbstractMapPLayout implements PReadOnlyLayout {
 	
 	public PTreeLayout(PComponent component) {
 		super(component);
-		
-		addObs(new PLayoutObs() {
-			public void onChildAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
-				PTreeIndex index = (PTreeIndex) constraint;
-				PTreeLayout.this.onChildAdded(child, index);
-			}
-			public void onChildRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
-				PTreeIndex index = (PTreeIndex) constraint;
-				PTreeLayout.this.onChildRemoved(child, index);
-			}
-		});
 	}
 	
 	public void removeChild(Object constraint) {
@@ -103,7 +91,9 @@ public class PTreeLayout extends AbstractMapPLayout implements PReadOnlyLayout {
 		super.removeChild(child);
 	}
 	
-	protected void onChildAdded(PComponent child, PTreeIndex index) {
+	protected void onChildAdded(PComponent child, Object constraint) {
+		PTreeIndex index = (PTreeIndex) constraint;
+		
 		PCellComponent cell = (PCellComponent) child;
 		System.out.println("PTreeLayout2.onChildAdded obj="+cell.getElement()+", idx="+index);
 		if (rootComp == null) {
@@ -126,7 +116,9 @@ public class PTreeLayout extends AbstractMapPLayout implements PReadOnlyLayout {
 		}
 	}
 	
-	protected void onChildRemoved(PComponent child, PTreeIndex index) {
+	protected void onChildRemoved(PComponent child, Object constraint) {
+		PTreeIndex index = (PTreeIndex) constraint;
+		
 		PCellComponent cell = (PCellComponent) child;
 		System.out.println("PTreeLayout2.onChildRemoved obj="+cell.getElement()+", idx="+index);
 		if (child == rootComp) {
@@ -193,7 +185,7 @@ public class PTreeLayout extends AbstractMapPLayout implements PReadOnlyLayout {
 	
 	public void setInsets(PInsets insets) {
 		this.insets = insets;
-		fireInvalidateEvent();
+		invalidate();
 	}
 	
 	public PInsets getInsets() {
@@ -210,7 +202,7 @@ public class PTreeLayout extends AbstractMapPLayout implements PReadOnlyLayout {
 	
 	public void setIndentSize(int value) {
 		indentSize = value;
-		fireInvalidateEvent();
+		invalidate();
 	}
 	
 	public int getIndentSize() {
@@ -219,7 +211,7 @@ public class PTreeLayout extends AbstractMapPLayout implements PReadOnlyLayout {
 	
 	public void setGap(int value) {
 		gap = value;
-		fireInvalidateEvent();
+		invalidate();
 	}
 	
 	public int getGap() {

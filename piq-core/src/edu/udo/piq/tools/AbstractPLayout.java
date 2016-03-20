@@ -52,6 +52,8 @@ public abstract class AbstractPLayout implements PLayout {
 		addInfoInternal(info);
 		
 		component.setParent(getOwner());
+		
+		onChildAdded(component, constraint);
 		fireAddEvent(component, constraint);
 	}
 	
@@ -65,6 +67,8 @@ public abstract class AbstractPLayout implements PLayout {
 		
 		removeInfoInternal(info);
 		child.setParent(null);
+		
+		onChildRemoved(child, constraint);
 		fireRemoveEvent(child, constraint);
 	}
 	
@@ -79,6 +83,8 @@ public abstract class AbstractPLayout implements PLayout {
 			PComponent child = info.comp;
 			Object constraint = info.constr;
 			child.setParent(null);
+			
+			onChildRemoved(child, constraint);
 			fireRemoveEvent(child, constraint);
 		}
 		clearAllInfosInternal();
@@ -186,7 +192,7 @@ public abstract class AbstractPLayout implements PLayout {
 	
 	public void setDesign(PLayoutDesign design) {
 		this.design = design;
-		fireInvalidateEvent();
+		invalidate();
 	}
 	
 	public PLayoutDesign getDesign() {
@@ -199,6 +205,17 @@ public abstract class AbstractPLayout implements PLayout {
 		}
 		return null;
 	}
+	
+	protected void invalidate() {
+		onInvalidated();
+		fireInvalidateEvent();
+	}
+	
+	protected void onInvalidated() {}
+	
+	protected void onChildAdded(PComponent child, Object constraint) {}
+	
+	protected void onChildRemoved(PComponent child, Object constraint) {}
 	
 	/*
 	 * Observers & Events
@@ -253,6 +270,18 @@ public abstract class AbstractPLayout implements PLayout {
 			comp = component;
 			constr = constraint;
 			bounds = new MutablePBounds();
+		}
+		
+		public PComponent getComponent() {
+			return comp;
+		}
+		
+		public PBounds getBounds() {
+			return bounds;
+		}
+		
+		public Object getConstraint() {
+			return constr;
 		}
 		
 	}

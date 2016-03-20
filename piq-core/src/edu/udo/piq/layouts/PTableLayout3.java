@@ -70,7 +70,7 @@ public class PTableLayout3 extends AbstractMapPLayout {
 	public void setColumnWidth(int index, int value) {
 		colWidths[index] = value;
 		colWidthSet[index] = true;
-		fireInvalidateEvent();
+		invalidate();
 	}
 	
 	public int getColumnWidth(int index) {
@@ -87,7 +87,7 @@ public class PTableLayout3 extends AbstractMapPLayout {
 				colWidths[index] = childW;
 			}
 		}
-		fireInvalidateEvent();
+		invalidate();
 	}
 	
 	public void addColumn() {
@@ -105,7 +105,7 @@ public class PTableLayout3 extends AbstractMapPLayout {
 		newColWidthSet[index] = false;
 		colWidths = newColWidths;
 		colWidthSet = newColWidthSet;
-		fireInvalidateEvent();
+		invalidate();
 	}
 	
 	public int getRowHeight(int row) {
@@ -123,7 +123,7 @@ public class PTableLayout3 extends AbstractMapPLayout {
 		System.arraycopy(rowHeights, index, newRowHeights, index + 1, rowHeights.length - index);
 		rowHeights = newRowHeights;
 		rowHeights[index] = DEFAULT_ROW_HEIGHT;
-		fireInvalidateEvent();
+		invalidate();
 	}
 	
 	public void removeAllColumnsAndRows() {
@@ -132,7 +132,7 @@ public class PTableLayout3 extends AbstractMapPLayout {
 		colWidths = new int[0];
 		colWidthSet = new boolean[0];
 		rowHeights = new int[0];
-		fireInvalidateEvent();
+		invalidate();
 	}
 	
 	public int getColumnCount() {

@@ -41,7 +41,7 @@ public class PDockLayout extends AbstractMapPLayout {
 			throw new IllegalArgumentException("insets="+value);
 		}
 		insets = new ImmutablePInsets(value);
-		fireInvalidateEvent();
+		invalidate();
 	}
 	
 	public PInsets getInsets() {
@@ -58,7 +58,7 @@ public class PDockLayout extends AbstractMapPLayout {
 	
 	public void setGap(int value) {
 		gap = value;
-		fireInvalidateEvent();
+		invalidate();
 	}
 	
 	public int getGap() {

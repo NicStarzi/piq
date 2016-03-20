@@ -54,9 +54,15 @@ public abstract class AbstractSwingPTest {
 			}
 		});
 		
-		buildGUI();
-		
-		frame.setVisible(true);
+		try {
+			buildGUI();
+			frame.setVisible(true);
+		} catch (Exception e) {
+			updateTimer.stop();
+			frame.dispose();
+			
+			e.printStackTrace();
+		}
 	}
 	
 	protected abstract void buildGUI();

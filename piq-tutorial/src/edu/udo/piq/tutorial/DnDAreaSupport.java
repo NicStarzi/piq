@@ -1,17 +1,15 @@
 package edu.udo.piq.tutorial;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PDnDManager;
 import edu.udo.piq.PDnDSupport;
 import edu.udo.piq.PDnDTransfer;
-import edu.udo.piq.PDnDTransfer.IndexAndContentTuple;
 import edu.udo.piq.PSize;
+import edu.udo.piq.components.collections.PModel;
 import edu.udo.piq.layouts.PFreeLayout.FreeConstraint;
 import edu.udo.piq.tools.ImmutablePDnDTransfer;
+import edu.udo.piq.tools.SingletonPModel;
 import edu.udo.piq.util.PCompUtil;
 
 public class DnDAreaSupport implements PDnDSupport {
@@ -26,7 +24,7 @@ public class DnDAreaSupport implements PDnDSupport {
 		if (target == null || transfer == null) {
 			throw new NullPointerException();
 		}
-		if (!(target instanceof DnDArea)) {
+		if (!(target instanceof DnDArea) || !(transfer instanceof DnDAreaTransfer)) {
 			return false;
 		}
 		if (!(transfer.getSource() instanceof DnDArea)) {
@@ -39,14 +37,14 @@ public class DnDAreaSupport implements PDnDSupport {
 		if (!canDrop(target, transfer, x, y)) {
 			throw new IllegalStateException("canDrop(target, transfer, x, y)=false");
 		}
-		DnDArea area = (DnDArea) target;
-		IndexAndContentTuple data = transfer.getData().get(0);
-		PComponent comp = (PComponent) data.getContent();
+		DnDAreaTransfer areaTrans = (DnDAreaTransfer) transfer;
+		DnDArea dstArea = (DnDArea) target;
+		PComponent comp = getComponent(transfer);
 		
-		PBounds areaBnds = area.getBounds();
-		int dropX = x - areaBnds.getX();
-		int dropY = y - areaBnds.getY();
-		area.getLayout().addChild(comp, new FreeConstraint(dropX, dropY));
+		PBounds areaBnds = dstArea.getBounds();
+		int dropX = (x - areaBnds.getX()) - areaTrans.compW / 2;
+		int dropY = (y - areaBnds.getY()) - areaTrans.compH / 2;
+		dstArea.getLayout().addChild(comp, new FreeConstraint(dropX, dropY));
 	}
 	
 	public boolean canDrag(PComponent source, int x, int y) {
@@ -74,10 +72,12 @@ public class DnDAreaSupport implements PDnDSupport {
 		DnDArea area = (DnDArea) source;
 		PComponent comp = area.getLayout().getChildAt(x, y);
 		
-		List<IndexAndContentTuple> data = new ArrayList<>();
-		data.add(new IndexAndContentTuple(comp, null));
+		PModel data = new SingletonPModel(comp);
 		PComponent previewComp = new DnDCompPreview(comp);
-		activeTransfer = new ImmutablePDnDTransfer(source, x, y, data, previewComp);
+		DnDAreaTransfer areaTrans = new DnDAreaTransfer(source, x, y, data, previewComp);
+		areaTrans.compW = comp.getBounds().getWidth();
+		areaTrans.compH = comp.getBounds().getHeight();
+		activeTransfer = areaTrans;
 		
 		source.getDragAndDropManager().startDrag(activeTransfer);
 	}
@@ -95,8 +95,7 @@ public class DnDAreaSupport implements PDnDSupport {
 		activeTransfer = null;
 		
 		DnDArea area = (DnDArea) source;
-		IndexAndContentTuple data = transfer.getData().get(0);
-		PComponent comp = (PComponent) data.getContent();
+		PComponent comp = getComponent(transfer);
 		
 		area.getLayout().removeChild(comp);
 	}
@@ -122,8 +121,7 @@ public class DnDAreaSupport implements PDnDSupport {
 			throw new IllegalArgumentException("source not instance of "+DnDArea.class.getName());
 		}
 		DnDArea area = (DnDArea) source;
-		IndexAndContentTuple data = transfer.getData().get(0);
-		PComponent comp = (PComponent) data.getContent();
+		PComponent comp = getComponent(transfer);
 		PSize compSize = PCompUtil.getPreferredSizeOf(comp);
 		
 		int w = compSize.getWidth();
@@ -140,6 +138,24 @@ public class DnDAreaSupport implements PDnDSupport {
 		}
 		DnDArea area = (DnDArea) source;
 		area.hideDropLoc();
+	}
+	
+	private PComponent getComponent(PDnDTransfer transfer) {
+		return (PComponent) ((SingletonPModel) transfer.getData()).getSingleElement();
+	}
+	
+	private static class DnDAreaTransfer extends ImmutablePDnDTransfer {
+		
+		public int compW;
+		public int compH;
+		
+		public DnDAreaTransfer(PComponent source, 
+				int fromX, int fromY, PModel dataModel,
+				PComponent visibleRepresentation) 
+		{
+			super(source, fromX, fromY, dataModel, visibleRepresentation);
+		}
+		
 	}
 	
 }

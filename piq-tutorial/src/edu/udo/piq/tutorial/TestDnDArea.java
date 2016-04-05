@@ -8,7 +8,8 @@ import javax.swing.JFrame;
 import javax.swing.Timer;
 
 import edu.udo.piq.components.PButton;
-import edu.udo.piq.components.PButtonObs;
+import edu.udo.piq.components.PClickObs;
+import edu.udo.piq.components.PClickable;
 import edu.udo.piq.components.containers.PSplitPanel;
 import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.swing.JCompPRoot;
@@ -79,8 +80,8 @@ public class TestDnDArea {
 	private void addBtn(DnDArea area, int num, int x, int y) {
 		PButton btn = new PButton();
 		btn.setContent(new PLabel("Button #"+num));
-		btn.addObs(new PButtonObs() {
-			public void onClick(PButton button) {
+		btn.addObs(new PClickObs() {
+			public void onClick(PClickable clickable) {
 				System.out.println("clicked #"+num);
 			}
 		});

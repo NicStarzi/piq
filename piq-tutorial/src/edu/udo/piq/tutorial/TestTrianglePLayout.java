@@ -8,7 +8,8 @@ import javax.swing.JFrame;
 import javax.swing.Timer;
 
 import edu.udo.piq.components.PButton;
-import edu.udo.piq.components.PButtonObs;
+import edu.udo.piq.components.PClickObs;
+import edu.udo.piq.components.PClickable;
 import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.swing.JCompPRoot;
@@ -56,8 +57,8 @@ public class TestTrianglePLayout {
 		
 		PButton btnTop = new PButton();
 		btnTop.setContent(new PLabel("Top"));
-		btnTop.addObs(new PButtonObs() {
-			public void onClick(PButton button) {
+		btnTop.addObs(new PClickObs() {
+			public void onClick(PClickable clickable) {
 				System.out.println("You clicked top!");
 			}
 		});
@@ -65,8 +66,8 @@ public class TestTrianglePLayout {
 		
 		PButton btnLft = new PButton();
 		btnLft.setContent(new PLabel("Left"));
-		btnLft.addObs(new PButtonObs() {
-			public void onClick(PButton button) {
+		btnLft.addObs(new PClickObs() {
+			public void onClick(PClickable clickable) {
 				System.out.println("You clicked left!");
 			}
 		});
@@ -74,8 +75,8 @@ public class TestTrianglePLayout {
 		
 		PButton btnRgt = new PButton();
 		btnRgt.setContent(new PLabel("Right"));
-		btnRgt.addObs(new PButtonObs() {
-			public void onClick(PButton button) {
+		btnRgt.addObs(new PClickObs() {
+			public void onClick(PClickable clickable) {
 				System.out.println("You clicked right!");
 			}
 		});

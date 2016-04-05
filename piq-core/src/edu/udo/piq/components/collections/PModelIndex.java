@@ -38,6 +38,8 @@ public interface PModelIndex {
 		model.remove(this);
 	}
 	
-	public PModelIndex withOffset(PModelIndex offset);
+	public default PModelIndex withOffset(PModelIndex offset) {
+		throw new UnsupportedOperationException();
+	}
 	
 }

@@ -24,7 +24,6 @@ import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
-import edu.udo.piq.PRootOverlay;
 import edu.udo.piq.PSize;
 import edu.udo.piq.PTimer;
 import edu.udo.piq.components.containers.DefaultPRootOverlay;
@@ -206,23 +205,6 @@ public abstract class AbstractPRoot implements PRoot {
 	
 	public PClipboard getClipboard() {
 		return clipboard;
-	}
-	
-	public PRootOverlay getOverlay() {
-		return getLayout().getOverlay();
-	}
-	
-	public void setBody(PComponent component) {
-		if (getBody() != null) {
-			getLayout().removeChild(Constraint.BODY);
-		}
-		if (component != null) {
-			getLayout().addChild(component, Constraint.BODY);
-		}
-	}
-	
-	public PComponent getBody() {
-		return getLayout().getBody();
 	}
 	
 	public PDnDManager getDragAndDropManager() {

@@ -23,9 +23,17 @@ public class PRootLayout extends AbstractEnumPLayout<Constraint> {
 		int y = ob.getY();
 		int w = ob.getWidth();
 		int h = ob.getHeight();
-		for (PComponent child : getChildren()) {
-			setChildBounds(child, x, y, w, h);
-		}
+		
+		PComponent overlay = getChildForConstraint(Constraint.OVERLAY);
+		setChildBounds(overlay, x, y, w, h);
+		
+		PComponent menuBar = getMenuBar();
+		PSize prefSizeMenuBar = getPreferredSizeOf(menuBar);
+		int menuBarH = prefSizeMenuBar.getHeight();
+		
+		PComponent body = getBody();
+		setChildBounds(menuBar, x, y, w, menuBarH);
+		setChildBounds(body, x, y + menuBarH, w, h - menuBarH);
 	}
 	
 	public PSize getPreferredSize() {
@@ -38,6 +46,10 @@ public class PRootLayout extends AbstractEnumPLayout<Constraint> {
 	
 	public PComponent getBody() {
 		return getChildForConstraint(Constraint.BODY);
+	}
+	
+	public PComponent getMenuBar() {
+		return getChildForConstraint(Constraint.MENUBAR);
 	}
 	
 	public PComponent getChildAt(int x, int y) {
@@ -57,6 +69,7 @@ public class PRootLayout extends AbstractEnumPLayout<Constraint> {
 	
 	public static enum Constraint {
 		BODY,
+		MENUBAR,
 		OVERLAY,
 		;
 	}

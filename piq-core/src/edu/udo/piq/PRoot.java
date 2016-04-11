@@ -4,6 +4,7 @@ import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.components.containers.PGlassPanel;
 import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.layouts.PRootLayout;
+import edu.udo.piq.layouts.PRootLayout.Constraint;
 import edu.udo.piq.util.PGuiTreeIterator;
 
 /**
@@ -281,7 +282,7 @@ public interface PRoot extends PComponent {
 	
 	/**
 	 * Returns the overlay for this {@link PRoot} or null if no overlay is supported.<br>
-	 * The overlay is used (among other possible uses) for drop down menus, tooltips and the 
+	 * The overlay is used (among other possible uses) for drop down menus, tool tips and the 
 	 * visual representation of a drag and drop.<br>
 	 * Custom components are free to use the overlay for other effects that need to be drawn 
 	 * freely on top of the rest of the GUI.<br>
@@ -295,7 +296,9 @@ public interface PRoot extends PComponent {
 	 * @see PDnDManager
 	 * @see PRootLayout
 	 */
-	public PRootOverlay getOverlay();
+	public default PRootOverlay getOverlay() {
+		return getLayout().getOverlay();
+	}
 	
 	/**
 	 * Sets the body {@link PComponent} of this {@link PRoot} to the given component.<br>
@@ -306,7 +309,14 @@ public interface PRoot extends PComponent {
 	 * @param component			the new body for this {@link PRoot} or null
 	 * @see PRootLayout
 	 */
-	public void setBody(PComponent component);
+	public default void setBody(PComponent component) {
+		if (getBody() != null) {
+			getLayout().removeChild(Constraint.BODY);
+		}
+		if (component != null) {
+			getLayout().addChild(component, Constraint.BODY);
+		}
+	}
 	
 	/**
 	 * Returns the body {@link PComponent} of this {@link PRoot}, this is usually a 
@@ -315,7 +325,22 @@ public interface PRoot extends PComponent {
 	 * @return					the body component of this root or null
 	 * @see PRootLayout
 	 */
-	public PComponent getBody();
+	public default PComponent getBody() {
+		return getLayout().getBody();
+	}
+	
+	public default void setMenuBar(PComponent component) {
+		if (getMenuBar() != null) {
+			getLayout().removeChild(Constraint.MENUBAR);
+		}
+		if (component != null) {
+			getLayout().addChild(component, Constraint.MENUBAR);
+		}
+	}
+	
+	public default PComponent getMenuBar() {
+		return getLayout().getMenuBar();
+	}
 	
 	/**
 	 * Returns the drag and drop manager for this {@link PRoot} or null if drag and drop is 

@@ -8,55 +8,25 @@ import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRootOverlay;
-import edu.udo.piq.PSize;
 import edu.udo.piq.PTimer;
-import edu.udo.piq.PTimerCallback;
 import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.components.textbased.PTextModel;
 import edu.udo.piq.layouts.PCentricLayout;
-import edu.udo.piq.layouts.PFreeLayout;
-import edu.udo.piq.layouts.PFreeLayout.FreeConstraint;
-import edu.udo.piq.tools.AbstractPLayoutOwner;
-import edu.udo.piq.util.PCompUtil;
 
-public class PToolTip extends AbstractPLayoutOwner {
+public class PToolTip extends AbstractPFloatingPanel {
 	
 	public static final int DEFAULT_SHOW_DELAY = 60;
 	
-	private final PMouseObs mouseObs = new PMouseObs() {
+	protected final PMouseObs mouseObs = new PMouseObs() {
 		public void onMouseMoved(PMouse mouse) {
-			if (isShown) {
-				if (!isMouseWithinClippedBounds()) {
-					removeFromOverlay();
-				}
-			} else {
-				boolean isWithin = target.isMouseWithinClippedBounds();
-				int newShowX = mouse.getX() - 4;
-				int newShowY = mouse.getY() - 4;
-				if (showX != newShowX || showY != newShowY) {
-					showX = newShowX;
-					showY = newShowY;
-					if (showTimer.isStarted()) {
-						showTimer.restart();
-					}
-				}
-				if (isWithin && !showTimer.isStarted()) {
-					showTimer.start();
-				} else if (!isWithin && showTimer.isStarted()) {
-					showTimer.stop();
-				}
-			}
+			PToolTip.this.onMouseMoved(mouse);
 		}
 	};
-	private final PTimer showTimer = new PTimer(new PTimerCallback() {
-		public void onTimerEvent() {
-			addToOverlay();
-		}
-	});
-	private int showX;
-	private int showY;
-	private boolean isShown = false;
-	private PComponent target;
+	protected final PTimer showTimer = new PTimer(() -> addToOverlay());
+	protected int showX;
+	protected int showY;
+	protected boolean isShown = false;
+	protected PComponent target;
 	
 	public PToolTip() {
 		super();
@@ -86,18 +56,18 @@ public class PToolTip extends AbstractPLayoutOwner {
 		return showTimer.getDelay();
 	}
 	
-	public void setTooltipComponent(PComponent component) {
-		if (target != null) {
-			target.removeObs(mouseObs);
+	public void setTooltipTarget(PComponent component) {
+		if (getTooltipTarget() != null) {
+			getTooltipTarget().removeObs(mouseObs);
 		}
 		target = component;
-		showTimer.setOwner(target);
-		if (target != null) {
-			target.addObs(mouseObs);
+		showTimer.setOwner(getTooltipTarget());
+		if (getTooltipTarget() != null) {
+			getTooltipTarget().addObs(mouseObs);
 		}
 	}
 	
-	public PComponent getTooltipComponent() {
+	public PComponent getTooltipTarget() {
 		return target;
 	}
 	
@@ -107,6 +77,14 @@ public class PToolTip extends AbstractPLayoutOwner {
 	
 	public PComponent getContent() {
 		return getLayout().getContent();
+	}
+	
+	public int getOverlayPositionX() {
+		return showX;
+	}
+	
+	public int getOverlayPositionY() {
+		return showY;
 	}
 	
 	public PCentricLayout getLayout() {
@@ -126,50 +104,92 @@ public class PToolTip extends AbstractPLayoutOwner {
 		renderer.strokeQuad(x, y, fx, fy);
 	}
 	
-	public PSize getDefaultPreferredSize() {
-		if (getLayout() != null) {
-			return getLayout().getPreferredSize();
+	protected void onMouseMoved(PMouse mouse) {
+		if (isShown) {
+			if (!isMouseWithinClippedBounds()) {
+				removeFromOverlay();
+			}
+		} else {
+			boolean isWithin = target.isMouseWithinClippedBounds();
+			if (isWithin) {
+				int newShowX = mouse.getX() - 4;
+				int newShowY = mouse.getY() - 4;
+				if (showX != newShowX || showY != newShowY) {
+					showX = newShowX;
+					showY = newShowY;
+					if (showTimer.isStarted()) {
+						showTimer.restart();
+					}
+				}
+				showTimer.start();
+			} else {
+				showTimer.stop();
+			}
 		}
-		return PSize.ZERO_SIZE;
 	}
 	
-	protected void repositionOnOverlay() {
-		PSize ownSize = PCompUtil.getPreferredSizeOf(this);
-		int ownX = showX;
-		int ownY = showY;
-		int ownW = ownSize.getWidth();
-		int ownH = ownSize.getHeight();
-		
-		PRootOverlay overlay = target.getRoot().getOverlay();
-		PBounds overlayBounds = overlay.getBounds();
-		int overlayX = overlayBounds.getX();
-		int overlayY = overlayBounds.getY();
-		int overlayW = overlayBounds.getWidth();
-		int overlayH = overlayBounds.getHeight();
-		
-		if (ownX + ownW > overlayX + overlayW) {
-			ownX = (overlayX + overlayW) - ownW;
+//	protected void repositionOnOverlay() {
+//		PSize ownSize = PCompUtil.getPreferredSizeOf(this);
+//		int ownX = showX;
+//		int ownY = showY;
+//		int ownW = ownSize.getWidth();
+//		int ownH = ownSize.getHeight();
+//		
+//		PRootOverlay overlay = getOverlay();
+//		ThrowException.ifNull(overlay, "overlay == null");
+//		
+//		PBounds overlayBounds = overlay.getBounds();
+//		int overlayX = overlayBounds.getX();
+//		int overlayY = overlayBounds.getY();
+//		int overlayW = overlayBounds.getWidth();
+//		int overlayH = overlayBounds.getHeight();
+//		
+//		if (ownW > overlayW) {
+//			ownX = overlayX;
+//		} else if (ownX + ownW > overlayX + overlayW) {
+//			ownX = (overlayX + overlayW) - ownW;
+//		}
+//		if (ownH > overlayH) {
+//			ownY = overlayY;
+//		} else if (ownY + ownH > overlayY + overlayH) {
+//			ownY = (overlayY + overlayH) - ownH;
+//		}
+//		PFreeLayout overlayLayout = overlay.getLayout();
+//		FreeConstraint constr = new FreeConstraint(ownX, ownY);
+//		overlayLayout.updateConstraint(this, constr);
+//	}
+//	
+//	protected void addToOverlay() {
+//		PFreeLayout overlayLayout = getOverlayLayout();
+//		ThrowException.ifNull(overlayLayout, "overlayLayout == null");
+//		
+//		FreeConstraint constr = new FreeConstraint(showX, showY);
+//		overlayLayout.addChild(this, constr);
+//		isShown = true;
+//		repositionOnOverlay();
+//	}
+//	
+//	protected void removeFromOverlay() {
+//		PFreeLayout overlayLayout = getOverlayLayout();
+//		ThrowException.ifNull(overlayLayout, "overlayLayout == null");
+//		
+//		overlayLayout.removeChild(this);
+//		isShown = false;
+//	}
+	
+	protected PRootOverlay getOverlay() {
+		if (target == null || target.getRoot() == null) {
+			return null;
 		}
-		if (ownY + ownH > overlayY + overlayH) {
-			ownY = (overlayY + overlayH) - ownH;
-		}
-		PFreeLayout overlayLayout = overlay.getLayout();
-		FreeConstraint constr = new FreeConstraint(ownX, ownY);
-		overlayLayout.updateConstraint(this, constr);
+		return target.getRoot().getOverlay();
 	}
 	
-	protected void addToOverlay() {
-		PFreeLayout overlayLayout = target.getRoot().getOverlay().getLayout();
-		FreeConstraint constr = new FreeConstraint(showX, showY);
-		overlayLayout.addChild(this, constr);
-		isShown = true;
-		repositionOnOverlay();
-	}
-	
-	protected void removeFromOverlay() {
-		PFreeLayout overlayLayout = target.getRoot().getOverlay().getLayout();
-		overlayLayout.removeChild(this);
-		isShown = false;
-	}
+//	public PFreeLayout getOverlayLayout() {
+//		PRootOverlay overlay = getOverlay();
+//		if (overlay == null) {
+//			return null;
+//		}
+//		return overlay.getLayout();
+//	}
 	
 }

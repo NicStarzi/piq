@@ -154,12 +154,12 @@ public class SwingPTest {
 		
 		PToolTip tipList = new PToolTip(new DefaultPTextModel("This is a nice list!"));
 		tipList.setID("Tooltip - List");
-		tipList.setTooltipComponent(list);
+		tipList.setTooltipTarget(list);
 		
 		PToolTip tipPic = new PToolTip();
 		tipPic.setID("Tooltip - Picture");
 		tipPic.setShowDelay(120);
-		tipPic.setTooltipComponent(pic);
+		tipPic.setTooltipTarget(pic);
 		PButton tipPicBtn = new PButton();
 		tipPicBtn.setContent(new PLabel(new DefaultPTextModel("Tooltip Button")));
 		tipPicBtn.addObs(new PClickObs() {

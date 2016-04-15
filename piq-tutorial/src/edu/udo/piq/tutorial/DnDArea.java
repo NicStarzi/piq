@@ -84,8 +84,8 @@ public class DnDArea extends AbstractPLayoutOwner {
 	}
 	
 	public void showDropLoc(int x, int y, int w, int h) {
-		dropX = x;
-		dropY = y;
+		dropX = x - w / 2;
+		dropY = y - h / 2;
 		dropFx = dropX + w;
 		dropFy = dropY + h;
 		dropHighlight = true;

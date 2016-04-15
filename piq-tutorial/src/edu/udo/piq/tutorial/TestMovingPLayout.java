@@ -8,7 +8,8 @@ import javax.swing.JFrame;
 import javax.swing.Timer;
 
 import edu.udo.piq.components.PButton;
-import edu.udo.piq.components.PButtonObs;
+import edu.udo.piq.components.PClickObs;
+import edu.udo.piq.components.PClickable;
 import edu.udo.piq.components.PSlider;
 import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.components.containers.PTabPanel;
@@ -109,8 +110,8 @@ public class TestMovingPLayout {
 		
 		PButton btn = new PButton();
 		btn.setContent(new PLabel("Click me!"));
-		btn.addObs(new PButtonObs() {
-			public void onClick(PButton button) {
+		btn.addObs(new PClickObs() {
+			public void onClick(PClickable clickable) {
 				System.out.println("You clicked it!");
 			}
 		});

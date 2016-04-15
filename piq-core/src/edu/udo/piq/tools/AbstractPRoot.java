@@ -39,6 +39,18 @@ import edu.udo.piq.util.PCompUtil;
 
 public abstract class AbstractPRoot implements PRoot {
 	
+	protected static final Comparator<PComponent> COMPONENT_COMPARATOR = (o1, o2) -> {
+		if (o1.equals(o2)) {
+			return 0;
+		}
+		int depth1 = o1.getDepth();
+		int depth2 = o2.getDepth();
+		if (depth1 == depth2) {
+			return -1;
+		}
+		return depth1 - depth2;
+	};
+	
 	protected final ObserverList<PGlobalEventObs> globalObsList
 			= PCompUtil.createDefaultObserverList();
 	protected final PRootLayout layout;
@@ -48,43 +60,22 @@ public abstract class AbstractPRoot implements PRoot {
 	protected PClipboard clipboard;
 	protected PDnDManager dndManager;
 	
-//	private final PComponentObs childObs = new PComponentObs() {
-//		public void preferredSizeChanged(PComponent component) {
-//			needReLayout = true;
-//			reLayOut(AbstractPRoot.this);
-//		}
-//	};
 	private final PLayoutObs layoutObs = new PLayoutObs() {
 		public void onLayoutInvalidated(PReadOnlyLayout layout) {
 			reLayOut(AbstractPRoot.this);
 		}
 		public void onChildRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
-//			child.removeObs(childObs);
 			reLayOut(AbstractPRoot.this);
 		}
 		public void onChildAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
-//			child.addObs(childObs);
 			reLayOut(AbstractPRoot.this);
-		}
-	};
-	private final Comparator<PComponent> componentComparator = new Comparator<PComponent>() {
-		public int compare(PComponent o1, PComponent o2) {
-			if (o1.equals(o2)) {
-				return 0;
-			}
-			int depth1 = o1.getDepth();
-			int depth2 = o2.getDepth();
-			if (depth1 == depth2) {
-				return -1;
-			}
-			return depth1 - depth2;
 		}
 	};
 	private final Set<PTimer> timerSet = new HashSet<>();
 	private final Set<PTimer> timersToAdd = new HashSet<>();
 	private final Set<PTimer> timersToRemove = new HashSet<>();
-	private Set<PComponent> reLayOutCompsFront = new TreeSet<>(componentComparator);
-	private Set<PComponent> reLayOutCompsBack = new TreeSet<>(componentComparator);
+	private Set<PComponent> reLayOutCompsFront = new TreeSet<>(COMPONENT_COMPARATOR);
+	private Set<PComponent> reLayOutCompsBack = new TreeSet<>(COMPONENT_COMPARATOR);
 	protected final ObserverList<PComponentObs> compObsList
 		= PCompUtil.createDefaultObserverList();
 	protected final ObserverList<PFocusObs> focusObsList
@@ -173,6 +164,9 @@ public abstract class AbstractPRoot implements PRoot {
 		if (component == oldOwner) {
 			return;
 		}
+		while (component != null && !component.isFocusable()) {
+			component = component.getParent();
+		}
 		if (oldOwner != null) {
 			fireFocusLostEvent(oldOwner);
 		}
@@ -260,64 +254,40 @@ public abstract class AbstractPRoot implements PRoot {
 	 */
 	
 	public void addObs(PComponentObs obs) throws NullPointerException {
-		if (obs == null) {
-			throw new NullPointerException("obs="+obs);
-		}
 		compObsList.add(obs);
 	}
 	
 	public void removeObs(PComponentObs obs) throws NullPointerException {
-		if (obs == null) {
-			throw new NullPointerException("obs="+obs);
-		}
 		compObsList.remove(obs);
 	}
 	
 	public void addObs(PFocusObs obs) throws NullPointerException {
-		if (obs == null) {
-			throw new NullPointerException("obs="+obs);
-		}
 		focusObsList.add(obs);
 	}
 	
 	public void removeObs(PFocusObs obs) throws NullPointerException {
-		if (obs == null) {
-			throw new NullPointerException("obs="+obs);
-		}
 		focusObsList.remove(obs);
 	}
 	
 	public void addObs(PMouseObs obs) {
-		if (obs == null) {
-			throw new NullPointerException("obs="+obs);
-		}
 		if (getMouse() != null) {
 			getMouse().addObs(obs);
 		}
 	}
 	
 	public void removeObs(PMouseObs obs) {
-		if (obs == null) {
-			throw new NullPointerException("obs="+obs);
-		}
 		if (getMouse() != null) {
 			getMouse().removeObs(obs);
 		}
 	}
 	
 	public void addObs(PKeyboardObs obs) {
-		if (obs == null) {
-			throw new NullPointerException("obs="+obs);
-		}
 		if (getKeyboard() != null) {
 			getKeyboard().addObs(obs);
 		}
 	}
 	
 	public void removeObs(PKeyboardObs obs) {
-		if (obs == null) {
-			throw new NullPointerException("obs="+obs);
-		}
 		if (getKeyboard() != null) {
 			getKeyboard().removeObs(obs);
 		}
@@ -339,6 +309,20 @@ public abstract class AbstractPRoot implements PRoot {
 				oldFocusOwner));
 	}
 	
+	public void fireGlobalEvent(PComponent source, Object eventData)
+			throws NullPointerException 
+	{
+		globalObsList.fireEvent((obs) -> obs.onGlobalEvent(source, eventData));
+	}
+	
+	public void addObs(PGlobalEventObs obs) throws NullPointerException {
+		globalObsList.add(obs);
+	}
+	
+	public void removeObs(PGlobalEventObs obs) throws NullPointerException {
+		globalObsList.remove(obs);
+	}
+	
 	/*
 	 * Uninteresting methods from component
 	 */
@@ -353,6 +337,13 @@ public abstract class AbstractPRoot implements PRoot {
 	
 	public PFocusTraversal getFocusTraversal() {
 		return focusTrav;
+	}
+	
+	/**
+	 * Always returns null by default.<br>
+	 */
+	public PDnDSupport getDragAndDropSupport() {
+		return null;
 	}
 	
 	public int getDepth() {
@@ -375,11 +366,28 @@ public abstract class AbstractPRoot implements PRoot {
 		return false;
 	}
 	
-	/**
-	 * Always returns null by default.<br>
+	/*
+	 * Unsupported inherited methods
 	 */
-	public PDnDSupport getDragAndDropSupport() {
-		return null;
+	
+	public void setDesign(PDesign design) {
+		throw new UnsupportedOperationException("PRoot");
+	}
+	
+	public PDesign getDesign() {
+		throw new UnsupportedOperationException("PRoot");
+	}
+	
+	public void setParent(PComponent parent) throws UnsupportedOperationException {
+		throw new UnsupportedOperationException("PRoot");
+	}
+	
+	public void defaultRender(PRenderer renderer) throws UnsupportedOperationException {
+		throw new UnsupportedOperationException("PRoot");
+	}
+	
+	public void setMouseOverCursor(PCursor cursor) {
+		throw new UnsupportedOperationException("PRoot");
 	}
 	
 	public void setID(String value) {
@@ -388,20 +396,6 @@ public abstract class AbstractPRoot implements PRoot {
 	
 	public String getID() {
 		return id;
-	}
-	
-	public void fireGlobalEvent(PComponent source, Object eventData)
-			throws NullPointerException 
-	{
-		globalObsList.fireEvent((obs) -> obs.onGlobalEvent(source, eventData));
-	}
-	
-	public void addObs(PGlobalEventObs obs) throws NullPointerException {
-		globalObsList.add(obs);
-	}
-	
-	public void removeObs(PGlobalEventObs obs) throws NullPointerException {
-		globalObsList.remove(obs);
 	}
 	
 	public String toString() {
@@ -432,33 +426,8 @@ public abstract class AbstractPRoot implements PRoot {
 	}
 	
 	/*
-	 * Unsupported inherited methods
-	 */
-	
-	public void setDesign(PDesign design) {
-		throw new UnsupportedOperationException("PRoot");
-	}
-	
-	public PDesign getDesign() {
-		throw new UnsupportedOperationException("PRoot");
-	}
-	
-	public void setParent(PComponent parent) throws UnsupportedOperationException {
-		throw new UnsupportedOperationException("PRoot");
-	}
-	
-	public void defaultRender(PRenderer renderer) throws UnsupportedOperationException {
-		throw new UnsupportedOperationException("PRoot");
-	}
-	
-	public void setMouseOverCursor(PCursor cursor) {
-		throw new UnsupportedOperationException("PRoot");
-	}
-	
-	/*
 	 * Utility class
 	 */
-	
 	
 	protected static class FontInfo {
 		protected final String name;

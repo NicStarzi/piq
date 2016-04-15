@@ -8,8 +8,6 @@ import edu.udo.piq.PRenderMode;
 public class DoNothingRenderer implements PImageRenderer {
 	
 	private static PRenderMode RM_FILL = new PRenderMode() {};
-	private static PRenderMode RM_OUTLINE;
-	private static PRenderMode RM_OUTLINE_DASHED;
 	private PRenderMode renderMode = getRenderModeFill();
 	
 	public void setRenderMode(PRenderMode mode) {
@@ -25,17 +23,11 @@ public class DoNothingRenderer implements PImageRenderer {
 	}
 	
 	public PRenderMode getRenderModeOutline() {
-		if (RM_OUTLINE == null) {
-			RM_OUTLINE = new PRenderMode() {};
-		}
-		return RM_OUTLINE;
+		return RM_FILL;
 	}
 	
 	public PRenderMode getRenderModeOutlineDashed() {
-		if (RM_OUTLINE_DASHED == null) {
-			RM_OUTLINE_DASHED = new PRenderMode() {};
-		}
-		return RM_OUTLINE_DASHED;
+		return RM_FILL;
 	}
 	
 	public void setClipBounds(int x, int y, int width, int height) {

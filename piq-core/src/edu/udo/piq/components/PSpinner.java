@@ -3,6 +3,8 @@ package edu.udo.piq.components;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
+import edu.udo.piq.PComponentAction;
+import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PLayout;
 import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PRenderer;
@@ -11,16 +13,76 @@ import edu.udo.piq.components.PSpinner.PSpinnerButton.PSpinnerBtnDir;
 import edu.udo.piq.components.defaults.PSpinnerModelInt;
 import edu.udo.piq.components.textbased.PTextField;
 import edu.udo.piq.components.textbased.PTextFieldObs;
+import edu.udo.piq.components.util.DefaultPKeyInput;
+import edu.udo.piq.components.util.ObjToStr;
+import edu.udo.piq.components.util.PKeyInput;
+import edu.udo.piq.components.util.PKeyInput.FocusPolicy;
+import edu.udo.piq.components.util.PKeyInput.KeyInputType;
 import edu.udo.piq.layouts.PSpinnerLayout;
 import edu.udo.piq.layouts.PSpinnerLayout.Constraint;
-import edu.udo.piq.tools.AbstractPLayoutOwner;
+import edu.udo.piq.tools.AbstractPInputLayoutOwner;
 import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.util.PCompUtil;
 import edu.udo.piq.util.ThrowException;
 
-public class PSpinner extends AbstractPLayoutOwner {
+public class PSpinner extends AbstractPInputLayoutOwner {
+	
+	/**
+	 * This method is used by the {@link #INPUT_PRESS_UP} and 
+	 * {@link #INPUT_PRESS_DOWN} key inputs. It returns the 
+	 * instance of {@link PSpinner} that belongs to the source 
+	 * of the key event.<br>
+	 * If no such spinner exists an IllegalArgumentException is 
+	 * thrown instead.
+	 * @param comp	a non-null PComponent that is either a PSpinner or a PSpinnerPart
+	 * @return		a non-null PSpinner
+	 */
+	protected static PSpinner getSpinner(PComponent comp) {
+		if (comp instanceof PSpinner) {
+			return (PSpinner) comp;
+		} else if (comp instanceof PSpinnerPart) {
+			return ((PSpinnerPart) comp).getSpinner();
+		} else {
+			throw new IllegalArgumentException("Event source has no "
+					+PSpinner.class.getSimpleName());
+		}
+	}
+	
+	/*
+	 * Input: Press Up
+	 * If the UP key is pressed while the spinner has focus, a model and 
+	 * is enabled, the next value of the spinners model will be selected.
+	 */
+	public static final String INPUT_IDENTIFIER_PRESS_UP = "pressUp";
+	
+	public static final PKeyInput INPUT_PRESS_UP = new DefaultPKeyInput(
+			FocusPolicy.THIS_OR_CHILD_HAS_FOCUS, KeyInputType.PRESS, Key.UP, (comp) -> 
+	{
+		PSpinner spinner = getSpinner(comp);
+		return spinner.isEnabled() && spinner.getModel() != null;
+	});
+	
+	public static final PComponentAction REACTION_PRESS_UP = (comp) -> {
+		getSpinner(comp).selectNext();
+	};
+	
+	/*
+	 * Input: Press Down
+	 * If the DOWN key is pressed while the spinner has focus, a model and 
+	 * is enabled, the previous value of the spinners model will be selected.
+	 */
+	public static final String INPUT_IDENTIFIER_PRESS_DOWN = "pressDown";
+	
+	public static final PKeyInput INPUT_PRESS_DOWN = new DefaultPKeyInput(
+			FocusPolicy.THIS_OR_CHILD_HAS_FOCUS, KeyInputType.PRESS, Key.DOWN, 
+			INPUT_PRESS_UP.getOptionalCondition());
+	
+	public static final PComponentAction REACTION_PRESS_DOWN = (comp) -> {
+		getSpinner(comp).selectPrevious();
+	};
 	
 	protected PSpinnerModel model;
+	protected ObjToStr encoder;
 	
 	public PSpinner(PSpinnerModel model) {
 		this();
@@ -39,6 +101,9 @@ public class PSpinner extends AbstractPLayoutOwner {
 			defaultModel = (PSpinnerModel) modelFac.getModelFor(this, defaultModel);
 		}
 		setModel(defaultModel);
+		
+		defineInput(INPUT_IDENTIFIER_PRESS_UP, INPUT_PRESS_UP, REACTION_PRESS_UP);
+		defineInput(INPUT_IDENTIFIER_PRESS_DOWN, INPUT_PRESS_DOWN, REACTION_PRESS_DOWN);
 	}
 	
 	protected void setLayout(PLayout layout) {
@@ -49,6 +114,23 @@ public class PSpinner extends AbstractPLayoutOwner {
 	
 	protected PSpinnerLayout getLayoutInternal() {
 		return (PSpinnerLayout) super.getLayout();
+	}
+	
+	public void setOutputEncoder(ObjToStr outputEncoder) {
+		encoder = outputEncoder;
+		if (getEditor() != null) {
+			getEditor().setOutputEncoder(getOutputEncoder());
+		}
+		if (getNextButton() != null) {
+			getNextButton().setOutputEncoder(getOutputEncoder());
+		}
+		if (getPrevButton() != null) {
+			getPrevButton().setOutputEncoder(getOutputEncoder());
+		}
+	}
+	
+	public ObjToStr getOutputEncoder() {
+		return encoder;
 	}
 	
 	public PSpinnerEditor getEditor() {
@@ -80,6 +162,28 @@ public class PSpinner extends AbstractPLayoutOwner {
 		return model;
 	}
 	
+	public void selectNext() {
+		PSpinnerModel model = getModel();
+		if (!model.hasNext()) {
+			return;
+		}
+		Object value = model.getNext();
+		if (model.canSetValue(value)) {
+			model.setValue(value);
+		}
+	}
+	
+	public void selectPrevious() {
+		PSpinnerModel model = getModel();
+		if (!model.hasPrevious()) {
+			return;
+		}
+		Object value = model.getPrevious();
+		if (model.canSetValue(value)) {
+			model.setValue(value);
+		}
+	}
+	
 	public void defaultRender(PRenderer renderer) {
 	}
 	
@@ -95,13 +199,23 @@ public class PSpinner extends AbstractPLayoutOwner {
 	public static class PSpinnerEditor extends PTextField implements PSpinnerPart {
 		
 		protected final PSpinnerModelObs spnrModelObs = 
-				(model, oldVal) -> onSpinnerModelValueChanged();
+				(model, oldVal) -> synchronizeModelValue();
 		protected PSpinnerModel spnrModel;
+		protected ObjToStr encoder;
 		
 		public PSpinnerEditor() {
 			super("");
 			
 			addObs((PTextFieldObs) (self) -> onUserInput());
+		}
+		
+		public void setOutputEncoder(ObjToStr outputEncoder) {
+			encoder = outputEncoder;
+			synchronizeModelValue();
+		}
+		
+		public ObjToStr getOutputEncoder() {
+			return encoder;
 		}
 		
 		public void setSpinnerModel(PSpinnerModel model) {
@@ -113,7 +227,7 @@ public class PSpinner extends AbstractPLayoutOwner {
 				getModel().setValue("");
 				setEditable(false);
 			} else {
-				onSpinnerModelValueChanged();
+				synchronizeModelValue();
 				getSpinnerModel().addObs(spnrModelObs);
 			}
 		}
@@ -122,20 +236,36 @@ public class PSpinner extends AbstractPLayoutOwner {
 			return spnrModel;
 		}
 		
-		protected void onUserInput() {
-			String value = getText();
-			if (getSpinnerModel() != null 
-					&& getSpinnerModel().canSetValue(value)) 
-			{
-				getSpinnerModel().setValue(value);
-			} else {
-				onSpinnerModelValueChanged();
+		public PSpinner getSpinner() {
+			if (getParent() instanceof PSpinner) {
+				return (PSpinner) getParent();
 			}
+			return null;
 		}
 		
-		protected void onSpinnerModelValueChanged() {
+		protected void onUserInput() {
+			String value = getText();
+			PSpinnerModel model = getSpinnerModel();
+			if (model != null && model.canSetValue(value)) {
+				model.setValue(value);
+			}
+			synchronizeModelValue();
+		}
+		
+		protected void synchronizeModelValue() {
 			if (getModel() != null) {
-				getModel().setValue(getSpinnerModel().getValue());
+				Object output;
+				if (getOutputEncoder() == null) {
+					output = getSpinnerModel().getValue();
+				} else {
+					try {
+						output = getOutputEncoder().parse(getSpinnerModel().getValue());
+					} catch (Exception e) {
+						e.printStackTrace();
+						output = null;
+					}
+				}
+				getModel().setValue(output);
 			}
 		}
 	}
@@ -148,6 +278,7 @@ public class PSpinner extends AbstractPLayoutOwner {
 				(model, oldVal) -> onSpinnerModelValueChanged();
 		protected PSpinnerBtnDir dir;
 		protected PSpinnerModel spnrModel;
+		protected ObjToStr encoder; // <- not used
 		
 		public PSpinnerButton(PSpinnerBtnDir direction) {
 			super();
@@ -188,6 +319,14 @@ public class PSpinner extends AbstractPLayoutOwner {
 		
 		public PComponent getContent() {
 			return null;
+		}
+		
+		public void setOutputEncoder(ObjToStr outputEncoder) {
+			encoder = outputEncoder;
+		}
+		
+		public ObjToStr getOutputEncoder() {
+			return encoder;
 		}
 		
 		public void setSpinnerModel(PSpinnerModel model) {

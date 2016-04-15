@@ -1,41 +1,60 @@
 package edu.udo.piq.components.defaults;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
+import edu.udo.piq.components.util.StrToObj;
 import edu.udo.piq.tools.AbstractPSpinnerModel;
 import edu.udo.piq.util.ThrowException;
 
 public class PSpinnerModelList extends AbstractPSpinnerModel {
 	
-	private final List<Object> valList;
-	private StringDecoder decoder;
-	private int index;
+	protected List<Object> valList;
+	protected StrToObj decoder;
+	protected int index;
 	
-	public PSpinnerModelList(Object value, Object[] values) {
-		ThrowException.ifNull(value, "value == null");
-		ThrowException.ifNull(values, "values == null");
-		valList = new ArrayList<>(values.length);
-		for (Object obj : values) {
-			valList.add(obj);
-		}
-		index = valList.indexOf(value);
-		ThrowException.ifLess(0, index, "values.contains(value) == false");
+	public PSpinnerModelList(Object[] values) {
+		this(Arrays.asList(values), 0);
 	}
 	
-	public void setStringDecoder(StringDecoder stringDecoder) {
+	public PSpinnerModelList(Object[] values, Object selectedValue) {
+		this(Arrays.asList(values), selectedValue);
+	}
+	
+	public PSpinnerModelList(Object[] values, int selectedIndex) {
+		this(Arrays.asList(values), selectedIndex);
+	}
+	
+	public PSpinnerModelList(List<Object> values) {
+		this(values, 0);
+	}
+	
+	public PSpinnerModelList(List<Object> values, Object selectedValue) {
+		this(values, values.indexOf(selectedValue));
+	}
+	
+	public PSpinnerModelList(List<Object> values, int selectedIndex) {
+		ThrowException.ifNull(values, "values == null");
+		ThrowException.ifNotWithin(0, values.size() - 1, selectedIndex, 
+				"selectedIndex < 0 || selectedIndex >= values.size()");
+		valList = Collections.unmodifiableList(values);
+		index = selectedIndex;
+	}
+	
+	public void setInputDecoder(StrToObj stringDecoder) {
 		decoder = stringDecoder;
 	}
 	
-	public StringDecoder getStringDecoder() {
+	public StrToObj getInputDecoder() {
 		return decoder;
 	}
 	
-	protected List<Object> getValueList() {
+	public List<Object> getValueList() {
 		return valList;
 	}
 	
-	protected int getValueIndex() {
+	public int getValueIndex() {
 		return index;
 	}
 	
@@ -59,9 +78,9 @@ public class PSpinnerModelList extends AbstractPSpinnerModel {
 		if (getValueList().contains(obj)) {
 			return true;
 		}
-		if (decoder != null && obj instanceof String) {
+		if (getInputDecoder() != null && obj instanceof String) {
 			return getValueList().contains(
-					decoder.fromString((String) obj));
+					getInputDecoder().parse((String) obj));
 		}
 		return false;
 	}
@@ -70,7 +89,7 @@ public class PSpinnerModelList extends AbstractPSpinnerModel {
 		ThrowException.ifFalse(canSetValue(obj), 
 				"canSetValue(value) == false");
 		if (!getValueList().contains(obj)) {
-			obj = decoder.fromString((String) obj);
+			obj = getInputDecoder().parse((String) obj);
 		}
 		if (!obj.equals(getValue())) {
 			Object oldValue = getValue();
@@ -81,31 +100,6 @@ public class PSpinnerModelList extends AbstractPSpinnerModel {
 	
 	public Object getValue() {
 		return getValueList().get(getValueIndex());
-	}
-	
-	public static interface StringDecoder {
-		public Object fromString(String str);
-	}
-	
-	public static class EnumDecoder<K extends Enum<K>> implements StringDecoder {
-		
-		protected final Class<K> enumCls;
-		
-		public EnumDecoder(Class<K> enumClass) {
-			ThrowException.ifNull(enumClass, "enumClass == null");
-			enumCls = enumClass;
-		}
-		
-		public Object fromString(String str) {
-			K[] enumConsts = enumCls.getEnumConstants();
-			for (K enumObj : enumConsts) {
-				String enumName = enumObj.name();
-				if (enumName.toLowerCase().equals(str.toLowerCase())) {
-					return enumObj;
-				}
-			}
-			return null;
-		}
 	}
 	
 }

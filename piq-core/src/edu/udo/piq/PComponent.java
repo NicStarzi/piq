@@ -679,6 +679,15 @@ public interface PComponent {
 		return root.getFocusOwner() == this;
 	}
 	
+	public default boolean thisOrChildHasFocus() {
+		PRoot root = getRoot();
+		if (root == null) {
+			return false;
+		}
+		PComponent focusOwner = root.getFocusOwner();
+		return focusOwner == this || isAncestorOf(focusOwner);
+	}
+	
 	/**
 	 * Makes this component the focus owner of its GUI.<br>
 	 * 

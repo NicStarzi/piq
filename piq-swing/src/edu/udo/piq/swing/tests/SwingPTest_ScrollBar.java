@@ -9,7 +9,6 @@ import javax.swing.Timer;
 
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PClickObs;
-import edu.udo.piq.components.PPicture;
 import edu.udo.piq.components.collections.PList;
 import edu.udo.piq.components.collections.PListModel;
 import edu.udo.piq.components.containers.PPanel;
@@ -17,7 +16,6 @@ import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PBorderLayout.Constraint;
-import edu.udo.piq.layouts.PFreeLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
 import edu.udo.piq.layouts.PWrapLayout;
 import edu.udo.piq.scroll.PScrollPanel;
@@ -88,17 +86,17 @@ public class SwingPTest_ScrollBar {
 			addElement();
 		}
 		
-		PPanel bodyPnl2 = new PPanel();
-		bodyPnl2.setLayout(new PFreeLayout(bodyPnl2));
-		root.setBody(bodyPnl2);
-		
-		PScrollPanel scrlPnl2 = new PScrollPanel();
-		bodyPnl2.addChild(scrlPnl2, new PFreeLayout.FreeConstraint(31, 46, 256, 256));
-		
-		PPicture content = new PPicture();
-		content.getModel().setImageID("Tex3.png");
-		content.setStretchToSize(false);
-		scrlPnl2.setBody(content);
+//		PPanel bodyPnl2 = new PPanel();
+//		bodyPnl2.setLayout(new PFreeLayout(bodyPnl2));
+//		root.setBody(bodyPnl2);
+//		
+//		PScrollPanel scrlPnl2 = new PScrollPanel();
+//		bodyPnl2.addChild(scrlPnl2, new PFreeLayout.FreeConstraint(31, 46, 256, 256));
+//		
+//		PPicture content = new PPicture();
+//		content.getModel().setImageID("Tex3.png");
+//		content.setStretchToSize(false);
+//		scrlPnl2.setBody(content);
 	}
 	
 	private int counter = 0;

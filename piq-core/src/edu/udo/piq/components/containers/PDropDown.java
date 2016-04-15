@@ -24,6 +24,7 @@ import edu.udo.piq.layouts.PTupleLayout;
 import edu.udo.piq.layouts.PTupleLayout.Constraint;
 import edu.udo.piq.layouts.PTupleLayout.Distribution;
 import edu.udo.piq.layouts.PTupleLayout.Orientation;
+import edu.udo.piq.tools.AbstractPInputLayoutOwner;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.tools.ImmutablePSize;
@@ -31,13 +32,11 @@ import edu.udo.piq.tools.MutablePSize;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
 
-public class PDropDown extends AbstractPLayoutOwner {
-	
-//	private static final int TRIANGLE_MIN_W = 12;
+public class PDropDown extends AbstractPInputLayoutOwner {
 	
 	protected final ObserverList<PDropDownObs> obsList
 		= PCompUtil.createDefaultObserverList();
-	private final PMouseObs mouseObs = new PMouseObs() {
+	protected final PMouseObs mouseObs = new PMouseObs() {
 		public void onButtonTriggered(PMouse mouse, MouseButton btn) {
 			PDropDown.this.onMouseButtonTriggered(mouse, btn);
 		}
@@ -45,16 +44,16 @@ public class PDropDown extends AbstractPLayoutOwner {
 			PDropDown.this.onMouseButtonReleased(mouse, btn);
 		}
 	};
-	private final PComponentObs containerObs = new PComponentObs() {
+	protected final PComponentObs containerObs = new PComponentObs() {
 		public void onPreferredSizeChanged(PComponent component) {
 			PDropDown.this.onPreferredSizeChanged();
 		}
 	};
-	private final PButtonModelObs modelObs = (mdl) -> PDropDown.this.onModelChange();
-	private final PClickObs btnObs = (btn) -> onButtonClick();
-	private final PDropDownContainer dropDownContainer;
-	private PButtonModel model;
-	private boolean bodyShown = false;
+	protected final PButtonModelObs modelObs = (mdl) -> PDropDown.this.onModelChange();
+	protected final PClickObs btnObs = (btn) -> onButtonClick();
+	protected final PDropDownContainer dropDownContainer;
+	protected PButtonModel model;
+	protected boolean bodyShown = false;
 	
 	public PDropDown() {
 		super();
@@ -126,6 +125,9 @@ public class PDropDown extends AbstractPLayoutOwner {
 			getModel().removeObs(modelObs);
 		}
 		this.model = model;
+		if (getButton() != null) {
+			getButton().setModel(model);
+		}
 		if (getModel() != null) {
 			getModel().addObs(modelObs);
 		}
@@ -265,10 +267,13 @@ public class PDropDown extends AbstractPLayoutOwner {
 		obsList.fireEvent((obs) -> obs.onBodyHidden(this));
 	}
 	
-	protected static class PDropDownContainer extends AbstractPLayoutOwner {
+	public static class PDropDownContainer extends AbstractPLayoutOwner {
+		
+		protected final PDropDown dropDown;
 		
 		public PDropDownContainer(PDropDown dropDown) {
 			super();
+			this.dropDown = dropDown;
 			setLayout(new PCentricLayout(this));
 			getLayout().setInsets(new ImmutablePInsets(1));
 			addObs(new PMouseObs() {
@@ -278,6 +283,10 @@ public class PDropDown extends AbstractPLayoutOwner {
 					}
 				}
 			});
+		}
+		
+		public PDropDown getDropDown() {
+			return dropDown;
 		}
 		
 		public PCentricLayout getLayout() {
@@ -311,13 +320,17 @@ public class PDropDown extends AbstractPLayoutOwner {
 		
 	}
 	
-	protected static class PDropDownButton extends PButton {
+	public static class PDropDownButton extends PButton {
 		
 		public static final PSize DEFAULT_PREF_SIZE = new ImmutablePSize(14, 14);
 		private MutablePSize prefSize = null;
 		
 		public PCursor getMouseOverCursor(PMouse mouse) {
 			return mouse.getCursorHand();
+		}
+		
+		public boolean isFocusable() {
+			return false;
 		}
 		
 		public void defaultRender(PRenderer renderer) {

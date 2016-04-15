@@ -295,7 +295,9 @@ public interface PRoot extends PComponent {
 	 * @see PDnDManager
 	 * @see PRootLayout
 	 */
-	public PRootOverlay getOverlay();
+	public default PRootOverlay getOverlay() {
+		return getLayout().getOverlay();
+	}
 	
 	/**
 	 * Sets the body {@link PComponent} of this {@link PRoot} to the given component.<br>
@@ -306,7 +308,12 @@ public interface PRoot extends PComponent {
 	 * @param component			the new body for this {@link PRoot} or null
 	 * @see PRootLayout
 	 */
-	public void setBody(PComponent component);
+	public default void setBody(PComponent component) {
+		if (getBody() != null) {
+			getLayout().removeChild(getBody());
+		}
+		getLayout().addChild(component, PRootLayout.Constraint.BODY);
+	}
 	
 	/**
 	 * Returns the body {@link PComponent} of this {@link PRoot}, this is usually a 
@@ -315,7 +322,9 @@ public interface PRoot extends PComponent {
 	 * @return					the body component of this root or null
 	 * @see PRootLayout
 	 */
-	public PComponent getBody();
+	public default PComponent getBody() {
+		return getLayout().getBody();
+	}
 	
 	/**
 	 * Returns the drag and drop manager for this {@link PRoot} or null if drag and drop is 

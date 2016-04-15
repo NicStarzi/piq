@@ -20,6 +20,10 @@ public abstract class AbstractMapPLayout extends AbstractPLayout implements PLay
 		return compMap.isEmpty();
 	}
 	
+	public int getChildCount() {
+		return compMap.size();
+	}
+	
 	public Collection<PComponent> getChildren() {
 		return Collections.unmodifiableSet(compMap.keySet());
 	}

@@ -4,12 +4,13 @@ import java.util.Collection;
 
 public class ThrowException {
 	
-	public static void ifNull(Object obj, String optionalMsg) 
+	public static <E> E ifNull(E obj, String optionalMsg) 
 			throws IllegalArgumentException 
 	{
 		if (obj == null) {
 			iae(createErrorMsg(optionalMsg));
 		}
+		return obj;
 	}
 	
 	public static void ifNotNull(Object obj, String optionalMsg) 
@@ -137,6 +138,36 @@ public class ThrowException {
 			iae(createErrorMsg(optionalMsg, "minimum(", min, ") <= value(", 
 					value, ") <= maximum(", max, ")"));
 		}
+	}
+	
+	public static void ifNotWithin(int[] arr, long value, String optionalMsg) 
+			throws IllegalArgumentException 
+	{
+		ifNotWithin(0, arr.length - 1, value, optionalMsg);
+	}
+	
+	public static void ifNotWithin(double[] arr, long value, String optionalMsg) 
+			throws IllegalArgumentException 
+	{
+		ifNotWithin(0, arr.length - 1, value, optionalMsg);
+	}
+	
+	public static void ifNotWithin(boolean[] arr, long value, String optionalMsg) 
+			throws IllegalArgumentException 
+	{
+		ifNotWithin(0, arr.length - 1, value, optionalMsg);
+	}
+	
+	public static void ifNotWithin(Object[] arr, long value, String optionalMsg) 
+			throws IllegalArgumentException 
+	{
+		ifNotWithin(0, arr.length - 1, value, optionalMsg);
+	}
+	
+	public static void ifNotWithin(Collection<?> col, long value, String optionalMsg) 
+			throws IllegalArgumentException 
+	{
+		ifNotWithin(0, col.size() - 1, value, optionalMsg);
 	}
 	
 	public static void ifNotWithin(long min, long max, long value, String optionalMsg) 

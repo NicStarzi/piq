@@ -2,9 +2,9 @@ package edu.udo.piq.tools;
 
 import edu.udo.piq.PColor;
 import edu.udo.piq.PFontResource;
+import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PRoot;
-import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.components.collections.PSelectionObs;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.components.defaults.DefaultPTextSelection;
@@ -18,7 +18,7 @@ import edu.udo.piq.components.textbased.PTextSelector;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
 
-public abstract class AbstractPTextComponent extends AbstractPComponent implements PTextComponent {
+public abstract class AbstractPTextComponent extends AbstractPInputComponent implements PTextComponent {
 	
 	protected static final String DEFAULT_FONT_NAME = "Arial";
 	protected static final int DEFAULT_FONT_SIZE = 14;

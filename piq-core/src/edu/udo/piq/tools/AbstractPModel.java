@@ -12,23 +12,9 @@ public abstract class AbstractPModel implements PModel {
 	protected final ObserverList<PModelObs> obsList
 		= PCompUtil.createDefaultObserverList();
 	
-//	protected abstract PModel createEmptyInstance();
-	
 	public PModelHistory getHistory() {
 		return null;
 	}
-	
-//	public PModel createCopy(Iterable<PModelIndex> indices)
-//			throws NullPointerException, WrongIndexType, IllegalIndex 
-//	{
-//		ThrowException.ifNull(indices, "indices == null");
-//		PModel copy = createEmptyInstance();
-//		for (PModelIndex index : this) {
-//			Object content = this.get(index);
-//			copy.add(index, content);
-//		}
-//		return copy;
-//	}
 	
 	public void addObs(PModelObs obs) throws NullPointerException {
 		obsList.add(obs);

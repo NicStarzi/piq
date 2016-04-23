@@ -1,31 +1,46 @@
 package edu.udo.piq.components.defaults;
 
+import java.util.ArrayList;
+
 import edu.udo.piq.components.charts.PBarChartModel;
 import edu.udo.piq.components.charts.PBarChartModelObs;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.ThrowException;
 
 public class DefaultPBarChartModel implements PBarChartModel {
 	
 	protected final ObserverList<PBarChartModelObs> obsList
 		= PCompUtil.createDefaultObserverList();
-	private final int[] barHeights;
+	protected final ArrayList<Integer> barValues = new ArrayList<>();
+//	private final int[] barHeights;
+	
+	public DefaultPBarChartModel() {
+		this(0);
+	}
 	
 	public DefaultPBarChartModel(int barCount) {
-		barHeights = new int [barCount];
+		barValues.ensureCapacity(barCount);
+		
+		Integer initialValue = Integer.valueOf(0);
+		for (int i = 0; i < barCount; i++) {
+			barValues.add(initialValue);
+		}
 	}
 	
 	public int getBarCount() {
-		return barHeights.length;
+		return barValues.size();
 	}
 	
 	public void setBarValue(int index, int value) {
-		barHeights[index] = value;
+		barValues.set(index, Integer.valueOf(value));
 		fireChangeEvent(index);
 	}
 	
 	public int getBarValue(int index) {
-		return barHeights[index];
+		ThrowException.ifNotWithin(barValues, index, 
+				"index < 0 || index >= getBarCount()");
+		return barValues.get(index).intValue();
 	}
 	
 	public void addObs(PBarChartModelObs obs) {

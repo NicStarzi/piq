@@ -1,7 +1,7 @@
 package edu.udo.piq.swing.tests;
 
 import edu.udo.piq.PColor;
-import edu.udo.piq.components.PColoredRectangle;
+import edu.udo.piq.components.PColoredShape;
 import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.layouts.PGridLayout;
 import edu.udo.piq.layouts.PGridLayout.AlignH;
@@ -29,22 +29,22 @@ public class SwingPTest_PGridLayout extends AbstractSwingPTest {
 		((PGridLayout) body.getLayout()).setRowGrowth(3, Growth.MAXIMIZE);
 		((PGridLayout) body.getLayout()).setInsets(new ImmutablePInsets(1));
 		
-		PColoredRectangle red = new PColoredRectangle(PColor.RED);
+		PColoredShape red = new PColoredShape(PColor.RED);
 		red.setID("RED");
-		PColoredRectangle green = new PColoredRectangle(PColor.GREEN);
+		PColoredShape green = new PColoredShape(PColor.GREEN);
 		green.setID("GREEN");
 		green.setSize(new ImmutablePSize(50, 125));
-		PColoredRectangle teal = new PColoredRectangle(PColor.TEAL);
+		PColoredShape teal = new PColoredShape(PColor.TEAL);
 		teal.setID("TEAL");
 		teal.setSize(new ImmutablePSize(125, 75));
-		PColoredRectangle blue = new PColoredRectangle(PColor.BLUE);
+		PColoredShape blue = new PColoredShape(PColor.BLUE);
 		blue.setSize(new ImmutablePSize(150, 150));
 		blue.setID("BLUE");
-		PColoredRectangle magenta = new PColoredRectangle(PColor.MAGENTA);
+		PColoredShape magenta = new PColoredShape(PColor.MAGENTA);
 		magenta.setID("MAGENTA");
-		PColoredRectangle white = new PColoredRectangle(PColor.WHITE);
+		PColoredShape white = new PColoredShape(PColor.WHITE);
 		white.setID("WHITE");
-		PColoredRectangle yellow = new PColoredRectangle(PColor.YELLOW);
+		PColoredShape yellow = new PColoredShape(PColor.YELLOW);
 		yellow.setID("YELLOW");
 		
 		/*

@@ -137,17 +137,52 @@ public class PFreeLayout extends AbstractMapPLayout {
 		return (FreeConstraint) super.getChildConstraint(child);
 	}
 	
+	public void updateConstraint(PComponent child, int x, int y) {
+		FreeConstraint con = getChildConstraint(child);
+		updateConstraint(child, con, x, y, con.w, con.h, con.z);
+	}
+	
+	public void updateConstraint(PComponent child, int x, int y, int z) {
+		FreeConstraint con = getChildConstraint(child);
+		updateConstraint(child, con, x, y, con.w, con.h, z);
+	}
+	
+	public void updateConstraint(PComponent child, int x, int y, int width, int height) {
+		FreeConstraint con = getChildConstraint(child);
+		updateConstraint(child, con, x, y, width, height, con.z);
+	}
+	
+	public void updateConstraint(PComponent child, int x, int y, int width, int height, int z) {
+		FreeConstraint con = getChildConstraint(child);
+		updateConstraint(child, con, x, y, width, height, z);
+	}
+	
+	protected void updateConstraint(PComponent child, FreeConstraint con, int x, int y, int width, int height, int z) {
+		boolean invalidate = false;
+		if (con.x != x || con.y != y || con.w != width || con.h != height) {
+			con.x = x;
+			con.y = y;
+			con.w = width;
+			con.h = height;
+			invalidate = true;
+		}
+		if (con.z != z) {
+			con.z = z;
+			sortedChildren.remove(child);
+			addChildSorted(child, con);
+			invalidate = true;
+		}
+		if (invalidate) {
+			invalidate();
+		}
+	}
+	
 	public void updateConstraint(PComponent child, FreeConstraint newConstraint) {
 		FreeConstraint con = getChildConstraint(child);
-		con.x = newConstraint.getX();
-		con.y = newConstraint.getY();
-		con.w = newConstraint.getWidth();
-		con.h = newConstraint.getHeight();
-		con.z = newConstraint.getZ();
-		sortedChildren.remove(child);
-		addChildSorted(child, con);
-//		System.out.println("PFreeLayout.updateConstraint("+child+") => "+sortedChildren);
-		invalidate();
+		updateConstraint(child, con, 
+				newConstraint.getX(), newConstraint.getY(), 
+				newConstraint.getWidth(), newConstraint.getHeight(), 
+				newConstraint.getZ());
 	}
 	
 	public static class FreeConstraint {

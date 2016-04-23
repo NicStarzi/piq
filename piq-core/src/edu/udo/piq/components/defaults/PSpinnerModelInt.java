@@ -1,5 +1,6 @@
 package edu.udo.piq.components.defaults;
 
+import edu.udo.piq.components.util.StrToObj;
 import edu.udo.piq.tools.AbstractPSpinnerModel;
 import edu.udo.piq.util.ThrowException;
 
@@ -10,10 +11,11 @@ public class PSpinnerModelInt extends AbstractPSpinnerModel {
 	public static final int DEFAULT_MAXIMUM = Integer.MAX_VALUE;
 	public static final int DEFAULT_STEP = 1;
 	
-	private Integer max = Integer.valueOf(DEFAULT_MAXIMUM);
-	private Integer min = Integer.valueOf(DEFAULT_MINIMUM);
-	private Integer val = Integer.valueOf(DEFAULT_VALUE);
-	private int step = DEFAULT_STEP;
+	protected Integer max = Integer.valueOf(DEFAULT_MAXIMUM);
+	protected Integer min = Integer.valueOf(DEFAULT_MINIMUM);
+	protected Integer val = Integer.valueOf(DEFAULT_VALUE);
+	private StrToObj decoder;
+	protected int step = DEFAULT_STEP;
 	
 	public PSpinnerModelInt() {
 		this(DEFAULT_VALUE);
@@ -35,6 +37,14 @@ public class PSpinnerModelInt extends AbstractPSpinnerModel {
 		this.min = Integer.valueOf(min);
 		this.val = Integer.valueOf(value);
 		this.step = step;
+	}
+	
+	public void setInputDecoder(StrToObj stringDecoder) {
+		decoder = stringDecoder;
+	}
+	
+	public StrToObj getInputDecoder() {
+		return decoder;
 	}
 	
 	public void setMaximum(Integer value) {
@@ -104,11 +114,15 @@ public class PSpinnerModelInt extends AbstractPSpinnerModel {
 		}
 		if (obj instanceof String) {
 			String strVal = (String) obj;
-			try {
-				int parsedInt = Integer.parseInt(strVal);
-				return canSetValue(Integer.valueOf(parsedInt));
-			} catch (NumberFormatException e) {
-				return false;
+			if (getInputDecoder() != null) {
+				obj = getInputDecoder().parse(strVal);
+			} else {
+				try {
+					int parsedInt = Integer.parseInt(strVal);
+					obj = Integer.valueOf(parsedInt);
+				} catch (NumberFormatException e) {
+					return false;
+				}
 			}
 		}
 		if (!(obj instanceof Integer)) {
@@ -132,7 +146,11 @@ public class PSpinnerModelInt extends AbstractPSpinnerModel {
 		ThrowException.ifFalse(canSetValue(obj), "canSetValue(value) == false");
 		if (obj instanceof String) {
 			String strVal = (String) obj;
-			obj = Integer.valueOf(Integer.parseInt(strVal));
+			if (getInputDecoder() != null) {
+				obj = getInputDecoder().parse(strVal);
+			} else {
+				obj = Integer.valueOf(Integer.parseInt(strVal));
+			}
 		}
 		Integer newValue = (Integer) obj;
 		if (!newValue.equals(getValue())) {

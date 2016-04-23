@@ -64,6 +64,9 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 			super.addNotify();
 			Component awtRoot = SwingUtilities.getRoot(panel);
 			if (awtRoot != null && awtRoot instanceof Window) {
+				if (wnd != null) {
+					throw new IllegalStateException("wnd="+wnd);
+				}
 				wnd = (Window) awtRoot;
 				wnd.addWindowListener(wndListener);
 			}
@@ -72,6 +75,7 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 			super.removeNotify();
 			if (wnd != null) {
 				wnd.removeWindowListener(wndListener);
+				wnd = null;
 			}
 		}
 		public void paintComponent(Graphics g) {

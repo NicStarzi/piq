@@ -7,6 +7,7 @@ import edu.udo.piq.components.collections.PCellComponent;
 import edu.udo.piq.components.collections.PModel;
 import edu.udo.piq.components.collections.PModelIndex;
 import edu.udo.piq.components.textbased.PLabel;
+import edu.udo.piq.components.util.ObjToStr;
 
 public class DefaultPCellComponent extends PLabel implements PCellComponent {
 	
@@ -14,8 +15,28 @@ public class DefaultPCellComponent extends PLabel implements PCellComponent {
 	public static final PColor DEFAULT_BACKGROUND_SELECTED_COLOR	= PColor.DARK_BLUE;
 	public static final PColor DEFAULT_DROP_HIGHLIGHT_COLOR			= PColor.RED;
 	
+	protected ObjToStr encoder;
+	protected Object cachedElement;
 	protected boolean selected;
 	protected boolean highlighted;
+	
+	public DefaultPCellComponent() {
+		this(null);
+	}
+	
+	public DefaultPCellComponent(ObjToStr outputEncoder) {
+		super();
+		setOutputEncoder(outputEncoder);
+	}
+	
+	public void setOutputEncoder(ObjToStr outputEncoder) {
+		encoder = outputEncoder;
+		refreshModelValue();
+	}
+	
+	public ObjToStr getOutputEncoder() {
+		return encoder;
+	}
 	
 	public void setSelected(boolean isSelected) {
 		selected = isSelected;
@@ -36,11 +57,20 @@ public class DefaultPCellComponent extends PLabel implements PCellComponent {
 	}
 	
 	public void setElement(PModel model, PModelIndex index) {
-		getModel().setValue(model.get(index));
+		cachedElement = model.get(index);
+		refreshModelValue();
 	}
 	
 	public Object getElement() {
-		return getModel().getValue();
+		return cachedElement;
+	}
+	
+	protected void refreshModelValue() {
+		if (getOutputEncoder() == null) {
+			getModel().setValue(cachedElement);
+		} else {
+			getModel().setValue(getOutputEncoder().parse(cachedElement));
+		}
 	}
 	
 	public void defaultRender(PRenderer renderer) {

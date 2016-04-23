@@ -1,5 +1,7 @@
 package edu.udo.piq.layouts;
 
+import java.util.Arrays;
+
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
@@ -11,29 +13,24 @@ import edu.udo.piq.util.ThrowException;
 
 public class PGridLayout extends AbstractMapPLayout {
 	
-	/*
-AAA B BBB
---C D DDD
-... D DDD
--E- F G--
-
-A = (0, 0, 1, 1)
-B = (2, 0, 2, 1)
-C = (0, 1, 1, 1 | RIGHT)
-D = (1, 1, 2, 2)
-E = (0, 3, 1, 1 | CENTER)
-F = (1, 3, 1, 1)
-G = (2, 3, 1, 1 | LEFT)
-
-[][][grow]
-	 */
+	public static final PInsets DEFAULT_INSETS = new ImmutablePInsets(4);
+	public static final Growth DEFAULT_COLUMN_GROWTH = Growth.PREFERRED;
+	public static final Growth DEFAULT_ROW_GROWTH = Growth.PREFERRED;
+	public static final int DEFAULT_GAP_BETWEEN_COLUMNS = 4;
+	public static final int DEFAULT_GAP_BETWEEN_ROWS = 4;
 	
 	protected final MutablePSize prefSize = new MutablePSize();
-	protected final DataCache cache;
 	protected final PCompInfo[] componentGrid;
 	protected final Growth[] growCols;
 	protected final Growth[] growRows;
-	protected PInsets insets = new ImmutablePInsets(4);
+	protected final int[] sizeCol;
+	protected final int[] sizeRow;
+	protected final int[] gapCol;
+	protected final int[] gapRow;
+	protected PInsets insets = DEFAULT_INSETS;
+	protected int countGrowCol;
+	protected int countGrowRow;
+	protected boolean valid = false;
 	
 	public PGridLayout(PComponent component, 
 			int numberOfColumns, int numberOfRows) 
@@ -42,11 +39,19 @@ G = (2, 3, 1, 1 | LEFT)
 		componentGrid = new PCompInfo[numberOfColumns * numberOfRows];
 		growCols = new Growth[numberOfColumns];
 		growRows = new Growth[numberOfRows];
-		cache = new DataCache();
+		Arrays.fill(growCols, DEFAULT_COLUMN_GROWTH);
+		Arrays.fill(growRows, DEFAULT_ROW_GROWTH);
+		
+		sizeCol = new int[numberOfColumns];
+		sizeRow = new int[numberOfRows];
+		gapCol = new int[numberOfColumns];
+		gapRow = new int[numberOfRows];
+		Arrays.fill(gapCol, DEFAULT_GAP_BETWEEN_COLUMNS);
+		Arrays.fill(gapRow, DEFAULT_GAP_BETWEEN_ROWS);
 	}
 	
 	protected void onInvalidated() {
-		cache.invalidate();
+		valid = false;
 	}
 	
 	protected void onChildAdded(PComponent child, Object constraint) {
@@ -61,7 +66,7 @@ G = (2, 3, 1, 1 | LEFT)
 			}
 		}
 		
-		cache.invalidate();
+		valid = false;
 	}
 	
 	protected void onChildRemoved(PComponent child, Object constraint) {
@@ -72,7 +77,7 @@ G = (2, 3, 1, 1 | LEFT)
 			}
 		}
 		
-		cache.invalidate();
+		valid = false;
 	}
 	
 	public void setInsets(PInsets insets) {
@@ -102,7 +107,7 @@ G = (2, 3, 1, 1 | LEFT)
 	}
 	
 	public Growth getColumnGrowth(int colIndex) {
-		ThrowException.ifNotWithin(0, getColumnCount(), colIndex, 
+		ThrowException.ifNotWithin(growCols, colIndex, 
 				"colIndex < 0 || colIndex >= getColumnCount()");
 		return growCols[colIndex];
 	}
@@ -116,9 +121,35 @@ G = (2, 3, 1, 1 | LEFT)
 	}
 	
 	public Growth getRowGrowth(int rowIndex) {
-		ThrowException.ifNotWithin(0, getRowCount(), rowIndex, 
+		ThrowException.ifNotWithin(growRows, rowIndex, 
 				"rowIndex < 0 || rowIndex >= getRowCount()");
 		return growRows[rowIndex];
+	}
+	
+	public void setGapAfterColumn(int colIndex, int value) {
+		if (getGapAfterColumn(colIndex) != value) {
+			gapCol[colIndex] = value;
+			invalidate();
+		}
+	}
+	
+	public int getGapAfterColumn(int colIndex) {
+		ThrowException.ifNotWithin(gapCol, colIndex, 
+				"colIndex < 0 || colIndex >= getColumnCount()");
+		return gapCol[colIndex];
+	}
+	
+	public void setGapAfterRow(int rowIndex, int value) {
+		if (getGapAfterRow(rowIndex) != value) {
+			gapRow[rowIndex] = value;
+			invalidate();
+		}
+	}
+	
+	public int getGapAfterRow(int rowIndex) {
+		ThrowException.ifNotWithin(gapRow, rowIndex, 
+				"rowIndex < 0 || rowIndex >= getRowCount()");
+		return gapRow[rowIndex];
 	}
 	
 	protected boolean canAdd(PComponent component, Object constraint) {
@@ -181,7 +212,8 @@ G = (2, 3, 1, 1 | LEFT)
 		int x = bounds.getX() + insets.getFromLeft();
 		int y = bounds.getY() + insets.getFromTop();
 		
-		cache.refreshLayout();
+		
+		refreshLayout();
 		
 //		System.out.println("colCount="+getColumnCount());
 //		System.out.println("rowCount="+getRowCount());
@@ -191,10 +223,10 @@ G = (2, 3, 1, 1 | LEFT)
 		
 		for (int cx = 0; cx < getColumnCount(); cx++) {
 			cellY = y;
-			int colW = cache.colGrownW[cx];
+			int colW = sizeCol[cx];
 			
 			for (int cy = 0; cy < getRowCount(); cy++) {
-				int rowH = cache.rowGrownH[cy];
+				int rowH = sizeRow[cy];
 				
 				PCompInfo info = getCellInternal(cx, cy);
 				if (info != null) {
@@ -204,11 +236,11 @@ G = (2, 3, 1, 1 | LEFT)
 //						System.out.println("cx="+cx+", cy="+cy+", cell="+cell);
 						int cellW = colW;
 						for (int ox = 1; ox < constr.w; ox++) {
-							cellW += cache.colGrownW[cx + ox];
+							cellW += sizeCol[cx + ox] + getGapAfterColumn(cx + ox - 1);
 						}
 						int cellH = rowH;
 						for (int oy = 1; oy < constr.h; oy++) {
-							cellH += cache.rowGrownH[cy + oy];
+							cellH += sizeRow[cy + oy] + getGapAfterRow(cy + oy - 1);
 						}
 						
 						PSize cellPrefSize = getPreferredSizeOf(cell);
@@ -225,134 +257,105 @@ G = (2, 3, 1, 1 | LEFT)
 						setChildBounds(cell, childX, childY, childW, childH);
 					}
 				}
-				cellY += rowH;
+				cellY += rowH + getGapAfterRow(cy);
 			}
 			
-			cellX += colW;
+			cellX += colW + getGapAfterColumn(cx);
 		}
 	}
 	
 	public PSize getPreferredSize() {
-		cache.refreshSize();
-//		System.out.println("PGridLayout.getPreferredSize="+prefSize);
+		if (valid) {
+			return prefSize;
+		}
+		refreshSize();
 		return prefSize;
 	}
 	
-	protected class DataCache {
+	protected void refreshSize() {
+		valid = true;
 		
-		protected final int[] colMinW;
-		protected final int[] rowMinH;
-		protected final int[] colGrownW;
-		protected final int[] rowGrownH;
-		protected int countGrowCol;
-		protected int countGrowRow;
-		protected boolean valid = false;
-		
-		public DataCache() {
-			int colCount = getColumnCount();
-			colMinW = new int[colCount];
-			colGrownW = new int[colCount];
-			int rowCount = getRowCount();
-			rowMinH = new int[rowCount];
-			rowGrownH = new int[rowCount];
+		for (int cy = 0; cy < getRowCount(); cy++) {
+			sizeRow[cy] = 0;
 		}
-		
-		public void invalidate() {
-			valid = false;
-		}
-		
-		public void refreshSize() {
-			if (valid) {
-				System.out.println("PGridLayout.refresh() == CANCEL");
-				return;
-			}
-			System.out.println("PGridLayout.refresh() == SUCCESS");
-			valid = true;
-			
+		for (int cx = 0; cx < getColumnCount(); cx++) {
+			sizeCol[cx] = 0;
 			for (int cy = 0; cy < getRowCount(); cy++) {
-				rowMinH[cy] = 0;
-			}
-			for (int cx = 0; cx < getColumnCount(); cx++) {
-				colMinW[cx] = 0;
-				for (int cy = 0; cy < getRowCount(); cy++) {
-					PCompInfo info = getCellInternal(cx, cy);
-					if (info == null) {
-						continue;
-					}
-					GridConstraint constr = (GridConstraint) info.getConstraint();
-					if (cx != constr.x || cy != constr.y) {
-						continue;
-					}
-					PSize cellPrefSize = getPreferredSizeOf(info.getComponent());
-					int cellPrefW = cellPrefSize.getWidth();
-					int cellPrefH = cellPrefSize.getHeight();
-					
-					if (cellPrefW > colMinW[cx]) {
-						colMinW[cx] = cellPrefW;
-					}
-					if (cellPrefH > rowMinH[cy]) {
-						rowMinH[cy] = cellPrefH;
-					}
+				PCompInfo info = getCellInternal(cx, cy);
+				if (info == null) {
+					continue;
+				}
+				GridConstraint constr = (GridConstraint) info.getConstraint();
+				if (cx != constr.x || cy != constr.y) {
+					continue;
+				}
+				PSize cellPrefSize = getPreferredSizeOf(info.getComponent());
+				int cellPrefW = cellPrefSize.getWidth();
+				int cellPrefH = cellPrefSize.getHeight();
+				
+				if (cellPrefW > sizeCol[cx]) {
+					sizeCol[cx] = cellPrefW;
+				}
+				if (cellPrefH > sizeRow[cy]) {
+					sizeRow[cy] = cellPrefH;
 				}
 			}
-			countGrowCol = 0;
-			countGrowRow = 0;
-			int minW = 0;
-			int minH = 0;
+		}
+		countGrowCol = 0;
+		countGrowRow = 0;
+		int minW = 0;
+		int minH = 0;
+		for (int cx = 0; cx < getColumnCount(); cx++) {
+			minW += sizeCol[cx];
+//			colGrownW[cx] = colGrownW[cx];
+			if (growCols[cx] == Growth.MAXIMIZE) {
+				countGrowCol++;
+			}
+		}
+		for (int cy = 0; cy < getRowCount(); cy++) {
+			minH += sizeRow[cy];
+//			rowGrownH[cy] = rowGrownH[cy];
+			if (growRows[cy] == Growth.MAXIMIZE) {
+				countGrowRow++;
+			}
+		}
+		prefSize.setWidth(minW);
+		prefSize.setHeight(minH);
+	}
+	
+	protected void refreshLayout() {
+		refreshSize();
+		
+		PComponent owner = getOwner();
+		if (owner == null) {
+			return;
+		}
+		PInsets insets = getInsets();
+		PBounds ownerBounds = owner.getBounds();
+		if (ownerBounds == null) {
+			return;
+		}
+		int totalW = ownerBounds.getWidth() - insets.getHorizontal();
+		int totalH = ownerBounds.getHeight() - insets.getVertical();
+		int w = prefSize.getWidth();
+		int h = prefSize.getHeight();
+		
+		if (totalW > w && countGrowCol > 0) {
+			int growW = (totalW - w) / countGrowCol;
 			for (int cx = 0; cx < getColumnCount(); cx++) {
-				minW += colMinW[cx];
-				colGrownW[cx] = colMinW[cx];
 				if (growCols[cx] == Growth.MAXIMIZE) {
-					countGrowCol++;
+					sizeCol[cx] += growW;
 				}
 			}
+		}
+		if (totalH > h && countGrowRow > 0) {
+			int growH = (totalH - h) / countGrowRow;
 			for (int cy = 0; cy < getRowCount(); cy++) {
-				minH += rowMinH[cy];
-				rowGrownH[cy] = rowMinH[cy];
 				if (growRows[cy] == Growth.MAXIMIZE) {
-					countGrowRow++;
-				}
-			}
-			prefSize.setWidth(minW);
-			prefSize.setHeight(minH);
-		}
-		
-		public void refreshLayout() {
-			invalidate();
-			refreshSize();
-			
-			PComponent owner = getOwner();
-			if (owner == null) {
-				return;
-			}
-			PInsets insets = getInsets();
-			PBounds ownerBounds = owner.getBounds();
-			if (ownerBounds == null) {
-				return;
-			}
-			int totalW = ownerBounds.getWidth() - insets.getHorizontal();
-			int totalH = ownerBounds.getHeight() - insets.getVertical();
-			int w = prefSize.getWidth();
-			int h = prefSize.getHeight();
-			
-			if (totalW > w && countGrowCol > 0) {
-				int growW = (totalW - w) / countGrowCol;
-				for (int cx = 0; cx < getColumnCount(); cx++) {
-					if (growCols[cx] == Growth.MAXIMIZE) {
-						colGrownW[cx] += growW;
-					}
-				}
-			}
-			if (totalH > h && countGrowRow > 0) {
-				int growH = (totalH - h) / countGrowRow;
-				for (int cy = 0; cy < getRowCount(); cy++) {
-					if (growRows[cy] == Growth.MAXIMIZE) {
-						rowGrownH[cy] += growH;
-					}
+					sizeRow[cy] += growH;
 				}
 			}
 		}
-		
 	}
 	
 	public static class GridConstraint {

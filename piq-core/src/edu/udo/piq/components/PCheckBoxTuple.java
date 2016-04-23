@@ -12,7 +12,7 @@ import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.components.defaults.ReRenderPFocusObs;
-import edu.udo.piq.components.util.AbstractPKeyInput;
+import edu.udo.piq.components.util.DefaultPKeyInput;
 import edu.udo.piq.components.util.PKeyInput;
 import edu.udo.piq.components.util.PKeyInput.KeyInputType;
 import edu.udo.piq.layouts.PTupleLayout;
@@ -24,7 +24,7 @@ import edu.udo.piq.util.ThrowException;
 
 public class PCheckBoxTuple extends AbstractPInputLayoutOwner implements PClickable, PGlobalEventGenerator {
 	
-	public static final PKeyInput INPUT_TRIGGER_ENTER = new AbstractPKeyInput(
+	public static final PKeyInput INPUT_TRIGGER_ENTER = new DefaultPKeyInput(
 			KeyInputType.TRIGGER, Key.ENTER, (comp) -> 
 	{
 		PCheckBoxTuple btn = ThrowException.ifTypeCastFails(comp, PCheckBoxTuple.class, 

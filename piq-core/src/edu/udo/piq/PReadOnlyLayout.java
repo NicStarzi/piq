@@ -168,6 +168,14 @@ public interface PReadOnlyLayout extends PDisposable {
 	 */
 	public Collection<PComponent> getChildren();
 	
+	public default int getChildCount() {
+		return getChildren().size();
+	}
+	
+	public default boolean isEmpty() {
+		return getChildCount() == 0;
+	}
+	
 	/**
 	 * Lays out this {@link PReadOnlyLayout}.<br>
 	 * This method should set the bounds for all children according 

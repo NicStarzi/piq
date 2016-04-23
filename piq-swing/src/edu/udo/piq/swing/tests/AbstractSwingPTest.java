@@ -14,6 +14,7 @@ import edu.udo.piq.swing.JCompPRoot;
 public abstract class AbstractSwingPTest {
 	
 	protected final JCompPRoot root;
+	protected JFrame frame;
 	
 	public AbstractSwingPTest() {
 		this(640, 480);
@@ -34,7 +35,7 @@ public abstract class AbstractSwingPTest {
 	}
 	
 	private void buildSwing(int w, int h) {
-		JFrame frame = new JFrame();
+		frame = new JFrame();
 		frame.setSize(w, h);
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

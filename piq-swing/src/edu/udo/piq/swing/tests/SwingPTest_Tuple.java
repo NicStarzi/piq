@@ -43,12 +43,12 @@ public class SwingPTest_Tuple extends AbstractSwingPTest {
 		b.setElusive(true);
 		bodyPnl.addChild(b, bodyPnl.getLayout().getChildConstraint(t1));
 		
-		PSpinner s1 = new PSpinner(new PSpinnerModelList(
-				t1.getLayout().getDistribution(), Distribution.values()));
+		PSpinner s1 = new PSpinner(new PSpinnerModelList(Distribution.values(), 
+				t1.getLayout().getDistribution()));
 		bodyPnl.addChild(s1, new FreeConstraint(250, 50, 200, 24));
 		
-		PSpinner s2 = new PSpinner(new PSpinnerModelList(
-				t1.getLayout().getSecondaryDistribution(), Distribution.values()));
+		PSpinner s2 = new PSpinner(new PSpinnerModelList(Distribution.values(), 
+				t1.getLayout().getSecondaryDistribution()));
 		bodyPnl.addChild(s2, new FreeConstraint(250, 100, 200, 24));
 		
 		PCheckBoxTuple s3 = new PCheckBoxTuple(new PLabel(new DefaultPTextModel() {

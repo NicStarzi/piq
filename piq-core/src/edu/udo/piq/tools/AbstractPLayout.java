@@ -35,10 +35,6 @@ public abstract class AbstractPLayout implements PLayout {
 	
 	protected abstract void removeInfoInternal(PCompInfo info);
 	
-	public boolean isEmpty() {
-		return getChildren().isEmpty();
-	}
-	
 	public PComponent getOwner() {
 		return owner;
 	}

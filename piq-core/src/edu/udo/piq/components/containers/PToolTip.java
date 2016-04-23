@@ -48,6 +48,11 @@ public class PToolTip extends AbstractPFloatingPanel {
 		setContent(new PLabel(textModel));
 	}
 	
+	public PToolTip(Object initialContent) {
+		this();
+		setContent(new PLabel(initialContent));
+	}
+	
 	public void setShowDelay(int value) {
 		showTimer.setDelay(value);
 	}

@@ -31,7 +31,8 @@ public class PTextField extends AbstractPTextComponent {
 	protected final MutablePSize prefSize = new MutablePSize(200, 22);
 	protected PTextIndexTableSingleLine idxTab = new PTextIndexTableSingleLine();
 	protected PInsets insets;
-	private boolean contentsWereChanged = false;
+	protected boolean contentsWereChanged = false;
+	protected int columns = -1;
 	
 	public PTextField(PTextModel model) {
 		this();
@@ -53,6 +54,9 @@ public class PTextField extends AbstractPTextComponent {
 			}
 		});
 		addObs(new PFocusObs() {
+			public void onFocusGained(PComponent oldOwner, PComponent newOwner) {
+				contentsWereChanged = false;
+			}
 			public void onFocusLost(PComponent oldOwner) {
 				fireConfirmEvent();
 			}
@@ -72,6 +76,17 @@ public class PTextField extends AbstractPTextComponent {
 	
 	public void setEditable(boolean value) {
 		super.setEditable(value);
+	}
+	
+	public void setColumnCount(int value) {
+		if (columns != value) {
+			columns = value;
+			firePreferredSizeChangedEvent();
+		}
+	}
+	
+	public int getColumnCount() {
+		return columns;
 	}
 	
 	public PTextIndexTable getIndexTable() {
@@ -166,7 +181,10 @@ public class PTextField extends AbstractPTextComponent {
 		PInsets insets = getInsets();
 		int txtX = x + insets.getFromLeft();
 		int txtY = y + insets.getFromTop();
+		int txtW = bnds.getWidth() - insets.getHorizontal();
 		int txtH = bnds.getHeight() - insets.getVertical();
+		renderer.setClipBounds(txtX, txtY, txtW, txtH);
+		
 		if (text.isEmpty()) {
 			if (hasFocus() && getCaretRenderTimer().isFocusRender()) {
 				int minH = font.getSize(" ").getHeight();
@@ -239,11 +257,18 @@ public class PTextField extends AbstractPTextComponent {
 		if (font == null) {
 			return DEFAULT_PREFERRED_SIZE;
 		}
+		PInsets insets = getInsets();
+		int colCount = getColumnCount();
+		if (colCount > 0) {
+			PSize letterSize = font.getSize("W");
+			prefSize.setWidth(letterSize.getWidth() * colCount + insets.getHorizontal());
+			prefSize.setHeight(letterSize.getHeight() + insets.getVertical());
+			return prefSize;
+		}
 		String text = getText();
 		if (text == null || text.isEmpty()) {
 			return DEFAULT_PREFERRED_SIZE;
 		}
-		PInsets insets = getInsets();
 		PSize textSize = font.getSize(text);
 		prefSize.setWidth(textSize.getWidth() + insets.getHorizontal());
 		prefSize.setHeight(textSize.getHeight() + insets.getVertical());

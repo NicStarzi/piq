@@ -40,6 +40,23 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 	protected PSplitPanelModel model;
 	protected boolean pressed;
 	
+	public PSplitPanel(Orientation orientation, PComponent first, PComponent second) {
+		this(orientation);
+		setFirstComponent(first);
+		setSecondComponent(second);
+	}
+	
+	public PSplitPanel(PComponent first, PComponent second) {
+		this();
+		setFirstComponent(first);
+		setSecondComponent(second);
+	}
+	
+	public PSplitPanel(Orientation orientation) {
+		this();
+		setOrientation(orientation);
+	}
+	
 	public PSplitPanel() {
 		super();
 		

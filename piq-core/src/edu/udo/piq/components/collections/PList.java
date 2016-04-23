@@ -10,7 +10,6 @@ import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PComponentAction;
 import edu.udo.piq.PDnDSupport;
-import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PKeyboard.Modifier;
@@ -19,10 +18,13 @@ import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
+import edu.udo.piq.components.defaults.DefaultPCellComponent;
 import edu.udo.piq.components.defaults.DefaultPCellFactory;
 import edu.udo.piq.components.defaults.DefaultPDnDSupport;
 import edu.udo.piq.components.defaults.DefaultPListModel;
-import edu.udo.piq.components.util.AbstractPKeyInput;
+import edu.udo.piq.components.defaults.ReRenderPFocusObs;
+import edu.udo.piq.components.util.DefaultPKeyInput;
+import edu.udo.piq.components.util.ObjToStr;
 import edu.udo.piq.components.util.PKeyInput;
 import edu.udo.piq.layouts.PListLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
@@ -40,18 +42,63 @@ public class PList extends AbstractPInputLayoutOwner
 	protected static final PColor DROP_HIGHLIGHT_COLOR = PColor.RED;
 	protected static final int DRAG_AND_DROP_DISTANCE = 20;
 	
-	public static final PKeyInput INPUT_MOVE_UP = new AbstractPKeyInput(Key.UP, (comp) -> {
+	/**
+	 * If the UP key is pressed while all the following conditions are met:
+	 *  - the list has focus
+	 *  - the list is enabled
+	 *  - the model of the list is not null
+	 *  - the selection of the list is not null
+	 *  - the selection of the list has a previously selected index
+	 * then the selection will be moved up by one index.
+	 * @see #INPUT_ID_MOVE_UP
+	 * @see #REACTION_MOVE_UP
+	 */
+	public static final PKeyInput INPUT_MOVE_UP = new DefaultPKeyInput(Key.UP, (comp) -> {
 		PList list = ThrowException.ifTypeCastFails(comp, PList.class, "!(comp instanceof PList)");
 		return list.isEnabled() && list.getModel() != null 
 				&& list.getSelection() != null 
 				&& list.getSelection().getLastSelected() != null;
 	});
-	public static final PKeyInput INPUT_MOVE_DOWN = new AbstractPKeyInput(Key.DOWN, INPUT_MOVE_UP.getOptionalCondition());
+	
+	/**
+	 * Calls the {@link #onUpKeyTriggered()} method of {@link PList}.
+	 * Throws an {@link IllegalArgumentException} if comp is not an instance of PList.
+	 * @see #INPUT_ID_MOVE_UP
+	 * @see #onUpKeyTriggered()
+	 */
 	public static final PComponentAction REACTION_MOVE_UP = (comp) -> 
-		ThrowException.ifTypeCastFails(comp, PList.class, "!(comp instanceof PList)").onUpKeyTriggered();
-	public static final PComponentAction REACTION_MOVE_DOWN = (comp) -> 
-		ThrowException.ifTypeCastFails(comp, PList.class, "!(comp instanceof PList)").onDownKeyTriggered();
+		ThrowException.ifTypeCastFails(comp, PList.class, 
+			"!(comp instanceof PList)").onUpKeyTriggered();
+	/**
+	 * @see #INPUT_ID_MOVE_UP
+	 */
 	public static final String INPUT_ID_MOVE_UP = "moveUp";
+	
+	/**
+	 * If the DOWN key is pressed while all the following conditions are met:
+	 *  - the list has focus
+	 *  - the list is enabled
+	 *  - the model of the list is not null
+	 *  - the selection of the list is not null
+	 *  - the selection of the list has a previously selected index
+	 * then the selection will be moved down by one index.
+	 * @see #INPUT_ID_MOVE_DOWN
+	 * @see #REACTION_MOVE_DOWN
+	 */
+	public static final PKeyInput INPUT_MOVE_DOWN = new DefaultPKeyInput(Key.DOWN, 
+			INPUT_MOVE_UP.getOptionalCondition());
+	/**
+	 * Calls the {@link #onDownKeyTriggered()} method of {@link PList}.
+	 * Throws an {@link IllegalArgumentException} if comp is not an instance of PList.
+	 * @see #INPUT_ID_MOVE_DOWN
+	 * @see #onUpKeyTriggered()
+	 */
+	public static final PComponentAction REACTION_MOVE_DOWN = (comp) -> 
+		ThrowException.ifTypeCastFails(comp, PList.class, 
+				"!(comp instanceof PList)").onDownKeyTriggered();
+	/**
+	 * @see #INPUT_ID_MOVE_DOWN
+	*/
 	public static final String INPUT_ID_MOVE_DOWN = "moveDown";
 	
 	protected final ObserverList<PModelObs> modelObsList
@@ -86,15 +133,16 @@ public class PList extends AbstractPInputLayoutOwner
 			contentChanged((PListIndex) index, oldContent);
 		}
 	};
-	private PListSelection selection;
-	private PListModel model;
-	private PCellFactory cellFactory;
-	private PDnDSupport dndSup;
-	private PModelIndex currentDnDHighlightIndex;
-	private PCellComponent currentDnDHighlightComponent;
-	private int lastDragX = -1;
-	private int lastDragY = -1;
-	private boolean isDragTagged = false;
+	protected PListSelection selection;
+	protected PListModel model;
+	protected ObjToStr encoder;
+	protected PCellFactory cellFactory;
+	protected PDnDSupport dndSup;
+	protected PModelIndex currentDnDHighlightIndex;
+	protected PCellComponent currentDnDHighlightComponent;
+	protected int lastDragX = -1;
+	protected int lastDragY = -1;
+	protected boolean isDragTagged = false;
 	
 	public PList(PListModel model) {
 		this();
@@ -127,18 +175,7 @@ public class PList extends AbstractPInputLayoutOwner
 				PList.this.onMouseMoved(mouse);
 			}
 		});
-		addObs(new PFocusObs() {
-			public void onFocusGained(PComponent oldOwner, PComponent newOwner) {
-				if (newOwner == PList.this && getSelection() != null) {
-					fireReRenderEvent();
-				}
-			}
-			public void onFocusLost(PComponent oldOwner) {
-				if (oldOwner == PList.this && getSelection() != null) {
-					fireReRenderEvent();
-				}
-			}
-		});
+		addObs(new ReRenderPFocusObs());
 		
 		defineInput(INPUT_ID_MOVE_UP, INPUT_MOVE_UP, REACTION_MOVE_UP);
 		defineInput(INPUT_ID_MOVE_DOWN, INPUT_MOVE_DOWN, REACTION_MOVE_DOWN);
@@ -189,14 +226,14 @@ public class PList extends AbstractPInputLayoutOwner
 	}
 	
 	protected void onUpKeyTriggered() {
-		onMoveSelection(-1);
+		moveSelectedIndex(-1);
 	}
 	
 	protected void onDownKeyTriggered() {
-		onMoveSelection(1);
+		moveSelectedIndex(1);
 	}
 	
-	protected void onMoveSelection(int moveOffset) {
+	protected void moveSelectedIndex(int moveOffset) {
 		PListIndex lastSelected = getSelection().getLastSelected();
 		int nextSelectedVal = lastSelected.getIndexValue() + moveOffset;
 		if (nextSelectedVal >= 0 && nextSelectedVal < getModel().getSize()) {
@@ -275,8 +312,40 @@ public class PList extends AbstractPInputLayoutOwner
 		return result;
 	}
 	
+	public void setOutputEncoder(ObjToStr outputEncoder) {
+		encoder = outputEncoder;
+		ObjToStr outEnc = getOutputEncoder();
+		
+		PCellFactory cellFactory = getCellFactory();
+		if (cellFactory instanceof DefaultPCellFactory) {
+			((DefaultPCellFactory) cellFactory).setOutputEncoder(outEnc);
+		}
+		
+		PListModel model = getModel();
+		if (model != null) {
+			for (PModelIndex index : model) {
+				PCellComponent cell = getCellComponent((PListIndex) index);
+				if (cell instanceof DefaultPCellComponent) {
+					((DefaultPCellComponent) cell).setOutputEncoder(outEnc);
+					cell.setElement(model, index);
+				}
+			}
+		}
+	}
+	
+	public ObjToStr getOutputEncoder() {
+		return encoder;
+	}
+	
 	public void setCellFactory(PCellFactory listCellFactory) {
 		cellFactory = listCellFactory;
+		
+		ObjToStr outEnc = getOutputEncoder();
+		PCellFactory cellFactory = getCellFactory();
+		if (cellFactory instanceof DefaultPCellFactory) {
+			((DefaultPCellFactory) cellFactory).setOutputEncoder(outEnc);
+		}
+		
 		getLayoutInternal().clearChildren();
 		
 		PListModel model = getModel();

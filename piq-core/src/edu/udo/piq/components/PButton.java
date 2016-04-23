@@ -16,7 +16,7 @@ import edu.udo.piq.PRenderer;
 import edu.udo.piq.PTimer;
 import edu.udo.piq.components.defaults.DefaultPButtonModel;
 import edu.udo.piq.components.defaults.ReRenderPFocusObs;
-import edu.udo.piq.components.util.AbstractPKeyInput;
+import edu.udo.piq.components.util.DefaultPKeyInput;
 import edu.udo.piq.components.util.PKeyInput;
 import edu.udo.piq.components.util.PKeyInput.KeyInputType;
 import edu.udo.piq.layouts.PCentricLayout;
@@ -28,29 +28,46 @@ import edu.udo.piq.util.ThrowException;
 
 public class PButton extends AbstractPInputLayoutOwner implements PClickable, PGlobalEventGenerator {
 	
-	public static final PKeyInput INPUT_PRESS_ENTER = new AbstractPKeyInput(
+	/*
+	 * Input: Press Enter
+	 * If the ENTER key is pressed while the button has focus, a model and 
+	 * is enabled, the button will become pressed.
+	 */
+	
+	public static final String INPUT_IDENTIFIER_PRESS_ENTER = "pressEnter";
+	
+	public static final PKeyInput INPUT_PRESS_ENTER = new DefaultPKeyInput(
 			KeyInputType.TRIGGER, Key.ENTER, (comp) -> 
 	{
 		PButton btn = (PButton) comp;
 		return btn.isEnabled() && btn.getModel() != null;
 	});
-	public static final PKeyInput INPUT_RELEASE_ENTER = new AbstractPKeyInput(
-			KeyInputType.RELEASE, Key.ENTER, INPUT_PRESS_ENTER.getOptionalCondition());
+	
 	public static final PComponentAction REACTION_PRESS_ENTER = (comp) -> {
 		PButton btn = ThrowException.ifTypeCastFails(comp, PButton.class, 
 				"!(comp instanceof PButton)");
 		btn.getModel().setPressed(true);
 	};
+	
+	/*
+	 * Input: Release Enter
+	 * When ENTER is released while button has focus, is enabled and pressed, 
+	 * the button will become unpressed.
+	 */
+	
+	public static final String INPUT_IDENTIFIER_RELEASE_ENTER = "releaseEnter";
+	
+	public static final PKeyInput INPUT_RELEASE_ENTER = new DefaultPKeyInput(
+			KeyInputType.RELEASE, Key.ENTER, INPUT_PRESS_ENTER.getOptionalCondition());
+	
 	public static final PComponentAction REACTION_RELEASE_ENTER = (comp) -> {
 		PButton btn = ThrowException.ifTypeCastFails(comp, PButton.class, 
 				"!(comp instanceof PButton)");
-		if (btn.isPressed() && btn.isEnabled()) {
+		if (btn.isPressed()) {
 			btn.getModel().setPressed(false);
 			btn.fireClickEvent();
 		}
 	};
-	public static final String INPUT_IDENTIFIER_PRESS_ENTER = "pressEnter";
-	public static final String INPUT_IDENTIFIER_RELEASE_ENTER = "releaseEnter";
 	
 	protected final ObserverList<PButtonModelObs> modelObsList
 		= PCompUtil.createDefaultObserverList();

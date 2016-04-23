@@ -1,5 +1,8 @@
 package edu.udo.piq.components.containers;
 
+import edu.udo.piq.PKeyboard;
+import edu.udo.piq.PKeyboardObs;
+import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.components.collections.PList;
 import edu.udo.piq.components.collections.PListIndex;
 import edu.udo.piq.components.collections.PListSingleSelection;
@@ -12,22 +15,17 @@ import edu.udo.piq.components.textbased.PLabel;
 
 public class PDropDownList extends PDropDown {
 	
-	private final PSelectionObs listSelectObs = new PSelectionObs() {
+	protected final PSelectionObs listSelectObs = new PSelectionObs() {
 		public void onSelectionAdded(PSelection selection, PModelIndex index) {
 			setDisplayedIndex(index);
 		}
 		public void onSelectionRemoved(PSelection selection, PModelIndex index) {
 			if (index.equals(displayedIndex)) {
 				setDisplayedIndex(null);
-//				if (list.getModel().getSize() > 0) {
-//					list.getSelection().addSelection(new PListIndex(0));
-//				} else {
-//					setDisplayedIndex(null);
-//				}
 			}
 		}
 	};
-	private final PModelObs modelObs = new PModelObs() {
+	protected final PModelObs modelObs = new PModelObs() {
 		public void onContentAdded(PModel model, PModelIndex index,
 				Object newContent) 
 		{
@@ -53,9 +51,16 @@ public class PDropDownList extends PDropDown {
 			}
 		}
 	};
-	private final PLabel label;
-	private final PList list;
-	private PModelIndex displayedIndex = null;
+	protected final PKeyboardObs keyObs = new PKeyboardObs() {
+		public void onKeyTriggered(PKeyboard keyboard, Key key) {
+			if (isBodyVisible() && (key == Key.ENTER || key == Key.ESC)) {
+				hideDropDown();
+			}
+		}
+	};
+	protected final PLabel label;
+	protected final PList list;
+	protected PModelIndex displayedIndex = null;
 	
 	public PDropDownList() {
 		super();
@@ -74,6 +79,7 @@ public class PDropDownList extends PDropDown {
 				getBody().takeFocus();
 			}
 		});
+		addObs(keyObs);
 	}
 	
 	public PList getList() {

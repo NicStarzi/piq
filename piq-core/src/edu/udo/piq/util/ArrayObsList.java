@@ -24,7 +24,7 @@ public class ArrayObsList<E> implements ObserverList<E> {
 	 */
 	protected static final int BUFFER_CAPACITY_INITIAL = 5;
 	protected static final int BUFFER_CAPACITY_INCREMENT = 5;
-	protected static final double BUFFER_CAPACITY_FACOTR = 1;
+	protected static final double BUFFER_CAPACITY_FACTOR = 1;
 	
 	/**
 	 * Array used to store all observers. Lazily initialized by the 
@@ -149,7 +149,7 @@ public class ArrayObsList<E> implements ObserverList<E> {
 	 * If the array has not yet been initialized it will be initialized as an 
 	 * empty array of size {@link #BUFFER_CAPACITY_INITIAL}.<br>
 	 * If the array was already initialized it will be resized to:<br><br><code> 
-	 * array.length * {@link #BUFFER_CAPACITY_FACOTR} + {@link #BUFFER_CAPACITY_INCREMENT}
+	 * array.length * {@link #BUFFER_CAPACITY_FACTOR} + {@link #BUFFER_CAPACITY_INCREMENT}
 	 * </code><br><br>The time-stamp array will always be sized to match the array.<br>
 	 */
 	private void resize() {
@@ -157,7 +157,7 @@ public class ArrayObsList<E> implements ObserverList<E> {
 			arr = new Object[BUFFER_CAPACITY_INITIAL];
 			modTimeStamp = new long[arr.length];
 		} else {
-			int size = (int) (arr.length * BUFFER_CAPACITY_FACOTR) + BUFFER_CAPACITY_INCREMENT;
+			int size = (int) (arr.length * BUFFER_CAPACITY_FACTOR) + BUFFER_CAPACITY_INCREMENT;
 			arr = Arrays.copyOf(arr, size);
 			modTimeStamp = Arrays.copyOf(modTimeStamp, size);
 		}

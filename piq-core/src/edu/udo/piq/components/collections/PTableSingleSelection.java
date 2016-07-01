@@ -39,8 +39,8 @@ public class PTableSingleSelection extends AbstractPSelection implements PTableS
 		return Collections.unmodifiableList(indices);
 	}
 	
-	public PTableIndex getLastSelected() {
-		return (PTableIndex) super.getLastSelected();
+	public PTableCellIndex getLastSelected() {
+		return (PTableCellIndex) super.getLastSelected();
 	}
 	
 	public boolean isSelected(PModelIndex index) {

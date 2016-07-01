@@ -22,6 +22,7 @@ public class SwingPRenderer implements PRenderer {
 	private static final SwingPRenderMode MODE_FILL = new SwingPRenderModeFill();
 	private static final SwingPRenderMode MODE_OUTLINE = new SwingPRenderModeOutline();
 	private static final SwingPRenderMode MODE_DASHED = new SwingPRenderModeOutlineDashed();
+	private static final SwingPRenderMode MODE_XOR = new SwingPRenderModeXOR();
 	
 	private SwingPRenderMode renderMode = MODE_FILL;
 	private Graphics2D graphics;
@@ -176,6 +177,10 @@ public class SwingPRenderer implements PRenderer {
 	
 	public PRenderMode getRenderModeOutlineDashed() {
 		return MODE_DASHED;
+	}
+	
+	public PRenderMode getRenderModeXOR() {
+		return MODE_XOR;
 	}
 	
 }

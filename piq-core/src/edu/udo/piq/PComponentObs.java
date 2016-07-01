@@ -38,7 +38,7 @@ public interface PComponentObs {
 	
 	/**
 	 * This event is fired by a {@link PComponent} when the component 
-	 * was added to a {@link PReadOnlyLayout}.<br>
+	 * was added to a {@link PReadOnlyLayout layout}.<br>
 	 * 
 	 * @param component the component that fired the event
 	 */
@@ -46,7 +46,7 @@ public interface PComponentObs {
 	
 	/**
 	 * This event is fired by a {@link PComponent} when the component 
-	 * was removed from a {@link PReadOnlyLayout}.<br>
+	 * was removed from a {@link PReadOnlyLayout layout}.<br>
 	 * 
 	 * @param component the component that fired the event
 	 */

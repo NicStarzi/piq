@@ -12,7 +12,7 @@ public class DelegatePRenderer implements PImageRenderer {
 	
 	private final PRenderer delegate;
 	private float ox, oy;
-	private float wFac, hFac;
+	private float facW, facH;
 	
 	public DelegatePRenderer(PRenderer delegateRenderer) {
 		if (delegateRenderer == null) {
@@ -22,19 +22,19 @@ public class DelegatePRenderer implements PImageRenderer {
 	}
 	
 	public void setWidthFactor(float value) {
-		wFac = value;
+		facW = value;
 	}
 	
 	public float getWidthFactor() {
-		return wFac;
+		return facW;
 	}
 	
 	public void setHeightFactor(float value) {
-		hFac = value;
+		facH = value;
 	}
 	
 	public float getHeightFactor() {
-		return hFac;
+		return facH;
 	}
 	
 	public void setPositionOffsetX(float value) {
@@ -54,10 +54,21 @@ public class DelegatePRenderer implements PImageRenderer {
 	}
 	
 	public void setClipBounds(PBounds bounds) {
+//		float ox = getPositionOffsetX();
+//		float oy = getPositionOffsetY();
+//		if (ox != 0 || oy != 0) {
+//			int bndX = (int) (bounds.getX() + ox);
+//			int bndY = (int) (bounds.getY() + oy);
+//			int bndW = bounds.getWidth();
+//			int bndH = bounds.getHeight();
+//			bounds = new ImmutablePBounds(bndX, bndY, bndW, bndH);
+//		}
 		delegate.setClipBounds(bounds);
 	}
 	
 	public void setClipBounds(int x, int y, int width, int height) {
+//		x += getPositionOffsetX();
+//		y += getPositionOffsetY();
 		delegate.setClipBounds(x, y, width, height);
 	}
 	
@@ -196,6 +207,10 @@ public class DelegatePRenderer implements PImageRenderer {
 	
 	public PRenderMode getRenderModeOutlineDashed() {
 		return delegate.getRenderModeOutlineDashed();
+	}
+	
+	public PRenderMode getRenderModeXOR() {
+		return delegate.getRenderModeXOR();
 	}
 	
 }

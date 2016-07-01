@@ -118,6 +118,7 @@ public class PTree extends AbstractPInputLayoutOwner
 	
 	public void setSelection(PTreeSelection selection) {
 		if (getSelection() != null) {
+			getSelection().clearSelection();
 			getSelection().removeObs(selectionObs);
 			for (PSelectionObs obs : obsListSelection) {
 				getSelection().removeObs(obs);

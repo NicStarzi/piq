@@ -30,6 +30,10 @@ public class DoNothingRenderer implements PImageRenderer {
 		return RM_FILL;
 	}
 	
+	public PRenderMode getRenderModeXOR() {
+		return RM_FILL;
+	}
+	
 	public void setClipBounds(int x, int y, int width, int height) {
 	}
 	

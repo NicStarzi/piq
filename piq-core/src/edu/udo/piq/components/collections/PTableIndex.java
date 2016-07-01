@@ -2,36 +2,40 @@ package edu.udo.piq.components.collections;
 
 import edu.udo.piq.util.ThrowException;
 
-public class PTableIndex implements PModelIndex {
+public abstract class PTableIndex implements PModelIndex {
 	
-	private final int column;
-	private final int row;
+	public abstract int getColumn();
 	
-	public PTableIndex(int columnIndex, int rowIndex) {
-		if (columnIndex < 0) {
-			throw new IllegalArgumentException("columnIndex="+columnIndex);
-		}
-		if (rowIndex < 0) {
-			throw new IllegalArgumentException("rowIndex="+rowIndex);
-		}
-		column = columnIndex;
-		row = rowIndex;
+	public abstract int getRow();
+	
+	public boolean isColumnIndex() {
+		return getColumn() >= 0;
 	}
 	
-	public int getColumn() {
-		return column;
-	}
-	
-	public int getRow() {
-		return row;
+	public boolean isRowIndex() {
+		return getRow() >= 0;
 	}
 	
 	public PTableIndex withOffset(PModelIndex offset) {
-		PTableIndex offsetTable = ThrowException.ifTypeCastFails(offset, 
+		PTableIndex offsetIndex = ThrowException.ifTypeCastFails(offset, 
 				PTableIndex.class, "(offset instanceof PTableIndex) == false");
-		int row = offsetTable.getRow() + getRow();
-		int col = offsetTable.getColumn() + getColumn();
-		return new PTableIndex(col, row);
+		
+		int col = -1;
+		int row = -1;
+		if (isColumnIndex() || offsetIndex.isColumnIndex()) {
+			col = offsetIndex.getColumn() + getColumn();
+		}
+		if (isRowIndex() || offsetIndex.isRowIndex()) {
+			row = offsetIndex.getRow() + getRow();
+		}
+		if (col >= 0 && row >= 0) {
+			return new PTableCellIndex(col, row);
+		}
+		if (col >= 0) {
+			return new PColumnIndex(col);
+		} else {
+			return new PRowIndex(col);
+		}
 	}
 	
 	public String toString() {
@@ -48,17 +52,17 @@ public class PTableIndex implements PModelIndex {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + column;
-		result = prime * result + row;
+		result = prime * result + getColumn();
+		result = prime * result + getRow();
 		return result;
 	}
 	
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj != null && obj instanceof PTableIndex) {
-			return column == ((PTableIndex) obj).column
-					&& row == ((PTableIndex) obj).row;
+		if (obj != null && obj instanceof PTableCellIndex) {
+			return getColumn() == ((PTableCellIndex) obj).getColumn()
+					&& getRow() == ((PTableCellIndex) obj).getRow();
 		}
 		return false;
 	}

@@ -254,6 +254,7 @@ public class PList extends AbstractPInputLayoutOwner
 	
 	public void setSelection(PListSelection listSelection) {
 		if (getSelection() != null) {
+			getSelection().clearSelection();
 			getSelection().removeObs(selectionObs);
 			for (PSelectionObs obs : selectionObsList) {
 				getSelection().removeObs(obs);
@@ -298,12 +299,48 @@ public class PList extends AbstractPInputLayoutOwner
 		return model;
 	}
 	
+	public boolean isSynchronizedWithModel() {
+		PListModel model = getModel();
+		
+		int elementCount = model.getSize();
+		int cellCount = getLayout().getChildCount();
+		if (elementCount != cellCount) {
+			return false;
+		}
+		
+		for (PModelIndex index : model) {
+			PCellComponent cell = getCellComponent((PListIndex) index);
+			if (cell == null) {
+				return false;
+			}
+			Object element = model.get(index);
+			if (element != cell.getElement() 
+					&& !element.equals(cell.getElement())) 
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public void synchronizeWithModel() {
+		getLayoutInternal().clearChildren();
+		for (PModelIndex index : getModel()) {
+			contentAdded((PListIndex) index, getModel().get(index));
+		}
+	}
+	
 	public List<Object> getAllSelectedContent() {
 		PSelection select = getSelection();
 		PModel model = getModel();
 		List<PModelIndex> indices = select.getAllSelected();
 		if (indices.isEmpty()) {
 			return Collections.emptyList();
+		}
+		if (indices.size() == 1) {
+			PModelIndex index = indices.get(0);
+			Object element = model.get(index);
+			return Collections.singletonList(element);
 		}
 		List<Object> result = new ArrayList<>(indices.size());
 		for (PModelIndex index : indices) {
@@ -412,12 +449,30 @@ public class PList extends AbstractPInputLayoutOwner
 	}
 	
 	protected void contentAdded(PListIndex index, Object newContent) {
-		PCellComponent cell = getCellFactory().makeCellComponent(getModel(), index);
-		getLayoutInternal().addChild(cell, Integer.valueOf(index.getIndexValue()));
+		PListModel model = getModel();
+		Integer layoutIndex = Integer.valueOf(index.getIndexValue());
+		
+		PCellComponent newCell = getCellFactory().makeCellComponent(model, index);
+		getLayoutInternal().addChild(newCell, layoutIndex);
+		
+		PListLayout layout = getLayoutInternal();
+		for (int i = layoutIndex + 1; i < layout.getChildCount(); i++) {
+			PListIndex cellIndex = new PListIndex(i);
+			PCellComponent cell = getCellComponent(cellIndex);
+			cell.setElement(model, cellIndex);
+		}
 	}
 	
 	protected void contentRemoved(PListIndex index, Object oldContent) {
 		getLayoutInternal().removeChild(getCellComponent(index));
+		
+		PListModel model = getModel();
+		PListLayout layout = getLayoutInternal();
+		for (int i = index.getIndexValue(); i < layout.getChildCount(); i++) {
+			PListIndex cellIndex = new PListIndex(i);
+			PCellComponent cell = getCellComponent(cellIndex);
+			cell.setElement(model, cellIndex);
+		}
 	}
 	
 	protected void contentChanged(PListIndex index, Object oldContent) {

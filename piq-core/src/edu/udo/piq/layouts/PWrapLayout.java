@@ -56,11 +56,11 @@ public class PWrapLayout extends PListLayout {
 		case CENTERED_VERTICAL:
 			alignedY = ob.getHeight() / 2 - prefH / 2;
 			break;
-		case FROM_BOTTOM:
-			alignedY = (ob.getFinalY() - insets.getFromBottom()) - prefH;
-			break;
 		case FROM_RIGHT:
 			alignedX = (ob.getFinalX() - insets.getFromRight()) - prefW;
+			break;
+		case FROM_BOTTOM:
+			alignedY = (ob.getFinalY() - insets.getFromBottom()) - prefH;
 			break;
 		case FROM_LEFT:
 		case FROM_TOP:

@@ -1,17 +1,11 @@
 package edu.udo.piq.components.collections;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
-import edu.udo.piq.PComponent;
 import edu.udo.piq.PDnDSupport;
-import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PKeyboard.Modifier;
+import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
@@ -19,6 +13,7 @@ import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.defaults.DefaultPCellFactory;
 import edu.udo.piq.components.defaults.DefaultPDnDSupport;
+import edu.udo.piq.components.defaults.ReRenderPFocusObs;
 import edu.udo.piq.layouts.PTableLayout3;
 import edu.udo.piq.tools.AbstractPInputLayoutOwner;
 import edu.udo.piq.util.ObserverList;
@@ -33,53 +28,16 @@ public class PTable extends AbstractPInputLayoutOwner
 	protected static final PColor DROP_HIGHLIGHT_COLOR = PColor.RED;
 	protected static final int DRAG_AND_DROP_DISTANCE = 20;
 	
-//	private final PInput moveUpInput = new PInput() {
-//		public Key getInputKey() {
-//			return Key.UP;
-//		}
-//		public KeyInputType getKeyInputType() {
-//			return KeyInputType.PRESS;
-//		}
-//		public boolean canBeUsed(PKeyboard keyboard) {
-//			return isEnabled() && getModel() != null 
-//					&& getSelection() != null 
-//					&& getSelection().getLastSelected() != null;
-//		}
-//	};
-//	private final Runnable moveUpReaction = new Runnable() {
-//		public void run() {
-//			onUpKeyTriggered();
-//		}
-//	};
-//	private final PInput moveDownInput = new PInput() {
-//		public Key getInputKey() {
-//			return Key.DOWN;
-//		}
-//		public KeyInputType getKeyInputType() {
-//			return KeyInputType.PRESS;
-//		}
-//		public boolean canBeUsed(PKeyboard keyboard) {
-//			return isEnabled() && getModel() != null 
-//					&& getSelection() != null 
-//					&& getSelection().getLastSelected() != null;
-//		}
-//	};
-//	private final Runnable moveDownReaction = new Runnable() {
-//		public void run() {
-//			onDownKeyTriggered();
-//		}
-//	};
-	
 	protected final ObserverList<PModelObs> modelObsList
 		= PCompUtil.createDefaultObserverList();
 	protected final ObserverList<PSelectionObs> selectionObsList
 		= PCompUtil.createDefaultObserverList();
 	private final PSelectionObs selectionObs = new PSelectionObs() {
 		public void onSelectionAdded(PSelection selection, PModelIndex index) {
-			selectionAdded((PTableIndex) index);
+			selectionAdded((PTableCellIndex) index);
 		}
 		public void onSelectionRemoved(PSelection selection, PModelIndex index) {
-			selectionRemoved((PTableIndex) index);
+			selectionRemoved((PTableCellIndex) index);
 		}
 		public void onLastSelectedChanged(PSelection selection,
 				PModelIndex prevLastSelected, PModelIndex newLastSelected) 
@@ -91,15 +49,17 @@ public class PTable extends AbstractPInputLayoutOwner
 	};
 	private final PModelObs modelObs = new PModelObs() {
 		public void onContentAdded(PModel model, PModelIndex index, Object newContent) {
-			getSelection().clearSelection();
-			contentAdded((PTableIndex) index, newContent);
+//			getSelection().clearSelection();
+//			contentAdded((PTableIndex) index, newContent);
+			contentAdded((PTableIndex) index, null);
 		}
 		public void onContentRemoved(PModel model, PModelIndex index, Object oldContent) {
+//			contentRemoved((PTableIndex) index, oldContent);
+//			getSelection().removeSelection(index);
 			contentRemoved((PTableIndex) index, oldContent);
-			getSelection().removeSelection(index);
 		}
 		public void onContentChanged(PModel model, PModelIndex index, Object oldContent) {
-			contentChanged((PTableIndex) index, oldContent);
+			contentChanged((PTableCellIndex) index, oldContent);
 		}
 	};
 	private PTableSelection selection;
@@ -112,13 +72,20 @@ public class PTable extends AbstractPInputLayoutOwner
 	private int lastDragY = -1;
 	private boolean isDragTagged = false;
 	
-	public PTable() {
-		//TODO Change to default model
-		this(new FixedSizePTableModel(0, 0));
+	public PTable(PTableModel model) {
+		this();
+		setModel(model);
 	}
 	
-	public PTable(PTableModel model) {
+	public PTable() {
 		super();
+		
+		PModelFactory modelFac = PModelFactory.getGlobalModelFactory();
+		PTableModel defaultModel = new FixedSizePTableModel(0, 0);
+		if (modelFac != null) {
+			defaultModel = (PTableModel) modelFac.getModelFor(this, defaultModel);
+		}
+		
 		setLayout(new PTableLayout3(this));
 		setDragAndDropSupport(new DefaultPDnDSupport());
 		setSelection(new PTableSingleSelection());
@@ -136,26 +103,12 @@ public class PTable extends AbstractPInputLayoutOwner
 				PTable.this.onMouseMoved(mouse);
 			}
 		});
-		addObs(new PFocusObs() {
-			public void onFocusGained(PComponent oldOwner, PComponent newOwner) {
-				if (newOwner == PTable.this && getSelection() != null) {
-					fireReRenderEvent();
-				}
-			}
-			public void onFocusLost(PComponent oldOwner) {
-				if (oldOwner == PTable.this && getSelection() != null) {
-					fireReRenderEvent();
-				}
-			}
-		});
-		
-//		defineInput(moveUpInput.getDefaultIdentifier(), moveUpInput, moveUpReaction);
-//		defineInput(moveDownInput.getDefaultIdentifier(), moveDownInput, moveDownReaction);
+		addObs(new ReRenderPFocusObs());
 	}
 	
 	protected void onMouseButtonTriggred(PMouse mouse, MouseButton btn) {
 		if (btn == MouseButton.LEFT && isMouseOverThisOrChild()) {
-			PTableIndex index = getIndexAt(mouse.getX(), mouse.getY());
+			PTableCellIndex index = getIndexAt(mouse.getX(), mouse.getY());
 			if (index != null) {
 				if (mouse.isPressed(MouseButton.DRAG_AND_DROP)) {
 					lastDragX = mouse.getX();
@@ -197,35 +150,13 @@ public class PTable extends AbstractPInputLayoutOwner
 		}
 	}
 	
-//	protected void onUpKeyTriggered() {
-//		onMoveSelection(-1);
-//	}
-//	
-//	protected void onDownKeyTriggered() {
-//		onMoveSelection(1);
-//	}
-//	
-//	protected void onMoveSelection(int moveOffset) {
-//		PTableIndex lastSelected = getSelection().getLastSelected();
-//		int nextSelectedVal = lastSelected.getIndexValue() + moveOffset;
-//		if (nextSelectedVal >= 0 && nextSelectedVal < getModel().getSize()) {
-//			PTableIndex nextSelected = new PTableIndex(nextSelectedVal);
-//			
-//			PKeyboard keyBoard = getKeyboard();
-//			if (keyBoard == null || !keyBoard.isModifierToggled(Modifier.CTRL)) {
-//				getSelection().clearSelection();
-//			}
-//			
-//			getSelection().addSelection(nextSelected);
-//		}
-//	}
-	
 	protected PTableLayout3 getLayoutInternal() {
 		return (PTableLayout3) super.getLayout();
 	}
 	
 	public void setSelection(PTableSelection listSelection) {
 		if (getSelection() != null) {
+			getSelection().clearSelection();
 			getSelection().removeObs(selectionObs);
 			for (PSelectionObs obs : selectionObsList) {
 				getSelection().removeObs(obs);
@@ -252,7 +183,6 @@ public class PTable extends AbstractPInputLayoutOwner
 			}
 		}
 		model = listModel;
-//		getLayoutInternal().clearChildren();
 		resizeLayoutTable();
 		if (getModel() != null) {
 			PTableModel model = getModel();
@@ -261,8 +191,8 @@ public class PTable extends AbstractPInputLayoutOwner
 			for (PModelObs obs : modelObsList) {
 				model.addObs(obs);
 			}
-			for (PModelIndex index : model) {
-				contentAdded((PTableIndex) index, model.get(index));
+			for (int row = 0; row < model.getRowCount(); row++) {
+				contentAdded(new PRowIndex(row), null);
 			}
 		}
 	}
@@ -271,30 +201,18 @@ public class PTable extends AbstractPInputLayoutOwner
 		PTableLayout3 layout = getLayoutInternal();
 		layout.removeAllColumnsAndRows();
 		PTableModel model = getModel();
-		for (int c = 0; c < model.getColumnCount(); c++) {
-			layout.addColumn();
-		}
-		for (int r = 0; r < model.getRowCount(); r++) {
-			layout.addRow();
+		if (model != null) {
+			for (int c = 0; c < model.getColumnCount(); c++) {
+				layout.addColumn();
+			}
+			for (int r = 0; r < model.getRowCount(); r++) {
+				layout.addRow();
+			}
 		}
 	}
 	
 	public PTableModel getModel() {
 		return model;
-	}
-	
-	public List<Object> getAllSelectedContent() {
-		PSelection select = getSelection();
-		PModel model = getModel();
-		List<PModelIndex> indices = select.getAllSelected();
-		if (indices.isEmpty()) {
-			return Collections.emptyList();
-		}
-		List<Object> result = new ArrayList<>(indices.size());
-		for (PModelIndex index : indices) {
-			result.add(model.get(index));
-		}
-		return result;
 	}
 	
 	public void setCellFactory(PCellFactory listCellFactory) {
@@ -303,10 +221,21 @@ public class PTable extends AbstractPInputLayoutOwner
 		
 		PTableModel model = getModel();
 		if (model != null) {
-			for (PModelIndex index : model) {
-				contentAdded((PTableIndex) index, model.get(index));
-			}
+			rebuildCellComponents();
 		}
+	}
+	
+	private void rebuildCellComponents() {
+		PTableModel model = getModel();
+		for (PModelIndex index : model) {
+			contentAdded((PTableCellIndex) index, null);
+		}
+//		for (int col = 0; col < model.getColumnCount(); col++) {
+//			for (int row = 0; row < model.getRowCount(); row++) {
+//				PTableIndex index = new PTableIndex(col, row);
+//				contentAdded(index, null);
+//			}
+//		}
 	}
 	
 	public PCellFactory getCellFactory() {
@@ -321,21 +250,11 @@ public class PTable extends AbstractPInputLayoutOwner
 		return dndSup;
 	}
 	
-	public PTableIndex getIndexAt(int x, int y) {
-		if (getModel() == null) {
-			return null;
-		}
-		PTableLayout3 layout = getLayoutInternal();
-		Collection<PComponent> children = layout.getChildren();
-		for (PComponent child : children) {
-			if (layout.getChildBounds(child).contains(x, y)) {
-				return (PTableIndex) layout.getChildConstraint(child);
-			}
-		}
-		return null;
+	public PTableCellIndex getIndexAt(int x, int y) {
+		return getLayoutInternal().getIndexAt(x, y);
 	}
 	
-	public PTableIndex getDropIndex(int x, int y) {
+	public PTableCellIndex getDropIndex(int x, int y) {
 		return getIndexAt(x, y);
 	}
 	
@@ -345,7 +264,7 @@ public class PTable extends AbstractPInputLayoutOwner
 		}
 		currentDnDHighlightIndex = index;
 		if (index != null) {
-			currentDnDHighlightComponent = getCellComponent((PTableIndex) index);
+			currentDnDHighlightComponent = getCellComponent((PTableCellIndex) index);
 			if (currentDnDHighlightComponent != null) {
 				currentDnDHighlightComponent.setDropHighlighted(true);
 			}
@@ -358,33 +277,61 @@ public class PTable extends AbstractPInputLayoutOwner
 	}
 	
 	protected void contentAdded(PTableIndex index, Object newContent) {
-		PCellComponent cell = getCellFactory().makeCellComponent(getModel(), index);
-		getLayoutInternal().addChild(cell, index);
+		System.out.println("PTable.contentAdded idx="+index);
+		if (index.isColumnIndex()) {
+			int col = index.getColumn();
+			for (int row = 0; row < getModel().getRowCount(); row++) {
+				PTableCellIndex cellIndex = new PTableCellIndex(col, row);
+				PCellComponent cell = getCellFactory().makeCellComponent(getModel(), cellIndex);
+				getLayoutInternal().addChild(cell, cellIndex);
+			}
+		} else {
+			int row = index.getRow();
+			for (int col = 0; col < getModel().getColumnCount(); col++) {
+				PTableCellIndex cellIndex = new PTableCellIndex(col, row);
+				PCellComponent cell = getCellFactory().makeCellComponent(getModel(), cellIndex);
+				getLayoutInternal().addChild(cell, cellIndex);
+			}
+		}
 	}
 	
 	protected void contentRemoved(PTableIndex index, Object oldContent) {
-		getLayoutInternal().removeChild(getCellComponent(index));
+		System.out.println("PTable.contentRemoved idx="+index);
+		if (index.isColumnIndex()) {
+			int col = index.getColumn();
+			for (int row = getModel().getRowCount() - 1; row >= 0; row--) {
+				PTableCellIndex cellIndex = new PTableCellIndex(col, row);
+				getLayoutInternal().removeChild(cellIndex);
+			}
+		} else {
+			int row = index.getRow();
+			for (int col = getModel().getColumnCount() - 1; col >= 0; col--) {
+				PTableCellIndex cellIndex = new PTableCellIndex(col, row);
+				getLayoutInternal().removeChild(cellIndex);
+			}
+		}
 	}
 	
-	protected void contentChanged(PTableIndex index, Object oldContent) {
+	protected void contentChanged(PTableCellIndex index, Object oldContent) {
+		System.out.println("PTable.contentChanged idx="+index);
 		getCellComponent(index).setElement(getModel(), index);
 	}
 	
-	protected void selectionAdded(PTableIndex index) {
+	protected void selectionAdded(PTableCellIndex index) {
 		PCellComponent cellComp = getCellComponent(index);
 		if (cellComp != null) {
 			cellComp.setSelected(true);
 		}
 	}
 	
-	protected void selectionRemoved(PTableIndex index) {
+	protected void selectionRemoved(PTableCellIndex index) {
 		PCellComponent cellComp = getCellComponent(index);
 		if (cellComp != null) {
 			cellComp.setSelected(false);
 		}
 	}
 	
-	public PCellComponent getCellComponent(PTableIndex index) {
+	public PCellComponent getCellComponent(PTableCellIndex index) {
 		return (PCellComponent) getLayoutInternal().getChildForConstraint(index);
 	}
 	
@@ -423,9 +370,11 @@ public class PTable extends AbstractPInputLayoutOwner
 			}
 		}
 		if (hasFocus() && getSelection() != null) {
-			PTableIndex lastSelectedIndex = getSelection().getLastSelected();
+			PTableCellIndex lastSelectedIndex = getSelection().getLastSelected();
+//			System.out.println("lastSelectedIndex="+lastSelectedIndex);
 			if (lastSelectedIndex != null) {
 				PCellComponent cellComp = getCellComponent(lastSelectedIndex);
+//				System.out.println("cellComp="+cellComp);
 				PBounds cellBounds = cellComp.getBounds();
 				int cx = cellBounds.getX() - 1;
 				int cy = cellBounds.getY() - 1;
@@ -433,6 +382,8 @@ public class PTable extends AbstractPInputLayoutOwner
 				int cfy = cellBounds.getFinalY() + 1;
 				
 				renderer.setColor(FOCUS_COLOR);
+//				renderer.setColor(PColor.BLACK);
+				renderer.setRenderMode(renderer.getRenderModeOutlineDashed());
 				renderer.drawQuad(cx, cy, cfx, cfy);
 			}
 		}

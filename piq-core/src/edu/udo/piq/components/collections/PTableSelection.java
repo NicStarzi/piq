@@ -2,15 +2,15 @@ package edu.udo.piq.components.collections;
 
 public interface PTableSelection extends PSelection {
 	
-	public PTableIndex getLastSelected();
+	public PTableCellIndex getLastSelected();
 	
-	public default PTableIndex asTableIndex(PModelIndex index) {
+	public default PTableCellIndex asTableIndex(PModelIndex index) {
 		if (index == null) {
 			throw new NullPointerException("index == null");
 		}
-		if (index instanceof PTableIndex) {
-			return (PTableIndex) index;
+		if (index instanceof PTableCellIndex) {
+			return (PTableCellIndex) index;
 		}
-		throw new WrongIndexType(index, PTableIndex.class);
+		throw new WrongIndexType(index, PTableCellIndex.class);
 	}	
 }

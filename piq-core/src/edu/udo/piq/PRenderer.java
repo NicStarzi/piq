@@ -80,6 +80,8 @@ public interface PRenderer extends PDisposable {
 	
 	public PRenderMode getRenderModeOutlineDashed();
 	
+	public PRenderMode getRenderModeXOR();
+	
 	/**
 	 * Sets the clipping bounds that will be used for any subsequent 
 	 * rendering operations.<br>

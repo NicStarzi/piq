@@ -22,7 +22,7 @@ public class PToolTip extends AbstractPFloatingPanel {
 			PToolTip.this.onMouseMoved(mouse);
 		}
 	};
-	protected final PTimer showTimer = new PTimer(() -> addToOverlay());
+	protected final PTimer showTimer = new PTimer(this::addToOverlay);
 	protected int showX;
 	protected int showY;
 	protected boolean isShown = false;
@@ -133,54 +133,15 @@ public class PToolTip extends AbstractPFloatingPanel {
 		}
 	}
 	
-//	protected void repositionOnOverlay() {
-//		PSize ownSize = PCompUtil.getPreferredSizeOf(this);
-//		int ownX = showX;
-//		int ownY = showY;
-//		int ownW = ownSize.getWidth();
-//		int ownH = ownSize.getHeight();
-//		
-//		PRootOverlay overlay = getOverlay();
-//		ThrowException.ifNull(overlay, "overlay == null");
-//		
-//		PBounds overlayBounds = overlay.getBounds();
-//		int overlayX = overlayBounds.getX();
-//		int overlayY = overlayBounds.getY();
-//		int overlayW = overlayBounds.getWidth();
-//		int overlayH = overlayBounds.getHeight();
-//		
-//		if (ownW > overlayW) {
-//			ownX = overlayX;
-//		} else if (ownX + ownW > overlayX + overlayW) {
-//			ownX = (overlayX + overlayW) - ownW;
-//		}
-//		if (ownH > overlayH) {
-//			ownY = overlayY;
-//		} else if (ownY + ownH > overlayY + overlayH) {
-//			ownY = (overlayY + overlayH) - ownH;
-//		}
-//		PFreeLayout overlayLayout = overlay.getLayout();
-//		FreeConstraint constr = new FreeConstraint(ownX, ownY);
-//		overlayLayout.updateConstraint(this, constr);
-//	}
-//	
-//	protected void addToOverlay() {
-//		PFreeLayout overlayLayout = getOverlayLayout();
-//		ThrowException.ifNull(overlayLayout, "overlayLayout == null");
-//		
-//		FreeConstraint constr = new FreeConstraint(showX, showY);
-//		overlayLayout.addChild(this, constr);
-//		isShown = true;
-//		repositionOnOverlay();
-//	}
-//	
-//	protected void removeFromOverlay() {
-//		PFreeLayout overlayLayout = getOverlayLayout();
-//		ThrowException.ifNull(overlayLayout, "overlayLayout == null");
-//		
-//		overlayLayout.removeChild(this);
-//		isShown = false;
-//	}
+	protected void addToOverlay() {
+		super.addToOverlay();
+		isShown = true;
+	}
+	
+	protected void removeFromOverlay() {
+		super.removeFromOverlay();
+		isShown = false;
+	}
 	
 	protected PRootOverlay getOverlay() {
 		if (target == null || target.getRoot() == null) {
@@ -188,13 +149,5 @@ public class PToolTip extends AbstractPFloatingPanel {
 		}
 		return target.getRoot().getOverlay();
 	}
-	
-//	public PFreeLayout getOverlayLayout() {
-//		PRootOverlay overlay = getOverlay();
-//		if (overlay == null) {
-//			return null;
-//		}
-//		return overlay.getLayout();
-//	}
 	
 }

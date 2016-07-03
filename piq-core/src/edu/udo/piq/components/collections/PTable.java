@@ -11,9 +11,11 @@ import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
+import edu.udo.piq.components.defaults.DefaultPCellComponent;
 import edu.udo.piq.components.defaults.DefaultPCellFactory;
 import edu.udo.piq.components.defaults.DefaultPDnDSupport;
 import edu.udo.piq.components.defaults.ReRenderPFocusObs;
+import edu.udo.piq.components.util.ObjToStr;
 import edu.udo.piq.layouts.PTableLayout3;
 import edu.udo.piq.tools.AbstractPInputLayoutOwner;
 import edu.udo.piq.util.ObserverList;
@@ -49,28 +51,25 @@ public class PTable extends AbstractPInputLayoutOwner
 	};
 	private final PModelObs modelObs = new PModelObs() {
 		public void onContentAdded(PModel model, PModelIndex index, Object newContent) {
-//			getSelection().clearSelection();
-//			contentAdded((PTableIndex) index, newContent);
 			contentAdded((PTableIndex) index, null);
 		}
 		public void onContentRemoved(PModel model, PModelIndex index, Object oldContent) {
-//			contentRemoved((PTableIndex) index, oldContent);
-//			getSelection().removeSelection(index);
 			contentRemoved((PTableIndex) index, oldContent);
 		}
 		public void onContentChanged(PModel model, PModelIndex index, Object oldContent) {
 			contentChanged((PTableCellIndex) index, oldContent);
 		}
 	};
-	private PTableSelection selection;
-	private PTableModel model;
-	private PCellFactory cellFactory;
-	private PDnDSupport dndSup;
-	private PModelIndex currentDnDHighlightIndex;
-	private PCellComponent currentDnDHighlightComponent;
-	private int lastDragX = -1;
-	private int lastDragY = -1;
-	private boolean isDragTagged = false;
+	protected PTableSelection selection;
+	protected PTableModel model;
+	protected ObjToStr encoder;
+	protected PCellFactory cellFactory;
+	protected PDnDSupport dndSup;
+	protected PModelIndex currentDnDHighlightIndex;
+	protected PCellComponent currentDnDHighlightComponent;
+	protected int lastDragX = -1;
+	protected int lastDragY = -1;
+	protected boolean isDragTagged = false;
 	
 	public PTable(PTableModel model) {
 		this();
@@ -143,9 +142,10 @@ public class PTable extends AbstractPInputLayoutOwner
 			int disY = Math.abs(lastDragY - my);
 			int dis = Math.max(disX, disY);
 			if (dis >= DRAG_AND_DROP_DISTANCE) {
-				if (dndSup.canDrag(this, mx, my)) {
-					dndSup.startDrag(this, mx, my);
-				}
+				//FIXME
+//				if (dndSup.canDrag(this, mx, my)) {
+//					dndSup.startDrag(this, mx, my);
+//				}
 			}
 		}
 	}
@@ -183,7 +183,7 @@ public class PTable extends AbstractPInputLayoutOwner
 			}
 		}
 		model = listModel;
-		resizeLayoutTable();
+		rebuildCellComponents();
 		if (getModel() != null) {
 			PTableModel model = getModel();
 			
@@ -191,22 +191,25 @@ public class PTable extends AbstractPInputLayoutOwner
 			for (PModelObs obs : modelObsList) {
 				model.addObs(obs);
 			}
-			for (int row = 0; row < model.getRowCount(); row++) {
-				contentAdded(new PRowIndex(row), null);
-			}
 		}
 	}
 	
-	protected void resizeLayoutTable() {
+	protected void rebuildCellComponents() {
 		PTableLayout3 layout = getLayoutInternal();
 		layout.removeAllColumnsAndRows();
+		
 		PTableModel model = getModel();
 		if (model != null) {
-			for (int c = 0; c < model.getColumnCount(); c++) {
-				layout.addColumn();
+			for (int col = 0; col < model.getColumnCount(); col++) {
+				getLayoutInternal().addColumn();
 			}
-			for (int r = 0; r < model.getRowCount(); r++) {
-				layout.addRow();
+			for (int row = 0; row < model.getRowCount(); row++) {
+				getLayoutInternal().addRow();
+				for (int col = 0; col < model.getColumnCount(); col++) {
+					PTableCellIndex cellIndex = new PTableCellIndex(col, row);
+					PCellComponent cell = getCellFactory().makeCellComponent(model, cellIndex);
+					layout.addChild(cell, cellIndex);
+				}
 			}
 		}
 	}
@@ -221,22 +224,23 @@ public class PTable extends AbstractPInputLayoutOwner
 		
 		PTableModel model = getModel();
 		if (model != null) {
-			rebuildCellComponents();
+			throw new IllegalStateException();
+//			rebuildCellComponents();
 		}
 	}
 	
-	private void rebuildCellComponents() {
-		PTableModel model = getModel();
-		for (PModelIndex index : model) {
-			contentAdded((PTableCellIndex) index, null);
-		}
+//	private void rebuildCellComponents() {
+//		PTableModel model = getModel();
+//		for (PModelIndex index : model) {
+//			contentAdded((PTableCellIndex) index, null);
+//		}
 //		for (int col = 0; col < model.getColumnCount(); col++) {
 //			for (int row = 0; row < model.getRowCount(); row++) {
 //				PTableIndex index = new PTableIndex(col, row);
 //				contentAdded(index, null);
 //			}
 //		}
-	}
+//	}
 	
 	public PCellFactory getCellFactory() {
 		return cellFactory;
@@ -248,6 +252,58 @@ public class PTable extends AbstractPInputLayoutOwner
 	
 	public PDnDSupport getDragAndDropSupport() {
 		return dndSup;
+	}
+	
+	//TODO
+//	public void synchronizeWithModel() {
+//		getLayoutInternal().clearChildren();
+//		for (PModelIndex index : getModel()) {
+//			contentAdded((PListIndex) index, getModel().get(index));
+//		}
+//	}
+//	
+//	public List<Object> getAllSelectedContent() {
+//		PSelection select = getSelection();
+//		PModel model = getModel();
+//		List<PModelIndex> indices = select.getAllSelected();
+//		if (indices.isEmpty()) {
+//			return Collections.emptyList();
+//		}
+//		if (indices.size() == 1) {
+//			PModelIndex index = indices.get(0);
+//			Object element = model.get(index);
+//			return Collections.singletonList(element);
+//		}
+//		List<Object> result = new ArrayList<>(indices.size());
+//		for (PModelIndex index : indices) {
+//			result.add(model.get(index));
+//		}
+//		return result;
+//	}
+	
+	public void setOutputEncoder(ObjToStr outputEncoder) {
+		encoder = outputEncoder;
+		ObjToStr outEnc = getOutputEncoder();
+		
+		PCellFactory cellFactory = getCellFactory();
+		if (cellFactory instanceof DefaultPCellFactory) {
+			((DefaultPCellFactory) cellFactory).setOutputEncoder(outEnc);
+		}
+		
+		PTableModel model = getModel();
+		if (model != null) {
+			for (PModelIndex index : model) {
+				PCellComponent cell = getCellComponent((PTableCellIndex) index);
+				if (cell instanceof DefaultPCellComponent) {
+					((DefaultPCellComponent) cell).setOutputEncoder(outEnc);
+					cell.setElement(model, index);
+				}
+			}
+		}
+	}
+	
+	public ObjToStr getOutputEncoder() {
+		return encoder;
 	}
 	
 	public PTableCellIndex getIndexAt(int x, int y) {
@@ -278,36 +334,45 @@ public class PTable extends AbstractPInputLayoutOwner
 	
 	protected void contentAdded(PTableIndex index, Object newContent) {
 		System.out.println("PTable.contentAdded idx="+index);
+		
+		PTableModel model = getModel();
+		PTableLayout3 layout = getLayoutInternal();
 		if (index.isColumnIndex()) {
 			int col = index.getColumn();
-			for (int row = 0; row < getModel().getRowCount(); row++) {
+			layout.addColumn(col);
+			for (int row = 0; row < model.getRowCount(); row++) {
 				PTableCellIndex cellIndex = new PTableCellIndex(col, row);
-				PCellComponent cell = getCellFactory().makeCellComponent(getModel(), cellIndex);
-				getLayoutInternal().addChild(cell, cellIndex);
+				PCellComponent cell = getCellFactory().makeCellComponent(model, cellIndex);
+				layout.addChild(cell, cellIndex);
 			}
 		} else {
 			int row = index.getRow();
-			for (int col = 0; col < getModel().getColumnCount(); col++) {
+			layout.addRow(row);
+			for (int col = 0; col < model.getColumnCount(); col++) {
 				PTableCellIndex cellIndex = new PTableCellIndex(col, row);
-				PCellComponent cell = getCellFactory().makeCellComponent(getModel(), cellIndex);
-				getLayoutInternal().addChild(cell, cellIndex);
+				PCellComponent cell = getCellFactory().makeCellComponent(model, cellIndex);
+				layout.addChild(cell, cellIndex);
 			}
 		}
 	}
 	
 	protected void contentRemoved(PTableIndex index, Object oldContent) {
 		System.out.println("PTable.contentRemoved idx="+index);
+		
+		PTableModel model = getModel();
+		PTableLayout3 layout = getLayoutInternal();
 		if (index.isColumnIndex()) {
 			int col = index.getColumn();
-			for (int row = getModel().getRowCount() - 1; row >= 0; row--) {
+			for (int row = model.getRowCount() - 1; row >= 0; row--) {
 				PTableCellIndex cellIndex = new PTableCellIndex(col, row);
-				getLayoutInternal().removeChild(cellIndex);
+				layout.removeChild(cellIndex);
 			}
 		} else {
 			int row = index.getRow();
-			for (int col = getModel().getColumnCount() - 1; col >= 0; col--) {
+			layout.removeRow(row);
+			for (int col = model.getColumnCount() - 1; col >= 0; col--) {
 				PTableCellIndex cellIndex = new PTableCellIndex(col, row);
-				getLayoutInternal().removeChild(cellIndex);
+				layout.removeChild(cellIndex);
 			}
 		}
 	}
@@ -371,7 +436,6 @@ public class PTable extends AbstractPInputLayoutOwner
 		}
 		if (hasFocus() && getSelection() != null) {
 			PTableCellIndex lastSelectedIndex = getSelection().getLastSelected();
-//			System.out.println("lastSelectedIndex="+lastSelectedIndex);
 			if (lastSelectedIndex != null) {
 				PCellComponent cellComp = getCellComponent(lastSelectedIndex);
 //				System.out.println("cellComp="+cellComp);

@@ -98,6 +98,12 @@ public class PGridLayout extends AbstractMapPLayout {
 		return growRows.length;
 	}
 	
+	public void setColumnGrowth(Growth value) {
+		for (int col = 0; col < getColumnCount(); col++) {
+			setColumnGrowth(col, value);
+		}
+	}
+	
 	public void setColumnGrowth(int colIndex, Growth value) {
 		ThrowException.ifNull(value, "growth == null");
 		if (getColumnGrowth(colIndex) != value) {
@@ -110,6 +116,12 @@ public class PGridLayout extends AbstractMapPLayout {
 		ThrowException.ifNotWithin(growCols, colIndex, 
 				"colIndex < 0 || colIndex >= getColumnCount()");
 		return growCols[colIndex];
+	}
+	
+	public void setRowGrowth(Growth value) {
+		for (int row = 0; row < getRowCount(); row++) {
+			setRowGrowth(row, value);
+		}
 	}
 	
 	public void setRowGrowth(int rowIndex, Growth value) {
@@ -126,6 +138,12 @@ public class PGridLayout extends AbstractMapPLayout {
 		return growRows[rowIndex];
 	}
 	
+	public void setGapAfterColumn(int value) {
+		for (int col = 0; col < getColumnCount(); col++) {
+			setGapAfterColumn(col, value);
+		}
+	}
+	
 	public void setGapAfterColumn(int colIndex, int value) {
 		if (getGapAfterColumn(colIndex) != value) {
 			gapCol[colIndex] = value;
@@ -137,6 +155,12 @@ public class PGridLayout extends AbstractMapPLayout {
 		ThrowException.ifNotWithin(gapCol, colIndex, 
 				"colIndex < 0 || colIndex >= getColumnCount()");
 		return gapCol[colIndex];
+	}
+	
+	public void setGapAfterRow(int value) {
+		for (int row = 0; row < getRowCount(); row++) {
+			setGapAfterRow(row, value);
+		}
 	}
 	
 	public void setGapAfterRow(int rowIndex, int value) {
@@ -274,18 +298,25 @@ public class PGridLayout extends AbstractMapPLayout {
 	
 	protected void refreshSize() {
 		valid = true;
-		
+		// Reset row and column sizes first
 		for (int cy = 0; cy < getRowCount(); cy++) {
 			sizeRow[cy] = 0;
 		}
 		for (int cx = 0; cx < getColumnCount(); cx++) {
 			sizeCol[cx] = 0;
+			// Refresh row and column sizes (column by column)
 			for (int cy = 0; cy < getRowCount(); cy++) {
 				PCompInfo info = getCellInternal(cx, cy);
 				if (info == null) {
 					continue;
 				}
 				GridConstraint constr = (GridConstraint) info.getConstraint();
+				/* 
+				 * A component can be placed in more than one cell if the width 
+				 * and/or height of its constraint are larger than 1.
+				 * In this case we want to only count the component once so we 
+				 * filter them here.
+				 */
 				if (cx != constr.x || cy != constr.y) {
 					continue;
 				}
@@ -305,22 +336,35 @@ public class PGridLayout extends AbstractMapPLayout {
 		countGrowRow = 0;
 		int minW = 0;
 		int minH = 0;
+		// Sum up column sizes for preferred width
 		for (int cx = 0; cx < getColumnCount(); cx++) {
 			minW += sizeCol[cx];
-//			colGrownW[cx] = colGrownW[cx];
+			minW += getGapAfterColumn(cx);
+			// We count this here for later even though it is not needed for determining preferred size
 			if (growCols[cx] == Growth.MAXIMIZE) {
 				countGrowCol++;
 			}
 		}
+		// We take the last gap away since there is no following column
+		if (getColumnCount() > 0) {
+			minW -= getGapAfterColumn(getColumnCount() - 1);
+		}
+		// Sum up row sizes for preferred height
 		for (int cy = 0; cy < getRowCount(); cy++) {
 			minH += sizeRow[cy];
-//			rowGrownH[cy] = rowGrownH[cy];
+			minH += getGapAfterRow(cy);
+			// We count this here for later even though it is not needed for determining preferred size
 			if (growRows[cy] == Growth.MAXIMIZE) {
 				countGrowRow++;
 			}
 		}
-		prefSize.setWidth(minW);
-		prefSize.setHeight(minH);
+		// We take the last gap away since there is no following row
+		if (getRowCount() > 0) {
+			minH -= getGapAfterRow(getRowCount() - 1);
+		}
+		PInsets insets = getInsets();
+		prefSize.setWidth(minW + insets.getHorizontal());
+		prefSize.setHeight(minH + insets.getVertical());
 	}
 	
 	protected void refreshLayout() {
@@ -377,13 +421,25 @@ public class PGridLayout extends AbstractMapPLayout {
 		}
 		
 		public GridConstraint(int x, int y, int width, int height) {
+			this(x, y, width, height, AlignH.CENTER, AlignV.CENTER);
+		}
+		
+		public GridConstraint(int x, int y, AlignH alignH, AlignV alignV) {
+			this(x, y, 1, 1, alignH, alignV);
+		}
+		
+		public GridConstraint(int x, int y, int width, int height, AlignH alignH, AlignV alignV) {
 			if (x < 0 || y < 0 || width <= 0 || height <= 0) {
 				throw new IllegalArgumentException("x="+x+", y="+y+", width="+width+", height="+height);
 			}
+			ThrowException.ifNull(alignH, "alignH == null");
+			ThrowException.ifNull(alignV, "alignV == null");
 			this.x = x;
 			this.y = y;
 			this.w = width;
 			this.h = height;
+			this.alignH = alignH;
+			this.alignV = alignV;
 		}
 		
 		public GridConstraint x(int value) {

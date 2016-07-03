@@ -51,10 +51,11 @@ public class PTableLayout3 extends AbstractMapPLayout {
 	
 	protected boolean canAdd(PComponent component, Object constraint) {
 		if (constraint != null && constraint instanceof PTableCellIndex) {
-			PTableCellIndex ti = (PTableCellIndex) constraint;
-			return ti.getColumn() >= 0 && ti.getColumn() < getColumnCount() 
-					&& ti.getRow() >= 0 && ti.getRow() < getRowCount()
-					&& getChildForConstraint(constraint) == null;
+			PTableCellIndex tableIdx = (PTableCellIndex) constraint;
+			System.out.println("PTableLayout3.canAdd i="+tableIdx+", cc="+getColumnCount()+", rc="+getRowCount());
+			return tableIdx.getColumn() >= 0 && tableIdx.getColumn() < getColumnCount() 
+					&& tableIdx.getRow() >= 0 && tableIdx.getRow() < getRowCount();
+//					&& getChildForConstraint(constraint) == null;
 		}
 		return false;
 	}
@@ -87,7 +88,22 @@ public class PTableLayout3 extends AbstractMapPLayout {
 	}
 	
 	public void addColumn(int index) {
+		System.out.println("PTableLayout3.addColumn index="+index);
 		table.addColumn(index);
+		int colCount = table.getColumnCount();
+		int[] newColWidths = Arrays.copyOf(colWidths, colCount);
+		boolean[] newColWidthSet = Arrays.copyOf(colWidthSet, colCount);
+		System.arraycopy(colWidths, index, newColWidths, index + 1, colWidths.length - index);
+		System.arraycopy(colWidthSet, index, newColWidthSet, index + 1, colWidthSet.length - index);
+		newColWidths[index] = DEFAULT_COLUMN_WIDTH;
+		newColWidthSet[index] = false;
+		colWidths = newColWidths;
+		colWidthSet = newColWidthSet;
+		invalidate();
+	}
+	
+	public void removeColumn(int index) {
+		table.removeColumn(index);
 		int colCount = table.getColumnCount();
 		int[] newColWidths = Arrays.copyOf(colWidths, colCount);
 		boolean[] newColWidthSet = Arrays.copyOf(colWidthSet, colCount);
@@ -112,9 +128,32 @@ public class PTableLayout3 extends AbstractMapPLayout {
 		table.addRow(index);
 		int rowCount = table.getRowCount();
 		int[] newRowHeights = new int[rowCount];
-		System.arraycopy(rowHeights, index, newRowHeights, index + 1, rowHeights.length - index);
+		if (index > 0) {
+			// Copy elements from 0 to index from old rowHeights to newRowHeights
+			System.arraycopy(rowHeights, 0, newRowHeights, 0, index);
+		}
+		if (index < getRowCount() - 1) {
+			// Copy elements from index+1 to length from old rowHeights to newRowHeights
+			System.arraycopy(rowHeights, index, newRowHeights, index + 1, rowHeights.length - index);
+		}
 		rowHeights = newRowHeights;
 		rowHeights[index] = DEFAULT_ROW_HEIGHT;
+		invalidate();
+	}
+	
+	public void removeRow(int index) {
+		table.removeRow(index);
+		int rowCount = table.getRowCount();
+		int[] newRowHeights = new int[rowCount];
+		if (index > 0) {
+			// Copy elements from 0 to index from old rowHeights to newRowHeights
+			System.arraycopy(rowHeights, 0, newRowHeights, 0, index);
+		}
+		if (index < getRowCount()) {
+			// Copy elements from index+1 to length from old rowHeights to newRowHeights
+			System.arraycopy(rowHeights, index + 1, newRowHeights, index, rowHeights.length - index);
+		}
+		rowHeights = newRowHeights;
 		invalidate();
 	}
 	
@@ -165,7 +204,7 @@ public class PTableLayout3 extends AbstractMapPLayout {
 		if (rowIndex < 0 || colIndex < 0) {
 			return null;
 		}
-//		System.out.println("row="+rowIndex+", col="+colIndex);
+		System.out.println("row="+rowIndex+", col="+colIndex);
 		return new PTableCellIndex(colIndex, rowIndex);
 	}
 	
@@ -201,20 +240,19 @@ public class PTableLayout3 extends AbstractMapPLayout {
 		for (int c = 0; c < getColumnCount(); c++) {
 			prefW += colWidths[c];
 		}
-		int prefH = 0;
+		int prefH = cellGapH * (getRowCount() - 1);
 		for (int r = 0; r < getRowCount(); r++) {
-			int colH = 0;
+			int rowH = 0;
 			for (int c = 0; c < getColumnCount(); c++) {
 				PComponent child = table.get(c, r);
 				PSize childPrefSize = getPreferredSizeOf(child);
 				int childH = childPrefSize.getHeight();
-				colH += childH;
+				if (rowH < childH) {
+					rowH = childH;
+				}
 			}
-			if (colH > prefH) {
-				prefH = colH;
-			}
+			prefH += rowH;
 		}
-		prefH += cellGapH * (getRowCount() - 1);
 		prefSize.setWidth(prefW);
 		prefSize.setHeight(prefH);
 		return prefSize;

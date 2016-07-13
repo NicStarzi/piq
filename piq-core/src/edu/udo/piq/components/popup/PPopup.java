@@ -141,7 +141,7 @@ public class PPopup {
 		}
 		
 		PListLayout listLayout = new PListLayout(body);
-		listLayout.setAlignment(ListAlignment.FROM_TOP);
+		listLayout.setAlignment(ListAlignment.TOP_TO_BOTTOM);
 		listLayout.setInsets(new ImmutablePInsets(1));
 		body.setLayout(listLayout);
 		

@@ -2,8 +2,8 @@ package edu.udo.piq.components;
 
 public interface PSliderModelObs {
 	
-	public void onRangeChanged(PSliderModel model);
+	public default void onRangeChanged(PSliderModel model) {}
 	
-	public void onValueChanged(PSliderModel model);
+	public default void onValueChanged(PSliderModel model) {}
 	
 }

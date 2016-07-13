@@ -158,7 +158,7 @@ public class PList extends AbstractPInputLayoutOwner
 			defaultModel = (PListModel) modelFac.getModelFor(this, defaultModel);
 		}
 		
-		setLayout(new PListLayout(this, ListAlignment.FROM_TOP, 1));
+		setLayout(new PListLayout(this, ListAlignment.TOP_TO_BOTTOM, 1));
 		setDragAndDropSupport(new DefaultPDnDSupport());
 		setSelection(new PListMultiSelection());
 		setCellFactory(new DefaultPCellFactory());

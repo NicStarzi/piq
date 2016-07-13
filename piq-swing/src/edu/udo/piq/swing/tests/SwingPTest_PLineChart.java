@@ -61,7 +61,7 @@ public class SwingPTest_PLineChart {
 		root.setBody(bodyPnl);
 		
 		PPanel btm = new PPanel();
-		btm.setLayout(new PWrapLayout(btm, ListAlignment.CENTERED_HORIZONTAL));
+		btm.setLayout(new PWrapLayout(btm, ListAlignment.CENTERED_LEFT_TO_RIGHT));
 		bodyPnl.addChild(btm, Constraint.BOTTOM);
 		
 		PSlider sldAdd = new PSlider();

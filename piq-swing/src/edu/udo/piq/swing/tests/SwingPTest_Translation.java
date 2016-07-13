@@ -80,7 +80,7 @@ public class SwingPTest_Translation extends AbstractSwingPTest {
 		root.setBody(bodyPnl);
 		
 		PPanel selectPnl = new PPanel();
-		selectPnl.setLayout(new PListLayout(selectPnl, ListAlignment.FROM_LEFT, 16));
+		selectPnl.setLayout(new PListLayout(selectPnl, ListAlignment.LEFT_TO_RIGHT, 16));
 		bodyPnl.addChild(selectPnl, PBorderLayout.Constraint.TOP);
 		
 		PLabel lblGreetings = new PLabel(Term.GREETINGS);
@@ -96,7 +96,7 @@ public class SwingPTest_Translation extends AbstractSwingPTest {
 		selectPnl.addChild(languageList, null);
 		
 		PPanel btnPnl = new PPanel();
-		btnPnl.setLayout(new PListLayout(btnPnl, ListAlignment.CENTERED_HORIZONTAL));
+		btnPnl.setLayout(new PListLayout(btnPnl, ListAlignment.CENTERED_LEFT_TO_RIGHT));
 		bodyPnl.addChild(btnPnl, PBorderLayout.Constraint.BOTTOM);
 		
 		PButton btnConfirm = new PButton();

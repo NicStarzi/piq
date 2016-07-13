@@ -51,9 +51,11 @@ public class PTable extends AbstractPInputLayoutOwner
 	};
 	private final PModelObs modelObs = new PModelObs() {
 		public void onContentAdded(PModel model, PModelIndex index, Object newContent) {
+			getSelection().clearSelection();
 			contentAdded((PTableIndex) index, null);
 		}
 		public void onContentRemoved(PModel model, PModelIndex index, Object oldContent) {
+			getSelection().clearSelection();
 			contentRemoved((PTableIndex) index, oldContent);
 		}
 		public void onContentChanged(PModel model, PModelIndex index, Object oldContent) {
@@ -120,7 +122,7 @@ public class PTable extends AbstractPInputLayoutOwner
 					getSelection().clearSelection();
 				}
 				getSelection().addSelection(index);
-				takeFocus();
+				takeFocusNotFromDescendants();
 			}
 		}
 	}
@@ -333,52 +335,68 @@ public class PTable extends AbstractPInputLayoutOwner
 	}
 	
 	protected void contentAdded(PTableIndex index, Object newContent) {
-		System.out.println("PTable.contentAdded idx="+index);
-		
 		PTableModel model = getModel();
+		int colCount = model.getColumnCount();
+		int rowCount = model.getRowCount();
 		PTableLayout3 layout = getLayoutInternal();
 		if (index.isColumnIndex()) {
-			int col = index.getColumn();
-			layout.addColumn(col);
-			for (int row = 0; row < model.getRowCount(); row++) {
-				PTableCellIndex cellIndex = new PTableCellIndex(col, row);
+			int addedCol = index.getColumn();
+			layout.addColumn(addedCol);
+			for (int row = 0; row < rowCount; row++) {
+				PTableCellIndex cellIndex = new PTableCellIndex(addedCol, row);
 				PCellComponent cell = getCellFactory().makeCellComponent(model, cellIndex);
 				layout.addChild(cell, cellIndex);
 			}
+			for (int col = addedCol + 1; col < colCount; col++) {
+				for (int row = 0; row < rowCount; row++) {
+					PTableCellIndex cellIndex = new PTableCellIndex(col, row);
+					getCellComponent(cellIndex).setElement(model, cellIndex);
+				}
+			}
 		} else {
-			int row = index.getRow();
-			layout.addRow(row);
-			for (int col = 0; col < model.getColumnCount(); col++) {
-				PTableCellIndex cellIndex = new PTableCellIndex(col, row);
+			int addedRow = index.getRow();
+			layout.addRow(addedRow);
+			for (int col = 0; col < colCount; col++) {
+				PTableCellIndex cellIndex = new PTableCellIndex(col, addedRow);
 				PCellComponent cell = getCellFactory().makeCellComponent(model, cellIndex);
 				layout.addChild(cell, cellIndex);
+			}
+			for (int row = addedRow + 1; row < rowCount; row++) {
+				for (int col = 0; col < colCount; col++) {
+					PTableCellIndex cellIndex = new PTableCellIndex(col, row);
+					getCellComponent(cellIndex).setElement(model, cellIndex);
+				}
 			}
 		}
 	}
 	
 	protected void contentRemoved(PTableIndex index, Object oldContent) {
-		System.out.println("PTable.contentRemoved idx="+index);
-		
 		PTableModel model = getModel();
+		int colCount = model.getColumnCount();
+		int rowCount = model.getRowCount();
 		PTableLayout3 layout = getLayoutInternal();
 		if (index.isColumnIndex()) {
-			int col = index.getColumn();
-			for (int row = model.getRowCount() - 1; row >= 0; row--) {
-				PTableCellIndex cellIndex = new PTableCellIndex(col, row);
-				layout.removeChild(cellIndex);
+			int removedCol = index.getColumn();
+			layout.removeColumn(removedCol);
+			for (int col = removedCol; col < colCount; col++) {
+				for (int row = 0; row < rowCount; row++) {
+					PTableCellIndex cellIndex = new PTableCellIndex(col, row);
+					getCellComponent(cellIndex).setElement(model, cellIndex);
+				}
 			}
 		} else {
-			int row = index.getRow();
-			layout.removeRow(row);
-			for (int col = model.getColumnCount() - 1; col >= 0; col--) {
-				PTableCellIndex cellIndex = new PTableCellIndex(col, row);
-				layout.removeChild(cellIndex);
+			int removedRow = index.getRow();
+			layout.removeRow(removedRow);
+			for (int row = removedRow; row < rowCount; row++) {
+				for (int col = 0; col < colCount; col++) {
+					PTableCellIndex cellIndex = new PTableCellIndex(col, row);
+					getCellComponent(cellIndex).setElement(model, cellIndex);
+				}
 			}
 		}
 	}
 	
 	protected void contentChanged(PTableCellIndex index, Object oldContent) {
-		System.out.println("PTable.contentChanged idx="+index);
 		getCellComponent(index).setElement(getModel(), index);
 	}
 	
@@ -409,9 +427,19 @@ public class PTable extends AbstractPInputLayoutOwner
 		
 		renderer.setColor(BACKGROUND_COLOR);
 		renderer.drawQuad(x + 1, y + 1, fx - 1, fy - 1);
+		
+		defaultRenderLines(renderer, x, y);
+		
+		defaultRenderFocus(renderer);
+	}
+	
+	protected void defaultRenderLines(PRenderer renderer, int x, int y) {
 		renderer.setColor(PColor.BLACK);
 		
 		PTableLayout3 layout = getLayoutInternal();
+		int colCount = layout.getColumnCount();
+		int rowCount = layout.getRowCount();
+//		System.out.println("colCount="+colCount+", rowCount="+rowCount);
 		int colGapW = layout.getCellGapWidth();
 		int rowGapH = layout.getCellGapHeight();
 		
@@ -419,21 +447,42 @@ public class PTable extends AbstractPInputLayoutOwner
 		int sizeFx = x + prefSize.getWidth();
 		int sizeFy = y + prefSize.getHeight();
 		renderer.strokeQuad(x, y, sizeFx + colGapW, sizeFy + rowGapH);
+//		System.out.println("prefSize="+prefSize);
 		
-		for (int c = 1; c < layout.getColumnCount(); c++) {
-			int colW = layout.getColumnWidth(c);
-			
-			for (int r = 1; r < layout.getRowCount(); r++) {
-				int cx = x + colW + (colW + colGapW) * (c - 1);
-				int cfx = cx + colGapW;
-				renderer.drawQuad(cx, y, cfx, sizeFy);
-				
+		if (colCount == 1) {
+			for (int r = 1; r < rowCount; r++) {
 				int rowH = layout.getRowHeight(r);
 				int cy = y + rowH + (rowH + rowGapH) * (r - 1);
 				int cfy = cy + rowGapH;
 				renderer.drawQuad(x, cy, sizeFx, cfy);
 			}
+		} else if (rowCount == 1) {
+			for (int c = 1; c < colCount; c++) {
+				int colW = layout.getColumnWidth(c);
+				
+				int cx = x + colW + (colW + colGapW) * (c - 1);
+				int cfx = cx + colGapW;
+				renderer.drawQuad(cx, y, cfx, sizeFy);
+			}
+		} else {
+			for (int c = 1; c < colCount; c++) {
+				int colW = layout.getColumnWidth(c);
+				
+				for (int r = 1; r < rowCount; r++) {
+					int cx = x + colW + (colW + colGapW) * (c - 1);
+					int cfx = cx + colGapW;
+					renderer.drawQuad(cx, y, cfx, sizeFy);
+					
+					int rowH = layout.getRowHeight(r);
+					int cy = y + rowH + (rowH + rowGapH) * (r - 1);
+					int cfy = cy + rowGapH;
+					renderer.drawQuad(x, cy, sizeFx, cfy);
+				}
+			}
 		}
+	}
+	
+	protected void defaultRenderFocus(PRenderer renderer) {
 		if (hasFocus() && getSelection() != null) {
 			PTableCellIndex lastSelectedIndex = getSelection().getLastSelected();
 			if (lastSelectedIndex != null) {
@@ -446,7 +495,6 @@ public class PTable extends AbstractPInputLayoutOwner
 				int cfy = cellBounds.getFinalY() + 1;
 				
 				renderer.setColor(FOCUS_COLOR);
-//				renderer.setColor(PColor.BLACK);
 				renderer.setRenderMode(renderer.getRenderModeOutlineDashed());
 				renderer.drawQuad(cx, cy, cfx, cfy);
 			}

@@ -7,6 +7,7 @@ import edu.udo.piq.PRootOverlay;
 import edu.udo.piq.PSize;
 import edu.udo.piq.layouts.PRootLayout.Constraint;
 import edu.udo.piq.tools.AbstractEnumPLayout;
+import edu.udo.piq.util.ThrowException;
 
 public class PRootLayout extends AbstractEnumPLayout<Constraint> {
 	
@@ -65,6 +66,13 @@ public class PRootLayout extends AbstractEnumPLayout<Constraint> {
 			return body;
 		}
 		return null;
+	}
+	
+	public void onChildPrefSizeChanged(PComponent child) {
+		ThrowException.ifFalse(containsChild(child), "containsChild(child) == false");
+		if (child == getMenuBar()) {
+			invalidate();
+		}
 	}
 	
 	public static enum Constraint {

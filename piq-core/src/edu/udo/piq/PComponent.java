@@ -435,6 +435,11 @@ public interface PComponent {
 		return null;
 	}
 	
+	public default Object getConstraintsAtParent() {
+		ThrowException.ifNull(getParent(), "getParent() == null");
+		return getParent().getLayout().getChildConstraint(this);
+	}
+	
 	/**
 	 * Returns a {@link Collection} of all child components of this component.<br>
 	 * If this component has a {@link PReadOnlyLayout} then the method {@link PReadOnlyLayout#getChildren()} 
@@ -571,28 +576,6 @@ public interface PComponent {
 			return null;
 		}
 		return PCompUtil.fillClippedBounds(null, this);
-//		PComponent current = this;
-//		int clipX = Integer.MIN_VALUE;
-//		int clipY = Integer.MIN_VALUE;
-//		int clipFx = Integer.MAX_VALUE;
-//		int clipFy = Integer.MAX_VALUE;
-//		while (current != null) {
-//			PBounds bounds = current.getBounds();
-//			if (bounds == null) {
-//				return null;
-//			}
-//			clipX = Math.max(bounds.getX(), clipX);
-//			clipY = Math.max(bounds.getY(), clipY);
-//			clipFx = Math.min(bounds.getFinalX(), clipFx);
-//			clipFy = Math.min(bounds.getFinalY(), clipFy);
-//			int clipW = clipFx - clipX;
-//			int clipH = clipFy - clipY;
-//			if (clipW < 0 || clipH < 0) {
-//				return null;
-//			}
-//			current = current.getParent();
-//		}
-//		return new ImmutablePBounds(clipX, clipY, clipFx - clipX, clipFy - clipY);
 	}
 	
 	/**
@@ -700,6 +683,16 @@ public interface PComponent {
 	public default void takeFocus() {
 		PRoot root = getRoot();
 		ThrowException.ifNull(root, "getRoot() == null");
+		root.setFocusOwner(this);
+	}
+	
+	public default void takeFocusNotFromDescendants() {
+		PRoot root = getRoot();
+		ThrowException.ifNull(root, "getRoot() == null");
+		PComponent curFocusOwner = root.getFocusOwner();
+		if (curFocusOwner != null && curFocusOwner.isDescendantOf(this)) {
+			return;
+		}
 		root.setFocusOwner(this);
 	}
 	

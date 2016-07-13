@@ -8,6 +8,7 @@ import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractArrayPLayout;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.tools.MutablePSize;
+import edu.udo.piq.util.ThrowException;
 
 public class PCentricLayout extends AbstractArrayPLayout {
 	
@@ -120,11 +121,23 @@ public class PCentricLayout extends AbstractArrayPLayout {
 		return prefSize;
 	}
 	
+	public boolean containsChild(PComponent child) {
+		ThrowException.ifNull(child, "child == null");
+		return child == getContent();
+	}
+	
 	protected int getIndexFor(Object constr) {
 		if (constr == null) {
 			return 0;
 		}
 		return -1;
+	}
+	
+	public void onChildPrefSizeChanged(PComponent child) {
+		ThrowException.ifFalse(containsChild(child), "containsChild(child) == false");
+		if (!isGrowContent()) {
+			invalidate();
+		}
 	}
 	
 }

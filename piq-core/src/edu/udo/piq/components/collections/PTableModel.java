@@ -83,8 +83,8 @@ public interface PTableModel extends PModel {
 	
 	public default boolean contains(PModelIndex index) {
 		PTableIndex tableIndex = asTableIndex(index);
-		int col = tableIndex.getColumn();
-		int row = tableIndex.getRow();
+		int col = tableIndex.isColumnIndex() ? tableIndex.getColumn() : 0;
+		int row = tableIndex.isRowIndex() ? tableIndex.getRow() : 0;
 		return contains(col, row);
 	}
 	

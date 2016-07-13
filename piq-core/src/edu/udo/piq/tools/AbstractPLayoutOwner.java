@@ -50,6 +50,7 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 			ThrowException.ifNotEqual(this, getLayout().getOwner(), 
 					"getLayout().getOwner() != this");
 			getLayout().addObs(layoutObs);
+			fireReLayOutEvent();
 		}
 	}
 	
@@ -69,7 +70,6 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 	
 	protected void onChildRemoved(PComponent child, Object constraint) {
 		child.removeObs(childObs);
-		fireReLayOutEvent();
 		checkForPreferredSizeChange();
 		fireReRenderEvent();
 	}
@@ -90,7 +90,7 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 	}
 	
 	protected void onChildPreferredSizeChanged(PComponent child) {
-		fireReLayOutEvent();
+		((PLayout) getLayout()).onChildPrefSizeChanged(child);
 		checkForPreferredSizeChange();
 	}
 	

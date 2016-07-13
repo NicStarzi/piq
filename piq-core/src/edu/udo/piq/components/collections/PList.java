@@ -196,7 +196,7 @@ public class PList extends AbstractPInputLayoutOwner
 					getSelection().clearSelection();
 				}
 				getSelection().addSelection(index);
-				takeFocus();
+				takeFocusNotFromDescendants();
 			}
 		}
 	}

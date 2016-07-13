@@ -5,6 +5,7 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractEnumPLayout;
 import edu.udo.piq.tools.MutablePSize;
+import edu.udo.piq.util.ThrowException;
 
 public class PSplitLayout extends AbstractEnumPLayout<PSplitLayout.Constraint> {
 	
@@ -23,6 +24,10 @@ public class PSplitLayout extends AbstractEnumPLayout<PSplitLayout.Constraint> {
 	
 	public PSplitLayout(PComponent component) {
 		super(component, Constraint.class);
+	}
+	
+	public PComponent getDivider() {
+		return getChildForConstraint(Constraint.DIVIDER);
 	}
 	
 	public void setOrientation(Orientation orientation) {
@@ -105,6 +110,13 @@ public class PSplitLayout extends AbstractEnumPLayout<PSplitLayout.Constraint> {
 		prefSize.setWidth(prefW);
 		prefSize.setHeight(prefH);
 		return prefSize;
+	}
+	
+	public void onChildPrefSizeChanged(PComponent child) {
+		ThrowException.ifFalse(containsChild(child), "containsChild(child) == false");
+		if (child == getDivider()) {
+			invalidate();
+		}
 	}
 	
 	public static enum Orientation {

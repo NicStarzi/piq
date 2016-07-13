@@ -6,6 +6,7 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractEnumPLayout;
 import edu.udo.piq.tools.MutablePSize;
+import edu.udo.piq.util.ThrowException;
 
 public class PBorderLayout extends AbstractEnumPLayout<Constraint> {
 	
@@ -74,6 +75,13 @@ public class PBorderLayout extends AbstractEnumPLayout<Constraint> {
 		prefSize.setWidth(prefW);
 		prefSize.setHeight(prefH);
 		return prefSize;
+	}
+	
+	public void onChildPrefSizeChanged(PComponent child) {
+		ThrowException.ifFalse(containsChild(child), "containsChild(child) == false");
+		if (child != getChildForConstraint(Constraint.CENTER)) {
+			invalidate();
+		}
 	}
 	
 	public static enum Constraint {

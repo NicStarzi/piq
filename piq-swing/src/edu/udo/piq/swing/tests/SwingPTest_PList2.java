@@ -246,6 +246,7 @@ public class SwingPTest_PList2 {
 	
 	public static abstract class PersonCellComp extends PPanel implements PCellComponent {
 		
+		protected PModel model;
 		protected PModelIndex index;
 		protected boolean selected = false;
 		protected boolean dropHighLight = false;
@@ -269,7 +270,12 @@ public class SwingPTest_PList2 {
 		}
 		
 		public void setElement(PModel model, PModelIndex index) {
+			this.model = model;
 			this.index = index;
+		}
+		
+		public PModel getElementModel() {
+			return model;
 		}
 		
 		public PModelIndex getElementIndex() {

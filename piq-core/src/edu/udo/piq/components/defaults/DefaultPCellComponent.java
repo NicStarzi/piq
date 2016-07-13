@@ -16,6 +16,8 @@ public class DefaultPCellComponent extends PLabel implements PCellComponent {
 	public static final PColor DEFAULT_DROP_HIGHLIGHT_COLOR			= PColor.RED;
 	
 	protected ObjToStr encoder;
+	private PModel cachedModel;
+	private PModelIndex cachedIndex;
 	protected Object cachedElement;
 	protected boolean selected;
 	protected boolean highlighted;
@@ -57,8 +59,18 @@ public class DefaultPCellComponent extends PLabel implements PCellComponent {
 	}
 	
 	public void setElement(PModel model, PModelIndex index) {
+		cachedModel = model;
+		cachedIndex = index;
 		cachedElement = model.get(index);
 		refreshModelValue();
+	}
+	
+	public PModel getElementModel() {
+		return cachedModel;
+	}
+	
+	public PModelIndex getElementIndex() {
+		return cachedIndex;
 	}
 	
 	public Object getElement() {

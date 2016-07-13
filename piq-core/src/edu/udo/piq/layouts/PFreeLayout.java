@@ -10,6 +10,7 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractMapPLayout;
 import edu.udo.piq.tools.MutablePSize;
+import edu.udo.piq.util.ThrowException;
 
 public class PFreeLayout extends AbstractMapPLayout {
 	
@@ -185,16 +186,28 @@ public class PFreeLayout extends AbstractMapPLayout {
 				newConstraint.getZ());
 	}
 	
+	public void onChildPrefSizeChanged(PComponent child) {
+		ThrowException.ifFalse(containsChild(child), "containsChild(child) == false");
+		FreeConstraint cnstr = getChildConstraint(child);
+		if (cnstr.w == -1 || cnstr.h == -1) {
+			invalidate();
+		}
+	}
+	
 	public static class FreeConstraint {
 		
 		protected int x, y, w, h, z;
 		
 		public FreeConstraint() {
-			this(0, 0, -1, -1, 0);
+			this(0, 0, 0, 0, 0);
+			w = -1;
+			h = -1;
 		}
 		
 		public FreeConstraint(int x, int y) {
-			this(x, y, -1, -1, 0);
+			this(x, y, 0, 0, 0);
+			w = -1;
+			h = -1;
 		}
 		
 		public FreeConstraint(int x, int y, int w, int h) {
@@ -202,6 +215,8 @@ public class PFreeLayout extends AbstractMapPLayout {
 		}
 		
 		public FreeConstraint(int x, int y, int w, int h, int z) {
+			ThrowException.ifLess(0, w, "width < 0");
+			ThrowException.ifLess(0, h, "height < 0");
 			this.x = x;
 			this.y = y;
 			this.w = w;

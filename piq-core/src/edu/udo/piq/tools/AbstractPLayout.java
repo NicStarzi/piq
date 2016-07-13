@@ -87,7 +87,7 @@ public abstract class AbstractPLayout implements PLayout {
 	}
 	
 	public boolean containsChild(PComponent child) throws NullPointerException {
-		return getInfoFor(child) != null;
+		return getOwner() == child.getParent();
 	}
 	
 	public boolean containsChild(Object constraint) throws IllegalArgumentException {
@@ -200,6 +200,11 @@ public abstract class AbstractPLayout implements PLayout {
 			return root.getDesignSheet().getDesignFor(this);
 		}
 		return null;
+	}
+	
+	public void onChildPrefSizeChanged(PComponent child) {
+		ThrowException.ifFalse(containsChild(child), "containsChild(child) == false");
+		invalidate();
 	}
 	
 	protected void invalidate() {

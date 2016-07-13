@@ -7,6 +7,7 @@ import edu.udo.piq.PSize;
 import edu.udo.piq.layouts.PTupleLayout.Constraint;
 import edu.udo.piq.tools.AbstractEnumPLayout;
 import edu.udo.piq.tools.MutablePSize;
+import edu.udo.piq.util.ThrowException;
 
 public class PTupleLayout extends AbstractEnumPLayout<Constraint> {
 	
@@ -185,6 +186,15 @@ public class PTupleLayout extends AbstractEnumPLayout<Constraint> {
 		prefSize.setWidth(prefW);
 		prefSize.setHeight(prefH);
 		return prefSize;
+	}
+	
+	public void onChildPrefSizeChanged(PComponent child) {
+		ThrowException.ifFalse(containsChild(child), "containsChild(child) == false");
+		boolean primRespect = getDistribution() != Distribution.RESPECT_NONE;
+		boolean scndRespect = getSecondaryDistribution() != Distribution.RESPECT_NONE;
+		if (primRespect || scndRespect) {
+			invalidate();
+		}
 	}
 	
 	public static enum Constraint {

@@ -8,7 +8,7 @@ public class PMenuBar extends AbstractPLayoutOwner {
 	
 	public PMenuBar() {
 		super();
-		setLayout(new PWrapLayout(this, ListAlignment.FROM_LEFT));
+		setLayout(new PWrapLayout(this, ListAlignment.LEFT_TO_RIGHT));
 	}
 	
 }

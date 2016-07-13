@@ -153,7 +153,7 @@ public class SwingPTest_PList2 {
 					}
 				};
 				cellComp.setElement(model, index);
-				cellComp.setLayout(new PListLayout(cellComp, ListAlignment.FROM_LEFT));
+				cellComp.setLayout(new PListLayout(cellComp, ListAlignment.LEFT_TO_RIGHT));
 				cellComp.addChild(lblName, null);
 				cellComp.addChild(btn, null);
 				
@@ -183,7 +183,7 @@ public class SwingPTest_PList2 {
 		splitPnl.setSecondComponent(list2);
 		
 		PPanel btnPnl = new PPanel();
-		btnPnl.setLayout(new PWrapLayout(btnPnl, ListAlignment.CENTERED_HORIZONTAL));
+		btnPnl.setLayout(new PWrapLayout(btnPnl, ListAlignment.CENTERED_LEFT_TO_RIGHT));
 		bodyPnl.addChild(btnPnl, PBorderLayout.Constraint.BOTTOM);
 		
 		PButton btnAdd = new PButton();

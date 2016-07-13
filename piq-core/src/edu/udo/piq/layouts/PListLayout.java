@@ -14,7 +14,7 @@ import edu.udo.piq.tools.MutablePSize;
 
 public class PListLayout extends AbstractMapPLayout {
 	
-	public static final ListAlignment DEFAULT_ALIGNMENT = ListAlignment.FROM_TOP;
+	public static final ListAlignment DEFAULT_ALIGNMENT = ListAlignment.TOP_TO_BOTTOM;
 	public static final int DEFAULT_GAP = 2;
 	
 	/**
@@ -28,7 +28,7 @@ public class PListLayout extends AbstractMapPLayout {
 	 * method.<br>
 	 */
 	protected final MutablePSize prefSize;
-	protected ListAlignment align = ListAlignment.FROM_TOP;
+	protected ListAlignment align = ListAlignment.TOP_TO_BOTTOM;
 	protected PInsets insets = new ImmutablePInsets(4);
 	protected int gap = 2;
 	
@@ -208,20 +208,20 @@ public class PListLayout extends AbstractMapPLayout {
 		ListAlignment align = getAlignment();
 		boolean isHorizontal = align.isHorizontal();
 		switch (align) {
-		case CENTERED_HORIZONTAL:
+		case CENTERED_LEFT_TO_RIGHT:
 			alignedX = ob.getWidth() / 2 - prefW / 2;
 			break;
-		case CENTERED_VERTICAL:
+		case CENTERED_TOP_TO_BOTTOM:
 			alignedY = ob.getHeight() / 2 - prefH / 2;
 			break;
-		case FROM_BOTTOM:
+		case BOTTOM_TO_TOP:
 			alignedY = (ob.getFinalY() - insets.getFromBottom()) - prefH;
 			break;
-		case FROM_RIGHT:
+		case RIGHT_TO_LEFT:
 			alignedX = (ob.getFinalX() - insets.getFromRight()) - prefW;
 			break;
-		case FROM_LEFT:
-		case FROM_TOP:
+		case LEFT_TO_RIGHT:
+		case TOP_TO_BOTTOM:
 		default:
 		}
 		int x = Math.max(alignedX, minX);
@@ -282,16 +282,17 @@ public class PListLayout extends AbstractMapPLayout {
 	}
 	
 	public static enum ListAlignment {
-		FROM_LEFT,
-		FROM_TOP,
-		FROM_RIGHT,
-		FROM_BOTTOM,
-		CENTERED_HORIZONTAL,
-		CENTERED_VERTICAL,
+		LEFT_TO_RIGHT,
+		TOP_TO_BOTTOM,
+		RIGHT_TO_LEFT,
+		BOTTOM_TO_TOP,
+		CENTERED_LEFT_TO_RIGHT,
+		CENTERED_TOP_TO_BOTTOM,
 		;
 		
 		public boolean isHorizontal() {
-			return this == FROM_LEFT || this == FROM_RIGHT || this == CENTERED_HORIZONTAL;
+			return this == LEFT_TO_RIGHT || this == RIGHT_TO_LEFT 
+					|| this == CENTERED_LEFT_TO_RIGHT;
 		}
 		
 		public boolean isVertical() {

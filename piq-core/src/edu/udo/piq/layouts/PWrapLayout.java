@@ -50,20 +50,20 @@ public class PWrapLayout extends PListLayout {
 		ListAlignment align = getAlignment();
 		boolean isHorizontal = align.isHorizontal();
 		switch (align) {
-		case CENTERED_HORIZONTAL:
+		case CENTERED_LEFT_TO_RIGHT:
 			alignedX = ob.getWidth() / 2 - prefW / 2;
 			break;
-		case CENTERED_VERTICAL:
+		case CENTERED_TOP_TO_BOTTOM:
 			alignedY = ob.getHeight() / 2 - prefH / 2;
 			break;
-		case FROM_RIGHT:
+		case RIGHT_TO_LEFT:
 			alignedX = (ob.getFinalX() - insets.getFromRight()) - prefW;
 			break;
-		case FROM_BOTTOM:
+		case BOTTOM_TO_TOP:
 			alignedY = (ob.getFinalY() - insets.getFromBottom()) - prefH;
 			break;
-		case FROM_LEFT:
-		case FROM_TOP:
+		case LEFT_TO_RIGHT:
+		case TOP_TO_BOTTOM:
 		default:
 		}
 		int maxX = ob.getFinalX() - insets.getFromRight();

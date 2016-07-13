@@ -268,10 +268,12 @@ public class PGridLayout extends AbstractMapPLayout {
 						}
 						
 						PSize cellPrefSize = getPreferredSizeOf(cell);
-						int childX = constr.alignH.getX(cellX, cellW, cellPrefSize.getWidth());
-						int childY = constr.alignV.getY(cellY, cellH, cellPrefSize.getHeight());
-						int childW = constr.alignH.getW(cellW, cellPrefSize.getWidth());
-						int childH = constr.alignV.getH(cellH, cellPrefSize.getHeight());
+						int cellPrefW = cellPrefSize.getWidth();
+						int cellPrefH = cellPrefSize.getHeight();
+						int childX = constr.alignH.getLeftX(cellX, cellW, cellPrefW);
+						int childY = constr.alignV.getTopY(cellY, cellH, cellPrefH);
+						int childW = constr.alignH.getWidth(cellX, cellW, cellPrefW);
+						int childH = constr.alignV.getHeight(cellY, cellH, cellPrefH);
 						
 //						System.out.println("prefSize="+cellPrefSize);
 //						System.out.println("cellX="+cellX+", cellY="+cellY+", cellW="+cellW+", cellH="+cellH);
@@ -406,8 +408,8 @@ public class PGridLayout extends AbstractMapPLayout {
 		
 		protected int x, y;
 		protected int w = 1, h = 1;
-		protected AlignH alignH = AlignH.CENTER;
-		protected AlignV alignV = AlignV.CENTER;
+		protected AlignmentX alignH = AlignmentX.CENTER;
+		protected AlignmentY alignV = AlignmentY.CENTER;
 		
 		public GridConstraint() {
 		}
@@ -421,14 +423,14 @@ public class PGridLayout extends AbstractMapPLayout {
 		}
 		
 		public GridConstraint(int x, int y, int width, int height) {
-			this(x, y, width, height, AlignH.CENTER, AlignV.CENTER);
+			this(x, y, width, height, AlignmentX.CENTER, AlignmentY.CENTER);
 		}
 		
-		public GridConstraint(int x, int y, AlignH alignH, AlignV alignV) {
+		public GridConstraint(int x, int y, AlignmentX alignH, AlignmentY alignV) {
 			this(x, y, 1, 1, alignH, alignV);
 		}
 		
-		public GridConstraint(int x, int y, int width, int height, AlignH alignH, AlignV alignV) {
+		public GridConstraint(int x, int y, int width, int height, AlignmentX alignH, AlignmentY alignV) {
 			if (x < 0 || y < 0 || width <= 0 || height <= 0) {
 				throw new IllegalArgumentException("x="+x+", y="+y+", width="+width+", height="+height);
 			}
@@ -458,124 +460,22 @@ public class PGridLayout extends AbstractMapPLayout {
 			h = value;	return this;
 		}
 		
-		public GridConstraint alignH(AlignH value) {
+		public GridConstraint alignX(AlignmentX value) {
 			alignH = value;	return this;
 		}
 		
-		public GridConstraint alignV(AlignV value) {
+		public GridConstraint alignY(AlignmentY value) {
 			alignV = value;	return this;
 		}
 		
-	}
-	
-	public static enum AlignH {
-		LEFT,
-		RIGHT {
-			public int getX(int cellX, int cellW, int prefW) {
-				return cellX + cellW - prefW;
-			}
-		},
-		CENTER {
-			public int getX(int cellX, int cellW, int prefW) {
-				return cellX + cellW / 2 - prefW / 2;
-			}
-		},
-		FILL {
-			public int getW(int cellW, int prefW) {
-				return cellW;
-			}
-		},
-		;
-		public static final AlignH L = LEFT;
-		public static final AlignH R = RIGHT;
-		public static final AlignH C = CENTER;
-		public static final AlignH F = FILL;
-		
-		private static final AlignH[] ALL = values();
-		
-		public static AlignH get(String name) {
-			if (name.length() == 0) {
-				return null;
-			}
-			if (name.length() == 1) {
-				char ch = name.charAt(0);
-				for (AlignH elem : ALL) {
-					if (elem.name().charAt(0) == ch) {
-						return elem;
-					}
-				}
-			} else {
-				for (AlignH elem : ALL) {
-					if (elem.name().equalsIgnoreCase(name)) {
-						return elem;
-					}
-				}
-			}
-			return null;
+		public GridConstraint alignH(AlignmentX value) {
+			return alignX(value);
 		}
 		
-		public int getX(int cellX, int cellW, int prefW) {
-			return cellX;
+		public GridConstraint alignV(AlignmentY value) {
+			return alignY(value);
 		}
 		
-		public int getW(int cellW, int prefW) {
-			return prefW;
-		}
-	}
-	
-	public static enum AlignV {
-		TOP,
-		BOTTOM {
-			public int getY(int cellY, int cellH, int prefH) {
-				return cellY + cellH - prefH;
-			}
-		},
-		CENTER {
-			public int getY(int cellY, int cellH, int prefH) {
-				return cellY + cellH / 2 - prefH / 2;
-			}
-		},
-		FILL {
-			public int getH(int cellH, int prefH) {
-				return cellH;
-			}
-		},
-		;
-		public static final AlignV T = TOP;
-		public static final AlignV B = BOTTOM;
-		public static final AlignV C = CENTER;
-		public static final AlignV F = FILL;
-		
-		private static final AlignV[] ALL = values();
-		
-		public static AlignV get(String name) {
-			if (name.length() == 0) {
-				return null;
-			}
-			if (name.length() == 1) {
-				char ch = name.charAt(0);
-				for (AlignV elem : ALL) {
-					if (elem.name().charAt(0) == ch) {
-						return elem;
-					}
-				}
-			} else {
-				for (AlignV elem : ALL) {
-					if (elem.name().equalsIgnoreCase(name)) {
-						return elem;
-					}
-				}
-			}
-			return null;
-		}
-		
-		public int getY(int cellY, int cellH, int prefH) {
-			return cellY;
-		}
-		
-		public int getH(int cellH, int prefH) {
-			return prefH;
-		}
 	}
 	
 	public static enum Growth {
@@ -614,13 +514,13 @@ public class PGridLayout extends AbstractMapPLayout {
 				String valueAsStr = code.substring("alignX=".length());
 				char dim = code.charAt("align".length());
 				if (dim == 'H' || dim == 'X') {
-					AlignH value = AlignH.get(valueAsStr);
+					AlignmentX value = AlignmentX.getByName(valueAsStr);
 					if (value != null) {
 						c.alignH(value);
 						return;
 					}
 				} else if (dim == 'V' || dim == 'Y') {
-					AlignV value = AlignV.get(valueAsStr);
+					AlignmentY value = AlignmentY.getByName(valueAsStr);
 					if (value != null) {
 						c.alignV(value);
 						return;

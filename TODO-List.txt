@@ -3,7 +3,6 @@ TODO:
  - PTextArea drag and drop support
  - PTable overhaul + drag and drop support
  - PTextField scroll
- - PPasswordField
  - PScrollPanel scroll bars
  - PMouse: press and trigger is the same right now
  - PKeyObsMode: ALWAYS, WHEN_FOCUSED
@@ -12,4 +11,4 @@ TODO:
  - PPopups
  - PClickable (PButton, PCheckBox, PRadioButton, etc)
  - PButtonModel: Change model data from "isPressed" to "isEnabled"
- - GridLayout
+ - PComponent when width * height == 0 disable mouse and keyboard observers

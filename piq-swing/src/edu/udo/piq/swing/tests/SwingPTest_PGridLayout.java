@@ -3,9 +3,9 @@ package edu.udo.piq.swing.tests;
 import edu.udo.piq.PColor;
 import edu.udo.piq.components.PColoredShape;
 import edu.udo.piq.components.containers.PPanel;
+import edu.udo.piq.layouts.AlignmentX;
+import edu.udo.piq.layouts.AlignmentY;
 import edu.udo.piq.layouts.PGridLayout;
-import edu.udo.piq.layouts.PGridLayout.AlignH;
-import edu.udo.piq.layouts.PGridLayout.AlignV;
 import edu.udo.piq.layouts.PGridLayout.GridConstraint;
 import edu.udo.piq.layouts.PGridLayout.Growth;
 import edu.udo.piq.tools.ImmutablePInsets;
@@ -67,10 +67,10 @@ public class SwingPTest_PGridLayout extends AbstractSwingPTest {
 		body.addChild(red,		"0 0 1 1 alignX=r alignV=bOtToM");
 		body.addChild(green,	new GridConstraint(1, 0, 2, 1));
 		body.addChild(teal,		new GridConstraint(0, 1, 1, 1));//.alignH(AlignH.RIGHT)
-		body.addChild(blue,		new GridConstraint(1, 1, 2, 2).alignH(AlignH.F).alignV(AlignV.F));
-		body.addChild(magenta,	new GridConstraint(0, 3, 1, 1).alignH(AlignH.C).alignV(AlignV.B));
-		body.addChild(white,	new GridConstraint(1, 3, 1, 1).alignH(AlignH.R).alignV(AlignV.T));
-		body.addChild(yellow,	new GridConstraint(2, 3, 1, 1).alignH(AlignH.R).alignV(AlignV.C));
+		body.addChild(blue,		new GridConstraint(1, 1, 2, 2).alignH(AlignmentX.F).alignV(AlignmentY.F));
+		body.addChild(magenta,	new GridConstraint(0, 3, 1, 1).alignH(AlignmentX.C).alignV(AlignmentY.B));
+		body.addChild(white,	new GridConstraint(1, 3, 1, 1).alignH(AlignmentX.R).alignV(AlignmentY.T));
+		body.addChild(yellow,	new GridConstraint(2, 3, 1, 1).alignH(AlignmentX.R).alignV(AlignmentY.C));
 		
 		root.setBody(body);
 	}

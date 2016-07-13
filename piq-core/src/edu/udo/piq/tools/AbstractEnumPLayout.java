@@ -12,6 +12,15 @@ public abstract class AbstractEnumPLayout<K extends Enum<K>> extends AbstractArr
 		this.enumClass = enumClass;
 	}
 	
+	public void setChildForConstraint(PComponent component, Object constraint) {
+		if (getChildForConstraint(constraint) != null) {
+			removeChild(constraint);
+		}
+		if (component != null) {
+			addChild(component, constraint);
+		}
+	}
+	
 	protected int getIndexFor(Object constr) {
 		return getOrdinal(constr);
 	}

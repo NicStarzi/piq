@@ -241,7 +241,7 @@ public class SwingPTest {
 		
 		PPanel btnPnl = new PPanel();
 		btnPnl.setID("Button Panel");
-		btnPnl.setLayout(new PWrapLayout(btnPnl, ListAlignment.FROM_LEFT));
+		btnPnl.setLayout(new PWrapLayout(btnPnl, ListAlignment.LEFT_TO_RIGHT));
 //		btnPnl.setLayout(new PListLayout(btnPnl, ListAlignment.FROM_LEFT));
 		bodyPnl.addChild(btnPnl, PBorderLayout.Constraint.BOTTOM);
 		

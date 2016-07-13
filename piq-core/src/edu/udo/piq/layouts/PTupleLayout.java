@@ -97,7 +97,7 @@ public class PTupleLayout extends AbstractEnumPLayout<Constraint> {
 	
 	public void layOut() {
 		Distribution distPrim = getDistribution();
-		Distribution distScnd = this.distScnd;
+		Distribution distScnd = getSecondaryDistribution();
 		PComponent first = getFirst();
 		PComponent second = getSecond();
 		int gap;
@@ -198,7 +198,7 @@ public class PTupleLayout extends AbstractEnumPLayout<Constraint> {
 		;
 	}
 	
-	protected static class LayoutData {
+	public static class LayoutData {
 		public int pos1;
 		public int size1;
 		public int size2;

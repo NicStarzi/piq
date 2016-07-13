@@ -18,11 +18,11 @@ import edu.udo.piq.components.collections.PTable;
 import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.components.defaults.PSpinnerModelInt;
 import edu.udo.piq.components.textbased.PLabel;
+import edu.udo.piq.layouts.AlignmentX;
+import edu.udo.piq.layouts.AlignmentY;
 import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PBorderLayout.Constraint;
 import edu.udo.piq.layouts.PGridLayout;
-import edu.udo.piq.layouts.PGridLayout.AlignH;
-import edu.udo.piq.layouts.PGridLayout.AlignV;
 import edu.udo.piq.layouts.PGridLayout.GridConstraint;
 import edu.udo.piq.swing.JCompPRoot;
 
@@ -83,22 +83,22 @@ public class SwingPTest_PTable {
 		ctrlPnl.setLayout(layout);
 		
 		PSpinner inputCol = new PSpinner(new PSpinnerModelInt(0, 0, 100));
-		ctrlPnl.addChild(inputCol, new GridConstraint(0, 0, AlignH.FILL, AlignV.CENTER));
+		ctrlPnl.addChild(inputCol, new GridConstraint(0, 0, AlignmentX.FILL, AlignmentY.CENTER));
 		
 		PSpinner inputRow = new PSpinner(new PSpinnerModelInt(0, 0, 100));
-		ctrlPnl.addChild(inputRow, new GridConstraint(0, 1, AlignH.FILL, AlignV.CENTER));
+		ctrlPnl.addChild(inputRow, new GridConstraint(0, 1, AlignmentX.FILL, AlignmentY.CENTER));
 		
 		PButton btnAddColumn = new PButton(new PLabel("Add Column"));
-		ctrlPnl.addChild(btnAddColumn, new GridConstraint(1, 0, AlignH.FILL, AlignV.FILL));
+		ctrlPnl.addChild(btnAddColumn, new GridConstraint(1, 0, AlignmentX.FILL, AlignmentY.FILL));
 		
 		PButton btnRemoveColumn = new PButton(new PLabel("Remove Column"));
-		ctrlPnl.addChild(btnRemoveColumn, new GridConstraint(1, 1, AlignH.FILL, AlignV.FILL));
+		ctrlPnl.addChild(btnRemoveColumn, new GridConstraint(1, 1, AlignmentX.FILL, AlignmentY.FILL));
 		
 		PButton btnAddRow = new PButton(new PLabel("Add Row"));
-		ctrlPnl.addChild(btnAddRow, new GridConstraint(2, 0, AlignH.FILL, AlignV.FILL));
+		ctrlPnl.addChild(btnAddRow, new GridConstraint(2, 0, AlignmentX.FILL, AlignmentY.FILL));
 		
 		PButton btnRemoveRow = new PButton(new PLabel("Remove Row"));
-		ctrlPnl.addChild(btnRemoveRow, new GridConstraint(2, 1, AlignH.FILL, AlignV.FILL));
+		ctrlPnl.addChild(btnRemoveRow, new GridConstraint(2, 1, AlignmentX.FILL, AlignmentY.FILL));
 		
 		btnAddColumn.addObs((PClickObs) (c) -> {
 			int col = (int) inputCol.getModel().getValue();

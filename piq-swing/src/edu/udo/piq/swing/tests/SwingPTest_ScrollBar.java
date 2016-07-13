@@ -62,7 +62,7 @@ public class SwingPTest_ScrollBar {
 		root.setBody(bodyPnl);
 		
 		PPanel btnPnl = new PPanel();
-		btnPnl.setLayout(new PWrapLayout(btnPnl, ListAlignment.CENTERED_HORIZONTAL));
+		btnPnl.setLayout(new PWrapLayout(btnPnl, ListAlignment.CENTERED_LEFT_TO_RIGHT));
 		bodyPnl.addChild(btnPnl, Constraint.BOTTOM);
 		
 		PButton btnAdd = new PButton();

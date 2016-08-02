@@ -140,6 +140,10 @@ public class SwingPRenderer implements PRenderer {
 		drawString(font, Character.toString(c), x, y);
 	}
 	
+	public boolean isFontSupported(PFontResource font) {
+		return font instanceof AwtPFontResource;
+	}
+	
 	public void drawString(PFontResource font, String text, float x, float y) {
 		Font awtFont = ((AwtPFontResource) font).getAwtFont();
 		FontMetrics fm = graphics.getFontMetrics(awtFont);

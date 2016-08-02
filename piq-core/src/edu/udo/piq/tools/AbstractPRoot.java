@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
+import edu.udo.piq.PBounds;
 import edu.udo.piq.PClipboard;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PComponentObs;
@@ -328,22 +329,38 @@ public abstract class AbstractPRoot implements PRoot {
 		return null;
 	}
 	
+	/**
+	 * Always returns zero by default.
+	 */
 	public int getDepth() {
 		return 0;
 	}
 	
+	/**
+	 * Always returns null by default.
+	 */
 	public PComponent getParent() {
 		return null;
 	}
 	
+	/**
+	 * Always returns the {@link PBounds bounds} of this root.
+	 * @see #getBounds()
+	 */
 	public PSize getDefaultPreferredSize() {
 		return getBounds();
 	}
 	
+	/**
+	 * Always returns true by default.
+	 */
 	public boolean defaultFillsAllPixels() {
 		return true;
 	}
 	
+	/**
+	 * Returns false by default.
+	 */
 	public boolean isFocusable() {
 		return false;
 	}

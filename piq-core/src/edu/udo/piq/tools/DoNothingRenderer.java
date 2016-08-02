@@ -50,6 +50,10 @@ public class DoNothingRenderer implements PImageRenderer {
 	public void drawPolygon(float[] xCoords, float[] yCoords) {
 	}
 	
+	public boolean isFontSupported(PFontResource font) {
+		return true;
+	}
+	
 	public void drawString(PFontResource font, String text, float x, float y) {
 	}
 	

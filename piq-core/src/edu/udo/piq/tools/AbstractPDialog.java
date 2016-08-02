@@ -39,6 +39,11 @@ public abstract class AbstractPDialog extends AbstractPRoot implements PDialog {
 		return getSuperRoot().fetchFontResource(fontName, pointSize, style);
 	}
 	
+	public boolean isFontSupported(PFontResource font) {
+		throwExceptionIfDisposed();
+		return getSuperRoot().isFontSupported(font);
+	}
+	
 	public PImageResource fetchImageResource(Object imgID)
 			throws NullPointerException 
 	{

@@ -143,7 +143,7 @@ public interface PRoot extends PComponent {
 	public void reRender(PComponent component);
 	
 	//TODO
-	public void mouseOverCursorChanged(PComponent component);
+	public void onMouseOverCursorChanged(PComponent component);
 	
 	/**
 	 * Registers that a {@link PComponent} needs a refresh for its {@link PLayout} in the near future.<br>
@@ -198,6 +198,8 @@ public interface PRoot extends PComponent {
 	 */
 	public PFontResource fetchFontResource(String fontName, double pointSize, Style style) 
 			throws NullPointerException, IllegalArgumentException;
+	
+	public boolean isFontSupported(PFontResource font);
 	
 	/**
 	 * Returns an instance of {@link PImageResource} that was loaded from 

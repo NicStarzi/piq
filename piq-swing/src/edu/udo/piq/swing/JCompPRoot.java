@@ -113,6 +113,10 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 		super.dndManager = dndManager;
 	}
 	
+	public JPanel getJPanel() {
+		return panel;
+	}
+	
 	/*
 	 * Overwrites the protected super method
 	 */
@@ -120,11 +124,7 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 		super.setDesignSheet(designSheet);
 	}
 	
-	public JPanel getJPanel() {
-		return panel;
-	}
-	
-	public void mouseOverCursorChanged(PComponent component) {
+	public void onMouseOverCursorChanged(PComponent component) {
 		mouse.mouseOverCursorChanged(component);
 	}
 	
@@ -154,6 +154,10 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 		openedDialogs.add(pDlg);
 		
 		return pDlg;
+	}
+	
+	public boolean isFontSupported(PFontResource font) {
+		return font instanceof AwtPFontResource;
 	}
 	
 	public PFontResource fetchFontResource(String fontName, double pointSize, Style style) 
@@ -204,7 +208,8 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 			try {
 				bufImg = ImageIO.read(new File(imgPath));
 			} catch (IOException e) {
-				e.printStackTrace();
+				System.err.println(e.getMessage());
+//				e.printStackTrace();
 			}
 			imgRes = new BufferedPImageResource(bufImg);
 			imgMap.put(imgPath, imgRes);

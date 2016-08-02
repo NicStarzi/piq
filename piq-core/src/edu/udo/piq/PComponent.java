@@ -172,7 +172,7 @@ public interface PComponent {
 	
 	/**
 	 * @param cursor
-	 * @see PRoot#mouseOverCursorChanged(PComponent)
+	 * @see PRoot#onMouseOverCursorChanged(PComponent)
 	 */
 	public void setMouseOverCursor(PCursor cursor);
 	

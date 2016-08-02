@@ -117,7 +117,7 @@ public class SwingPDialog extends AbstractPDialog implements PDialog {
 		return keyboard;
 	}
 	
-	public void mouseOverCursorChanged(PComponent component) {
+	public void onMouseOverCursorChanged(PComponent component) {
 		mouse.mouseOverCursorChanged(component);
 	}
 	

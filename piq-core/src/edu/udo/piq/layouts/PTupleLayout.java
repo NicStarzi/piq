@@ -1,12 +1,15 @@
 package edu.udo.piq.layouts;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PSize;
 import edu.udo.piq.layouts.PTupleLayout.Constraint;
 import edu.udo.piq.tools.AbstractEnumPLayout;
-import edu.udo.piq.tools.MutablePSize;
 import edu.udo.piq.util.ThrowException;
 
 public class PTupleLayout extends AbstractEnumPLayout<Constraint> {
@@ -16,13 +19,6 @@ public class PTupleLayout extends AbstractEnumPLayout<Constraint> {
 	public static final Distribution	DEFAULT_DISTRIBUTION	= Distribution.RESPECT_BOTH;
 	public static final int				DEFAULT_GAP				= 4;
 	
-	/**
-	 * To save memory the preferred size of the layout 
-	 * is an instance of MutablePSize which is updated 
-	 * and returned by the {@link #getPreferredSize()} 
-	 * method.<br>
-	 */
-	protected final MutablePSize prefSize	= new MutablePSize();
 	protected PInsets insets				= DEFAULT_INSETS;
 	protected Orientation orientation		= DEFAULT_ORIENTATION;
 	protected Distribution distPrim			= DEFAULT_DISTRIBUTION;
@@ -96,7 +92,7 @@ public class PTupleLayout extends AbstractEnumPLayout<Constraint> {
 		return getChildForConstraint(Constraint.SECOND);
 	}
 	
-	public void layOut() {
+	protected void layOutInternal() {
 		Distribution distPrim = getDistribution();
 		Distribution distScnd = getSecondaryDistribution();
 		PComponent first = getFirst();
@@ -141,7 +137,6 @@ public class PTupleLayout extends AbstractEnumPLayout<Constraint> {
 			dataPrim = dataY;
 			dataScnd = dataX;
 		}
-		distPrim = distPrim.suggestDelegate(dataPrim);
 		distPrim.transformPrimary(dataPrim);
 		distScnd.transformSecondary(dataScnd);
 		
@@ -159,7 +154,7 @@ public class PTupleLayout extends AbstractEnumPLayout<Constraint> {
 		}
 	}
 	
-	public PSize getPreferredSize() {
+	protected void onInvalidated() {
 		PComponent first = getChildForConstraint(Constraint.FIRST);
 		PComponent second = getChildForConstraint(Constraint.SECOND);
 		PSize sizeFirst = getPreferredSizeOf(first);
@@ -185,10 +180,9 @@ public class PTupleLayout extends AbstractEnumPLayout<Constraint> {
 		}
 		prefSize.setWidth(prefW);
 		prefSize.setHeight(prefH);
-		return prefSize;
 	}
 	
-	public void onChildPrefSizeChanged(PComponent child) {
+	protected void onChildPrefSizeChanged(PComponent child) {
 		ThrowException.ifFalse(containsChild(child), "containsChild(child) == false");
 		boolean primRespect = getDistribution() != Distribution.RESPECT_NONE;
 		boolean scndRespect = getSecondaryDistribution() != Distribution.RESPECT_NONE;
@@ -206,6 +200,9 @@ public class PTupleLayout extends AbstractEnumPLayout<Constraint> {
 		LEFT_TO_RIGHT,
 		TOP_TO_BOTTOM,
 		;
+		public static final List<Orientation> ALL = 
+				Collections.unmodifiableList(Arrays.asList(values()));
+		public static final int COUNT = ALL.size();
 	}
 	
 	public static class LayoutData {
@@ -236,30 +233,17 @@ public class PTupleLayout extends AbstractEnumPLayout<Constraint> {
 				data.pos1 = data.pos1 + data.sizeTotal / 2 - sizePref / 2;
 			}
 			protected void transformSecondary(LayoutData data) {
-//				int sizeMax = Math.max(data.size1, data.size2);
 				data.pos1 = data.sizeTotal / 2;// - sizeMax / 2;
-			}
-			protected Distribution suggestDelegate(LayoutData data) {
-				if (data.size1 + data.gap + data.size2 >= data.sizeTotal) 
-				{
-					return Distribution.RESPECT_NONE;
-				}
-				return this;
 			}
 		},
 		RESPECT_NONE {
 			protected void transformPrimary(LayoutData data) {
-				int sizePref = data.size1 + data.size2;
-				double percentFirst = data.size1 / (double) sizePref;
-				data.size1 = (int) Math.ceil(data.sizeTotal * percentFirst);
-				data.size2 = data.sizeTotal - (data.size1 + data.gap);
+				int size = (data.sizeTotal - data.gap) / 2;
+				data.size1 = data.size2 = size;
 			}
 			protected void transformSecondary(LayoutData data) {
 				data.size1 = data.size2 = data.sizeTotal;
 				data.pos1 = data.sizeTotal / 2;// - data.size1 / 2
-			}
-			protected Distribution suggestDelegate(LayoutData data) {
-				return this;
 			}
 		},
 		RESPECT_FIRST {
@@ -270,9 +254,6 @@ public class PTupleLayout extends AbstractEnumPLayout<Constraint> {
 				data.size2 = data.size1;
 				data.pos1 = data.sizeTotal / 2;// - data.size1 / 2
 			}
-			protected Distribution suggestDelegate(LayoutData data) {
-				return this;
-			}
 		},
 		RESPECT_SECOND {
 			protected void transformPrimary(LayoutData data) {
@@ -282,17 +263,15 @@ public class PTupleLayout extends AbstractEnumPLayout<Constraint> {
 				data.size1 = data.size2;
 				data.pos1 = data.sizeTotal / 2;// - data.size1 / 2
 			}
-			protected Distribution suggestDelegate(LayoutData data) {
-				return this;
-			}
 		},
 		;
+		public static final List<Distribution> ALL = 
+				Collections.unmodifiableList(Arrays.asList(values()));
+		public static final int COUNT = ALL.size();
 		
 		protected abstract void transformPrimary(LayoutData data);
 		
 		protected abstract void transformSecondary(LayoutData data);
-		
-		protected abstract Distribution suggestDelegate(LayoutData data);
 	}
 	
 }

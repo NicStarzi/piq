@@ -2,6 +2,7 @@ package edu.udo.piq.tools;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
+import edu.udo.piq.PComponentObs;
 import edu.udo.piq.PLayout;
 import edu.udo.piq.PLayoutDesign;
 import edu.udo.piq.PLayoutObs;
@@ -13,14 +14,28 @@ import edu.udo.piq.util.ThrowException;
 
 public abstract class AbstractPLayout implements PLayout {
 	
+	protected final PComponentObs ownerObs = new PComponentObs() {
+		public void onBoundsChanged(PComponent component) {
+			onOwnerBoundsChanged();
+		}
+	};
+	protected final PComponentObs childObs = new PComponentObs() {
+		public void onPreferredSizeChanged(PComponent component) {
+			onChildPrefSizeChanged(component);
+		}
+	};
+	
 	protected final ObserverList<PLayoutObs> obsList
 		= PCompUtil.createDefaultObserverList();
-	private final PComponent owner;
+	protected final PComponent owner;
 	private PLayoutDesign design;
+	protected MutablePSize prefSize = new MutablePSize();
+	protected boolean invalidated = true;
 	
 	protected AbstractPLayout(PComponent component) {
 		ThrowException.ifNull(component, "component == null");
 		owner = component;
+		owner.addObs(ownerObs);
 	}
 	
 	protected abstract boolean canAdd(PComponent component, Object constraint);
@@ -46,11 +61,13 @@ public abstract class AbstractPLayout implements PLayout {
 		
 		PCompInfo info = new PCompInfo(component, constraint);
 		addInfoInternal(info);
+		component.addObs(childObs);
 		
 		component.setParent(getOwner());
 		
 		onChildAdded(component, constraint);
 		fireAddEvent(component, constraint);
+		invalidate();
 	}
 	
 	public void removeChild(PComponent child) throws NullPointerException, IllegalArgumentException {
@@ -61,6 +78,7 @@ public abstract class AbstractPLayout implements PLayout {
 		
 		Object constraint = info.constr;
 		
+		child.removeObs(childObs);
 		removeInfoInternal(info);
 		child.setParent(null);
 		
@@ -202,21 +220,57 @@ public abstract class AbstractPLayout implements PLayout {
 		return null;
 	}
 	
-	public void onChildPrefSizeChanged(PComponent child) {
+	protected void invalidate() {
+		pushState(DebugState.INVALIDATED);
+		invalidated = true;
+		fireInvalidateEvent();
+	}
+	
+	public void layOut() {
+		if (getOwner().getBounds().isEmpty()) {
+			return;
+		}
+		if (invalidated) {
+			invalidated = false;
+			pushState(DebugState.ON_INVALIDATED);
+			onInvalidated();
+		}
+		pushState(DebugState.LAYOUT);
+		layOutInternal();
+	}
+	
+	protected abstract void layOutInternal();
+	
+	public PSize getPreferredSize() {
+		if (invalidated) {
+			invalidated = false;
+			pushState(DebugState.ON_INVALIDATED);
+			onInvalidated();
+		}
+		pushState(DebugState.GET_PREF_SIZE);
+		return getPreferredSizeInternal();
+	}
+	
+	protected PSize getPreferredSizeInternal() {
+		return prefSize;
+	}
+	
+	protected void onChildPrefSizeChanged(PComponent child) {
 		ThrowException.ifFalse(containsChild(child), "containsChild(child) == false");
 		invalidate();
 	}
 	
-	protected void invalidate() {
-		onInvalidated();
-		fireInvalidateEvent();
+	protected void onOwnerBoundsChanged() {
+		invalidate();
 	}
 	
 	protected void onInvalidated() {}
 	
 	protected void onChildAdded(PComponent child, Object constraint) {}
 	
-	protected void onChildRemoved(PComponent child, Object constraint) {}
+	protected void onChildRemoved(PComponent child, Object constraint) {
+		invalidate();
+	}
 	
 	/*
 	 * Observers & Events
@@ -342,6 +396,48 @@ public abstract class AbstractPLayout implements PLayout {
 			return h;
 		}
 		
+	}
+	
+//	private DebugState curState;
+//	private int stateCounter;
+//	private static int[] staticStateCounter = new int[DebugState.values().length];
+//	
+	private void pushState(DebugState state) {
+		//FIXME: This is just for debugging purposes
+//		boolean wasOnInv = curState == DebugState.ON_INVALIDATED;
+//		boolean wasGPS = curState == DebugState.GET_PREF_SIZE;
+//		if (getClass() != PRootLayout.class 
+//				&& state == DebugState.LAYOUT && !(wasOnInv || wasGPS)) 
+//		{
+//			System.err.println("current="+curState+", next="+state);
+//		}
+//		if (curState == state) {
+//			stateCounter++;
+//		} else {
+//			curState = state;
+//			stateCounter = 1;
+//		}
+//		staticStateCounter[curState.ordinal()]++;
+//		if (false) {//curState == DebugState.LAYOUT || curState == DebugState.ON_INVALIDATED
+//			StringBuilder sb = new StringBuilder();
+//			sb.append(getOwner());
+//			sb.append(" ");
+//			sb.append(curState);
+//			sb.append(" (");
+//			sb.append(stateCounter);
+//			sb.append(")[");
+//			sb.append(staticStateCounter[state.ordinal()]);
+//			sb.append("]");
+//			System.out.println(sb.toString());
+//		}
+	}
+	
+	private static enum DebugState {
+		INVALIDATED,
+		ON_INVALIDATED,
+		LAYOUT,
+		GET_PREF_SIZE,
+		;
 	}
 	
 }

@@ -22,6 +22,7 @@ import edu.udo.piq.layouts.PSpinnerLayout;
 import edu.udo.piq.layouts.PSpinnerLayout.Constraint;
 import edu.udo.piq.tools.AbstractPInputLayoutOwner;
 import edu.udo.piq.tools.ImmutablePSize;
+import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
 import edu.udo.piq.util.ThrowException;
 
@@ -81,6 +82,9 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 		getSpinner(comp).selectPrevious();
 	};
 	
+	protected final ObserverList<PSpinnerModelObs> modelObsList = 
+			PCompUtil.createDefaultObserverList();
+	protected final PSpinnerModelObs modelObs = this::onModelValueChanged;
 	protected PSpinnerModel model;
 	protected ObjToStr encoder;
 	
@@ -146,7 +150,17 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 	}
 	
 	public void setModel(PSpinnerModel model) {
+		if (getModel() != null) {
+			for (PSpinnerModelObs obs : modelObsList) {
+				getModel().removeObs(obs);
+			}
+		}
 		this.model = model;
+		if (getModel() != null) {
+			for (PSpinnerModelObs obs : modelObsList) {
+				getModel().addObs(obs);
+			}
+		}
 		setModel(getLayoutInternal().getEditor());
 		setModel(getLayoutInternal().getNextButton());
 		setModel(getLayoutInternal().getPrevButton());
@@ -194,6 +208,24 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 		return editor != null && PCompUtil.fillsAllPixels(editor)
 				&& btnNext != null && PCompUtil.fillsAllPixels(btnNext)
 				&& btnPrev != null && PCompUtil.fillsAllPixels(btnPrev);
+	}
+	
+	public void addObs(PSpinnerModelObs obs) throws NullPointerException {
+		modelObsList.add(obs);
+		if (getModel() != null) {
+			getModel().addObs(obs);
+		}
+	}
+	
+	public void removeObs(PSpinnerModelObs obs) throws NullPointerException {
+		modelObsList.remove(obs);
+		if (getModel() != null) {
+			getModel().removeObs(obs);
+		}
+	}
+	
+	protected void onModelValueChanged(PSpinnerModel model, Object oldVal) {
+		modelObsList.fireEvent((obs) -> obs.onValueChanged(getModel(), oldVal));
 	}
 	
 	public static class PSpinnerEditor extends PTextField implements PSpinnerPart {

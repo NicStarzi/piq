@@ -10,7 +10,6 @@ import edu.udo.piq.PLayoutDesign;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractMapPLayout;
 import edu.udo.piq.tools.ImmutablePInsets;
-import edu.udo.piq.tools.MutablePSize;
 
 public class PListLayout extends AbstractMapPLayout {
 	
@@ -21,13 +20,7 @@ public class PListLayout extends AbstractMapPLayout {
 	 * Manages all components as a list.
 	 */
 	protected final List<PComponent> compList;
-	/**
-	 * To save memory the preferred size of the layout 
-	 * is an instance of MutablePSize which is updated 
-	 * and returned by the {@link #getPreferredSize()} 
-	 * method.<br>
-	 */
-	protected final MutablePSize prefSize;
+	protected PSize[] cachedPrefSizes;
 	protected ListAlignment align = ListAlignment.TOP_TO_BOTTOM;
 	protected PInsets insets = new ImmutablePInsets(4);
 	protected int gap = 2;
@@ -47,7 +40,6 @@ public class PListLayout extends AbstractMapPLayout {
 	public PListLayout(PComponent owner, ListAlignment alignment, int gap) {
 		super(owner);
 		compList = new ArrayList<>();
-		prefSize = new MutablePSize();
 		
 		setAlignment(alignment);
 		setGap(gap);
@@ -64,6 +56,7 @@ public class PListLayout extends AbstractMapPLayout {
 			Integer con = Integer.valueOf(i);
 			setChildConstraint(compList.get(i), con);
 		}
+		invalidate();
 	}
 	
 	protected void onChildRemoved(PComponent child, Object constraint) {
@@ -73,6 +66,7 @@ public class PListLayout extends AbstractMapPLayout {
 			Integer con = Integer.valueOf(i);
 			setChildConstraint(compList.get(i), con);
 		}
+		invalidate();
 	}
 	
 	public void setGap(int value) {
@@ -179,79 +173,19 @@ public class PListLayout extends AbstractMapPLayout {
 		return (constraint == null || constraint instanceof Integer) && !compList.contains(cmp);
 	}
 	
-	public void layOut() {
-		PInsets insets = getInsets();
-		PBounds ob = getOwner().getBounds();
+	protected void onInvalidated() {
 		int gap = getGap();
-		int minX = ob.getX() + insets.getFromLeft();
-		int minY = ob.getY() + insets.getFromTop();
-		int alignedX = minX;
-		int alignedY = minY;
-		int w = ob.getWidth() - insets.getHorizontal();
-		int h = ob.getHeight() - insets.getVertical();
-		
-		int prefW = 0;
-		int prefH = 0;
-		PSize[] compPrefSizes = new PSize[compList.size()];
-		for (int i = 0; i < compList.size(); i++) {
-			PComponent comp = compList.get(i);
-			PSize compPrefSize = getPreferredSizeOf(comp);
-			compPrefSizes[i] = compPrefSize;
-			prefW += compPrefSize.getWidth() + gap;
-			prefH += compPrefSize.getHeight() + gap;
-		}
-		if (compPrefSizes.length > 0) {
-			prefW -= gap;
-			prefH -= gap;
-		}
-		
-		ListAlignment align = getAlignment();
-		boolean isHorizontal = align.isHorizontal();
-		switch (align) {
-		case CENTERED_LEFT_TO_RIGHT:
-			alignedX = ob.getWidth() / 2 - prefW / 2;
-			break;
-		case CENTERED_TOP_TO_BOTTOM:
-			alignedY = ob.getHeight() / 2 - prefH / 2;
-			break;
-		case BOTTOM_TO_TOP:
-			alignedY = (ob.getFinalY() - insets.getFromBottom()) - prefH;
-			break;
-		case RIGHT_TO_LEFT:
-			alignedX = (ob.getFinalX() - insets.getFromRight()) - prefW;
-			break;
-		case LEFT_TO_RIGHT:
-		case TOP_TO_BOTTOM:
-		default:
-		}
-		int x = Math.max(alignedX, minX);
-		int y = Math.max(alignedY, minY);
-		
-		for (int i = 0; i < compList.size(); i++) {
-			PComponent comp = compList.get(i);
-			PSize compPrefSize = compPrefSizes[i];
-			int compPrefW = compPrefSize.getWidth();
-			int compPrefH = compPrefSize.getHeight();
-			
-			if (isHorizontal) {
-				setChildBounds(comp, x, y, compPrefW, h);
-//				setChildBounds(comp, x, y, compPrefW, compPrefH);
-				x += compPrefW + gap;
-			} else {
-				setChildBounds(comp, x, y, w, compPrefH);
-//				setChildBounds(comp, x, y, compPrefW, compPrefH);
-				y += compPrefH + gap;
-			}
-		}
-	}
-	
-	public PSize getPreferredSize() {
 		int prefW = 0;
 		int prefH = 0;
 		boolean isHorizontal = getAlignment().isHorizontal();
+		
+		if (cachedPrefSizes == null || cachedPrefSizes.length < compList.size()) {
+			cachedPrefSizes = new PSize[compList.size()];
+		}
 		for (int i = 0; i < compList.size(); i++) {
 			PComponent comp = compList.get(i);
 			PSize compPrefSize = getPreferredSizeOf(comp);
+			cachedPrefSizes[i] = compPrefSize;
 			int compPrefW = compPrefSize.getWidth();
 			int compPrefH = compPrefSize.getHeight();
 			
@@ -274,11 +208,62 @@ public class PListLayout extends AbstractMapPLayout {
 				prefH -= gap;
 			}
 		}
-		prefH += getInsets().getVertical();
 		prefW += getInsets().getHorizontal();
+		prefH += getInsets().getVertical();
 		prefSize.setWidth(prefW);
 		prefSize.setHeight(prefH);
-		return prefSize;
+	}
+	
+	protected void layOutInternal() {
+		PInsets insets = getInsets();
+		PBounds ob = getOwner().getBounds();
+		int gap = getGap();
+		int minX = ob.getX() + insets.getFromLeft();
+		int minY = ob.getY() + insets.getFromTop();
+		int alignedX = minX;
+		int alignedY = minY;
+		int w = ob.getWidth() - insets.getHorizontal();
+		int h = ob.getHeight() - insets.getVertical();
+		
+		int prefW = prefSize.getWidth();
+		int prefH = prefSize.getHeight();
+		
+		ListAlignment align = getAlignment();
+		boolean isHorizontal = align.isHorizontal();
+		switch (align) {
+		case CENTERED_LEFT_TO_RIGHT:
+			alignedX = minX + w / 2 - (prefW - insets.getHorizontal()) / 2;
+			break;
+		case CENTERED_TOP_TO_BOTTOM:
+			alignedY = minY + h / 2 - (prefH - insets.getVertical()) / 2;
+			break;
+		case BOTTOM_TO_TOP:
+			alignedY = (ob.getFinalY() - insets.getFromBottom()) - prefH;
+			break;
+		case RIGHT_TO_LEFT:
+			alignedX = (ob.getFinalX() - insets.getFromRight()) - prefW;
+			break;
+		case LEFT_TO_RIGHT:
+		case TOP_TO_BOTTOM:
+		default:
+		}
+		int x = Math.max(alignedX, minX);
+		int y = Math.max(alignedY, minY);
+		
+		for (int i = 0; i < compList.size(); i++) {
+			PComponent comp = compList.get(i);
+			PSize compPrefSize = cachedPrefSizes[i];
+			int compPrefW = compPrefSize.getWidth();
+			int compPrefH = compPrefSize.getHeight();
+			
+			if (isHorizontal) {
+				setChildBounds(comp, x, y, compPrefW, h);
+				x += compPrefW + gap;
+			} else {
+				setChildBounds(comp, x, y, w, compPrefH);
+				y += compPrefH + gap;
+			}
+		}
 	}
 	
 	public static enum ListAlignment {

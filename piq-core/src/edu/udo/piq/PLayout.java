@@ -89,6 +89,6 @@ public interface PLayout extends PReadOnlyLayout {
 		return value;
 	}
 	
-	public void onChildPrefSizeChanged(PComponent child);
+//	public void onChildPrefSizeChanged(PComponent child);
 	
 }

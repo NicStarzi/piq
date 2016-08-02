@@ -8,7 +8,9 @@ public abstract class AbstractPBorder extends AbstractPLayoutOwner implements PB
 	
 	public AbstractPBorder() {
 		super();
-		setLayout(new PCentricLayout(this));
+		PCentricLayout layout = new PCentricLayout(this);
+		layout.setGrowContent(true);
+		setLayout(layout);
 	}
 	
 	public AbstractPBorder(PComponent content) {
@@ -34,7 +36,8 @@ public abstract class AbstractPBorder extends AbstractPLayoutOwner implements PB
 	
 	public boolean defaultFillsAllPixels() {
 		PComponent content = getContent();
-		return getLayout().isGrowContent() && content != null && content.defaultFillsAllPixels();
+		return getLayout().isGrowContent() && content != null 
+				&& content.defaultFillsAllPixels();
 	}
 	
 }

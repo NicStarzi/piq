@@ -9,23 +9,9 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractMapPLayout;
-import edu.udo.piq.tools.MutablePSize;
 
 public class PTabPanelLayout extends AbstractMapPLayout {
 	
-//	private final Comparator<PComponent> childComparator = new Comparator<PComponent>() {
-//		public int compare(PComponent cmp1, PComponent cmp2) {
-//			if (cmp1 == getTabBackground()) {
-//				return -1;
-//			}
-//			if (cmp2 == getTabBackground()) {
-//				return 1;
-//			}
-//			return 0;
-//		}
-//	}; 
-	
-	private final MutablePSize prefSize = new MutablePSize();
 	private final List<PComponent> tabList = new ArrayList<>();
 	private final List<PComponent> bodyList = new ArrayList<>();
 	private final List<PComponent> sortedChildList = new ArrayList<>();
@@ -62,6 +48,7 @@ public class PTabPanelLayout extends AbstractMapPLayout {
 			bodyList.remove(child);
 		}
 		sortedChildList.remove(child);
+		invalidate();
 	}
 	
 //	private void sortChildList() {
@@ -133,7 +120,7 @@ public class PTabPanelLayout extends AbstractMapPLayout {
 		return constraint != null && constraint instanceof Constraint;
 	}
 	
-	public void layOut() {
+	protected void layOutInternal() {
 		PBounds ob = getOwner().getBounds();
 		int x = ob.getX();
 		int y = ob.getY();
@@ -166,7 +153,7 @@ public class PTabPanelLayout extends AbstractMapPLayout {
 		}
 	}
 	
-	public PSize getPreferredSize() {
+	protected void onInvalidated() {
 		int maxTabW = 0;
 		int maxTabH = 0;
 		for (PComponent Tab : tabList) {
@@ -208,7 +195,6 @@ public class PTabPanelLayout extends AbstractMapPLayout {
 		}
 		prefSize.setWidth(w);
 		prefSize.setHeight(h);
-		return prefSize;
 	}
 	
 	public Collection<PComponent> getChildren() {

@@ -19,6 +19,11 @@ public class MutablePSize extends AbstractPSize implements PSize {
 		h = height;
 	}
 	
+	public void set(PSize other) {
+		setWidth(other.getWidth());
+		setHeight(other.getHeight());
+	}
+	
 	public void setWidth(int value) {
 		w = value;
 	}

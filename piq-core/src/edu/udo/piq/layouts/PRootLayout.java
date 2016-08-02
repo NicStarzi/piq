@@ -16,29 +16,7 @@ public class PRootLayout extends AbstractEnumPLayout<Constraint> {
 	public PRootLayout(PRoot owner) {
 		super(owner, Constraint.class);
 		this.owner = owner;
-	}
-	
-	public void layOut() {
-		PBounds ob = getOwner().getBounds();
-		int x = ob.getX();
-		int y = ob.getY();
-		int w = ob.getWidth();
-		int h = ob.getHeight();
-		
-		PComponent overlay = getChildForConstraint(Constraint.OVERLAY);
-		setChildBounds(overlay, x, y, w, h);
-		
-		PComponent menuBar = getMenuBar();
-		PSize prefSizeMenuBar = getPreferredSizeOf(menuBar);
-		int menuBarH = prefSizeMenuBar.getHeight();
-		
-		PComponent body = getBody();
-		setChildBounds(menuBar, x, y, w, menuBarH);
-		setChildBounds(body, x, y + menuBarH, w, h - menuBarH);
-	}
-	
-	public PSize getPreferredSize() {
-		return owner.getBounds();
+		prefSize = null;
 	}
 	
 	public PRootOverlay getOverlay() {
@@ -68,7 +46,30 @@ public class PRootLayout extends AbstractEnumPLayout<Constraint> {
 		return null;
 	}
 	
-	public void onChildPrefSizeChanged(PComponent child) {
+	protected void layOutInternal() {
+		PBounds ob = getOwner().getBounds();
+		int x = ob.getX();
+		int y = ob.getY();
+		int w = ob.getWidth();
+		int h = ob.getHeight();
+		
+		PComponent overlay = getChildForConstraint(Constraint.OVERLAY);
+		setChildBounds(overlay, x, y, w, h);
+		
+		PComponent menuBar = getMenuBar();
+		PSize prefSizeMenuBar = getPreferredSizeOf(menuBar);
+		int menuBarH = prefSizeMenuBar.getHeight();
+		
+		PComponent body = getBody();
+		setChildBounds(menuBar, x, y, w, menuBarH);
+		setChildBounds(body, x, y + menuBarH, w, h - menuBarH);
+	}
+	
+	protected PSize getPreferredSizeInternal() {
+		return owner.getBounds();
+	}
+	
+	protected void onChildPrefSizeChanged(PComponent child) {
 		ThrowException.ifFalse(containsChild(child), "containsChild(child) == false");
 		if (child == getMenuBar()) {
 			invalidate();

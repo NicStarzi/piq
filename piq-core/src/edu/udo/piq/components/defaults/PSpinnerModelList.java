@@ -26,15 +26,15 @@ public class PSpinnerModelList extends AbstractPSpinnerModel {
 		this(Arrays.asList(values), selectedIndex);
 	}
 	
-	public PSpinnerModelList(List<Object> values) {
+	public PSpinnerModelList(List<?> values) {
 		this(values, 0);
 	}
 	
-	public PSpinnerModelList(List<Object> values, Object selectedValue) {
+	public PSpinnerModelList(List<?> values, Object selectedValue) {
 		this(values, values.indexOf(selectedValue));
 	}
 	
-	public PSpinnerModelList(List<Object> values, int selectedIndex) {
+	public PSpinnerModelList(List<?> values, int selectedIndex) {
 		ThrowException.ifNull(values, "values == null");
 		ThrowException.ifNotWithin(0, values.size() - 1, selectedIndex, 
 				"selectedIndex < 0 || selectedIndex >= values.size()");

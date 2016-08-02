@@ -14,6 +14,17 @@ public class DefaultPSliderModel implements PSliderModel {
 	protected int max = 100;
 	protected int min = 0;
 	
+	public DefaultPSliderModel() {
+	}
+	
+	public DefaultPSliderModel(int value, int min, int max) {
+		this.min = min;
+		this.max = max;
+		setMaxValue(max);
+		setMinValue(min);
+		setValue(value);
+	}
+	
 	public void setValue(int value) {
 		value = adjustValue(value);
 		if (this.value != value) {

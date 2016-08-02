@@ -8,7 +8,6 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PLayout;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractEnumPLayout;
-import edu.udo.piq.tools.MutablePSize;
 
 public class PScrollBarLayout 
 	extends AbstractEnumPLayout<PScrollBarLayout.Constraint> 
@@ -33,7 +32,6 @@ public class PScrollBarLayout
 //	}
 	
 //	private final PComponent[] comps = new PComponent[Constraint.values().length];
-	private final MutablePSize prefSize = new MutablePSize();
 	private Orientation ori;
 	
 	public PScrollBarLayout(PComponent component) {
@@ -100,7 +98,7 @@ public class PScrollBarLayout
 				&& compClassMap.get(constraint) == component.getClass();
 	}
 	
-	public void layOut() {
+	protected void layOutInternal() {
 //		System.out.println("PScrollBarLayout.layOut");
 		PBounds ob = getOwner().getBounds();
 		int x = ob.getX();
@@ -245,7 +243,7 @@ public class PScrollBarLayout
 		return (double) size / (double) prefSize;
 	}
 	
-	public PSize getPreferredSize() {
+	protected void onInvalidated() {
 		int prefW = 0;
 		int prefH = 0;
 		boolean horizontal = getOrientation() == Orientation.HORIZONTAL;
@@ -269,7 +267,6 @@ public class PScrollBarLayout
 		}
 		prefSize.setWidth(prefW);
 		prefSize.setHeight(prefH);
-		return prefSize;
 	}
 	
 	public static enum Orientation {

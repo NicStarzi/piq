@@ -1,10 +1,9 @@
 package edu.udo.piq.tools;
 
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PComponentObs;
 import edu.udo.piq.PLayout;
-import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PLayoutObs;
+import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.util.ThrowException;
 
 public abstract class AbstractPLayoutOwner extends AbstractPComponent {
@@ -20,12 +19,7 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 			AbstractPLayoutOwner.this.onChildLaidOut(child, constraint);
 		}
 		public void onLayoutInvalidated(PReadOnlyLayout layout) {
-			AbstractPLayoutOwner.this.onLayoutInvalidated();
-		}
-	};
-	protected final PComponentObs childObs = new PComponentObs() {
-		public void onPreferredSizeChanged(PComponent component) {
-			AbstractPLayoutOwner.this.onChildPreferredSizeChanged(component);
+			AbstractPLayoutOwner.this.fireReLayOutEvent();
 		}
 	};
 	protected PLayout layout;
@@ -69,29 +63,17 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 	}
 	
 	protected void onChildRemoved(PComponent child, Object constraint) {
-		child.removeObs(childObs);
 		checkForPreferredSizeChange();
 		fireReRenderEvent();
 	}
 	
 	protected void onChildAdded(PComponent child, Object constraint) {
-		child.addObs(childObs);
-		fireReLayOutEvent();
 		checkForPreferredSizeChange();
 		fireReRenderEvent();
 	}
 	
 	protected void onChildLaidOut(PComponent child, Object constraint) {
 		fireReRenderEvent();
-	}
-	
-	protected void onLayoutInvalidated() {
-		fireReLayOutEvent();
-	}
-	
-	protected void onChildPreferredSizeChanged(PComponent child) {
-		((PLayout) getLayout()).onChildPrefSizeChanged(child);
-		checkForPreferredSizeChange();
 	}
 	
 }

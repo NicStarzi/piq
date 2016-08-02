@@ -10,6 +10,7 @@ import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PComponentAction;
 import edu.udo.piq.PDnDSupport;
+import edu.udo.piq.PInsets;
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PKeyboard.Modifier;
@@ -252,6 +253,30 @@ public class PList extends AbstractPInputLayoutOwner
 		return (PListLayout) super.getLayout();
 	}
 	
+	public void setAlignment(ListAlignment value) {
+		getLayoutInternal().setAlignment(value);
+	}
+	
+	public ListAlignment getAlignment() {
+		return getLayoutInternal().getAlignment();
+	}
+	
+	public void setGap(int value) {
+		getLayoutInternal().setGap(value);
+	}
+	
+	public int getGap() {
+		return getLayoutInternal().getGap();
+	}
+	
+	public void setInsets(PInsets value) {
+		getLayoutInternal().setInsets(value);
+	}
+	
+	public PInsets getInsets() {
+		return getLayoutInternal().getInsets();
+	}
+	
 	public void setSelection(PListSelection listSelection) {
 		if (getSelection() != null) {
 			getSelection().clearSelection();
@@ -271,6 +296,68 @@ public class PList extends AbstractPInputLayoutOwner
 	
 	public PListSelection getSelection() {
 		return selection;
+	}
+	
+	public void setSelected(Object value) {
+		ThrowException.ifNull(getModel(), "getModel() == null");
+		PModelIndex index = getModel().getIndexOf(value);
+		ThrowException.ifNull(index, "getModel().getIndexOf(value) == null");
+		
+		PSelection sel = getSelection();
+		if (sel == null) {
+			return;
+		}
+		if (sel.isSelected(index)) {
+			return;
+		}
+		getSelection().clearSelection();
+		getSelection().addSelection(index);
+	}
+	
+	public void setSelected(PModelIndex index) {
+		ThrowException.ifNull(index, "index == null");
+		if (getSelection() != null) {
+			getSelection().clearSelection();
+			getSelection().addSelection(index);
+		}
+	}
+	
+	public List<PModelIndex> getAllSelectedIndices() {
+		if (getSelection() == null) {
+			return Collections.emptyList(); 
+		}
+		return getSelection().getAllSelected();
+	}
+	
+	public List<Object> getAllSelectedValues() {
+		PModel model = getModel();
+		if (getSelection() == null || model == null) {
+			return Collections.emptyList();
+		}
+		List<PModelIndex> indices = getSelection().getAllSelected();
+		List<Object> result = new ArrayList<>(indices.size());
+		for (PModelIndex index : indices) {
+			result.add(model.get(index));
+		}
+		return result;
+	}
+	
+	public PModelIndex getLastSelectedIndex() {
+		if (getSelection() == null) {
+			return null;
+		}
+		return getSelection().getLastSelected();
+	}
+	
+	public Object getSelectedValue() {
+		if (getSelection() == null || getModel() == null) {
+			return null;
+		}
+		PModelIndex index = getSelection().getLastSelected();
+		if (index == null) {
+			return null;
+		}
+		return getModel().get(index);
 	}
 	
 	public void setModel(PListModel listModel) {

@@ -12,7 +12,7 @@ import edu.udo.piq.components.PPicture;
 import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.components.textbased.PLabel;
-import edu.udo.piq.layouts.PDockLayout;
+import edu.udo.piq.layouts.PDockLayoutOLD;
 import edu.udo.piq.swing.JCompPRoot;
 import edu.udo.piq.tools.ImmutablePInsets;
 
@@ -52,7 +52,7 @@ public class SwingPTest_DockLayout {
 		updateTimer.start();
 		
 		PPanel pnl = new PPanel();
-		PDockLayout dockLayout = new PDockLayout(pnl);
+		PDockLayoutOLD dockLayout = new PDockLayoutOLD(pnl);
 		dockLayout.setInsets(new ImmutablePInsets(12));
 		dockLayout.setGap(6);
 		pnl.setLayout(dockLayout);
@@ -60,18 +60,18 @@ public class SwingPTest_DockLayout {
 		
 		PButton btn1 = new PButton();
 		btn1.setContent(new PLabel(new DefaultPTextModel("Button")));
-		pnl.addChild(btn1, new PDockLayout.Constraint(0, 0));
+		pnl.addChild(btn1, new PDockLayoutOLD.Constraint(0, 0));
 		
 		PButton btn2 = new PButton();
 		btn2.setContent(new PLabel(new DefaultPTextModel("Button")));
-		pnl.addChild(btn2, new PDockLayout.Constraint(1, 0));
+		pnl.addChild(btn2, new PDockLayoutOLD.Constraint(1, 0));
 		
 		PLabel lbl1 = new PLabel(new DefaultPTextModel("This is a very very very long label"));
-		pnl.addChild(lbl1, new PDockLayout.Constraint(0, 1));
+		pnl.addChild(lbl1, new PDockLayoutOLD.Constraint(0, 1));
 		
 		PPicture pic1 = new PPicture();
 		pic1.getModel().setImageID("Tex.png");
-		pnl.addChild(pic1, new PDockLayout.Constraint(643, 0));
+		pnl.addChild(pic1, new PDockLayoutOLD.Constraint(643, 0));
 	}
 	
 }

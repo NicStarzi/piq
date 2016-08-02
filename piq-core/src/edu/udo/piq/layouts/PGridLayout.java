@@ -1,6 +1,8 @@
 package edu.udo.piq.layouts;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
@@ -8,7 +10,6 @@ import edu.udo.piq.PInsets;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractMapPLayout;
 import edu.udo.piq.tools.ImmutablePInsets;
-import edu.udo.piq.tools.MutablePSize;
 import edu.udo.piq.util.ThrowException;
 
 public class PGridLayout extends AbstractMapPLayout {
@@ -19,7 +20,6 @@ public class PGridLayout extends AbstractMapPLayout {
 	public static final int DEFAULT_GAP_BETWEEN_COLUMNS = 4;
 	public static final int DEFAULT_GAP_BETWEEN_ROWS = 4;
 	
-	protected final MutablePSize prefSize = new MutablePSize();
 	protected final PCompInfo[] componentGrid;
 	protected final Growth[] growCols;
 	protected final Growth[] growRows;
@@ -30,7 +30,6 @@ public class PGridLayout extends AbstractMapPLayout {
 	protected PInsets insets = DEFAULT_INSETS;
 	protected int countGrowCol;
 	protected int countGrowRow;
-	protected boolean valid = false;
 	
 	public PGridLayout(PComponent component, 
 			int numberOfColumns, int numberOfRows) 
@@ -50,10 +49,6 @@ public class PGridLayout extends AbstractMapPLayout {
 		Arrays.fill(gapRow, DEFAULT_GAP_BETWEEN_ROWS);
 	}
 	
-	protected void onInvalidated() {
-		valid = false;
-	}
-	
 	protected void onChildAdded(PComponent child, Object constraint) {
 		if (constraint instanceof String) {
 			constraint = new GridConstraint((String) constraint);
@@ -65,8 +60,6 @@ public class PGridLayout extends AbstractMapPLayout {
 				componentGrid[cellID(cx, cy)] = getInfoFor(child);
 			}
 		}
-		
-		valid = false;
 	}
 	
 	protected void onChildRemoved(PComponent child, Object constraint) {
@@ -76,8 +69,7 @@ public class PGridLayout extends AbstractMapPLayout {
 				componentGrid[cellID(cx, cy)] = null;
 			}
 		}
-		
-		valid = false;
+		invalidate();
 	}
 	
 	public void setInsets(PInsets insets) {
@@ -230,17 +222,13 @@ public class PGridLayout extends AbstractMapPLayout {
 		return cx + cy * getColumnCount();
 	}
 	
-	public void layOut() {
+	protected void layOutInternal() {
 		PInsets insets = getInsets();
 		PBounds bounds = getOwner().getBounds();
 		int x = bounds.getX() + insets.getFromLeft();
 		int y = bounds.getY() + insets.getFromTop();
 		
-		
 		refreshLayout();
-		
-//		System.out.println("colCount="+getColumnCount());
-//		System.out.println("rowCount="+getRowCount());
 		
 		int cellX = x;
 		int cellY = y;
@@ -256,6 +244,7 @@ public class PGridLayout extends AbstractMapPLayout {
 				if (info != null) {
 					PComponent cell = info.getComponent();
 					GridConstraint constr = (GridConstraint) info.getConstraint();
+					
 					if (cx == constr.x && cy == constr.y) {
 //						System.out.println("cx="+cx+", cy="+cy+", cell="+cell);
 						int cellW = colW;
@@ -290,20 +279,13 @@ public class PGridLayout extends AbstractMapPLayout {
 		}
 	}
 	
-	public PSize getPreferredSize() {
-		if (valid) {
-			return prefSize;
-		}
-		refreshSize();
-		return prefSize;
-	}
-	
-	protected void refreshSize() {
-		valid = true;
+	protected void onInvalidated() {
 		// Reset row and column sizes first
 		for (int cy = 0; cy < getRowCount(); cy++) {
 			sizeRow[cy] = 0;
 		}
+		boolean[] isColSet = new boolean[getColumnCount()];
+		boolean[] isRowSet = new boolean[getRowCount()];
 		for (int cx = 0; cx < getColumnCount(); cx++) {
 			sizeCol[cx] = 0;
 			// Refresh row and column sizes (column by column)
@@ -323,14 +305,23 @@ public class PGridLayout extends AbstractMapPLayout {
 					continue;
 				}
 				PSize cellPrefSize = getPreferredSizeOf(info.getComponent());
-				int cellPrefW = cellPrefSize.getWidth();
-				int cellPrefH = cellPrefSize.getHeight();
-				
-				if (cellPrefW > sizeCol[cx]) {
-					sizeCol[cx] = cellPrefW;
+				if (!isColSet[cx] || constr.w == 1) {
+					int cellPrefW = cellPrefSize.getWidth();
+					if (!isColSet[cx] || cellPrefW > sizeCol[cx]) {
+						sizeCol[cx] = cellPrefW;
+					}
+					if (constr.w == 1) {
+						isColSet[cx] = true;
+					}
 				}
-				if (cellPrefH > sizeRow[cy]) {
-					sizeRow[cy] = cellPrefH;
+				if (!isRowSet[cy] || constr.h == 1) {
+					int cellPrefH = cellPrefSize.getHeight();
+					if (!isRowSet[cy] || cellPrefH > sizeRow[cy]) {
+						sizeRow[cy] = cellPrefH;
+					}
+					if (constr.h == 1) {
+						isRowSet[cy] = true;
+					}
 				}
 			}
 		}
@@ -370,8 +361,6 @@ public class PGridLayout extends AbstractMapPLayout {
 	}
 	
 	protected void refreshLayout() {
-		refreshSize();
-		
 		PComponent owner = getOwner();
 		if (owner == null) {
 			return;
@@ -448,32 +437,91 @@ public class PGridLayout extends AbstractMapPLayout {
 			x = value;	return this;
 		}
 		
+		public int getX() {
+			return x;
+		}
+		
 		public GridConstraint y(int value) {
 			y = value;	return this;
+		}
+		
+		public int getY() {
+			return y;
 		}
 		
 		public GridConstraint w(int value) {
 			w = value;	return this;
 		}
 		
+		public int getWidth() {
+			return getW();
+		}
+		
+		public int getW() {
+			return w;
+		}
+		
 		public GridConstraint h(int value) {
 			h = value;	return this;
+		}
+		
+		public int getHeight() {
+			return getH();
+		}
+		
+		public int getH() {
+			return h;
 		}
 		
 		public GridConstraint alignX(AlignmentX value) {
 			alignH = value;	return this;
 		}
 		
+		public AlignmentX getAlignX() {
+			return alignH;
+		}
+		
 		public GridConstraint alignY(AlignmentY value) {
 			alignV = value;	return this;
+		}
+		
+		public AlignmentY getAlignY() {
+			return alignV;
 		}
 		
 		public GridConstraint alignH(AlignmentX value) {
 			return alignX(value);
 		}
 		
+		public AlignmentX getAlignH() {
+			return getAlignX();
+		}
+		
 		public GridConstraint alignV(AlignmentY value) {
 			return alignY(value);
+		}
+		
+		public AlignmentY getAlignV() {
+			return getAlignY();
+		}
+		
+		public String toString() {
+			StringBuilder builder = new StringBuilder();
+			builder.append(getClass().getSimpleName());
+			builder.append(" [x=");
+			builder.append(x);
+			builder.append(", y=");
+			builder.append(y);
+			builder.append(", width=");
+			builder.append(w);
+			builder.append(", height=");
+			builder.append(h);
+			builder.append(", alignX=");
+			builder.append(alignH);
+			builder.append(", alignY=");
+			builder.append(alignV);
+			builder.append("]");
+			return builder.toString();
 		}
 		
 	}
@@ -482,6 +530,9 @@ public class PGridLayout extends AbstractMapPLayout {
 		PREFERRED, 
 		MAXIMIZE,
 		;
+		public static final List<Growth> ALL = 
+				Collections.unmodifiableList(Arrays.asList(values()));
+		public static final int COUNT = ALL.size();
 	}
 	
 	public static class GridConstraintParser {

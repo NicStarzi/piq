@@ -17,53 +17,52 @@ public abstract class AbstractSwingPTest {
 	protected JFrame frame;
 	
 	public AbstractSwingPTest() {
-		this(640, 480);
+		root = new JCompPRoot();
 	}
 	
 	public AbstractSwingPTest(int w, int h) {
-		root = new JCompPRoot();
-		
+		this();
+		buildSwing(w, h);
+	}
+	
+	protected final void buildSwing(int w, int h) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					buildSwing(w, h);
+					frame = new JFrame();
+					frame.setSize(w, h);
+					frame.setLocationRelativeTo(null);
+					frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+					frame.setContentPane(root.getJPanel());
+					
+					final Timer updateTimer = new Timer(10, new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							root.update();
+						}
+					});
+					updateTimer.setCoalesce(true);
+					updateTimer.setRepeats(true);
+					updateTimer.start();
+					frame.addWindowListener(new WindowAdapter() {
+						public void windowClosed(WindowEvent e) {
+							updateTimer.stop();
+						}
+					});
+					
+					try {
+						buildGUI();
+						frame.setVisible(true);
+					} catch (Exception e) {
+						updateTimer.stop();
+						frame.dispose();
+						
+						e.printStackTrace();
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		});
-	}
-	
-	private void buildSwing(int w, int h) {
-		frame = new JFrame();
-		frame.setSize(w, h);
-		frame.setLocationRelativeTo(null);
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		frame.setContentPane(root.getJPanel());
-		
-		final Timer updateTimer = new Timer(10, new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				root.update();
-			}
-		});
-		updateTimer.setCoalesce(true);
-		updateTimer.setRepeats(true);
-		updateTimer.start();
-		frame.addWindowListener(new WindowAdapter() {
-			public void windowClosed(WindowEvent e) {
-				updateTimer.stop();
-			}
-		});
-		
-		try {
-			buildGUI();
-			frame.setVisible(true);
-		} catch (Exception e) {
-			updateTimer.stop();
-			frame.dispose();
-			
-			e.printStackTrace();
-		}
 	}
 	
 	protected abstract void buildGUI();

@@ -4,18 +4,15 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractEnumPLayout;
-import edu.udo.piq.tools.MutablePSize;
 import edu.udo.piq.tutorial.TrianglePLayout.Pos;
 
 public class TrianglePLayout extends AbstractEnumPLayout<Pos> {
-	
-	protected final MutablePSize prefSize = new MutablePSize();
 	
 	public TrianglePLayout(PComponent component) {
 		super(component, Pos.class);
 	}
 	
-	public void layOut() {
+	protected void layOutInternal() {
 		PBounds ob = getOwner().getBounds();
 		int x = ob.getX();
 		int fx = ob.getFinalX();
@@ -52,7 +49,7 @@ public class TrianglePLayout extends AbstractEnumPLayout<Pos> {
 		}
 	}
 	
-	public PSize getPreferredSize() {
+	protected void onInvalidated() {
 		PComponent top = getChildForConstraint(Pos.TOP);
 		PComponent lft = getChildForConstraint(Pos.BOTTOM_LEFT);
 		PComponent rgt = getChildForConstraint(Pos.BOTTOM_RIGHT);
@@ -70,7 +67,6 @@ public class TrianglePLayout extends AbstractEnumPLayout<Pos> {
 		
 		prefSize.setWidth(prefW);
 		prefSize.setHeight(prefH);
-		return prefSize;
 	}
 	
 	public static enum Pos {

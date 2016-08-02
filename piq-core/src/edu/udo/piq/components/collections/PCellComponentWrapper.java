@@ -10,8 +10,12 @@ import edu.udo.piq.tools.AbstractPLayoutOwner;
 
 public class PCellComponentWrapper extends AbstractPLayoutOwner implements PCellComponent {
 	
-	public static final PColor DEFAULT_BACKGROUND_SELECTED_COLOR	= DefaultPCellComponent.DEFAULT_BACKGROUND_SELECTED_COLOR;
-	public static final PColor DEFAULT_DROP_HIGHLIGHT_COLOR			= DefaultPCellComponent.DEFAULT_DROP_HIGHLIGHT_COLOR;
+	public static final PColor DEFAULT_BACKGROUND_COLOR				= 
+			PColor.WHITE;
+	public static final PColor DEFAULT_BACKGROUND_SELECTED_COLOR	= 
+			DefaultPCellComponent.DEFAULT_BACKGROUND_SELECTED_COLOR;
+	public static final PColor DEFAULT_DROP_HIGHLIGHT_COLOR			= 
+			DefaultPCellComponent.DEFAULT_DROP_HIGHLIGHT_COLOR;
 	
 	private WrapperContentDelegator contentDel;
 	private PModel model;
@@ -102,10 +106,12 @@ public class PCellComponentWrapper extends AbstractPLayoutOwner implements PCell
 	}
 	
 	public void defaultRender(PRenderer renderer) {
+		PColor backgroundColor = DEFAULT_BACKGROUND_COLOR;
 		if (isSelected()) {
-			renderer.setColor(DEFAULT_BACKGROUND_SELECTED_COLOR);
-			renderer.drawQuad(getBounds());
+			backgroundColor = DEFAULT_BACKGROUND_SELECTED_COLOR;
 		}
+		renderer.setColor(backgroundColor);
+		renderer.drawQuad(getBounds());
 		if (isDropHighlighted()) {
 			PBounds bounds = getBounds();
 			int x = bounds.getX();

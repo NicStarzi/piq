@@ -300,6 +300,9 @@ public class PComboBox extends PDropDown {
 		}
 	}
 	
+	protected void onModelChange() {
+	}
+	
 	protected void onButtonClick() {
 		if (isBodyVisible()) {
 			hideDropDown();

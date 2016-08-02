@@ -219,23 +219,15 @@ public class PDropDown extends AbstractPInputLayoutOwner {
 	}
 	
 	protected void onMouseButtonTriggered(PMouse mouse, MouseButton btn) {
-		if (btn == MouseButton.LEFT && getModel() != null && isMouseOverThisOrChild()) {
-			getModel().setPressed(true);
+		PButtonModel model = getModel();
+		if (btn == MouseButton.LEFT && model != null 
+				&& !model.isPressed() && isMouseOverThisOrChild()) 
+		{
+			model.setPressed(true);
 		}
 	}
 	
 	protected void onMouseButtonReleased(PMouse mouse, MouseButton btn) {
-		boolean oldPressed = isPressed();
-		if (btn == MouseButton.LEFT && oldPressed) {
-			getModel().setPressed(false);
-			if (isMouseOverThisOrChild()) {
-				if (isBodyVisible()) {
-					hideDropDown();
-				} else {
-					showDropDown();
-				}
-			}
-		}
 	}
 	
 	protected void onPreferredSizeChanged() {
@@ -245,6 +237,13 @@ public class PDropDown extends AbstractPInputLayoutOwner {
 	}
 	
 	protected void onModelChange() {
+		if (!getModel().isPressed() && isMouseOverThisOrChild()) {
+			if (isBodyVisible()) {
+				hideDropDown();
+			} else {
+				showDropDown();
+			}
+		}
 		fireReRenderEvent();
 	}
 	

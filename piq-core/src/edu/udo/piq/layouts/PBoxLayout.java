@@ -4,14 +4,11 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PLayoutDesign;
-import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractMapPLayout;
 import edu.udo.piq.tools.ImmutablePInsets;
-import edu.udo.piq.tools.MutablePSize;
 
 public class PBoxLayout extends AbstractMapPLayout {
 	
-	protected final MutablePSize prefSize = new MutablePSize();
 	protected PInsets insets = new ImmutablePInsets(4, 4);
 	private Box rootBox;
 	
@@ -57,7 +54,7 @@ public class PBoxLayout extends AbstractMapPLayout {
 				&& getChildForConstraint(constraint) == null;
 	}
 	
-	public void layOut() {
+	protected void layOutInternal() {
 		PBounds ob = getOwner().getBounds();
 		PInsets insets = getInsets();
 		int x = ob.getX() + insets.getFromLeft();
@@ -115,13 +112,12 @@ public class PBoxLayout extends AbstractMapPLayout {
 		}
 	}
 	
-	public PSize getPreferredSize() {
+	protected void onInvalidated() {
 		Box root = getRootBox();
 		int w = recursiveGetPrefW(root);
 		int h = recursiveGetPrefH(root);
 		prefSize.setWidth(w);
 		prefSize.setHeight(h);
-		return prefSize;
 	}
 	
 	private int recursiveGetPrefW(Box cell) {

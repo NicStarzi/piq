@@ -7,18 +7,10 @@ import edu.udo.piq.PLayoutDesign;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractArrayPLayout;
 import edu.udo.piq.tools.ImmutablePInsets;
-import edu.udo.piq.tools.MutablePSize;
 import edu.udo.piq.util.ThrowException;
 
 public class PCentricLayout extends AbstractArrayPLayout {
 	
-	/**
-	 * To save memory the preferred size of the layout 
-	 * is an instance of MutablePSize which is updated 
-	 * and returned by the {@link #getPreferredSize()} 
-	 * method.<br>
-	 */
-	protected final MutablePSize prefSize = new MutablePSize();
 	protected PInsets insets = new ImmutablePInsets(4);
 	protected boolean growContent = false;
 	
@@ -66,7 +58,20 @@ public class PCentricLayout extends AbstractArrayPLayout {
 		return constraint == null;
 	}
 	
-	public void layOut() {
+	protected void onInvalidated() {
+		int prefW = getInsets().getHorizontal();
+		int prefH = getInsets().getVertical();
+		PComponent content = getContent();
+		if (content != null) {
+			PSize contentSize = getPreferredSizeOf(content);
+			prefW += contentSize.getWidth();
+			prefH += contentSize.getHeight();
+		}
+		prefSize.setWidth(prefW);
+		prefSize.setHeight(prefH);
+	}
+	
+	protected void layOutInternal() {
 		PComponent content = getContent();
 		if (content != null) {
 			PBounds ob = getOwner().getBounds();
@@ -107,20 +112,6 @@ public class PCentricLayout extends AbstractArrayPLayout {
 		}
 	}
 	
-	public PSize getPreferredSize() {
-		int prefW = getInsets().getHorizontal();
-		int prefH = getInsets().getVertical();
-		PComponent content = getContent();
-		if (content != null) {
-			PSize contentSize = getPreferredSizeOf(content);
-			prefW += contentSize.getWidth();
-			prefH += contentSize.getHeight();
-		}
-		prefSize.setWidth(prefW);
-		prefSize.setHeight(prefH);
-		return prefSize;
-	}
-	
 	public boolean containsChild(PComponent child) {
 		ThrowException.ifNull(child, "child == null");
 		return child == getContent();
@@ -133,7 +124,7 @@ public class PCentricLayout extends AbstractArrayPLayout {
 		return -1;
 	}
 	
-	public void onChildPrefSizeChanged(PComponent child) {
+	protected void onChildPrefSizeChanged(PComponent child) {
 		ThrowException.ifFalse(containsChild(child), "containsChild(child) == false");
 		if (!isGrowContent()) {
 			invalidate();

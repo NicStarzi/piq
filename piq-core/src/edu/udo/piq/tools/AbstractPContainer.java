@@ -32,12 +32,28 @@ public abstract class AbstractPContainer extends AbstractPLayoutOwner {
 		getLayout().addChild(component, constraint);
 	}
 	
+	public void removeChild(PComponent component) {
+		getLayout().removeChild(component);
+	}
+	
+	public void removeChild(Object constraint) {
+		getLayout().removeChild(constraint);
+	}
+	
+	public void clearChildren() {
+		getLayout().clearChildren();
+	}
+	
 	/**
 	 * Makes the protected method from {@link AbstractPLayoutOwner} 
 	 * public to give access to the user.<br>
 	 */
 	public Collection<PComponent> getChildren() {
 		return super.getChildren();
+	}
+	
+	public int getChildCount() {
+		return getLayout().getChildCount();
 	}
 	
 	/**

@@ -9,7 +9,6 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractMapPLayout;
-import edu.udo.piq.tools.MutablePSize;
 import edu.udo.piq.util.ThrowException;
 
 public class PFreeLayout extends AbstractMapPLayout {
@@ -20,7 +19,6 @@ public class PFreeLayout extends AbstractMapPLayout {
 	 * and returned by the {@link #getPreferredSize()} 
 	 * method.<br>
 	 */
-	protected final MutablePSize prefSize = new MutablePSize();
 	protected final List<PComponent> sortedChildren = new ArrayList<>();
 	
 	public PFreeLayout(PComponent owner) {
@@ -39,7 +37,7 @@ public class PFreeLayout extends AbstractMapPLayout {
 		return constraint != null && constraint instanceof FreeConstraint;
 	}
 	
-	public void layOut() {
+	protected void layOutInternal() {
 		PBounds ob = getOwner().getBounds();
 		int parentX = ob.getX();
 		int parentY = ob.getY();
@@ -64,7 +62,7 @@ public class PFreeLayout extends AbstractMapPLayout {
 		}
 	}
 	
-	public PSize getPreferredSize() {
+	protected void onInvalidated() {
 		int maxFx = 0;
 		int maxFy = 0;
 		for (PComponent cmp : getChildren()) {
@@ -91,7 +89,6 @@ public class PFreeLayout extends AbstractMapPLayout {
 		}
 		prefSize.setWidth(maxFx);
 		prefSize.setHeight(maxFy);
-		return prefSize;
 	}
 	
 	public void clearChildren() {
@@ -186,8 +183,11 @@ public class PFreeLayout extends AbstractMapPLayout {
 				newConstraint.getZ());
 	}
 	
-	public void onChildPrefSizeChanged(PComponent child) {
-		ThrowException.ifFalse(containsChild(child), "containsChild(child) == false");
+	protected void onOwnerBoundsChanged() {
+		// We do not have to invalidate when the owners bounds change
+	}
+	
+	protected void onChildPrefSizeChanged(PComponent child) {
 		FreeConstraint cnstr = getChildConstraint(child);
 		if (cnstr.w == -1 || cnstr.h == -1) {
 			invalidate();

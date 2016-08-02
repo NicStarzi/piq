@@ -23,7 +23,7 @@ public class PWrapLayout extends PListLayout {
 		super(owner, alignment, gap);
 	}
 	
-	public void layOut() {
+	protected void layOutInternal() {
 		PInsets insets = getInsets();
 		PBounds ob = getOwner().getBounds();
 		int gap = getGap();
@@ -112,7 +112,7 @@ public class PWrapLayout extends PListLayout {
 		}
 	}
 	
-	public PSize getPreferredSize() {
+	protected void onInvalidated() {
 		PInsets insets = getInsets();
 		PBounds bnds = getOwner().getBounds();
 		int bndsW;
@@ -140,9 +140,6 @@ public class PWrapLayout extends PListLayout {
 			
 			if (isHorizontal) {
 				if (curPrefW + compPrefW > bndsW) {
-//					if (prefW < curPrefW) {
-//						prefW = curPrefW;
-//					}
 					if (prefW < compPrefW) {
 						prefW = compPrefW;
 					}
@@ -157,9 +154,6 @@ public class PWrapLayout extends PListLayout {
 				}
 			} else {
 				if (curPrefH + compPrefH > bndsH) {
-//					if (prefH < curPrefH) {
-//						prefH = curPrefH;
-//					}
 					if (prefH < compPrefH) {
 						prefH = compPrefH;
 					}
@@ -187,7 +181,6 @@ public class PWrapLayout extends PListLayout {
 		prefH += insets.getVertical();
 		prefSize.setWidth(prefW);
 		prefSize.setHeight(prefH);
-		return prefSize;
 	}
 	
 }

@@ -45,4 +45,8 @@ public interface PSize {
 	 */
 	public int getHeight();
 	
+	public default boolean isEmpty() {
+		return getWidth() * getHeight() < 1;
+	}
+	
 }

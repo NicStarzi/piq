@@ -1,12 +1,5 @@
 package edu.udo.piq.swing.tests;
 
-import java.awt.EventQueue;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.JFrame;
-import javax.swing.Timer;
-
 import edu.udo.piq.PComponent;
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PClickObs;
@@ -32,44 +25,19 @@ import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PBorderLayout.Constraint;
 import edu.udo.piq.layouts.PGridLayout;
 import edu.udo.piq.layouts.PGridLayout.GridConstraint;
-import edu.udo.piq.swing.JCompPRoot;
 import edu.udo.piq.tools.ImmutablePInsets;
 
-public class SwingPTest_PTable {
+public class SwingPTest_PTable extends AbstractSwingPTest {
+	
 	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					SwingPTest_PTable window = new SwingPTest_PTable();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+		new SwingPTest_PTable();
 	}
 	
-	private final JFrame frame;
-	private final JCompPRoot root;
-	
 	public SwingPTest_PTable() {
-		frame = new JFrame();
-		frame.setSize(320, 240);
-		frame.setLocationRelativeTo(null);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		root = new JCompPRoot();
-		frame.setContentPane(root.getJPanel());
-		
-		Timer updateTimer = new Timer(10, new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				root.update();
-			}
-		});
-		updateTimer.setCoalesce(true);
-		updateTimer.setRepeats(true);
-		updateTimer.start();
-		
+		super(640, 480);
+	}
+	
+	public void buildGUI() {
 		DefaultPTableModel tm = new DefaultPTableModel(3, 3);
 		tm.set(1, 0, "Aaaa");
 		tm.set(2, 1, "Bbbb");

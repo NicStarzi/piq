@@ -22,7 +22,7 @@ public class DefaultPListModel extends AbstractPModel implements PListModel {
 	public DefaultPListModel() {
 	}
 	
-	public DefaultPListModel(Iterable<Object> contents) {
+	public DefaultPListModel(Iterable<?> contents) {
 		for (Object o : contents) {
 			add(getSize(), o);
 		}

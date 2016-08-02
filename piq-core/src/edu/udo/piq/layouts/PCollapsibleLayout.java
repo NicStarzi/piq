@@ -6,7 +6,6 @@ import edu.udo.piq.PInsets;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractEnumPLayout;
 import edu.udo.piq.tools.ImmutablePInsets;
-import edu.udo.piq.tools.MutablePSize;
 import edu.udo.piq.util.ThrowException;
 
 public class PCollapsibleLayout extends AbstractEnumPLayout<PCollapsibleLayout.Constraint> {
@@ -17,7 +16,6 @@ public class PCollapsibleLayout extends AbstractEnumPLayout<PCollapsibleLayout.C
 	public static final int DEFAULT_BUTTON_HEADER_GAP = 2;
 	public static final int DEFAULT_HEADER_BODY_GAP = 2;
 	
-	protected final MutablePSize prefSize = new MutablePSize();
 	protected AlignmentX headerAlignX = DEFAULT_HEADER_ALIGNMENT_X;
 	protected AlignmentY headerAlignY = DEFAULT_HEADER_ALIGNMENT_Y;
 	protected PInsets insets = DEFAULT_INSETS;
@@ -101,7 +99,36 @@ public class PCollapsibleLayout extends AbstractEnumPLayout<PCollapsibleLayout.C
 		return btnLblGap;
 	}
 	
-	public void layOut() {
+	protected void onInvalidated() {
+		PComponent btn = getChildForConstraint(Constraint.EXPAND_BUTTON);
+		PComponent lbl = getChildForConstraint(Constraint.LABEL);
+		PComponent bdy = getChildForConstraint(Constraint.BODY);
+		
+		PSize prefSizeBtn = getPreferredSizeOf(btn);
+		PSize prefSizeLbl = getPreferredSizeOf(lbl);
+		PSize prefSizeBdy;
+		
+		int prefHeaderH = Math.max(prefSizeBtn.getHeight(), prefSizeLbl.getHeight());
+		int prefH;
+		if (isExpanded()) {
+			prefSizeBdy = getPreferredSizeOf(bdy);
+			prefH = prefHeaderH + getHeaderBodyGap() + prefSizeBdy.getHeight();
+		} else {
+			prefSizeBdy = PSize.ZERO_SIZE;
+			prefH = prefHeaderH;
+		}
+		int prefW = Math.max(prefSizeBdy.getWidth(), 
+				prefSizeBtn.getWidth() + prefSizeLbl.getWidth());
+		
+		PInsets insets = getInsets();
+		prefW += insets.getHorizontal();
+		prefH += insets.getVertical();
+		
+		prefSize.setWidth(prefW);
+		prefSize.setHeight(prefH);
+	}
+	
+	protected void layOutInternal() {
 		PInsets insets = getInsets();
 		PBounds ob = getOwner().getBounds();
 		int x = ob.getX() + insets.getFromLeft();
@@ -169,36 +196,6 @@ public class PCollapsibleLayout extends AbstractEnumPLayout<PCollapsibleLayout.C
 		} else {
 			setChildBounds(bdy, x, y, 0, 0);
 		}
-	}
-	
-	public PSize getPreferredSize() {
-		PComponent btn = getChildForConstraint(Constraint.EXPAND_BUTTON);
-		PComponent lbl = getChildForConstraint(Constraint.LABEL);
-		PComponent bdy = getChildForConstraint(Constraint.BODY);
-		
-		PSize prefSizeBtn = getPreferredSizeOf(btn);
-		PSize prefSizeLbl = getPreferredSizeOf(lbl);
-		PSize prefSizeBdy;
-		
-		int prefHeaderH = Math.max(prefSizeBtn.getHeight(), prefSizeLbl.getHeight());
-		int prefH;
-		if (isExpanded()) {
-			prefSizeBdy = getPreferredSizeOf(bdy);
-			prefH = prefHeaderH + getHeaderBodyGap() + prefSizeBdy.getHeight();
-		} else {
-			prefSizeBdy = PSize.ZERO_SIZE;
-			prefH = prefHeaderH;
-		}
-		int prefW = Math.max(prefSizeBdy.getWidth(), 
-				prefSizeBtn.getWidth() + prefSizeLbl.getWidth());
-		
-		PInsets insets = getInsets();
-		prefW += insets.getHorizontal();
-		prefH += insets.getVertical();
-		
-		prefSize.setWidth(prefW);
-		prefSize.setHeight(prefH);
-		return prefSize;
 	}
 	
 	public static enum Constraint {

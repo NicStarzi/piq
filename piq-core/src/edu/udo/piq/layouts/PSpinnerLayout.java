@@ -1,16 +1,13 @@
 package edu.udo.piq.layouts;
 
-import edu.udo.piq.components.PSpinnerPart;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PSize;
+import edu.udo.piq.components.PSpinnerPart;
 import edu.udo.piq.layouts.PSpinnerLayout.Constraint;
 import edu.udo.piq.tools.AbstractEnumPLayout;
-import edu.udo.piq.tools.MutablePSize;
 
 public class PSpinnerLayout extends AbstractEnumPLayout<Constraint> {
-	
-	protected final MutablePSize prefSize = new MutablePSize();
 	
 	public PSpinnerLayout(PComponent component) {
 		super(component, Constraint.class);
@@ -36,7 +33,7 @@ public class PSpinnerLayout extends AbstractEnumPLayout<Constraint> {
 		return (PSpinnerPart) getChildForConstraint(Constraint.BTN_PREV);
 	}
 	
-	public void layOut() {
+	protected void layOutInternal() {
 		PBounds ob = getOwner().getBounds();
 		int x = ob.getX();
 		int y = ob.getY();
@@ -74,7 +71,7 @@ public class PSpinnerLayout extends AbstractEnumPLayout<Constraint> {
 		}
 	}
 	
-	public PSize getPreferredSize() {
+	protected void onInvalidated() {
 		PComponent editor = getChildForConstraint(Constraint.EDITOR);
 		PComponent btnNext = getChildForConstraint(Constraint.BTN_NEXT);
 		PComponent btnPrev = getChildForConstraint(Constraint.BTN_PREV);
@@ -86,7 +83,6 @@ public class PSpinnerLayout extends AbstractEnumPLayout<Constraint> {
 		
 		prefSize.setWidth(editorSize.getWidth() + btnW);
 		prefSize.setHeight(max(editorSize.getHeight(), btnH));
-		return prefSize;
 	}
 	
 	public static enum Constraint {

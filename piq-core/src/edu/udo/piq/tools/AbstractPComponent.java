@@ -81,7 +81,9 @@ public class AbstractPComponent implements PComponent {
 	};
 	protected final PComponentObs parentObs = new PComponentObs() {
 		public void onRootChanged(PComponent component, PRoot currentRoot) {
+			PRoot oldRoot = cachedRoot;
 			setCachedRoot(currentRoot);
+			AbstractPComponent.this.onRootChanged(oldRoot);
 		}
 	};
 	/**
@@ -94,6 +96,7 @@ public class AbstractPComponent implements PComponent {
 			if (child == AbstractPComponent.this) {
 				cachedBoundsInvalid = true;
 				checkForBoundsChange();
+				AbstractPComponent.this.onThisLaidOut(constraint);
 			}
 		}
 	};
@@ -169,8 +172,8 @@ public class AbstractPComponent implements PComponent {
 	 */
 	private int lastBndsX = -1;
 	private int lastBndsY = -1;
-	private int lastBndsW = 0;
-	private int lastBndsH = 0;
+	private int lastBndsW = -1;
+	private int lastBndsH = -1;
 	/**
 	 * The components id will be displayed by the toString() method unless the id 
 	 * is null.<br> If the id is null the toString() method will show the components 
@@ -206,6 +209,13 @@ public class AbstractPComponent implements PComponent {
 			throw new IllegalArgumentException(this+" is descendant of "+parent);
 		}
 		cachedBoundsInvalid = true;
+		cachedBounds = null;
+		lastPrefW = -1;
+		lastPrefH = -1;
+		lastBndsX = -1;
+		lastBndsY = -1;
+		lastBndsW = -1;
+		lastBndsH = -1;
 		PComponent oldParent = this.parent;
 		if (oldParent != null) {
 			oldParent.getLayout().removeObs(parentLayoutObs);
@@ -227,6 +237,7 @@ public class AbstractPComponent implements PComponent {
 			PRoot root = parent == null ? null : parent.getRoot();
 			setCachedRoot(root);
 		}
+		onParentChanged(oldParent);
 	}
 	
 	private void setCachedRoot(PRoot root) {
@@ -287,6 +298,8 @@ public class AbstractPComponent implements PComponent {
 	public PComponent getParent() {
 		return parent;
 	}
+	
+	boolean a = false;
 	
 	public PBounds getBounds() {
 		if (cachedBoundsInvalid) {
@@ -534,14 +547,12 @@ public class AbstractPComponent implements PComponent {
 			lastBndsW = currentW;
 			lastBndsH = currentH;
 			fireBoundsChangedEvent();
-			fireReLayOutEvent();
 			fireReRenderEvent();
 		}
 	}
 	
 	protected void checkForPreferredSizeChange() {
 		PSize currentPrefSize = PCompUtil.getPreferredSizeOf(this);
-		
 		if (lastPrefW != currentPrefSize.getWidth() 
 				|| lastPrefH != currentPrefSize.getHeight()) 
 		{
@@ -550,6 +561,12 @@ public class AbstractPComponent implements PComponent {
 			firePreferredSizeChangedEvent();
 		}
 	}
+	
+	protected void onRootChanged(PRoot oldRoot) {}
+	
+	protected void onParentChanged(PComponent oldParent) {}
+	
+	protected void onThisLaidOut(Object constraint) {}
 	
 	public void setID(String value) {
 		id = value;
@@ -560,13 +577,10 @@ public class AbstractPComponent implements PComponent {
 	}
 	
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
 		if (id == null) {
-			builder.append(getClass().getSimpleName());
-		} else {
-			builder.append(getID());
+			return getClass().getSimpleName();
 		}
-		return builder.toString();
+		return id;
 	}
 	
 	public String getDebugInfo() {

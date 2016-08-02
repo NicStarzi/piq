@@ -19,7 +19,6 @@ import edu.udo.piq.components.collections.PCellComponent;
 import edu.udo.piq.components.collections.PTreeIndex;
 import edu.udo.piq.tools.AbstractMapPLayout;
 import edu.udo.piq.tools.ImmutablePInsets;
-import edu.udo.piq.tools.MutablePSize;
 import edu.udo.piq.util.ThrowException;
 
 public class PTreeLayout extends AbstractMapPLayout implements PReadOnlyLayout {
@@ -63,7 +62,6 @@ public class PTreeLayout extends AbstractMapPLayout implements PReadOnlyLayout {
 	public static final int DEFAULT_INDENT_SIZE = 20;
 	public static final int DEFAULT_GAP = 2;
 	
-	protected final MutablePSize prefSize = new MutablePSize();
 	protected final Map<PComponent, List<PComponent>> childMap = new HashMap<>();
 	protected PComponent rootComp;
 	protected PInsets insets = new ImmutablePInsets(4);
@@ -141,6 +139,7 @@ public class PTreeLayout extends AbstractMapPLayout implements PReadOnlyLayout {
 		if (index.getLastIndex() != sibblings.size()) {
 			correctChildConstraints(sibblings, index.getLastIndex());
 		}
+		invalidate();
 	}
 	
 	protected void correctChildConstraints(List<PComponent> children, int from) {
@@ -279,7 +278,7 @@ public class PTreeLayout extends AbstractMapPLayout implements PReadOnlyLayout {
 		return childMap.get(parentInTree);
 	}
 	
-	public void layOut() {
+	protected void layOutInternal() {
 		PBounds ob = getOwner().getBounds();
 		PInsets insets = getInsets();
 		int x = ob.getX() + insets.getFromLeft();
@@ -315,7 +314,7 @@ public class PTreeLayout extends AbstractMapPLayout implements PReadOnlyLayout {
 		}
 	}
 	
-	public PSize getPreferredSize() {
+	protected void onInvalidated() {
 		PInsets insets = getInsets();
 		
 		int maxFx = 0;
@@ -349,7 +348,6 @@ public class PTreeLayout extends AbstractMapPLayout implements PReadOnlyLayout {
 		
 		prefSize.setWidth(maxFx + insets.getHorizontal());
 		prefSize.setHeight(prefH + insets.getVertical());
-		return prefSize;
 	}
 	
 	protected static class StackInfo {

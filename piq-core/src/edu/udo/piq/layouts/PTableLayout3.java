@@ -3,45 +3,26 @@ package edu.udo.piq.layouts;
 import edu.udo.cs.util.ResizableTable;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
+import edu.udo.piq.PInsets;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.collections.PTableCellIndex;
 import edu.udo.piq.tools.AbstractMapPLayout;
-import edu.udo.piq.tools.MutablePSize;
+import edu.udo.piq.tools.ImmutablePInsets;
+import edu.udo.piq.util.ThrowException;
 
 public class PTableLayout3 extends AbstractMapPLayout {
 	
 	public static final int DEFAULT_COLUMN_WIDTH = 50;
 	public static final int DEFAULT_ROW_HEIGHT = 16;
+	public static final PInsets DEFAULT_INSETS = new ImmutablePInsets(1);
 	
-	protected final MutablePSize prefSize = new MutablePSize();
 	private final ResizableTable<PComponent> table = new ResizableTable<>(0, 0);
+	private PInsets		insets		= DEFAULT_INSETS;
 	private int[]		colWidths	= new int[0];
 	private boolean[]	colWidthSet	= new boolean[0];
 	private int[]		rowHeights	= new int[0];
-	private int cellGapW = 1;
-	private int cellGapH = 1;
-	
-	static enum Mode {
-		INV,
-		LAY,
-		GPS,
-		;
-	}
-	Mode m;
-	int c;
-	private void push(Mode mode) {
-		if (m == mode) {
-			c++;
-		} else {
-			m = mode;
-			c = 1;
-		}
-		System.out.println(m+" ("+c+")");
-	}
-	
-	protected void onInvalidated() {
-		push(Mode.INV);//FIXME
-	}
+	private int			cellGapW	= 1;
+	private int			cellGapH	= 1;
 	
 	public PTableLayout3(PComponent component) {
 		super(component);
@@ -61,13 +42,15 @@ public class PTableLayout3 extends AbstractMapPLayout {
 			}
 		}
 		table.set(col, index.getRow(), child);
-		onInvalidated();
+		invalidate();
 	}
 	
 	protected void onChildRemoved(PComponent child, Object constraint) {
 //		System.out.println("PTableLayout3.childRemoved cnstr="+constraint+", child="+child);
 		PTableCellIndex index = (PTableCellIndex) constraint;
 		table.set(index.getColumn(), index.getRow(), null);
+		// We do not need to invalidate here because the size of the table 
+		// is not changed by a removed component
 	}
 	
 	protected boolean canAdd(PComponent component, Object constraint) {
@@ -127,13 +110,14 @@ public class PTableLayout3 extends AbstractMapPLayout {
 			newColWidths[col] = colWidths[col - 1];
 			newColWidthSet[col] = colWidthSet[col - 1];
 			
-			// Refresh constraints for children
 			for (int row = 0; row < rowCount; row++) {
 				PComponent child = table.get(col, row);
 				if (child == null) {
 					continue;
 				}
-				setChildConstraint(child, new PTableCellIndex(col, row));
+				// Refresh constraints for children
+				PTableCellIndex childIndex = new PTableCellIndex(col, row);
+				setChildConstraint(child, childIndex);
 			}
 		}
 		// Set default values for new column
@@ -146,8 +130,8 @@ public class PTableLayout3 extends AbstractMapPLayout {
 	}
 	
 	public void removeColumn(int index) {
-//		System.out.println("PTableLayout3.removeColumn index="+index);
 		int rowCount = getRowCount();
+		// Make sure to call removeChild before removing the child from the model
 		for (int row = 0; row < rowCount; row++) {
 			removeChild(table.get(index, row));
 		}
@@ -163,17 +147,17 @@ public class PTableLayout3 extends AbstractMapPLayout {
 			newColWidths[col] = colWidths[col];
 			newColWidthSet[col] = colWidthSet[col];
 		}
-		// These columns must all be shifted to the right by 1
+		// These columns must all be shifted to the left by 1
 		for (int col = index; col < colCount; col++) {
 			newColWidths[col] = colWidths[col + 1];
 			newColWidthSet[col] = colWidthSet[col + 1];
 			
-			// Refresh constraints for children
 			for (int row = 0; row < rowCount; row++) {
 				PComponent child = table.get(col, row);
 				if (child == null) {
 					continue;
 				}
+				// Refresh constraints for children
 				PTableCellIndex childIndex = new PTableCellIndex(col, row);
 				setChildConstraint(child, childIndex);
 			}
@@ -193,70 +177,46 @@ public class PTableLayout3 extends AbstractMapPLayout {
 	}
 	
 	public void addRow(int index) {
-//		System.out.println("PTableLayout3.addColumn index="+index);
 		table.addRow(index);
 		int colCount = getColumnCount();
 		int rowCount = getRowCount();
 		
-		// We need to re-create this
-		int[] newRowHeights = new int[rowCount];
-		
-		// These columns keep their old index
-		for (int row = 0; row < index; row++) {
-			newRowHeights[row] = rowHeights[row];
-		}
-		// These columns must all be shifted to the right by 1
+		// These rows must all be shifted to the bottom by 1
 		for (int row = index + 1; row < rowCount; row++) {
-			newRowHeights[row] = rowHeights[row - 1];
-			
-			// Refresh constraints for children
 			for (int col = 0; col < colCount; col++) {
 				PComponent child = table.get(col, row);
 				if (child == null) {
 					continue;
 				}
-				setChildConstraint(child, new PTableCellIndex(col, row));
+				// Refresh constraints for children
+				PTableCellIndex childIndex = new PTableCellIndex(col, row);
+				setChildConstraint(child, childIndex);
 			}
 		}
-		// Set default values for new column
-		newRowHeights[index] = DEFAULT_ROW_HEIGHT;
-		// Update internal state and invalidate layout
-		rowHeights = newRowHeights;
 		invalidate();
 	}
 	
 	public void removeRow(int index) {
-//		System.out.println("PTableLayout3.removeColumn index="+index);
 		int colCount = getColumnCount();
+		// Make sure to call removeChild before removing the child from the model
 		for (int col = 0; col < colCount; col++) {
 			removeChild(table.get(col, index));
 		}
 		table.removeRow(index);
 		int rowCount = getRowCount();
 		
-		// We need to re-create this
-		int[] newRowHeights = new int[rowCount];
-		
-		// These columns keep their old index
-		for (int row = 0; row < index; row++) {
-			newRowHeights[row] = rowHeights[row];
-		}
-		// These columns must all be shifted to the right by 1
+		// These rows must all be shifted to the top by 1
 		for (int row = index; row < rowCount; row++) {
-			newRowHeights[row] = rowHeights[row + 1];
-			
-			// Refresh constraints for children
 			for (int col = 0; col < colCount; col++) {
 				PComponent child = table.get(col, row);
 				if (child == null) {
 					continue;
 				}
+				// Refresh constraints for children
 				PTableCellIndex childIndex = new PTableCellIndex(col, row);
 				setChildConstraint(child, childIndex);
 			}
 		}
-		// Update internal state and invalidate layout
-		rowHeights = newRowHeights;
 		invalidate();
 	}
 	
@@ -285,6 +245,18 @@ public class PTableLayout3 extends AbstractMapPLayout {
 		return cellGapH;
 	}
 	
+	public void setInsets(PInsets value) {
+		ThrowException.ifNull(value, "value == null");
+		if (!getInsets().equals(value)) {
+			insets = value;
+			invalidate();
+		}
+	}
+	
+	public PInsets getInsets() {
+		return insets;
+	}
+	
 	public PTableCellIndex getIndexAt(int x, int y) {
 		int rowIndex = -1;
 		int rowFy = 0;
@@ -310,46 +282,24 @@ public class PTableLayout3 extends AbstractMapPLayout {
 		return new PTableCellIndex(colIndex, rowIndex);
 	}
 	
-	public void layOut() {
-		push(Mode.LAY);//FIXME
+	protected void onInvalidated() {
+		int rowCount = getRowCount();
+		int colCount = getColumnCount();
+		int gapX = getCellGapWidth();
+		int gapY = getCellGapHeight();
+		PInsets insets = getInsets();
 		
-		PBounds ob = getOwner().getBounds();
-		int x = ob.getX();
-		int y = ob.getY();
-		
-		int compX = x;
-		int compY = y;
-		for (int r = 0; r < getRowCount(); r++) {
-			int rowH = 0;
-			for (int c = 0; c < getColumnCount(); c++) {
-				PComponent child = table.get(c, r);
-				PSize childPrefSize = getPreferredSizeOf(child);
-				int childW = colWidths[c];
-				int childH = childPrefSize.getHeight();
-				
-				setChildBounds(child, compX, compY, childW, childH);
-				if (rowH < childH) {
-					rowH = childH;
-				}
-				compX += childW + cellGapW;
-			}
-			rowHeights[r] = rowH;
-			compX = x;
-			compY += rowH + cellGapH;
-		}
-	}
-	
-	public PSize getPreferredSize() {
-		push(Mode.GPS);//FIXME
-		
-		int prefW = cellGapW * (getColumnCount() - 1);
-		for (int c = 0; c < getColumnCount(); c++) {
+		int prefW = insets.getHorizontal() + gapX * (colCount - 1);
+		for (int c = 0; c < colCount; c++) {
 			prefW += colWidths[c];
 		}
-		int prefH = cellGapH * (getRowCount() - 1);
+		int prefH = insets.getVertical() + gapY * (rowCount - 1);
+		if (rowHeights.length != rowCount) {
+			rowHeights = new int[rowCount];
+		}
 		for (int r = 0; r < getRowCount(); r++) {
 			int rowH = 0;
-			for (int c = 0; c < getColumnCount(); c++) {
+			for (int c = 0; c < colCount; c++) {
 				PComponent child = table.get(c, r);
 				PSize childPrefSize = getPreferredSizeOf(child);
 				int childH = childPrefSize.getHeight();
@@ -357,14 +307,39 @@ public class PTableLayout3 extends AbstractMapPLayout {
 					rowH = childH;
 				}
 			}
+			rowHeights[r] = rowH;
 			prefH += rowH;
 		}
 		prefSize.setWidth(prefW);
 		prefSize.setHeight(prefH);
-		return prefSize;
 	}
 	
-	public void onChildPrefSizeChanged(PComponent child) {
+	protected void layOutInternal() {
+		PBounds ob = getOwner().getBounds();
+		PInsets insets = getInsets();
+		int x = ob.getX() + insets.getFromLeft();
+		int y = ob.getY() + insets.getFromTop();
+		
+		int gapX = getCellGapWidth();
+		int gapY = getCellGapHeight();
+		
+		int compX = x;
+		int compY = y;
+		for (int r = 0; r < getRowCount(); r++) {
+			int rowHeight = rowHeights[r];
+			for (int c = 0; c < getColumnCount(); c++) {
+				PComponent child = table.get(c, r);
+				int childW = colWidths[c];
+				
+				setChildBounds(child, compX, compY, childW, rowHeight);
+				compX += childW + gapX;
+			}
+			compX = x;
+			compY += rowHeight + gapY;
+		}
+	}
+	
+	protected void onChildPrefSizeChanged(PComponent child) {
 	}
 	
 }

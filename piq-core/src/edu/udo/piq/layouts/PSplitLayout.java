@@ -4,7 +4,6 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractEnumPLayout;
-import edu.udo.piq.tools.MutablePSize;
 import edu.udo.piq.util.ThrowException;
 
 public class PSplitLayout extends AbstractEnumPLayout<PSplitLayout.Constraint> {
@@ -12,13 +11,6 @@ public class PSplitLayout extends AbstractEnumPLayout<PSplitLayout.Constraint> {
 	public static final Orientation DEFAULT_ORIENTATION = Orientation.HORIZONTAL;
 	public static final double DEFAULT_SPLIT_POSITON = 0.5;
 	
-	/**
-	 * To save memory the preferred size of the layout 
-	 * is an instance of MutablePSize which is updated 
-	 * and returned by the {@link #getPreferredSize()} 
-	 * method.<br>
-	 */
-	protected final MutablePSize prefSize = new MutablePSize();
 	protected Orientation ori = DEFAULT_ORIENTATION;
 	protected double splitPos = DEFAULT_SPLIT_POSITON;
 	
@@ -60,7 +52,7 @@ public class PSplitLayout extends AbstractEnumPLayout<PSplitLayout.Constraint> {
 		return splitPos;
 	}
 	
-	public void layOut() {
+	protected void layOutInternal() {
 		PBounds ob = getOwner().getBounds();
 		int x = ob.getX();
 		int y = ob.getY();
@@ -91,7 +83,7 @@ public class PSplitLayout extends AbstractEnumPLayout<PSplitLayout.Constraint> {
 		}
 	}
 	
-	public PSize getPreferredSize() {
+	protected void onInvalidated() {
 		PComponent first = getChildForConstraint(Constraint.FIRST);
 		PComponent divider = getChildForConstraint(Constraint.DIVIDER);
 		PComponent second = getChildForConstraint(Constraint.SECOND);
@@ -109,10 +101,9 @@ public class PSplitLayout extends AbstractEnumPLayout<PSplitLayout.Constraint> {
 		}
 		prefSize.setWidth(prefW);
 		prefSize.setHeight(prefH);
-		return prefSize;
 	}
 	
-	public void onChildPrefSizeChanged(PComponent child) {
+	protected void onChildPrefSizeChanged(PComponent child) {
 		ThrowException.ifFalse(containsChild(child), "containsChild(child) == false");
 		if (child == getDivider()) {
 			invalidate();

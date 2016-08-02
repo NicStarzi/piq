@@ -44,7 +44,7 @@ public class PScrollPanelLayout extends AbstractMapPLayout implements PLayout {
 				&& constraint != Constraint.BODY == component instanceof PScrollBar;
 	}
 	
-	public void layOut() {
+	protected void layOutInternal() {
 //		System.out.println("PScrollPanelLayout.layOut");
 		PComponent body = getBody();
 		if (body != null) {
@@ -89,7 +89,7 @@ public class PScrollPanelLayout extends AbstractMapPLayout implements PLayout {
 		}
 	}
 	
-	public PSize getPreferredSize() {
+	public PSize getPreferredSizeInternal() {
 		PComponent bodyCmp = getChildForConstraint(Constraint.BODY);
 		return getPreferredSizeOf(bodyCmp);
 	}

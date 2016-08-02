@@ -1,22 +1,17 @@
 package edu.udo.piq.layouts;
 
-import edu.udo.piq.layouts.PBorderLayout.Constraint;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PSize;
+import edu.udo.piq.layouts.PBorderLayout.Constraint;
 import edu.udo.piq.tools.AbstractEnumPLayout;
-import edu.udo.piq.tools.MutablePSize;
 import edu.udo.piq.util.ThrowException;
 
 public class PBorderLayout extends AbstractEnumPLayout<Constraint> {
-	
-	/**
-	 * To save memory the preferred size of the layout 
-	 * is an instance of MutablePSize which is updated 
-	 * and returned by the {@link #getPreferredSize()} 
-	 * method.<br>
-	 */
-	protected final MutablePSize prefSize = new MutablePSize();
 	
 	public PBorderLayout(PComponent owner) {
 		super(owner, Constraint.class);
@@ -26,7 +21,19 @@ public class PBorderLayout extends AbstractEnumPLayout<Constraint> {
 		return "constraint.getClass() != Constraint.class";
 	}
 	
-	public void layOut() {
+	protected void onInvalidated() {
+		PSize prefLft = getPreferredSizeOf(getChildForConstraint(Constraint.LEFT));
+		PSize prefRgt = getPreferredSizeOf(getChildForConstraint(Constraint.RIGHT));
+		PSize prefTop = getPreferredSizeOf(getChildForConstraint(Constraint.TOP));
+		PSize prefBtm = getPreferredSizeOf(getChildForConstraint(Constraint.BOTTOM));
+		PSize prefCnt = getPreferredSizeOf(getChildForConstraint(Constraint.CENTER));
+		int prefW = prefLft.getWidth() + prefRgt.getWidth() + prefCnt.getWidth();
+		int prefH = prefTop.getHeight() + prefBtm.getHeight() + prefCnt.getHeight();
+		prefSize.setWidth(prefW);
+		prefSize.setHeight(prefH);
+	}
+	
+	protected void layOutInternal() {
 		PBounds ob = getOwner().getBounds();
 		int lft = ob.getX();
 		int rgt = ob.getFinalX();
@@ -64,20 +71,7 @@ public class PBorderLayout extends AbstractEnumPLayout<Constraint> {
 		}
 	}
 	
-	public PSize getPreferredSize() {
-		PSize prefLft = getPreferredSizeOf(getChildForConstraint(Constraint.LEFT));
-		PSize prefRgt = getPreferredSizeOf(getChildForConstraint(Constraint.RIGHT));
-		PSize prefTop = getPreferredSizeOf(getChildForConstraint(Constraint.TOP));
-		PSize prefBtm = getPreferredSizeOf(getChildForConstraint(Constraint.BOTTOM));
-		PSize prefCnt = getPreferredSizeOf(getChildForConstraint(Constraint.CENTER));
-		int prefW = prefLft.getWidth() + prefRgt.getWidth() + prefCnt.getWidth();
-		int prefH = prefTop.getHeight() + prefBtm.getHeight() + prefCnt.getHeight();
-		prefSize.setWidth(prefW);
-		prefSize.setHeight(prefH);
-		return prefSize;
-	}
-	
-	public void onChildPrefSizeChanged(PComponent child) {
+	protected void onChildPrefSizeChanged(PComponent child) {
 		ThrowException.ifFalse(containsChild(child), "containsChild(child) == false");
 		if (child != getChildForConstraint(Constraint.CENTER)) {
 			invalidate();
@@ -91,6 +85,9 @@ public class PBorderLayout extends AbstractEnumPLayout<Constraint> {
 		BOTTOM,
 		CENTER,
 		;
+		public static final List<Constraint> ALL = 
+				Collections.unmodifiableList(Arrays.asList(values()));
+		public static final int COUNT = ALL.size();
 	}
 	
 }

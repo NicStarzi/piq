@@ -254,9 +254,8 @@ public class PButton extends AbstractPInputLayoutOwner implements PClickable, PG
 	}
 	
 	protected void onMouseButtonTriggered(PMouse mouse, MouseButton btn) {
-		if (isEnabled() && btn == MouseButton.LEFT 
-//				&& getModel() != null && isMouseOver())
-				&& getModel() != null && isMouseOverThisOrChild())
+		if (isEnabled() && btn == MouseButton.LEFT && getModel() != null 
+				&& isMouseOverThisOrChild())
 		{
 			getModel().setPressed(true);
 		}

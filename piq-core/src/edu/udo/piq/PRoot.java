@@ -161,8 +161,11 @@ public interface PRoot extends PComponent {
 	public default void reLayOutTheEntireGui() {
 		//TODO: Not a very nice solution but it works.
 		for (PComponent comp : new PGuiTreeIterator(this)) {
-			if (comp.getLayout() != null) {
-				comp.getLayout().layOut();
+			PReadOnlyLayout layout = comp.getLayout();
+			if (layout != null) {
+//				System.out.println("comp="+comp+", layout="+layout);
+				layout.invalidate();
+				layout.layOut();
 			}
 		}
 	}
@@ -313,12 +316,7 @@ public interface PRoot extends PComponent {
 	 * @see PRootLayout
 	 */
 	public default void setBody(PComponent component) {
-		if (getBody() != null) {
-			getLayout().removeChild(Constraint.BODY);
-		}
-		if (component != null) {
-			getLayout().addChild(component, Constraint.BODY);
-		}
+		getLayout().setChildForConstraint(component, Constraint.BODY);
 	}
 	
 	/**
@@ -333,12 +331,7 @@ public interface PRoot extends PComponent {
 	}
 	
 	public default void setMenuBar(PComponent component) {
-		if (getMenuBar() != null) {
-			getLayout().removeChild(Constraint.MENUBAR);
-		}
-		if (component != null) {
-			getLayout().addChild(component, Constraint.MENUBAR);
-		}
+		getLayout().setChildForConstraint(component, Constraint.MENUBAR);
 	}
 	
 	public default PComponent getMenuBar() {

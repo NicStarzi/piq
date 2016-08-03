@@ -8,7 +8,7 @@ import edu.udo.piq.PSize;
 
 public class InnerPRoot extends AbstractPLayoutOwner {
 	
-	protected final DummyPRoot root = new DummyPRoot();
+	protected final DelegatePRoot root = new DelegatePRoot();
 	
 	public InnerPRoot() {
 		root.addObs(new PComponentObs() {
@@ -16,9 +16,10 @@ public class InnerPRoot extends AbstractPLayoutOwner {
 				firePreferredSizeChangedEvent();
 			}
 		});
+		root.setRepresentative(this);
 	}
 	
-	public DummyPRoot getDummyRoot() {
+	public DelegatePRoot getDelegateRoot() {
 		return root;
 	}
 	
@@ -31,7 +32,12 @@ public class InnerPRoot extends AbstractPLayoutOwner {
 	}
 	
 	protected void onRootChanged(PRoot oldRoot) {
-		//TODO
+		root.setDelegateRoot(getRoot());
+	}
+	
+	protected void onThisLaidOut(Object constraint) {
+		root.setBounds(getBounds());
+		root.reLayOutTheEntireGui();
 	}
 	
 }

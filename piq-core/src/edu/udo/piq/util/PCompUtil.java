@@ -195,9 +195,7 @@ public class PCompUtil {
 	 * @see PReadOnlyLayout#getChildAt(int, int)
 	 */
 	public static PComponent getComponentAt(PComponent root, int x, int y) throws IllegalArgumentException {
-		if (root == null) {
-			throw new IllegalArgumentException("root == null");
-		}
+		ThrowException.ifNull(root, "root == null");
 		PReadOnlyLayout current = root.getLayout();
 		if (current == null) {
 			return null;

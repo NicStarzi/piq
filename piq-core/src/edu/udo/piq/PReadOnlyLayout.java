@@ -176,6 +176,8 @@ public interface PReadOnlyLayout extends PDisposable {
 		return getChildCount() == 0;
 	}
 	
+	public void invalidate();
+	
 	/**
 	 * Lays out this {@link PReadOnlyLayout}.<br>
 	 * This method should set the bounds for all children according 

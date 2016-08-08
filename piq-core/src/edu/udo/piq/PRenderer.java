@@ -126,6 +126,8 @@ public interface PRenderer extends PDisposable {
 	 */
 	public void setClipBounds(int x, int y, int width, int height);
 	
+	public void intersectClipBounds(int x, int y, int width, int height);
+	
 	/**
 	 * Sets the {@link PColor} that will be used by any subsequent 
 	 * rendering operations.<br>

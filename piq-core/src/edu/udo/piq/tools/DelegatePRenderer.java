@@ -72,6 +72,10 @@ public class DelegatePRenderer implements PImageRenderer {
 		delegate.setClipBounds(x, y, width, height);
 	}
 	
+	public void intersectClipBounds(int x, int y, int width, int height) {
+		delegate.intersectClipBounds(x, y, width, height);
+	}
+	
 	public void setColor(PColor color) {
 		delegate.setColor(color);
 	}

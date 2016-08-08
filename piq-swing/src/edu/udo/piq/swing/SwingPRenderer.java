@@ -39,6 +39,10 @@ public class SwingPRenderer implements PRenderer {
 		graphics.setClip(x, y, width, height);
 	}
 	
+	public void intersectClipBounds(int x, int y, int width, int height) {
+		graphics.clipRect(x, y, width, height);
+	}
+	
 	public PBounds getClipBounds() {
 		Rectangle r = graphics.getClipBounds();
 		return new ImmutablePBounds(r.x, r.y, r.width, r.height);

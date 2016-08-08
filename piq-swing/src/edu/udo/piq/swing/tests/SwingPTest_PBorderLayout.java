@@ -42,7 +42,8 @@ public class SwingPTest_PBorderLayout extends AbstractSwingPTest {
 		colorMap.put(Constraint.CENTER,	PColor.YELLOW);
 		
 		for (Constraint c : Constraint.ALL) {
-			bodyPnl.addChild(new TestPanel(colorMap.get(c)), c);
+			TestPanel cell = new TestPanel(colorMap.get(c));
+			bodyPnl.addChild(cell, c);
 		}
 	}
 	

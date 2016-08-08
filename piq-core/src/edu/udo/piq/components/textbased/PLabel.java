@@ -22,13 +22,13 @@ public class PLabel extends AbstractPComponent {
 	
 	protected final ObserverList<PTextModelObs> modelObsList
 		= PCompUtil.createDefaultObserverList();
-	private final PTextModelObs modelObs = new PTextModelObs() {
+	protected final PTextModelObs modelObs = new PTextModelObs() {
 		public void onTextChanged(PTextModel model) {
 			firePreferredSizeChangedEvent();
 			fireReRenderEvent();
 		}
 	};
-	private PTextModel model;
+	protected PTextModel model;
 	
 	public PLabel() {
 		super();

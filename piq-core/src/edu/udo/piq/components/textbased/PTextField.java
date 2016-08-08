@@ -183,7 +183,7 @@ public class PTextField extends AbstractPTextComponent {
 		int txtY = y + insets.getFromTop();
 		int txtW = bnds.getWidth() - insets.getHorizontal();
 		int txtH = bnds.getHeight() - insets.getVertical();
-		renderer.setClipBounds(txtX, txtY, txtW, txtH);
+		renderer.intersectClipBounds(txtX, txtY, txtW, txtH);
 		
 		if (text.isEmpty()) {
 			if (hasFocus() && getCaretRenderTimer().isFocusRender()) {

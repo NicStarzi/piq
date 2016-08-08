@@ -37,6 +37,9 @@ public class DoNothingRenderer implements PImageRenderer {
 	public void setClipBounds(int x, int y, int width, int height) {
 	}
 	
+	public void intersectClipBounds(int x, int y, int width, int height) {
+	}
+	
 	public void setColor1(double r, double g, double b, double a) {
 	}
 	

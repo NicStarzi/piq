@@ -12,9 +12,15 @@ public class SwingPTest_PBarChart extends AbstractSwingPTest {
 		new SwingPTest_PBarChart();
 	}
 	
+	public SwingPTest_PBarChart() {
+		super(640, 480);
+	}
+	
 	protected void buildGUI() {
 		PSizeTestArea sizeTest = new PSizeTestArea();
 		sizeTest.setBackgroundColor(PColor.GREY75);
+		sizeTest.setContentX(50);
+		sizeTest.setContentY(50);
 		root.setBody(sizeTest);
 		
 		PBarChart chart = new PBarChart();

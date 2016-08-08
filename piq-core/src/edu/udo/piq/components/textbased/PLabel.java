@@ -28,6 +28,7 @@ public class PLabel extends AbstractPComponent {
 			fireReRenderEvent();
 		}
 	};
+	protected PFontResource cachedFont;
 	protected PTextModel model;
 	
 	public PLabel() {
@@ -123,7 +124,12 @@ public class PLabel extends AbstractPComponent {
 		if (root == null) {
 			return null;
 		}
-		return root.fetchFontResource(DEFAULT_FONT_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_STYLE);
+		if (cachedFont != null && root.isFontSupported(cachedFont)) {
+			return cachedFont;
+		}
+		cachedFont = root.fetchFontResource(DEFAULT_FONT_NAME, 
+				DEFAULT_FONT_SIZE, DEFAULT_FONT_STYLE);
+		return cachedFont;
 	}
 	
 }

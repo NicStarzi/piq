@@ -1,10 +1,13 @@
 package edu.udo.piq.tools;
 
+import java.util.ArrayDeque;
 import java.util.Comparator;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
+import edu.udo.piq.PBounds;
 import edu.udo.piq.PClipboard;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PComponentObs;
@@ -24,6 +27,7 @@ import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
+import edu.udo.piq.PRootOverlay;
 import edu.udo.piq.PSize;
 import edu.udo.piq.PTimer;
 import edu.udo.piq.components.containers.DefaultPRootOverlay;
@@ -59,7 +63,7 @@ public abstract class AbstractPRoot implements PRoot {
 	protected PClipboard clipboard;
 	protected PDnDManager dndManager;
 	
-	private final PLayoutObs layoutObs = new PLayoutObs() {
+	protected final PLayoutObs layoutObs = new PLayoutObs() {
 		public void onLayoutInvalidated(PReadOnlyLayout layout) {
 			reLayOut(AbstractPRoot.this);
 		}
@@ -68,22 +72,24 @@ public abstract class AbstractPRoot implements PRoot {
 		}
 		public void onChildAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
 			reLayOut(AbstractPRoot.this);
+			reLayOut(child);
 		}
 	};
-	private final Set<PTimer> timerSet = new HashSet<>();
-	private final Set<PTimer> timersToAdd = new HashSet<>();
-	private final Set<PTimer> timersToRemove = new HashSet<>();
-	private Set<PComponent> reLayOutCompsFront = new TreeSet<>(COMPONENT_COMPARATOR);
-	private Set<PComponent> reLayOutCompsBack = new TreeSet<>(COMPONENT_COMPARATOR);
+	protected final Set<PTimer> timerSet = new HashSet<>();
+	protected final Set<PTimer> timersToAdd = new HashSet<>();
+	protected final Set<PTimer> timersToRemove = new HashSet<>();
+	protected Set<PComponent> reLayOutCompsFront = new TreeSet<>(COMPONENT_COMPARATOR);
+	protected Set<PComponent> reLayOutCompsBack = new TreeSet<>(COMPONENT_COMPARATOR);
+	protected final ReRenderSet reRenderSet = new ReRenderSet(this);
 	protected final ObserverList<PComponentObs> compObsList
 		= PCompUtil.createDefaultObserverList();
 	protected final ObserverList<PFocusObs> focusObsList
 		= PCompUtil.createDefaultObserverList();
-	private PFocusTraversal focusTrav = new DefaultPFocusTraversal(this);
-	private PComponent focusOwner;
-	private String id;
-	private boolean needReLayout = true;
-	private boolean timerIterationInProgress;
+	protected PFocusTraversal focusTrav = new DefaultPFocusTraversal(this);
+	protected PComponent focusOwner;
+	protected String id;
+	protected boolean needReLayout = true;
+	protected boolean timerIterationInProgress;
 	
 	public AbstractPRoot() {
 		layout = new PRootLayout(this);
@@ -105,6 +111,7 @@ public abstract class AbstractPRoot implements PRoot {
 	
 	public void reLayOut() {
 		if (needReLayout) {
+			getLayout().invalidate();
 			getLayout().layOut();
 			needReLayout = false;
 		}
@@ -147,6 +154,119 @@ public abstract class AbstractPRoot implements PRoot {
 			reLayOutCompsBack.clear();
 //			System.out.println("##############################");
 //			System.out.println();
+		}
+	}
+	
+	public void reRender(PComponent component) {
+		reRenderSet.add(component);
+	}
+	
+	protected void defaultRootRender(PRenderer renderer, int rootClipX, int rootClipY, int rootClipFx, int rootClipFy) {
+		Deque<RenderStackInfo> stack = createRenderStack(rootClipX, rootClipY, rootClipFx, rootClipFy);
+		
+		while (!stack.isEmpty()) {
+			RenderStackInfo info = stack.pollLast();
+			PComponent comp = info.child;
+			PBounds compBounds = comp.getBounds();
+			int clipX = Math.max(compBounds.getX(), info.clipX);
+			int clipY = Math.max(compBounds.getY(), info.clipY);
+			int clipFx = Math.min(compBounds.getFinalX(), info.clipFx);
+			int clipFy = Math.min(compBounds.getFinalY(), info.clipFy);
+			int clipW = clipFx - clipX;
+			int clipH = clipFy - clipY;
+//			System.out.println("comp="+comp+", clipX="+clipX+", clipY="+clipY+", clipW="+clipW+", clipH="+clipH);
+			if (clipW < 0 || clipH < 0) {
+//				System.out.println("doNotRenderComp="+comp);
+				continue;
+			}
+			renderComponent(renderer, comp, clipX, clipY, clipW, clipH);
+			
+			PReadOnlyLayout layout = comp.getLayout();
+			if (layout != null) {
+				for (PComponent child : layout.getChildren()) {
+					/*
+					 * We need to addLast to make sure children are rendered after their parents 
+					 * and before any siblings of the parent will be rendered. (we call pollLast)
+					 * Do NOT change to addFirst!
+					 */
+					stack.addLast(new RenderStackInfo(child, clipX, clipY, clipFx, clipFy));
+				}
+			}
+		}
+		reRenderSet.clear();
+	}
+	
+	private Deque<RenderStackInfo> createRenderStack(int rootClipX, int rootClipY, int rootClipFx, int rootClipFy) {
+		Deque<RenderStackInfo> stack = new ArrayDeque<>();
+		/*
+		 * If the root is to be rendered we will re-render everything.
+		 */
+		if (reRenderSet.containsRoot()) {
+			stack.addLast(new RenderStackInfo(getBody(), rootClipX, rootClipY, rootClipFx, rootClipFy));
+		} else {
+			// these are filled by PCompUtil.fillClippedBounds(...)
+			// This is used to cut down on the number of objects created
+			MutablePBounds tmpBnds = new MutablePBounds();
+			
+			for (PComponent child : reRenderSet) {
+				// We check to see whether the component is still part of this GUI tree (might have been removed by now)
+				if (child.getRoot() == this) {
+					PBounds clipBnds = PCompUtil.fillClippedBounds(tmpBnds, child);
+					// If the clipped bounds are null the component is completely 
+					// concealed and does not need to be rendered
+					if (clipBnds == null) {
+						continue;
+					}
+					int clipX = clipBnds.getX();
+					int clipY = clipBnds.getY();
+					int clipFx = clipBnds.getFinalX();
+					int clipFy = clipBnds.getFinalY();
+					// We do addFirst here for consistency with the while-loop
+					stack.addFirst(new RenderStackInfo(child, clipX, clipY, clipFx, clipFy));
+				}
+			}
+		}
+		// The overlay must be rendered last whenever the rest of the GUI is rendered
+		PRootOverlay overlay = getOverlay();
+		if (overlay != null) {
+			for (PComponent overlayComp : overlay.getChildren()) {
+				stack.addFirst(new RenderStackInfo(overlayComp, rootClipX, rootClipY, rootClipFx, rootClipFy));
+			}
+		}
+		return stack;
+	}
+	
+	private void renderComponent(PRenderer renderer, PComponent comp, 
+			int clipX, int clipY, int clipW, int clipH) 
+	{
+		renderer.setClipBounds(clipX, clipY, clipW, clipH);
+//		System.out.println("clip="+clipX+", "+clipY+", "+clipW+", "+clipH);
+		
+		renderer.setRenderMode(renderer.getRenderModeFill());
+		renderer.setColor1(1, 1, 1, 1);
+		PDesign design = comp.getDesign();
+		design.render(renderer, comp);
+	}
+	
+	protected static class RenderStackInfo {
+		public final PComponent child;
+		public final int clipX;
+		public final int clipY;
+		public final int clipFx;
+		public final int clipFy;
+		
+		public RenderStackInfo(PComponent child, int clipX, 
+				int clipY, int clipFx, int clipFy) 
+		{
+			this.child = child;
+			this.clipX = clipX;
+			this.clipY = clipY;
+			this.clipFx = clipFx;
+			this.clipFy = clipFy;
+		}
+		
+		public String toString() {
+			return child.toString();
 		}
 	}
 	
@@ -328,22 +448,38 @@ public abstract class AbstractPRoot implements PRoot {
 		return null;
 	}
 	
+	/**
+	 * Always returns zero by default.
+	 */
 	public int getDepth() {
 		return 0;
 	}
 	
+	/**
+	 * Always returns null by default.
+	 */
 	public PComponent getParent() {
 		return null;
 	}
 	
+	/**
+	 * Always returns the {@link PBounds bounds} of this root.
+	 * @see #getBounds()
+	 */
 	public PSize getDefaultPreferredSize() {
 		return getBounds();
 	}
 	
+	/**
+	 * Always returns true by default.
+	 */
 	public boolean defaultFillsAllPixels() {
 		return true;
 	}
 	
+	/**
+	 * Returns false by default.
+	 */
 	public boolean isFocusable() {
 		return false;
 	}

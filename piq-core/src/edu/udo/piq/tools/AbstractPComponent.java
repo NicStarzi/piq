@@ -500,7 +500,7 @@ public class AbstractPComponent implements PComponent {
 	protected void fireMouseOverCursorChangedEvent() {
 		PRoot root = getRoot();
 		if (root != null) {
-			root.mouseOverCursorChanged(this);
+			root.onMouseOverCursorChanged(this);
 		}
 	}
 	

@@ -31,7 +31,7 @@ public abstract class AbstractPTextComponent extends AbstractPInputComponent imp
 		= PCompUtil.createDefaultObserverList();
 	protected final ObserverList<PSelectionObs> selectionObsList
 		= PCompUtil.createDefaultObserverList();
-	private final PTextModelObs modelObs = new PTextModelObs() {
+	protected final PTextModelObs modelObs = new PTextModelObs() {
 		public void onTextChanged(PTextModel model) {
 			AbstractPTextComponent.this.onTextChanged();
 			if (getSelection() != null) {
@@ -41,12 +41,13 @@ public abstract class AbstractPTextComponent extends AbstractPInputComponent imp
 			fireReRenderEvent();
 		}
 	};
-	private PTextInput txtInput;
-	private PTextSelector txtSel;
-	private PCaretRenderTimer caretTimer;
-	private PTextModel model;
-	private PTextSelection selection;
-	private boolean editable = true;
+	protected PFontResource cachedFont;
+	protected PTextInput txtInput;
+	protected PTextSelector txtSel;
+	protected PCaretRenderTimer caretTimer;
+	protected PTextModel model;
+	protected PTextSelection selection;
+	protected boolean editable = true;
 	
 	public AbstractPTextComponent() {
 		PModelFactory modelFac = PModelFactory.getGlobalModelFactory();
@@ -213,8 +214,12 @@ public abstract class AbstractPTextComponent extends AbstractPInputComponent imp
 		if (root == null) {
 			return null;
 		}
-		return root.fetchFontResource(DEFAULT_FONT_NAME, 
+		if (cachedFont != null && root.isFontSupported(cachedFont)) {
+			return cachedFont;
+		}
+		cachedFont = root.fetchFontResource(DEFAULT_FONT_NAME, 
 				DEFAULT_FONT_SIZE, DEFAULT_FONT_STYLE);
+		return cachedFont;
 	}
 	
 }

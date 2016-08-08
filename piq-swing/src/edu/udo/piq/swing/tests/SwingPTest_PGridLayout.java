@@ -44,7 +44,7 @@ public class SwingPTest_PGridLayout extends AbstractSwingPTest {
 		for (int x = 2; x < layout.getColumnCount(); x++) {
 			final int col = x;
 			Growth gr = layout.getColumnGrowth(x);
-			PSpinnerModel model = new PSpinnerModelEnum<Growth>(Growth.class, gr);
+			PSpinnerModel model = new PSpinnerModelEnum<>(Growth.class, gr);
 			PSpinner selectGrowth = new PSpinner(model);
 			selectGrowth.addObs((mdl, oldVal) -> {
 				Growth value = (Growth) model.getValue();
@@ -63,7 +63,7 @@ public class SwingPTest_PGridLayout extends AbstractSwingPTest {
 		for (int y = 2; y < layout.getRowCount(); y++) {
 			final int row = y;
 			Growth gr = layout.getRowGrowth(y);
-			PSpinnerModel model = new PSpinnerModelEnum<Growth>(Growth.class, gr);
+			PSpinnerModel model = new PSpinnerModelEnum<>(Growth.class, gr);
 			PSpinner selectGrowth = new PSpinner(model);
 			selectGrowth.addObs((mdl, oldVal) -> {
 				Growth value = (Growth) model.getValue();

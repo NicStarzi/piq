@@ -220,7 +220,7 @@ public abstract class AbstractPLayout implements PLayout {
 		return null;
 	}
 	
-	protected void invalidate() {
+	public void invalidate() {
 		pushState(DebugState.INVALIDATED);
 		invalidated = true;
 		fireInvalidateEvent();

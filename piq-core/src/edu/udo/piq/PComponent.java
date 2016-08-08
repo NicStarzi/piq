@@ -172,7 +172,7 @@ public interface PComponent {
 	
 	/**
 	 * @param cursor
-	 * @see PRoot#mouseOverCursorChanged(PComponent)
+	 * @see PRoot#onMouseOverCursorChanged(PComponent)
 	 */
 	public void setMouseOverCursor(PCursor cursor);
 	
@@ -640,7 +640,8 @@ public interface PComponent {
 			return false;
 		}
 		PComponent compAtMouse = mouse.getComponentAtMouse();
-		return compAtMouse == this || isAncestorOf(compAtMouse);
+		return compAtMouse != null && (compAtMouse == this 
+				|| isAncestorOf(compAtMouse));
 	}
 	
 	/**

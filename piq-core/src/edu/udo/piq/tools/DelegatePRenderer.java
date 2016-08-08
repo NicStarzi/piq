@@ -177,6 +177,10 @@ public class DelegatePRenderer implements PImageRenderer {
 		delegate.drawPolygon(xCoords, yCoords);
 	}
 	
+	public boolean isFontSupported(PFontResource font) {
+		return delegate.isFontSupported(font);
+	}
+	
 	public void drawString(PFontResource font, String text, float x, float y) {
 		float ox = getPositionOffsetX();
 		float oy = getPositionOffsetY();

@@ -233,6 +233,8 @@ public interface PRenderer extends PDisposable {
 	
 	public void drawPolygon(float[] xCoords, float[] yCoords);
 	
+	public boolean isFontSupported(PFontResource font);
+	
 	public void drawString(PFontResource font, String text, float x, float y);
 	
 	public void drawEllipse(int x, int y, int width, int height);

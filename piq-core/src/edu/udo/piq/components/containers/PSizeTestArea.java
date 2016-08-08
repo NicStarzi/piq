@@ -25,8 +25,8 @@ public class PSizeTestArea extends AbstractPLayoutOwner {
 	
 	private PColor backgroundColor = DEFAULT_BACKGROUND_COLOR;
 	private PComponent content;
-	private int contentX = 50;
-	private int contentY = 50;
+	private int contentX = ANCHOR_WIDTH;
+	private int contentY = ANCHOR_HEIGHT;
 	private int contentFx = 100;
 	private int contentFy = 100;
 	
@@ -53,12 +53,18 @@ public class PSizeTestArea extends AbstractPLayoutOwner {
 	
 	protected void onMouseMoved(PMouse mouse) {
 		if (dragAnchor != null) {
-			int ax = dragAnchor.getX(this);
-			int ay = dragAnchor.getY(this);
+			PBounds ownBounds = getBounds();
+			int x = ownBounds.getX();
+			int y = ownBounds.getY();
+			int w = ownBounds.getWidth();
+			int h = ownBounds.getHeight();
+			
+			int ax = x + dragAnchor.getX(this);
+			int ay = y + dragAnchor.getY(this);
 			int newAx = mouse.getX() - dragOffsetX;
 			int newAy = mouse.getY() - dragOffsetY;
 			if (ax != newAx || ay != newAy) {
-				dragAnchor.setPosition(this, newAx, newAy);
+				dragAnchor.setPosition(this, newAx, newAy, w, h);
 			}
 		}
 	}
@@ -86,8 +92,12 @@ public class PSizeTestArea extends AbstractPLayoutOwner {
 	}
 	
 	protected PBounds getAnchorBounds(Anchor anchor) {
-		int ax = anchor.getX(this);
-		int ay = anchor.getY(this);
+		PBounds ownBounds = getBounds();
+		int x = ownBounds.getX();
+		int y = ownBounds.getY();
+		
+		int ax = x + anchor.getX(this);
+		int ay = y + anchor.getY(this);
 		return new ImmutablePBounds(ax, ay, ANCHOR_WIDTH, ANCHOR_HEIGHT);
 	}
 	
@@ -216,8 +226,12 @@ public class PSizeTestArea extends AbstractPLayoutOwner {
 	}
 	
 	public void defaultRender(PRenderer renderer) {
+		PBounds bounds = getBounds();
+		int x = bounds.getX();
+		int y = bounds.getY();
+		
 		renderer.setColor(getBackgroundColor());
-		renderer.drawQuad(getBounds());
+		renderer.drawQuad(x, y, bounds.getFinalX(), bounds.getFinalY());
 		
 		for (Anchor anchor : Anchor.ALL) {
 			if (anchor == dragAnchor) {
@@ -225,17 +239,10 @@ public class PSizeTestArea extends AbstractPLayoutOwner {
 			} else {
 				renderer.setColor(PColor.BLACK);
 			}
-			renderAnchor(renderer, anchor.getX(this), anchor.getY(this));
+			int ax = x + anchor.getX(this);
+			int ay = y + anchor.getY(this);
+			renderAnchor(renderer, ax, ay);
 		}
-		
-//		int leftAnchorX = getContentX() - ANCHOR_WIDTH;
-//		int rightAnchorX = getContentFinalX() + 1;
-//		int topAnchorY = getContentY() - ANCHOR_HEIGHT;
-//		int bottomAnchorY = getContentFinalY() + 1;
-//		renderAnchor(renderer, leftAnchorX, topAnchorY);
-//		renderAnchor(renderer, leftAnchorX, bottomAnchorY);
-//		renderAnchor(renderer, rightAnchorX, topAnchorY);
-//		renderAnchor(renderer, rightAnchorX, bottomAnchorY);
 	}
 	
 	protected void renderAnchor(PRenderer renderer, int x, int y) {
@@ -248,7 +255,10 @@ public class PSizeTestArea extends AbstractPLayoutOwner {
 	
 	protected static enum Anchor {
 		TOP_LEFT {
-			public void setPosition(PSizeTestArea area, int x, int y) {
+			public void setPosition(PSizeTestArea area, int x, int y, int w, int h) {
+				x = limit(x, 0, w - ANCHOR_WIDTH * 2);
+				y = limit(y, 0, h - ANCHOR_HEIGHT * 2);
+				
 				area.setContentX(x + ANCHOR_WIDTH);
 				area.setContentY(y + ANCHOR_HEIGHT);
 			}
@@ -260,7 +270,10 @@ public class PSizeTestArea extends AbstractPLayoutOwner {
 			}
 		},
 		TOP_RIGHT {
-			public void setPosition(PSizeTestArea area, int x, int y) {
+			public void setPosition(PSizeTestArea area, int x, int y, int w, int h) {
+				x = limit(x, ANCHOR_WIDTH, w - ANCHOR_WIDTH);
+				y = limit(y, 0, h - ANCHOR_HEIGHT * 2);
+				
 				area.setContentFinalX(x - 1);
 				area.setContentY(y + ANCHOR_HEIGHT);
 			}
@@ -272,7 +285,10 @@ public class PSizeTestArea extends AbstractPLayoutOwner {
 			}
 		},
 		BOTTOM_LEFT {
-			public void setPosition(PSizeTestArea area, int x, int y) {
+			public void setPosition(PSizeTestArea area, int x, int y, int w, int h) {
+				x = limit(x, 0, w - ANCHOR_WIDTH * 2);
+				y = limit(y, ANCHOR_HEIGHT, h - ANCHOR_HEIGHT);
+				
 				area.setContentX(x + ANCHOR_WIDTH);
 				area.setContentFinalY(y - 1);
 			}
@@ -284,7 +300,10 @@ public class PSizeTestArea extends AbstractPLayoutOwner {
 			}
 		},
 		BOTTOM_RIGHT {
-			public void setPosition(PSizeTestArea area, int x, int y) {
+			public void setPosition(PSizeTestArea area, int x, int y, int w, int h) {
+				x = limit(x, ANCHOR_WIDTH, w - ANCHOR_WIDTH);
+				y = limit(y, ANCHOR_HEIGHT, h - ANCHOR_HEIGHT);
+				
 				area.setContentFinalX(x - 1);
 				area.setContentFinalY(y - 1);
 			}
@@ -299,12 +318,20 @@ public class PSizeTestArea extends AbstractPLayoutOwner {
 		public static final List<Anchor> ALL = 
 				Collections.unmodifiableList(Arrays.asList(values()));
 		
-		public abstract void setPosition(PSizeTestArea area, int x, int y);
+		public abstract void setPosition(PSizeTestArea area, int x, int y, int w, int h);
 		
 		public abstract int getX(PSizeTestArea area);
 		
 		public abstract int getY(PSizeTestArea area);
 		
+		private static int limit(int value, int min, int max) {
+			if (value < min) {
+				return min;
+			} else if (value > max) {
+				return max;
+			}
+			return value;
+		}
 	}
 	
 }

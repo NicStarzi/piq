@@ -4,8 +4,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
@@ -15,14 +13,16 @@ import edu.udo.piq.PCursor;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRoot;
+import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
 import edu.udo.piq.util.ThrowException;
 
 public class SwingPMouse implements PMouse {
 	
+	protected final ObserverList<PMouseObs> obsList
+		= PCompUtil.createDefaultObserverList();
 	private final PRoot root;
 	private final JComponent base;
-	private final List<PMouseObs> obsList = new CopyOnWriteArrayList<>();
 	private final boolean[] btnPressed;
 	private final boolean[] btnReleased;
 	private final boolean[] btnTriggered;
@@ -258,27 +258,19 @@ public class SwingPMouse implements PMouse {
 	}
 	
 	protected void fireMoveEvent() {
-		for (PMouseObs obs : obsList) {
-			obs.onMouseMoved(this);
-		}
+		obsList.fireEvent((obs) -> obs.onMouseMoved(this));
 	}
 	
 	protected void fireTriggerEvent(MouseButton btn) {
-		for (PMouseObs obs : obsList) {
-			obs.onButtonTriggered(this, btn);
-		}
+		obsList.fireEvent((obs) -> obs.onButtonTriggered(this, btn));
 	}
 	
 	protected void fireReleaseEvent(MouseButton btn) {
-		for (PMouseObs obs : obsList) {
-			obs.onButtonReleased(this, btn);
-		}
+		obsList.fireEvent((obs) -> obs.onButtonReleased(this, btn));
 	}
 	
 	protected void firePressEvent(MouseButton btn) {
-		for (PMouseObs obs : obsList) {
-			obs.onButtonPressed(this, btn);
-		}
+		obsList.fireEvent((obs) -> obs.onButtonPressed(this, btn));
 	}
 	
 }

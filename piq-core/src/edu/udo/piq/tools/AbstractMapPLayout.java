@@ -10,7 +10,7 @@ import edu.udo.piq.PLayout;
 
 public abstract class AbstractMapPLayout extends AbstractPLayout implements PLayout {
 	
-	private final Map<PComponent, PCompInfo> compMap = new HashMap<>();
+	protected final Map<PComponent, PCompInfo> compMap = new HashMap<>();
 	
 	protected AbstractMapPLayout(PComponent component) {
 		super(component);

@@ -5,17 +5,36 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PLayoutDesign;
 import edu.udo.piq.PSize;
-import edu.udo.piq.tools.AbstractArrayPLayout;
+import edu.udo.piq.tools.AbstractMapPLayout;
 import edu.udo.piq.tools.ImmutablePInsets;
-import edu.udo.piq.util.ThrowException;
 
-public class PCentricLayout extends AbstractArrayPLayout {
+public class PLayeredLayout extends AbstractMapPLayout {
 	
 	protected PInsets insets = new ImmutablePInsets(4);
 	protected boolean growContent = false;
+	protected Object shownLayerKey = null;
 	
-	public PCentricLayout(PComponent component) {
-		super(component, 1);
+	public PLayeredLayout(PComponent component) {
+		super(component);
+	}
+	
+	protected void onChildAdded(PComponent component, Object constraint) {
+		if (shownLayerKey == null) {
+			shownLayerKey = constraint;
+		}
+	}
+	
+	public void setShownLayerKey(Object layerKey) {
+		if (shownLayerKey != layerKey || (layerKey != null 
+				&& !layerKey.equals(shownLayerKey))) 
+		{
+			shownLayerKey = layerKey;
+			invalidate();
+		}
+	}
+	
+	public Object getShownLayerKey() {
+		return shownLayerKey;
 	}
 	
 	public void setInsets(PInsets insets) {
@@ -46,36 +65,35 @@ public class PCentricLayout extends AbstractArrayPLayout {
 		return growContent;
 	}
 	
-	public void setContent(PComponent component) {
-		if (getContent() != null) {
-			removeChild(component);
-		}
-		addChild(component, null);
-	}
-	
-	public PComponent getContent() {
-		return getCompAt(0);
-	}
-	
 	protected boolean canAdd(PComponent component, Object constraint) {
-		return constraint == null;
+		return constraint != null;
 	}
 	
 	protected void onInvalidated() {
-		int prefW = getInsets().getHorizontal();
-		int prefH = getInsets().getVertical();
-		PComponent content = getContent();
-		if (content != null) {
-			PSize contentSize = getPreferredSizeOf(content);
-			prefW += contentSize.getWidth();
-			prefH += contentSize.getHeight();
+		int prefW = 0;
+		int prefH = 0;
+		for (PComponent child : getChildren()) {
+			PSize childSize = getPreferredSizeOf(child);
+			int childW = childSize.getWidth();
+			int childH = childSize.getHeight();
+			if (prefW < childW) {
+				prefW = childW;
+			}
+			if (prefH < childH) {
+				prefH = childH;
+			}
 		}
+		prefW += getInsets().getHorizontal();
+		prefH += getInsets().getVertical();
 		prefSize.setWidth(prefW);
 		prefSize.setHeight(prefH);
 	}
 	
 	protected void layOutInternal() {
-		PComponent content = getContent();
+		if (getShownLayerKey() == null) {
+			return;
+		}
+		PComponent content = getChildForConstraint(getShownLayerKey());
 		if (content != null) {
 			PBounds ob = getOwner().getBounds();
 			PInsets insets = getInsets();
@@ -112,25 +130,6 @@ public class PCentricLayout extends AbstractArrayPLayout {
 				}
 				setChildBounds(content, compX, compY, compW, compH);
 			}
-		}
-	}
-	
-	public boolean containsChild(PComponent child) {
-		ThrowException.ifNull(child, "child == null");
-		return child == getContent();
-	}
-	
-	protected int getIndexFor(Object constr) {
-		if (constr == null) {
-			return 0;
-		}
-		return -1;
-	}
-	
-	protected void onChildPrefSizeChanged(PComponent child) {
-		ThrowException.ifFalse(containsChild(child), "containsChild(child) == false");
-		if (!isGrowContent()) {
-			invalidate();
 		}
 	}
 	

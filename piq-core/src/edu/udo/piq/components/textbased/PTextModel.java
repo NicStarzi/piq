@@ -8,6 +8,10 @@ public interface PTextModel {
 	
 	public String getText();
 	
+	public default int getLength() {
+		return getText().length();
+	}
+	
 	public void addObs(PTextModelObs obs);
 	
 	public void removeObs(PTextModelObs obs);

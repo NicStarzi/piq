@@ -7,7 +7,7 @@ import edu.udo.piq.util.ThrowException;
 public class PSpinnerModelDouble extends AbstractPSpinnerModel {
 	
 	public static final double DEFAULT_VALUE = 0;
-	public static final double DEFAULT_MINIMUM = Double.MIN_VALUE;
+	public static final double DEFAULT_MINIMUM = -Double.MAX_VALUE;
 	public static final double DEFAULT_MAXIMUM = Double.MAX_VALUE;
 	public static final double DEFAULT_STEP = 1;
 	

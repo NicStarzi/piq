@@ -19,7 +19,7 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 			AbstractPLayoutOwner.this.onChildLaidOut(child, constraint);
 		}
 		public void onLayoutInvalidated(PReadOnlyLayout layout) {
-			AbstractPLayoutOwner.this.fireReLayOutEvent();
+			AbstractPLayoutOwner.this.onLayoutInvalidated();
 		}
 	};
 	protected PLayout layout;
@@ -74,6 +74,11 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 	
 	protected void onChildLaidOut(PComponent child, Object constraint) {
 		fireReRenderEvent();
+	}
+	
+	protected void onLayoutInvalidated() {
+		fireReLayOutEvent();
+//		fireReRenderEvent();
 	}
 	
 }

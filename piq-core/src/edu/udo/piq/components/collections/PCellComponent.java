@@ -4,11 +4,11 @@ import edu.udo.piq.PComponent;
 
 public interface PCellComponent extends PComponent {
 	
-	public void setSelected(boolean isSelected);
+	public void setSelected(boolean value);
 	
 	public boolean isSelected();
 	
-	public void setDropHighlighted(boolean isHighlighted);
+	public void setDropHighlighted(boolean value);
 	
 	public boolean isDropHighlighted();
 	

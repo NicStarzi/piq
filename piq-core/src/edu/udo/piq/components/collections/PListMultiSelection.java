@@ -23,7 +23,7 @@ public class PListMultiSelection extends AbstractPSelection implements PListSele
 	@SuppressWarnings("null")
 	public void removeSelection(PModelIndex index) {
 		if (indices.remove(index)) {
-			if (index == getLastSelected()) {
+			if (index != null && index.equals(getLastSelected())) {
 				setLastSelected(null);
 			}
 			int indexVal = ((PListIndex) index).getIndexValue();

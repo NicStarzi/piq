@@ -40,18 +40,22 @@ public class DefaultPCellComponent extends PLabel implements PCellComponent {
 		return encoder;
 	}
 	
-	public void setSelected(boolean isSelected) {
-		selected = isSelected;
-		fireReRenderEvent();
+	public void setSelected(boolean value) {
+		if (selected != value) {
+			selected = value;
+			fireReRenderEvent();
+		}
 	}
 	
 	public boolean isSelected() {
 		return selected;
 	}
 	
-	public void setDropHighlighted(boolean isHighlighted) {
-		highlighted = isHighlighted;
-		fireReRenderEvent();
+	public void setDropHighlighted(boolean value) {
+		if (highlighted != value) {
+			highlighted = value;
+			fireReRenderEvent();
+		}
 	}
 	
 	public boolean isDropHighlighted() {

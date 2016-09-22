@@ -1,6 +1,7 @@
 package edu.udo.piq;
 
 import edu.udo.piq.tools.ImmutablePBounds;
+import edu.udo.piq.tools.MutablePBounds;
 
 /**
  * A simple bounding box that can be used for all kinds of purposes.<br>
@@ -95,6 +96,18 @@ public interface PBounds extends PSize {
 		return x >= getX() && x <= getFinalX() && y >= getY() && y <= getFinalY();
 	}
 	
+	public default boolean isOverlapping(PBounds other) {
+		int x1 = getX();
+		int y1 = getY();
+		int fx1 = getFinalX();
+		int fy1 = getFinalY();
+		int x2 = other.getX();
+		int y2 = other.getY();
+		int fx2 = other.getFinalX();
+		int fy2 = other.getFinalY();
+		return !(x1 > fx2 || y1 > fy2 || fx1 < x2 || fy1 < y2);
+	}
+	
 	/**
 	 * Creates and returns a new instance of {@link PBounds} that is the 
 	 * intersection between these bounds and the other bounds.<br>
@@ -103,7 +116,11 @@ public interface PBounds extends PSize {
 	 * @param other		a non-null instance of PBounds
 	 * @return			a new PBounds object or null if no intersection exists
 	 */
-	public default PBounds makeIntersection(PBounds other) {
+	public default PBounds createIntersection(PBounds other) {
+		return fillIntersection(other, null);
+	}
+	
+	public default PBounds fillIntersection(PBounds other, MutablePBounds result) {
 		int x = Math.max(getX(), other.getX());
 		int y = Math.max(getY(), other.getY());
 		int fx = Math.min(getFinalX(), other.getFinalX());
@@ -113,6 +130,13 @@ public interface PBounds extends PSize {
 		if (w < 0 || h < 0) {
 			return null;
 		}
-		return new ImmutablePBounds(x, y, w, h);
+		if (result == null) {
+			return new ImmutablePBounds(x, y, w, h); 
+		}
+		result.setX(x);
+		result.setY(y);
+		result.setWidth(w);
+		result.setHeight(h);
+		return result;
 	}
 }

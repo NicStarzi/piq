@@ -16,12 +16,12 @@ public abstract class AbstractPLayout implements PLayout {
 	
 	protected final PComponentObs ownerObs = new PComponentObs() {
 		public void onBoundsChanged(PComponent component) {
-			onOwnerBoundsChanged();
+			AbstractPLayout.this.onOwnerBoundsChanged();
 		}
 	};
 	protected final PComponentObs childObs = new PComponentObs() {
 		public void onPreferredSizeChanged(PComponent component) {
-			onChildPrefSizeChanged(component);
+			AbstractPLayout.this.onChildPrefSizeChanged(component);
 		}
 	};
 	
@@ -61,9 +61,8 @@ public abstract class AbstractPLayout implements PLayout {
 		
 		PCompInfo info = new PCompInfo(component, constraint);
 		addInfoInternal(info);
-		component.addObs(childObs);
-		
 		component.setParent(getOwner());
+		component.addObs(childObs);
 		
 		onChildAdded(component, constraint);
 		fireAddEvent(component, constraint);
@@ -98,7 +97,7 @@ public abstract class AbstractPLayout implements PLayout {
 			Object constraint = info.constr;
 			child.setParent(null);
 			
-			onChildRemoved(child, constraint);
+			onChildCleared(child, constraint);
 			fireRemoveEvent(child, constraint);
 		}
 		clearAllInfosInternal();
@@ -256,7 +255,6 @@ public abstract class AbstractPLayout implements PLayout {
 	}
 	
 	protected void onChildPrefSizeChanged(PComponent child) {
-		ThrowException.ifFalse(containsChild(child), "containsChild(child) == false");
 		invalidate();
 	}
 	
@@ -270,6 +268,9 @@ public abstract class AbstractPLayout implements PLayout {
 	
 	protected void onChildRemoved(PComponent child, Object constraint) {
 		invalidate();
+	}
+	
+	protected void onChildCleared(PComponent child, Object constraint) {
 	}
 	
 	/*

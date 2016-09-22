@@ -19,7 +19,7 @@ public class PListLayout extends AbstractMapPLayout {
 	/**
 	 * Manages all components as a list.
 	 */
-	protected final List<PComponent> compList;
+	protected final List<PComponent> compList = new ArrayList<>();
 	protected PSize[] cachedPrefSizes;
 	protected ListAlignment align = ListAlignment.TOP_TO_BOTTOM;
 	protected PInsets insets = new ImmutablePInsets(4);
@@ -39,7 +39,6 @@ public class PListLayout extends AbstractMapPLayout {
 	
 	public PListLayout(PComponent owner, ListAlignment alignment, int gap) {
 		super(owner);
-		compList = new ArrayList<>();
 		
 		setAlignment(alignment);
 		setGap(gap);
@@ -67,6 +66,11 @@ public class PListLayout extends AbstractMapPLayout {
 			setChildConstraint(compList.get(i), con);
 		}
 		invalidate();
+	}
+	
+	protected void clearAllInfosInternal() {
+		super.clearAllInfosInternal();
+		compList.clear();
 	}
 	
 	public void setGap(int value) {
@@ -147,7 +151,7 @@ public class PListLayout extends AbstractMapPLayout {
 		for (int i = 0; i < compList.size(); i++) {
 			PComponent child = compList.get(i);
 			PBounds bnds = getChildBounds(child);
-			if (bnds.getFinalY() >= y) {
+			if (bnds.contains(x, y)) {
 				return i;
 			}
 		}

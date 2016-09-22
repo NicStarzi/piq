@@ -124,11 +124,4 @@ public class PCentricLayout extends AbstractArrayPLayout {
 		return -1;
 	}
 	
-	protected void onChildPrefSizeChanged(PComponent child) {
-		ThrowException.ifFalse(containsChild(child), "containsChild(child) == false");
-		if (!isGrowContent()) {
-			invalidate();
-		}
-	}
-	
 }

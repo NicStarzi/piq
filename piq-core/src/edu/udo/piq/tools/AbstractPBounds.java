@@ -24,7 +24,7 @@ public abstract class AbstractPBounds implements PBounds {
 		return x >= getX() && x <= getFinalX() && y >= getY() && y <= getFinalY();
 	}
 	
-	public PBounds makeIntersection(PBounds other) {
+	public PBounds createIntersection(PBounds other) {
 		int x = Math.max(getX(), other.getX());
 		int y = Math.max(getY(), other.getY());
 		int fx = Math.min(getFinalX(), other.getFinalX());

@@ -11,4 +11,9 @@ public interface PTextSelection extends PSelection {
 	
 	public PListIndex getHighestSelectedIndex();
 	
+	public default void selectAll(PTextModel model) {
+		addSelection(new PListIndex(0));
+		addSelection(new PListIndex(model.getLength()));
+	}
+	
 }

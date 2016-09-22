@@ -435,7 +435,7 @@ public interface PComponent {
 		return null;
 	}
 	
-	public default Object getConstraintsAtParent() {
+	public default Object getConstraintAtParent() {
 		ThrowException.ifNull(getParent(), "getParent() == null");
 		return getParent().getLayout().getChildConstraint(this);
 	}
@@ -473,7 +473,9 @@ public interface PComponent {
 	 * @see #getParent()
 	 */
 	public default boolean isAncestorOf(PComponent maybeDescendant) {
-		ThrowException.ifNull(maybeDescendant, "maybeDescendant == null");
+		if (maybeDescendant == null) {
+			return false;
+		}
 		PComponent comp = maybeDescendant.getParent();
 		while (comp != null) {
 			if (comp == this) {
@@ -496,7 +498,9 @@ public interface PComponent {
 	 * @see #getParent()
 	 */
 	public default boolean isDescendantOf(PComponent maybeAncestor) {
-		ThrowException.ifNull(maybeAncestor, "maybeAncestor == null");
+		if (maybeAncestor == null) {
+			return false;
+		}
 		return maybeAncestor.isAncestorOf(this);
 	}
 	
@@ -568,7 +572,7 @@ public interface PComponent {
 	 * 
 	 * @return the clipped {@link PBounds} of this component or null
 	 * @see #getBounds()
-	 * @see PBounds#makeIntersection(PBounds)
+	 * @see PBounds#createIntersection(PBounds)
 	 * @see PCompUtil#fillClippedBounds(MutablePBounds, PComponent)
 	 */
 	public default PBounds getClippedBounds() {
@@ -685,6 +689,13 @@ public interface PComponent {
 		PRoot root = getRoot();
 		ThrowException.ifNull(root, "getRoot() == null");
 		root.setFocusOwner(this);
+	}
+	
+	public default void tryToTakeFocus() {
+		PRoot root = getRoot();
+		if (root != null) {
+			root.setFocusOwner(this);
+		}
 	}
 	
 	public default void takeFocusNotFromDescendants() {

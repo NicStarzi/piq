@@ -55,10 +55,10 @@ public class PTextField extends AbstractPTextComponent {
 		});
 		addObs(new PFocusObs() {
 			public void onFocusGained(PComponent oldOwner, PComponent newOwner) {
-				contentsWereChanged = false;
+				PTextField.this.onFocusGained();
 			}
 			public void onFocusLost(PComponent oldOwner) {
-				fireConfirmEvent();
+				PTextField.this.onFocusLost();
 			}
 		});
 	}
@@ -93,9 +93,18 @@ public class PTextField extends AbstractPTextComponent {
 		return idxTab;
 	}
 	
+	protected void onFocusGained() {
+		contentsWereChanged = false;
+	}
+	
+	protected void onFocusLost() {
+		fireConfirmEvent();
+	}
+	
 	protected void onTextChanged() {
 		contentsWereChanged = true;
 		idxTab.setLastIndexInRow(getText().length());
+		super.onTextChanged();
 	}
 	
 	public void setInsets(PInsets value) {

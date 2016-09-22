@@ -1,5 +1,7 @@
 package edu.udo.piq.components.textbased;
 
+import edu.udo.piq.PComponent;
+import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
@@ -8,7 +10,6 @@ import edu.udo.piq.util.PCompUtil;
 
 public class PTextSelector {
 	
-	protected final PTextComponent owner;
 	protected final PMouseObs mouseObs = new PMouseObs() {
 		public void onMouseMoved(PMouse mouse) {
 			PTextSelector.this.onMouseMoved(mouse);
@@ -20,14 +21,41 @@ public class PTextSelector {
 			PTextSelector.this.onMouseButtonReleased(mouse, btn);
 		}
 	};
+	protected final PFocusObs focusObs = new PFocusObs() {
+		public void onFocusGained(PComponent oldOwner, PComponent newOwner) {
+			PTextSelector.this.onFocusGained();
+		}
+	};
+	protected PTextComponent owner;
 	protected PListIndex pressedIndex;
 	
-	public PTextSelector(PTextComponent component) {
+	public void setOwner(PTextComponent component) {
+		if (getOwner() != null) {
+			getOwner().removeObs(mouseObs);
+			getOwner().removeObs(focusObs);
+		}
 		owner = component;
+		if (getOwner() != null) {
+			getOwner().addObs(mouseObs);
+			getOwner().addObs(focusObs);
+		}
+	}
+	
+	public PComponent getOwner() {
+		return owner;
 	}
 	
 	public PMouseObs getMouseObs() {
 		return mouseObs;
+	}
+	
+	protected void onFocusGained() {
+		if (owner.getSelection() == null) {
+			return;
+		}
+		if (!owner.getSelection().hasSelection()) {
+			owner.getSelection().addSelection(new PListIndex(0));
+		}
 	}
 	
 	protected void onMouseMoved(PMouse mouse) {

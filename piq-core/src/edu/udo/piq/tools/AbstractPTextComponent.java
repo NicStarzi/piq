@@ -18,7 +18,10 @@ import edu.udo.piq.components.textbased.PTextSelector;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
 
-public abstract class AbstractPTextComponent extends AbstractPInputComponent implements PTextComponent {
+public abstract class AbstractPTextComponent 
+	extends AbstractPInputComponent 
+	implements PTextComponent 
+{
 	
 	protected static final String DEFAULT_FONT_NAME = "Arial";
 	protected static final int DEFAULT_FONT_SIZE = 14;
@@ -31,16 +34,7 @@ public abstract class AbstractPTextComponent extends AbstractPInputComponent imp
 		= PCompUtil.createDefaultObserverList();
 	protected final ObserverList<PSelectionObs> selectionObsList
 		= PCompUtil.createDefaultObserverList();
-	protected final PTextModelObs modelObs = new PTextModelObs() {
-		public void onTextChanged(PTextModel model) {
-			AbstractPTextComponent.this.onTextChanged();
-			if (getSelection() != null) {
-				getSelection().clearSelection();
-			}
-			firePreferredSizeChangedEvent();
-			fireReRenderEvent();
-		}
-	};
+	protected final PTextModelObs modelObs = (mdl) -> AbstractPTextComponent.this.onTextChanged();
 	protected PFontResource cachedFont;
 	protected PTextInput txtInput;
 	protected PTextSelector txtSel;
@@ -60,11 +54,16 @@ public abstract class AbstractPTextComponent extends AbstractPInputComponent imp
 		
 		setSelection(new DefaultPTextSelection());
 		setTextInput(new PTextInput(this));
-		setTextSelector(new PTextSelector(this));
+		setTextSelector(new PTextSelector());
 		setCaretRenderTimer(new PCaretRenderTimer(this));
 	}
 	
 	protected void onTextChanged() {
+		if (getSelection() != null) {
+			getSelection().clearSelection();
+		}
+		firePreferredSizeChangedEvent();
+		fireReRenderEvent();
 	}
 	
 	protected void setTextInput(PTextInput textInput) {
@@ -83,11 +82,11 @@ public abstract class AbstractPTextComponent extends AbstractPInputComponent imp
 	
 	protected void setTextSelector(PTextSelector textSelector) {
 		if (getTextSelector() != null) {
-			removeObs(getTextSelector().getMouseObs());
+			getTextSelector().setOwner(null);
 		}
 		txtSel = textSelector;
 		if (getTextSelector() != null) {
-			addObs(getTextSelector().getMouseObs());
+			getTextSelector().setOwner(this);
 		}
 	}
 	
@@ -120,7 +119,7 @@ public abstract class AbstractPTextComponent extends AbstractPInputComponent imp
 	}
 	
 	public boolean isEditable() {
-		return editable;
+		return editable && isEnabled();
 	}
 	
 	public boolean isFocusable() {

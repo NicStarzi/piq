@@ -69,6 +69,7 @@ public class PTextArea extends AbstractPTextComponent {
 	
 	protected void onTextChanged() {
 		idxTableIsDirty = true;
+		super.onTextChanged();
 	}
 	
 	public PListIndex getTextIndexAt(int x, int y) {

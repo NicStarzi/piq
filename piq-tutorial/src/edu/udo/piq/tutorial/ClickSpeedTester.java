@@ -3,14 +3,13 @@ package edu.udo.piq.tutorial;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PFontResource;
+import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.PMouse;
+import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
-import edu.udo.piq.PTimerCallback;
-import edu.udo.piq.PFontResource.Style;
-import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PTimer;
 import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.MutablePSize;
@@ -48,11 +47,7 @@ public class ClickSpeedTester extends AbstractPComponent {
 				}
 			}
 		});
-		timer = new PTimer(this, new PTimerCallback() {
-			public void onTimerEvent() {
-				ClickSpeedTester.this.onTick();
-			}
-		});
+		timer = new PTimer(this, ClickSpeedTester.this::onTimerTick);
 		timer.setRepeating(true);
 	}
 	
@@ -92,7 +87,7 @@ public class ClickSpeedTester extends AbstractPComponent {
 		setStatus(STATUS_SHOW_RESULT);
 	}
 	
-	private void onTick() {
+	private void onTimerTick(double deltaTime) {
 		if (status == STATUS_COUNT_DOWN) {
 			countDown();
 		} else if (status == STATUS_SHOW_RESULT) {

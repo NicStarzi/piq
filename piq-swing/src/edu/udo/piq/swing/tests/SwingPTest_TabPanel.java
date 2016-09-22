@@ -1,12 +1,5 @@
 package edu.udo.piq.swing.tests;
 
-import java.awt.EventQueue;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.JFrame;
-import javax.swing.Timer;
-
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PClickObs;
 import edu.udo.piq.components.containers.PPanel;
@@ -14,43 +7,18 @@ import edu.udo.piq.components.containers.PTabPanel;
 import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.layouts.PFreeLayout;
 import edu.udo.piq.layouts.PFreeLayout.FreeConstraint;
-import edu.udo.piq.swing.JCompPRoot;
 
-public class SwingPTest_TabPanel {
+public class SwingPTest_TabPanel extends AbstractSwingPTest {
+	
 	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					SwingPTest_TabPanel window = new SwingPTest_TabPanel();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+		new SwingPTest_TabPanel();
 	}
 	
-	private final JFrame frame;
-	private final JCompPRoot root;
-	
 	public SwingPTest_TabPanel() {
-		frame = new JFrame();
-		frame.setSize(640, 480);
-		frame.setLocationRelativeTo(null);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		root = new JCompPRoot();
-		frame.setContentPane(root.getJPanel());
-		
-		Timer updateTimer = new Timer(10, new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				root.update();
-			}
-		});
-		updateTimer.setCoalesce(true);
-		updateTimer.setRepeats(true);
-		updateTimer.start();
-		
+		super(640, 480);
+	}
+	
+	public void buildGUI() {
 		PTabPanel bodyPnl = new PTabPanel();
 		root.setBody(bodyPnl);
 		

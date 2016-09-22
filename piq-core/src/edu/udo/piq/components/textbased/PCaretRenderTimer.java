@@ -86,7 +86,7 @@ public class PCaretRenderTimer {
 		focusToggleTimer.start();
 	}
 	
-	protected void onTimerUpdate() {
+	protected void onTimerUpdate(double deltaTime) {
 		PTextSelection selection = owner.getSelection();
 		PListIndex selectionFrom = selection.getLowestSelectedIndex();
 		PListIndex selectionTo = selection.getHighestSelectedIndex();

@@ -6,6 +6,7 @@ import java.util.Deque;
 import java.util.List;
 
 import edu.udo.piq.PDnDSupport;
+import edu.udo.piq.components.collections.PDropComponent;
 import edu.udo.piq.components.collections.PModel;
 import edu.udo.piq.components.collections.PModelIndex;
 import edu.udo.piq.components.collections.PTreeIndex;
@@ -15,36 +16,39 @@ import static edu.udo.piq.components.collections.PTreeIndex.ROOT;;
 
 public class PTreePDnDSupport extends DefaultPDnDSupport implements PDnDSupport {
 	
+	// This special root node can be detected by the PTreePDnDSupport when dropping
 	public static final Object EXPORT_MODEL_ROOT_CONTENT = new Object() {
 		public String toString() {
 			return "PTreeDnDSupportExportRoot";
 		};
 	};
 	
-	protected void doNaiveImport(PModel dstModel, PModelIndex dstIndex, PModel importData) {
-		if (importData instanceof PTreeModel) {
-			PTreeModel treeImportData = (PTreeModel) importData;
-			PTreeIndex treeDstIndex = (PTreeIndex) dstIndex;
-			if (treeImportData.getRoot() == EXPORT_MODEL_ROOT_CONTENT) {
+	protected void doNaiveImport(PDropComponent dstComp, 
+			PModel dstModel, PModelIndex dstIndex, PModel importData) 
+	{
+		if (!(importData instanceof PTreeModel)) {
+			super.doNaiveImport(dstComp, dstModel, dstIndex, importData);
+		}
+		PTreeModel treeImportData = (PTreeModel) importData;
+		PTreeIndex treeDstIndex = (PTreeIndex) dstIndex;
+		if (treeImportData.getRoot() == EXPORT_MODEL_ROOT_CONTENT) {
+			Deque<PTreeIndex> stack = new ArrayDeque<>();
+			for (int i = 0; i < treeImportData.getChildCount(ROOT); i++) {
+				stack.addLast(ROOT.append(i));
 				
-				Deque<PTreeIndex> stack = new ArrayDeque<>();
-				for (int i = 0; i < treeImportData.getChildCount(ROOT); i++) {
-					stack.addLast(ROOT.append(i));
+				while (!stack.isEmpty()) {
+					PTreeIndex exportIndex = stack.pop();
+					PTreeIndex importIndex = treeDstIndex.append(exportIndex, 1);
+					dstModel.add(importIndex, importData.get(exportIndex));
 					
-					while (!stack.isEmpty()) {
-						PTreeIndex exportIndex = stack.pop();
-						PTreeIndex importIndex = treeDstIndex.append(exportIndex, 1);
-						dstModel.add(importIndex, importData.get(exportIndex));
-						
-						for (int j = 0; j < treeImportData.getChildCount(exportIndex); j++) {
-							stack.addLast(exportIndex.append(j));
-						}
+					for (int j = 0; j < treeImportData.getChildCount(exportIndex); j++) {
+						stack.addLast(exportIndex.append(j));
 					}
 				}
-				return;
 			}
+		} else {
+			super.doNaiveImport(dstComp, dstModel, dstIndex, importData);
 		}
-		super.doNaiveImport(dstModel, dstIndex, importData);
 	}
 	
 	protected PModel buildNaiveExportModel(PModel srcModel, List<PModelIndex> srcIndices) {

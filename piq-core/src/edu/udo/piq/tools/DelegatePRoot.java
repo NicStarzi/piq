@@ -178,12 +178,16 @@ public class DelegatePRoot extends AbstractPRoot implements PRoot {
 		super.update(milliSeconds);
 	}
 	
+	public double getDeltaTime() {
+		return getDelegateRoot().getDeltaTime();
+	}
+	
 	public void tickAllTimers(int milliSeconds) {
 		super.tickAllTimers(milliSeconds);
 	}
 	
-	public void reLayOutAll() {
-		super.reLayOutAll();
+	public void reLayOutAll(int maxIterationCount) {
+		super.reLayOutAll(maxIterationCount);
 	}
 	
 	public void reRender(PComponent component) {

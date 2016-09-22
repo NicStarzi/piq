@@ -1,53 +1,21 @@
 package edu.udo.piq.swing.tests;
 
-import java.awt.EventQueue;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.JFrame;
-import javax.swing.Timer;
-
 import edu.udo.piq.components.PPicture;
 import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.layouts.PBoxLayout;
 import edu.udo.piq.layouts.PBoxLayout.Box;
-import edu.udo.piq.swing.JCompPRoot;
 
-public class SwingPTest_BoxLayout {
+public class SwingPTest_BoxLayout extends AbstractSwingPTest {
+	
 	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					SwingPTest_BoxLayout window = new SwingPTest_BoxLayout();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+		new SwingPTest_BoxLayout();
 	}
 	
-	private final JFrame frame;
-	private final JCompPRoot root;
-	
 	public SwingPTest_BoxLayout() {
-		frame = new JFrame();
-		frame.setSize(640, 480);
-		frame.setLocationRelativeTo(null);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		root = new JCompPRoot();
-		frame.setContentPane(root.getJPanel());
-		
-		Timer updateTimer = new Timer(10, new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				root.update();
-			}
-		});
-		updateTimer.setCoalesce(true);
-		updateTimer.setRepeats(true);
-		updateTimer.start();
-		
+		super(640, 480);
+	}
+	
+	public void buildGUI() {
 		PPanel pnl = new PPanel();
 		PBoxLayout boxLayout = new PBoxLayout(pnl);
 		pnl.setLayout(boxLayout);

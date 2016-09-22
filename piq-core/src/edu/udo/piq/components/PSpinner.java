@@ -1,9 +1,10 @@
 package edu.udo.piq.components;
 
+import java.util.function.Consumer;
+
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PComponentAction;
 import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PLayout;
 import edu.udo.piq.PModelFactory;
@@ -28,44 +29,15 @@ import edu.udo.piq.util.ThrowException;
 
 public class PSpinner extends AbstractPInputLayoutOwner {
 	
-	/**
-	 * This method is used by the {@link #INPUT_PRESS_UP} and 
-	 * {@link #INPUT_PRESS_DOWN} key inputs. It returns the 
-	 * instance of {@link PSpinner} that belongs to the source 
-	 * of the key event.<br>
-	 * If no such spinner exists an IllegalArgumentException is 
-	 * thrown instead.
-	 * @param comp	a non-null PComponent that is either a PSpinner or a PSpinnerPart
-	 * @return		a non-null PSpinner
-	 */
-	protected static PSpinner getSpinner(PComponent comp) {
-		if (comp instanceof PSpinner) {
-			return (PSpinner) comp;
-		} else if (comp instanceof PSpinnerPart) {
-			return ((PSpinnerPart) comp).getSpinner();
-		} else {
-			throw new IllegalArgumentException("Event source has no "
-					+PSpinner.class.getSimpleName());
-		}
-	}
-	
 	/*
 	 * Input: Press Up
 	 * If the UP key is pressed while the spinner has focus, a model and 
 	 * is enabled, the next value of the spinners model will be selected.
 	 */
 	public static final String INPUT_IDENTIFIER_PRESS_UP = "pressUp";
-	
-	public static final PKeyInput INPUT_PRESS_UP = new DefaultPKeyInput(
-			FocusPolicy.THIS_OR_CHILD_HAS_FOCUS, KeyInputType.PRESS, Key.UP, (comp) -> 
-	{
-		PSpinner spinner = getSpinner(comp);
-		return spinner.isEnabled() && spinner.getModel() != null;
-	});
-	
-	public static final PComponentAction REACTION_PRESS_UP = (comp) -> {
-		getSpinner(comp).selectNext();
-	};
+	public static final PKeyInput<PSpinner> INPUT_PRESS_UP = new DefaultPKeyInput<>(
+			FocusPolicy.THIS_OR_CHILD_HAS_FOCUS, KeyInputType.PRESS, Key.UP, PSpinner::canTriggerUpOrDown);
+	public static final Consumer<PSpinner> REACTION_PRESS_UP = self -> self.selectNext();
 	
 	/*
 	 * Input: Press Down
@@ -73,14 +45,13 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 	 * is enabled, the previous value of the spinners model will be selected.
 	 */
 	public static final String INPUT_IDENTIFIER_PRESS_DOWN = "pressDown";
+	public static final PKeyInput<PSpinner> INPUT_PRESS_DOWN = new DefaultPKeyInput<>(
+			FocusPolicy.THIS_OR_CHILD_HAS_FOCUS, KeyInputType.PRESS, Key.DOWN, PSpinner::canTriggerUpOrDown);
+	public static final Consumer<PSpinner> REACTION_PRESS_DOWN = self -> self.selectPrevious();
 	
-	public static final PKeyInput INPUT_PRESS_DOWN = new DefaultPKeyInput(
-			FocusPolicy.THIS_OR_CHILD_HAS_FOCUS, KeyInputType.PRESS, Key.DOWN, 
-			INPUT_PRESS_UP.getOptionalCondition());
-	
-	public static final PComponentAction REACTION_PRESS_DOWN = (comp) -> {
-		getSpinner(comp).selectPrevious();
-	};
+	protected static boolean canTriggerUpOrDown(PSpinner self) {
+		return self.isEnabled() && self.getModel() != null;
+	}
 	
 	protected final ObserverList<PSpinnerModelObs> modelObsList = 
 			PCompUtil.createDefaultObserverList();
@@ -275,6 +246,14 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 			return null;
 		}
 		
+		public boolean isEnabled() {
+			PSpinner parent = getSpinner();
+			if (parent != null) {
+				return parent.isEnabled();
+			}
+			return super.isEnabled();
+		}
+		
 		protected void onUserInput() {
 			String value = getText();
 			PSpinnerModel model = getSpinnerModel();
@@ -385,6 +364,14 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 		
 		public PSpinnerBtnDir getPSpinnerBtnDir() {
 			return dir;
+		}
+		
+		public boolean isEnabled() {
+			PComponent parent = getParent();
+			if (parent instanceof PSpinner) {
+				return ((PSpinner) parent).isEnabled();
+			}
+			return super.isEnabled();
 		}
 		
 		public void defaultRender(PRenderer renderer) {

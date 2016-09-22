@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import edu.udo.piq.PComponent;
 import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PKeyboard.Modifier;
 import edu.udo.piq.util.ThrowException;
 
-public class DefaultPKeyInput implements PKeyInput {
+public class DefaultPKeyInput<COMP_TYPE extends PComponent> 
+	implements PKeyInput<COMP_TYPE> 
+{
 	
 	public static final KeyInputType DEFAULT_KEY_INPUT_TYPE = KeyInputType.TRIGGER;
 	public static final FocusPolicy DEFAULT_FOCUS_POLICY = FocusPolicy.THIS_HAS_FOCUS;
@@ -18,7 +21,7 @@ public class DefaultPKeyInput implements PKeyInput {
 	protected KeyInputType type = DEFAULT_KEY_INPUT_TYPE;
 	protected FocusPolicy focusPlcy = DEFAULT_FOCUS_POLICY;
 	protected Key key;
-	protected OptionalCondition triggerCond;
+	protected Condition<COMP_TYPE> triggerCond;
 	
 	public DefaultPKeyInput(Key key) {
 		this(DEFAULT_FOCUS_POLICY, DEFAULT_KEY_INPUT_TYPE, key, null, DEFAULT_MODIFIERS);
@@ -36,19 +39,19 @@ public class DefaultPKeyInput implements PKeyInput {
 		this(focusPolicy, inputType, key, null, DEFAULT_MODIFIERS);
 	}
 	
-	public DefaultPKeyInput(Key key, OptionalCondition condition) {
+	public DefaultPKeyInput(Key key, Condition<COMP_TYPE> condition) {
 		this(DEFAULT_FOCUS_POLICY, DEFAULT_KEY_INPUT_TYPE, key, condition, DEFAULT_MODIFIERS);
 	}
 	
-	public DefaultPKeyInput(KeyInputType inputType, Key key, OptionalCondition condition) {
+	public DefaultPKeyInput(KeyInputType inputType, Key key, Condition<COMP_TYPE> condition) {
 		this(DEFAULT_FOCUS_POLICY, inputType, key, condition, DEFAULT_MODIFIERS);
 	}
 	
-	public DefaultPKeyInput(FocusPolicy focusPolicy, Key key, OptionalCondition condition) {
+	public DefaultPKeyInput(FocusPolicy focusPolicy, Key key, Condition<COMP_TYPE> condition) {
 		this(focusPolicy, DEFAULT_KEY_INPUT_TYPE, key, condition, DEFAULT_MODIFIERS);
 	}
 	
-	public DefaultPKeyInput(FocusPolicy focusPolicy, KeyInputType inputType, Key key, OptionalCondition condition) {
+	public DefaultPKeyInput(FocusPolicy focusPolicy, KeyInputType inputType, Key key, Condition<COMP_TYPE> condition) {
 		this(focusPolicy, inputType, key, condition, DEFAULT_MODIFIERS);
 	}
 	
@@ -68,19 +71,21 @@ public class DefaultPKeyInput implements PKeyInput {
 		this(focusPolicy, inputType, key, null, mods);
 	}
 	
-	public DefaultPKeyInput(Key key, OptionalCondition condition, Modifier ... mods) {
+	public DefaultPKeyInput(Key key, Condition<COMP_TYPE> condition, Modifier ... mods) {
 		this(DEFAULT_FOCUS_POLICY, DEFAULT_KEY_INPUT_TYPE, key, condition, mods);
 	}
 	
-	public DefaultPKeyInput(KeyInputType inputType, Key key, OptionalCondition condition, Modifier ... mods) {
+	public DefaultPKeyInput(KeyInputType inputType, Key key, Condition<COMP_TYPE> condition, Modifier ... mods) {
 		this(DEFAULT_FOCUS_POLICY, inputType, key, condition, mods);
 	}
 	
-	public DefaultPKeyInput(FocusPolicy focusPolicy, Key key, OptionalCondition condition, Modifier ... mods) {
+	public DefaultPKeyInput(FocusPolicy focusPolicy, Key key, Condition<COMP_TYPE> condition, Modifier ... mods) {
 		this(focusPolicy, DEFAULT_KEY_INPUT_TYPE, key, condition, mods);
 	}
 	
-	public DefaultPKeyInput(FocusPolicy focusPolicy, KeyInputType inputType, Key key, OptionalCondition condition, Modifier ... mods) {
+	public DefaultPKeyInput(FocusPolicy focusPolicy, KeyInputType inputType, 
+			Key key, Condition<COMP_TYPE> condition, Modifier ... mods) 
+	{
 		this.focusPlcy = ThrowException.ifNull(focusPolicy, "focusPolicy == null");
 		this.type = ThrowException.ifNull(inputType, "inputType == null");
 		this.key = ThrowException.ifNull(key, "key == null");
@@ -90,7 +95,7 @@ public class DefaultPKeyInput implements PKeyInput {
 		}
 	}
 	
-	public DefaultPKeyInput setKey(Key value) {
+	public DefaultPKeyInput<COMP_TYPE> setKey(Key value) {
 		key = value;
 		return this;
 	}
@@ -99,7 +104,7 @@ public class DefaultPKeyInput implements PKeyInput {
 		return key;
 	}
 	
-	public DefaultPKeyInput addModifier(Modifier modifier) {
+	public DefaultPKeyInput<COMP_TYPE> addModifier(Modifier modifier) {
 		if (mods == null) {
 			mods = new ArrayList<>(2);
 		}
@@ -107,7 +112,7 @@ public class DefaultPKeyInput implements PKeyInput {
 		return this;
 	}
 	
-	public DefaultPKeyInput removeModifier(Modifier modifier) {
+	public DefaultPKeyInput<COMP_TYPE> removeModifier(Modifier modifier) {
 		if (mods != null) {
 			mods.remove(modifier);
 		}
@@ -128,7 +133,7 @@ public class DefaultPKeyInput implements PKeyInput {
 		return mods.get(index);
 	}
 	
-	public DefaultPKeyInput setKeyInputType(KeyInputType value) {
+	public DefaultPKeyInput<COMP_TYPE> setKeyInputType(KeyInputType value) {
 		type = value;
 		return this;
 	}
@@ -137,7 +142,7 @@ public class DefaultPKeyInput implements PKeyInput {
 		return type;
 	}
 	
-	public DefaultPKeyInput setFocusPolicy(FocusPolicy value) {
+	public DefaultPKeyInput<COMP_TYPE> setFocusPolicy(FocusPolicy value) {
 		focusPlcy = value;
 		return this;
 	}
@@ -146,12 +151,12 @@ public class DefaultPKeyInput implements PKeyInput {
 		return focusPlcy;
 	}
 	
-	public DefaultPKeyInput setCondition(OptionalCondition condition) {
+	public DefaultPKeyInput<COMP_TYPE> setCondition(Condition<COMP_TYPE> condition) {
 		triggerCond = condition;
 		return this;
 	}
 	
-	public OptionalCondition getOptionalCondition() {
+	public Condition<COMP_TYPE> getCondition() {
 		return triggerCond;
 	}
 	

@@ -1,111 +1,105 @@
 package edu.udo.piq.components.defaults;
-//package edu.udo.piq.comps.selectcomps;
-//
-//import java.util.ArrayList;
-//import java.util.Iterator;
-//import java.util.List;
-//
-public class DefaultPTableModel {}
-//public class DefaultPTableModel extends AbstractPModel implements PTableModel {
-//	
-//	private final List<Object[]> rows = new ArrayList<>();
-//	private int colCount;
-//	
-//	public Object get(PModelIndex index) {
-//		PTableIndex tableIndex = asTableIndex(index);
-//		return get(tableIndex.getColumn(), tableIndex.getRow());
-//	}
-//	
-//	public boolean contains(PModelIndex index) {
-//		PTableIndex tableIndex = asTableIndex(index);
-//		return contains(tableIndex.getColumn(), tableIndex.getRow());
-//	}
-//	
-//	public PTableIndex getIndexOf(Object content) {
-//		for (int colIndex = 0; colIndex < rows.size(); colIndex++) {
-//			Object[] row = rows.get(colIndex);
-//			for (int rowIndex = 0; rowIndex < row.length; rowIndex++) {
-//				if (content.equals(row[rowIndex])) {
-//					return new PTableIndex(colIndex, rowIndex);
-//				}
-//			}
-//		}
-//		return null;
-//	}
-//	
-//	public boolean canAdd(PModelIndex index, Object content) {
-//		PTableIndex tableIndex = asTableIndex(index);
-//		return canAdd(tableIndex.getColumn(), tableIndex.getRow(), content);
-//	}
-//	
-//	public void add(PModelIndex index, Object content) {
-//		PTableIndex tableIndex = asTableIndex(index);
-//		add(tableIndex.getColumn(), tableIndex.getRow(), content);
-//	}
-//	
-//	public boolean canRemove(PModelIndex index) {
-//		PTableIndex tableIndex = asTableIndex(index);
-//		return canRemove(tableIndex.getColumn(), tableIndex.getRow());
-//	}
-//	
-//	public void remove(PModelIndex index) {
-//		PTableIndex tableIndex = asTableIndex(index);
-//		remove(tableIndex.getColumn(), tableIndex.getRow());
-//	}
-//	
-//	public Iterator<PModelIndex> iterator() {
-//		return null;
-//	}
-//	
-//	public int getColumnCount() {
-//		return colCount;
-//	}
-//	
-//	public int getRowCount() {
-//		return rows.size();
-//	}
-//	
-//	public Object get(int column, int row) {
-//		return rows.get(row)[column];
-//	}
-//	
-//	public boolean contains(int column, int row) {
-//		return column >= 0 && column < getColumnCount() 
-//				&& row >= 0 && row < getRowCount();
-//	}
-//	
-//	public boolean canAdd(int column, int row, Object content) {
-//		return content != null && contains(column, row);
-//	}
-//	
-//	public void add(int column, int row, Object content) {
-//		Object oldContent = get(column, row);
-//		set(column, row, content);
-//		if (oldContent == null) {
-//			fireAddEvent(new PTableIndex(column, row), content);
-//		} else {
-//			fireChangeEvent(new PTableIndex(column, row), content);
-//		}
-//	}
-//	
-//	public boolean canRemove(int column, int row) {
-//		return contains(column, row);
-//	}
-//	
-//	public void remove(int column, int row) {
-//		Object oldContent = get(column, row);
-//		if (oldContent != null) {
-//			set(column, row, null);
-//			fireRemoveEvent(new PTableIndex(column, row), oldContent);
-//		}
-//	}
-//	
-//	protected void set(int column, int row, Object content) {
-//		Object[] rowArr = rows.get(row);
-//		Object oldValue = rowArr[column];
-//		if (oldValue != content) {
-//			rowArr[column] = content;
-//		}
-//	}
-//	
-//}
+
+import edu.udo.cs.util.ResizableTable;
+import edu.udo.piq.components.collections.AddImpossible;
+import edu.udo.piq.components.collections.PModelIndex;
+import edu.udo.piq.components.collections.PTableCellIndex;
+import edu.udo.piq.components.collections.PTableIndex;
+import edu.udo.piq.components.collections.PTableModel;
+import edu.udo.piq.components.collections.RemoveImpossible;
+import edu.udo.piq.tools.AbstractPTableModel;
+import edu.udo.piq.util.ThrowException;
+
+public class DefaultPTableModel extends AbstractPTableModel implements PTableModel {
+	
+	private final ResizableTable<Object> table;
+	private Object[] header;
+	private boolean headerActive;
+	
+	public DefaultPTableModel() {
+		this(3, 3);
+	}
+	
+	public DefaultPTableModel(int columnCount, int rowCount) {
+		table = new ResizableTable<>(columnCount, rowCount);
+	}
+	
+	public void setHeaderEnabled(boolean value) {
+		if (headerActive != value) {
+			headerActive = value;
+			fireHeaderStatusChangedEvent();
+		}
+	}
+	
+	public boolean isHeaderEnabled() {
+		return headerActive;
+	}
+	
+	public void setHeader(int column, Object element) {
+		if (header == null) {
+			header = new Object[getColumnCount()];
+		}
+		ThrowException.ifNotWithin(header, column, "column < 0 || column >= getColumnCount()");
+		Object oldElement = header[column];
+		if (oldElement != element || (oldElement != null 
+				&& oldElement.equals(element))) 
+		{
+			header[column] = element;
+			fireHeaderElementChangedEvent(column, oldElement);
+		}
+	}
+	
+	public Object getHeader(int column) {
+		ThrowException.ifFalse(isHeaderEnabled(), "isHeaderEnabled() == false");
+		return header[column];
+	}
+	
+	public int getColumnCount() {
+		return table.getColumnCount();
+	}
+	
+	public int getRowCount() {
+		return table.getRowCount();
+	}
+	
+	public void add(PModelIndex index, Object content) {
+		if (!canAdd(index, content)) {
+			throw new AddImpossible(this, index, content);
+		}
+		PTableIndex tableIndex = asTableIndex(index);
+		if (tableIndex.isRowIndex()) {
+			int row = tableIndex.getRow();
+			table.addRow(row);
+		} else {
+			int col = tableIndex.getColumn();
+			table.addColumn(col);
+		}
+		fireAddEvent(index, content);
+	}
+	
+	public void remove(PModelIndex index) {
+		if (!canRemove(index)) {
+			throw new RemoveImpossible(this, index);
+		}
+		Object oldContent = get(index);
+		PTableIndex tableIndex = asTableIndex(index);
+		if (tableIndex.isRowIndex()) {
+			int row = tableIndex.getRow();
+			table.removeRow(row);
+		} else {
+			int col = tableIndex.getColumn();
+			table.removeColumn(col);
+		}
+		fireRemoveEvent(index, oldContent);
+	}
+	
+	public void set(int column, int row, Object content) {
+		table.set(column, row, content);
+		fireChangeEvent(new PTableCellIndex(column, row), content);
+	}
+	
+	public Object get(int column, int row) {
+		return table.get(column, row);
+	}
+	
+}

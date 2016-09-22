@@ -383,6 +383,13 @@ public interface PRoot extends PComponent {
 	public void setFocusOwner(PComponent component);
 	
 	/**
+	 * Returns the number of milliseconds in between the two most recent update ticks of 
+	 * all {@link PTimer PTimers}.
+	 * @return	the milliseconds between the last two ticks of all PTimers
+	 */
+	public double getDeltaTime();
+	
+	/**
 	 * Registers the given {@link PTimer} at this root.<br>
 	 * A registered Timer will be ticked once every millisecond.<br>
 	 * A timer can not be registered more then once.<br>

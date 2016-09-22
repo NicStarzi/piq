@@ -89,11 +89,11 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 //			PBounds bndsSecond = getLayoutInternal().getChildBounds(Constraint.SECOND);
 //			defaultRenderFillBounds(renderer, bndsSecond);
 //		}
-		if (!PCompUtil.fillsAllPixels(divider)) {
-			// see above
-			PBounds bndsDivider = getLayoutInternal().getChildBounds(Constraint.DIVIDER);
-			defaultRenderFillBounds(renderer, bndsDivider);
-		}
+//		if (!PCompUtil.fillsAllPixels(divider)) {
+//			// see above
+//			PBounds bndsDivider = getLayoutInternal().getChildBounds(Constraint.DIVIDER);
+//			defaultRenderFillBounds(renderer, bndsDivider);
+//		}
 		defaultRenderFillBounds(renderer, getBounds());
 	}
 	

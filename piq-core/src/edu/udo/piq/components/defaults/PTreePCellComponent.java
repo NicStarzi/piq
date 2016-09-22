@@ -2,7 +2,6 @@ package edu.udo.piq.components.defaults;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
-import edu.udo.piq.PComponent;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.components.PCheckBox;
 import edu.udo.piq.components.PCheckBoxModel;
@@ -10,6 +9,7 @@ import edu.udo.piq.components.collections.PCellComponent;
 import edu.udo.piq.components.collections.PModel;
 import edu.udo.piq.components.collections.PModelIndex;
 import edu.udo.piq.components.collections.PModelObs;
+import edu.udo.piq.components.collections.PReadOnlyModel;
 import edu.udo.piq.components.collections.PTree;
 import edu.udo.piq.components.collections.PTreeIndex;
 import edu.udo.piq.components.collections.PTreeModel;
@@ -17,22 +17,20 @@ import edu.udo.piq.layouts.PTupleLayout;
 import edu.udo.piq.layouts.PTupleLayout.Constraint;
 import edu.udo.piq.tools.AbstractPCheckBoxModel;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
-import edu.udo.piq.util.ThrowException;
 
 public class PTreePCellComponent extends AbstractPLayoutOwner implements PCellComponent {
 	
 	protected final PModelObs modelObs = new PModelObs() {
-		public void onContentAdded(PModel model, PModelIndex index, Object newContent) {
+		public void onContentAdded(PReadOnlyModel model, PModelIndex index, Object newContent) {
 			PTreePCellComponent.this.onContentAdded(model, index, newContent);
 		}
-		public void onContentRemoved(PModel model, PModelIndex index, Object oldContent) {
+		public void onContentRemoved(PReadOnlyModel model, PModelIndex index, Object oldContent) {
 			PTreePCellComponent.this.onContentRemoved(model, index, oldContent);
 		}
-		public void onContentChanged(PModel model, PModelIndex index, Object oldContent) {
+		public void onContentChanged(PReadOnlyModel model, PModelIndex index, Object oldContent) {
 			PTreePCellComponent.this.onContentChanged(model, index, oldContent);
 		}
 	};
-	protected PTreeModel model;
 	
 	public PTreePCellComponent() {
 		super();
@@ -43,15 +41,8 @@ public class PTreePCellComponent extends AbstractPLayoutOwner implements PCellCo
 		return (PTupleLayout) super.getLayout();
 	}
 	
-	public void setSecondComponent(PComponent comp) {
-		ThrowException.ifTypeCastFails(comp, PCellComponent.class, 
-				"!(comp instanceof PCellComponent)");
-		if (getSecondComponent() != null) {
-			getLayoutInternal().removeChild(Constraint.SECOND);
-		}
-		if (comp != null) {
-			getLayoutInternal().addChild(comp, Constraint.SECOND);
-		}
+	public void setSecondComponent(PCellComponent comp) {
+		getLayoutInternal().setChildForConstraint(comp, Constraint.SECOND);
 	}
 	
 	public PCellComponent getSecondComponent() {
@@ -80,16 +71,16 @@ public class PTreePCellComponent extends AbstractPLayoutOwner implements PCellCo
 		return chkBx.isChecked();
 	}
 	
-	public void setSelected(boolean isSelected) {
-		getSecondComponent().setSelected(isSelected);
+	public void setSelected(boolean value) {
+		getSecondComponent().setSelected(value);
 	}
 	
 	public boolean isSelected() {
 		return getSecondComponent().isSelected();
 	}
 	
-	public void setDropHighlighted(boolean isHighlighted) {
-		getSecondComponent().setDropHighlighted(isHighlighted);
+	public void setDropHighlighted(boolean value) {
+		getSecondComponent().setDropHighlighted(value);
 	}
 	
 	public boolean isDropHighlighted() {
@@ -100,16 +91,15 @@ public class PTreePCellComponent extends AbstractPLayoutOwner implements PCellCo
 		if (getElementModel() != null) {
 			getElementModel().removeObs(modelObs);
 		}
-		this.model = (PTreeModel) model;
+		getSecondComponent().setElement(model, index);
 		if (getElementModel() != null) {
 			getElementModel().addObs(modelObs);
 		}
-		getSecondComponent().setElement(model, index);
-		setCheckBoxShown(getElementModel().getChildCount((PTreeIndex) index) > 0);
+		setCheckBoxShown(canBeExpanded());
 	}
 	
 	public PTreeModel getElementModel() {
-		return model;
+		return (PTreeModel) getSecondComponent().getElementModel();
 	}
 	
 	public Object getElement() {
@@ -117,14 +107,23 @@ public class PTreePCellComponent extends AbstractPLayoutOwner implements PCellCo
 	}
 	
 	public PTreeIndex getElementIndex() {
-		PTree parent = (PTree) getParent();
-		if (parent == null) {
-			return null;
-		}
-		return (PTreeIndex) parent.getLayout().getChildConstraint(this);
+		return (PTreeIndex) getSecondComponent().getElementIndex();
 	}
 	
-	protected void onContentAdded(PModel model, PModelIndex index, Object newContent) {
+	public boolean defaultFillsAllPixels() {
+		return false;
+	}
+	
+	public boolean canBeExpanded() {
+		PTreeModel model = getElementModel();
+		PTreeIndex index = getElementIndex();
+		if (model == null || index == null) {
+			return false;
+		}
+		return model.getChildCount(index) > 0;
+	}
+	
+	protected void onContentAdded(PReadOnlyModel model, PModelIndex index, Object newContent) {
 		if (index instanceof PTreeIndex) {
 			PTreeIndex treeIndex = (PTreeIndex) index;
 			if (treeIndex.getDepth() > 0 && treeIndex.createParentIndex().equals(getElementIndex())) {
@@ -133,7 +132,7 @@ public class PTreePCellComponent extends AbstractPLayoutOwner implements PCellCo
 		}
 	}
 	
-	protected void onContentRemoved(PModel model, PModelIndex index, Object oldContent) {
+	protected void onContentRemoved(PReadOnlyModel model, PModelIndex index, Object oldContent) {
 		if (index instanceof PTreeIndex) {
 			PTreeIndex treeIndex = (PTreeIndex) index;
 			if (treeIndex.getDepth() > 0 && treeIndex.createParentIndex().equals(getElementIndex())) {
@@ -142,7 +141,7 @@ public class PTreePCellComponent extends AbstractPLayoutOwner implements PCellCo
 		}
 	}
 	
-	protected void onContentChanged(PModel model, PModelIndex index, Object oldContent) {
+	protected void onContentChanged(PReadOnlyModel model, PModelIndex index, Object oldContent) {
 		// Intentionally left blank.
 	}
 	

@@ -51,6 +51,10 @@ public class SingletonPModel extends AbstractPModel implements PModel {
 		};
 	}
 	
+	public boolean canSet(PModelIndex index, Object content) {
+		return index == SINGLETON_INDEX;
+	}
+	
 	public void set(PModelIndex index, Object content) {
 		ThrowException.ifNull(index, "index == null");
 		ThrowException.ifNotEqual(index, SINGLETON_INDEX, "index != SingletonPModel.SINGLETON_INDEX");

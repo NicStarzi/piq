@@ -50,7 +50,7 @@ public class PTimer {
 	/**
 	 * Starts at 0 and counts to {@link #delayInMillis} and then resets back to 0.
 	 */
-	protected int timeCount;
+	protected double timeCount;
 	/**
 	 * True if timer is supposed to start again after expiring
 	 */
@@ -64,7 +64,7 @@ public class PTimer {
 	/**
 	 * True if time should not be counted even if we are started and not disabled.
 	 * A paused timer is not unregistered from the root, instead it will ignore 
-	 * any calls to the {@link #tick(int)} method.
+	 * any calls to the {@link #tick(double)} method.
 	 */
 	protected boolean paused;
 	
@@ -210,7 +210,7 @@ public class PTimer {
 	 * (in milliseconds) before expiring unless it is either paused 
 	 * or disabled.<br>
 	 * When a timer expires it will run the 
-	 * {@link PTimerCallback#onTimerEvent()} method of its 
+	 * {@link PTimerCallback#onTimerEvent(double)} method of its 
 	 * {@link PTimerCallback}.<br>
 	 * <br>
 	 * If this timer is already started this method call will be ignored.<br>
@@ -300,15 +300,15 @@ public class PTimer {
 	 * is repeating it will be reset.<br>
 	 * 
 	 * If the timer has counted down its delay in milliseconds it 
-	 * will expire and run the {@link PTimerCallback#onTimerEvent()} 
+	 * will expire and run the {@link PTimerCallback#onTimerEvent(double)} 
 	 * method of its {@link PTimerCallback}. If the timer is repeating 
 	 * it will then start counting time again.<br>
-	 * @param milliSeconds
+	 * @param deltaTime
 	 */
-	public void tick(int milliSeconds) {
-		ThrowException.ifLess(0, milliSeconds, "milliSeconds < 0");
+	public void tick(double deltaTime) {
+		ThrowException.ifLess(0.0, deltaTime, "deltaTime < 0");
 		if (isStarted() && !isPaused()) {
-			timeCount += milliSeconds;
+			timeCount += deltaTime;
 			
 			if (timeCount >= delayInMillis) {
 				if (isRepeating()) {
@@ -316,7 +316,7 @@ public class PTimer {
 				} else {
 					stop();
 				}
-				callback.onTimerEvent();
+				callback.onTimerEvent(deltaTime);
 			}
 		}
 	}

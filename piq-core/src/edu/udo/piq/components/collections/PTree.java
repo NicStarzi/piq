@@ -6,23 +6,29 @@ import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PDnDSupport;
 import edu.udo.piq.PKeyboard;
+import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PKeyboard.Modifier;
+import edu.udo.piq.PLayout;
 import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
-import edu.udo.piq.components.defaults.PTreePCellFactory;
 import edu.udo.piq.components.defaults.DefaultPTreeModel;
+import edu.udo.piq.components.defaults.PTreePCellFactory;
 import edu.udo.piq.components.defaults.PTreePDnDSupport;
 import edu.udo.piq.components.defaults.ReRenderPFocusObs;
+import edu.udo.piq.components.util.DefaultPKeyInput;
+import edu.udo.piq.components.util.PKeyInput;
 import edu.udo.piq.layouts.PTreeLayout;
+import edu.udo.piq.layouts.PTreeLayout.PTreeLayoutObs;
 import edu.udo.piq.tools.AbstractPInputLayoutOwner;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
@@ -37,6 +43,26 @@ public class PTree extends AbstractPInputLayoutOwner
 	protected static final PColor FOCUS_COLOR = PColor.GREY25;
 	protected static final PColor DROP_HIGHLIGHT_COLOR = PColor.RED;
 	protected static final int DRAG_AND_DROP_DISTANCE = 20;
+	
+	public static final PKeyInput<PTree> INPUT_MOVE_UP = 
+			new DefaultPKeyInput<>(Key.UP, PTree::isKeyTriggerEnabled);
+	public static final Consumer<PTree> REACTION_MOVE_UP = PTree::onKeyTriggerUp;
+	public static final String INPUT_ID_MOVE_UP = "moveUp";
+	
+	public static final PKeyInput<PTree> INPUT_MOVE_DOWN = 
+			new DefaultPKeyInput<>(Key.DOWN, PTree::isKeyTriggerEnabled);
+	public static final Consumer<PTree> REACTION_MOVE_DOWN = PTree::onKeyTriggerDown;
+	public static final String INPUT_ID_MOVE_DOWN = "moveDown";
+	
+	public static final PKeyInput<PTree> INPUT_MOVE_RIGHT = 
+			new DefaultPKeyInput<>(Key.RIGHT, PTree::isKeyTriggerEnabled);
+	public static final Consumer<PTree> REACTION_MOVE_RIGHT = PTree::onKeyTriggerRight;
+	public static final String INPUT_ID_MOVE_RIGHT = "moveRight";
+	
+	public static final PKeyInput<PTree> INPUT_MOVE_LEFT = 
+			new DefaultPKeyInput<>(Key.LEFT, PTree::isKeyTriggerEnabled);
+	public static final Consumer<PTree> REACTION_MOVE_LEFT = PTree::onKeyTriggerLeft;
+	public static final String INPUT_ID_MOVE_LEFT = "moveLeft";
 	
 	protected final ObserverList<PModelObs> obsListModel
 		= PCompUtil.createDefaultObserverList();
@@ -55,16 +81,17 @@ public class PTree extends AbstractPInputLayoutOwner
 		}
 	};
 	protected final PModelObs modelObs = new PModelObs() {
-		public void onContentAdded(PModel model, PModelIndex index, Object newContent) {
+		public void onContentAdded(PReadOnlyModel model, PModelIndex index, Object newContent) {
 			PTree.this.onContentAdded((PTreeIndex) index, newContent);
 		}
-		public void onContentRemoved(PModel model, PModelIndex index, Object oldContent) {
+		public void onContentRemoved(PReadOnlyModel model, PModelIndex index, Object oldContent) {
 			PTree.this.onContentRemoved((PTreeIndex) index, oldContent);
 		}
-		public void onContentChanged(PModel model, PModelIndex index, Object oldContent) {
+		public void onContentChanged(PReadOnlyModel model, PModelIndex index, Object oldContent) {
 			PTree.this.onContentChanged((PTreeIndex) index, oldContent);
 		}
 	};
+	protected final PTreeLayoutObs cellMoveObs = this::onChildMoved;
 	protected PTreeSelection	selection;
 	protected PTreeModel		model;
 	protected PCellFactory		cellFact;
@@ -110,10 +137,49 @@ public class PTree extends AbstractPInputLayoutOwner
 			}
 		});
 		addObs(new ReRenderPFocusObs());
+		
+		defineInput(INPUT_ID_MOVE_UP, INPUT_MOVE_UP, REACTION_MOVE_UP);
+		defineInput(INPUT_ID_MOVE_DOWN, INPUT_MOVE_DOWN, REACTION_MOVE_DOWN);
+		defineInput(INPUT_ID_MOVE_LEFT, INPUT_MOVE_LEFT, REACTION_MOVE_LEFT);
+		defineInput(INPUT_ID_MOVE_RIGHT, INPUT_MOVE_RIGHT, REACTION_MOVE_RIGHT);
+	}
+	
+	protected void setLayout(PLayout layout) {
+		if (getLayoutInternal() != null) {
+			getLayoutInternal().removeObs(cellMoveObs);
+		}
+		super.setLayout(layout);
+		if (getLayoutInternal() != null) {
+			getLayoutInternal().addObs(cellMoveObs);
+		}
 	}
 	
 	protected PTreeLayout getLayoutInternal() {
 		return (PTreeLayout) super.getLayout();
+	}
+	
+	public void setGap(int value) {
+		getLayoutInternal().setGap(value);
+	}
+	
+	public int getGap() {
+		return getLayoutInternal().getGap();
+	}
+	
+	public void setIndentSize(int value) {
+		getLayoutInternal().setIndentSize(value);
+	}
+	
+	public int getIndentSize() {
+		return getLayoutInternal().getIndentSize();
+	}
+	
+	public void setHideRootNode(boolean value) {
+		getLayoutInternal().setHideRootNode(value);
+	}
+	
+	public boolean isHideRootNode() {
+		return getLayoutInternal().isHideRootNode();
 	}
 	
 	public void setSelection(PTreeSelection selection) {
@@ -318,7 +384,7 @@ public class PTree extends AbstractPInputLayoutOwner
 		int fy = bounds.getFinalY();
 		
 		renderer.setColor(BACKGROUND_COLOR);
-		renderer.drawQuad(x + 0, y + 0, fx - 0, fy - 0);
+		renderer.drawQuad(x, y, fx, fy);
 		
 		PTreeLayout layout = getLayoutInternal();
 		PComponent root = layout.getRootComponent();
@@ -330,6 +396,7 @@ public class PTree extends AbstractPInputLayoutOwner
 		defaultRenderFocus(renderer);
 	}
 	
+	//TODO: Add option for customization
 	protected void defaultRenderParentChildConnections(PRenderer renderer, int boundsX) {
 		// Draw black lines connecting parent and child nodes
 		renderer.setColor(PARENT_CHILD_LINE_COLOR);
@@ -337,18 +404,24 @@ public class PTree extends AbstractPInputLayoutOwner
 		PComponent root = layout.getRootComponent();
 		
 		Deque<PComponent> stack = new ArrayDeque<>();
-		stack.push(root);
+		if (layout.isHideRootNode()) {
+			for (PComponent child : layout.getChildNodesOf(root)) {
+				stack.push(child);
+			}
+		} else {
+			stack.push(root);
+		}
 		while (!stack.isEmpty()) {
-			PComponent current = stack.pop();
-			PBounds parentBnds = current.getBounds();
+			PComponent parent = stack.pop();
+			PBounds parentBnds = parent.getBounds();
 			int ph = parentBnds.getHeight();
 			int px = parentBnds.getX() - 6;
-			if (current == layout.getRootComponent() && px < boundsX) {
+			if (parent == layout.getRootComponent() && px < boundsX) {
 				px = boundsX + 1;
 			}
 			int py = parentBnds.getY() + ph / 2;
 			
-			for (PComponent child : layout.getChildNodesOf(current)) {
+			for (PComponent child : layout.getChildNodesOf(parent)) {
 				PBounds childBnds = child.getBounds();
 				int ch = childBnds.getHeight();
 				int cx = childBnds.getX() - 2;
@@ -385,10 +458,6 @@ public class PTree extends AbstractPInputLayoutOwner
 					
 					renderer.setColor(DROP_HIGHLIGHT_COLOR);
 					renderer.drawQuad(cx, cy, cfx, cfy);
-				} else {
-					System.out.println("DROP="+childIndex);
-					System.out.println("PARENT="+parentIndex);
-					System.out.println();
 				}
 			} else {
 				// highlight below the last child of parent
@@ -468,6 +537,7 @@ public class PTree extends AbstractPInputLayoutOwner
 			getSelection().clearSelection();
 			PCellComponent cell = getCellFactory().makeCellComponent(getModel(), index);
 			getLayoutInternal().addChild(cell, index);
+			setIndexExpanded(index, true);
 		}
 	}
 	
@@ -489,20 +559,27 @@ public class PTree extends AbstractPInputLayoutOwner
 		return index.getDepth() == 0 || isIndexVisible(index);
 	}
 	
-	protected void onContentAdded(PTreeIndex index, Object content) {
-		System.out.println("--- ADD --- "+content+", idx="+index);
-		addContent(index, content);
+	protected void onChildMoved(PComponent child, PTreeIndex oldIndex, PTreeIndex newIndex) {
+		boolean wasExpanded = isIndexExpanded(oldIndex);
+		hiddenIdxSet.remove(newIndex);
 		
-		System.out.println(getModel());
-		getLayoutInternal().debug();
+		PCellComponent cell = (PCellComponent) child;
+//		System.out.println("PTree.onChildMoved child="+cell.getElement()+", old="+oldIndex+", new="+newIndex);
+		cell.setElement(getModel(), newIndex);
+//		System.out.println("setIndexExpanded newIdx="+newIndex+", expanded?="+wasExpanded);
+		setIndexExpanded(newIndex, wasExpanded);
+	}
+	
+	protected void onContentAdded(PTreeIndex index, Object content) {
+//		System.out.println("--- ADD --- "+content+", idx="+index);
+		addContent(index, content);
+//		
+//		System.out.println(getModel());
+//		getLayoutInternal().debug();
 	}
 	
 	protected void onContentRemoved(PTreeIndex index, Object content) {
-		System.out.println("--- REMOVE --- "+content+", idx="+index);
 		removeContent(index, content);
-		
-		System.out.println(getModel());
-		getLayoutInternal().debug();
 	}
 	
 	protected void onContentChanged(PTreeIndex index, Object content) {
@@ -510,9 +587,19 @@ public class PTree extends AbstractPInputLayoutOwner
 	}
 	
 	protected void onSelectionAdded(PTreeIndex index) {
-		PCellComponent cellComp = getCellComponent(index);
-		if (cellComp != null) {
-			cellComp.setSelected(true);
+		if (!isIndexVisible(index)) {
+			makeIndexVisible(index);
+			/*
+			 * When we make an index visible we change the tree structure. This will result in 
+			 * the selection being cleared. So we re-select the index right again. The onSelectionAdded 
+			 * method will then be called again with the index now being visible.
+			 */
+			getSelection().addSelection(index);
+		} else {
+			PCellComponent cellComp = getCellComponent(index);
+			if (cellComp != null) {
+				cellComp.setSelected(true);
+			}
 		}
 	}
 	
@@ -527,6 +614,70 @@ public class PTree extends AbstractPInputLayoutOwner
 		if (hasFocus()) {
 			fireReRenderEvent();
 		}
+	}
+	
+	protected static void onKeyTriggerUp(PTree self) {
+		if (!self.moveSelectedIndex(-1, true)) {
+			self.moveSelectedIndex(-1, false);
+		}
+	}
+	
+	protected static void onKeyTriggerDown(PTree self) {
+		if (!self.moveSelectedIndex(1, true)) {
+			if (self.moveSelectedIndex(-1, false)) {
+				self.moveSelectedIndex(1, true);
+			} else {
+				self.moveSelectedIndex(1, false);
+			}
+		}
+	}
+	
+	protected static void onKeyTriggerLeft(PTree self) {
+		self.moveSelectedIndex(-1, false);
+	}
+	
+	protected static void onKeyTriggerRight(PTree self) {
+		self.moveSelectedIndex(1, false);
+	}
+	
+	protected static boolean isKeyTriggerEnabled(PTree self) {
+		return self.isEnabled() && self.getModel() != null 
+				&& self.getSelection() != null 
+				&& self.getSelection().getLastSelected() != null;
+	}
+	
+	protected boolean moveSelectedIndex(int offset, boolean isSibbling) {
+		PTreeIndex lastSelected = getSelection().getLastSelected();
+		
+		PTreeIndex nextSelected;
+		if (isSibbling) {
+			if (lastSelected.isRoot()) {
+				return false;
+			}
+			nextSelected = lastSelected.getSibbling(offset);
+		} else {
+			if (offset == -1) {
+				if (lastSelected.isRoot()) {
+					return false;
+				}
+				nextSelected = lastSelected.createParentIndex();
+			} else if (offset == 1) {
+				nextSelected = lastSelected.append(0);
+			} else {
+				throw new IllegalArgumentException("isSibbling == "+isSibbling+", offset="+offset);
+			}
+		}
+		
+		if (getModel().contains(nextSelected)) {
+			PKeyboard keyBoard = getKeyboard();
+			if (keyBoard == null || !keyBoard.isModifierToggled(Modifier.CTRL)) {
+				getSelection().clearSelection();
+			}
+			
+			getSelection().addSelection(nextSelected);
+			return true;
+		}
+		return false;
 	}
 	
 	protected void onMouseButtonTriggred(PMouse mouse, MouseButton btn) {
@@ -544,12 +695,13 @@ public class PTree extends AbstractPInputLayoutOwner
 					getSelection().clearSelection();
 				}
 				getSelection().addSelection(index);
-				takeFocus();
+				takeFocusNotFromDescendants();
 			}
 		}
 	}
 	
 	protected void onMouseButtonPressed(PMouse mouse, MouseButton btn) {
+		// Intentionally left empty
 	}
 	
 	protected void onMouseReleased(PMouse mouse, MouseButton btn) {

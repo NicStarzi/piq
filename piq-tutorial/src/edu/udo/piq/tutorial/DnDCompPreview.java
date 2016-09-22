@@ -2,20 +2,33 @@ package edu.udo.piq.tutorial;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
+import edu.udo.piq.PDnDIndicator;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.DelegatePRenderer;
 
-public class DnDCompPreview extends AbstractPComponent {
+public class DnDCompPreview extends AbstractPComponent implements PDnDIndicator {
 	
 	private PComponent original;
+	private boolean dropPossible;
 	
 	public DnDCompPreview(PComponent other) {
 		if (other == null) {
 			throw new IllegalArgumentException();
 		}
 		original = other;
+	}
+	
+	public void setDropPossible(boolean value) {
+		if (isDropPossible() == value) {
+			return;
+		}
+		dropPossible = value;
+	}
+	
+	public boolean isDropPossible() {
+		return dropPossible;
 	}
 	
 	public boolean isElusive() {

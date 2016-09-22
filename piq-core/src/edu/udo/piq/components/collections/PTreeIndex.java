@@ -62,6 +62,10 @@ public class PTreeIndex implements PModelIndex {
 		this.depth = depth;//indices.length;
 	}
 	
+	public boolean isRoot() {
+		return getDepth() == 0;
+	}
+	
 	public int getDepth() {
 		return depth;
 	}
@@ -132,6 +136,10 @@ public class PTreeIndex implements PModelIndex {
 	
 	public PTreeIndex replaceLastIndex(int index) {
 		return replaceIndex(getDepth() - 1, index);
+	}
+	
+	public PTreeIndex getSibbling(int lastIndexOffset) {
+		return replaceLastIndex(getLastIndex() + lastIndexOffset);
 	}
 	
 	public PTreeIndex replaceIndex(int level, int index) {

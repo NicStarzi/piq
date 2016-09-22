@@ -10,10 +10,7 @@ import edu.udo.piq.tools.AbstractMapPLayout;
 
 public class MovingPLayout extends AbstractMapPLayout {
 	
-	protected final PTimer timer = new PTimer(() -> {
-			MovingPLayout.this.time++;
-			invalidate();
-		});
+	protected final PTimer timer = new PTimer(MovingPLayout.this::onTimerTick);
 	private final PComponentObs ownerObs = new PComponentObs() {
 		public void onRootChanged(PComponent component, PRoot currentRoot) {
 			if (currentRoot == null) {
@@ -24,8 +21,8 @@ public class MovingPLayout extends AbstractMapPLayout {
 		}
 	};
 	private PComponent content;
-	private int time;
-	private int radius = 100;
+	private double time;
+	private double radius = 100;
 	
 	public MovingPLayout(PComponent component) {
 		super(component);
@@ -52,12 +49,17 @@ public class MovingPLayout extends AbstractMapPLayout {
 		timer.setOwner(null);
 	}
 	
+	protected void onTimerTick(double deltaTime) {
+		time += deltaTime;
+		invalidate();
+	}
+	
 	public void setRadius(int value) {
 		radius = value;
 		invalidate();
 	}
 	
-	public int getRadius() {
+	public double getRadius() {
 		return radius;
 	}
 	
@@ -81,7 +83,7 @@ public class MovingPLayout extends AbstractMapPLayout {
 		int centerX = ob.getCenterX();
 		int centerY = ob.getCenterY();
 		
-		int degree = time % (360 * timer.getDelay());
+		double degree = (time / 10) % 360;
 		double rad = Math.toRadians(degree);
 		int circleX = centerX + (int) (radius * Math.cos(rad));
 		int circleY = centerY + (int) (radius * Math.sin(rad));

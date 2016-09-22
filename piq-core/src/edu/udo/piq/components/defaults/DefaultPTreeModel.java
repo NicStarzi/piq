@@ -33,6 +33,10 @@ public class DefaultPTreeModel extends AbstractPModel implements PTreeModel {
 		return parentNode == null ? 0 : parentNode.getChildCount();
 	}
 	
+	public boolean canSet(PModelIndex index, Object content) {
+		return index instanceof PTreeIndex && contains(index);
+	}
+	
 	public void set(PModelIndex index, Object content) {
 		DefaultPTreeNode node = getNode(index);
 		if (node == null) {
@@ -261,6 +265,9 @@ public class DefaultPTreeModel extends AbstractPModel implements PTreeModel {
 		}
 		
 		public DefaultPTreeNode getChild(int index) {
+			if (index < 0 || index >= children.size()) {
+				return null;
+			}
 			return children.get(index);
 		}
 		

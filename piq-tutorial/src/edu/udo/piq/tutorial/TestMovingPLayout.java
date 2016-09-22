@@ -1,12 +1,5 @@
 package edu.udo.piq.tutorial;
 
-import java.awt.EventQueue;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.JFrame;
-import javax.swing.Timer;
-
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PClickObs;
 import edu.udo.piq.components.PClickable;
@@ -15,84 +8,19 @@ import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.components.containers.PTabPanel;
 import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.layouts.PCentricLayout;
-import edu.udo.piq.swing.JCompPRoot;
+import edu.udo.piq.swing.tests.AbstractSwingPTest;
 
-public class TestMovingPLayout {
+public class TestMovingPLayout extends AbstractSwingPTest {
 	
 	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					TestMovingPLayout window = new TestMovingPLayout();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+		new TestMovingPLayout();
 	}
 	
-	private final JFrame frame;
-	private final JCompPRoot root;
-	
 	public TestMovingPLayout() {
-		frame = new JFrame();
-		frame.setSize(640, 480);
-		frame.setLocationRelativeTo(null);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-//		JPanel cp = new JPanel();
-//		frame.setContentPane(cp);
-//		cp.setLayout(new BorderLayout(0, 0));
-//		
-//		JTree tree = new JTree();
-//		JScrollPane scrollPane = new JScrollPane(tree);
-//		cp.add(scrollPane, BorderLayout.WEST);
-//		
-//		JPanel panel = new JPanel();
-//		cp.add(panel, BorderLayout.NORTH);
-//		
-//		JButton btnNewButton = new JButton("New button");
-//		panel.add(btnNewButton);
-//		
-//		JTextField textField = new JTextField();
-//		panel.add(textField);
-//		textField.setColumns(10);
-//		
-//		JSpinner spinner = new JSpinner();
-//		panel.add(spinner);
-//		
-//		JCheckBox chckbxNewCheckBox = new JCheckBox("New check box");
-//		panel.add(chckbxNewCheckBox);
-//		
-//		JButton btnNewButton_1 = new JButton("New button");
-//		panel.add(btnNewButton_1);
-//		
-//		JList list = new JList();
-//		list.setModel(new AbstractListModel() {
-//			String[] values = new String[] {"Hallo", "Welt", "Wie", "Geht", "Es", "Dir"};
-//			public int getSize() {
-//				return values.length;
-//			}
-//			public Object getElementAt(int index) {
-//				return values[index];
-//			}
-//		});
-//		cp.add(list, BorderLayout.EAST);
-		
-		root = new JCompPRoot();
-//		cp.add(root.getJPanel(), BorderLayout.CENTER);
-		frame.setContentPane(root.getJPanel());
-		
-		Timer updateTimer = new Timer(10, new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				root.update();
-			}
-		});
-		updateTimer.setCoalesce(true);
-		updateTimer.setRepeats(true);
-		updateTimer.start();
-		
+		super(640, 480);
+	}
+	
+	public void buildGUI() {
 		PPanel bodyPnl = new PPanel();
 		bodyPnl.setLayout(new MovingPLayout(bodyPnl));
 		root.setBody(bodyPnl);

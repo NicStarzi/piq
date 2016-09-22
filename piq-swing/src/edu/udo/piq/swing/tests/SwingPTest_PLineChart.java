@@ -1,12 +1,5 @@
 package edu.udo.piq.swing.tests;
 
-import java.awt.EventQueue;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.JFrame;
-import javax.swing.Timer;
-
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PClickObs;
 import edu.udo.piq.components.PSlider;
@@ -19,43 +12,18 @@ import edu.udo.piq.layouts.PBorderLayout.Constraint;
 import edu.udo.piq.layouts.PCentricLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
 import edu.udo.piq.layouts.PWrapLayout;
-import edu.udo.piq.swing.JCompPRoot;
 
-public class SwingPTest_PLineChart {
+public class SwingPTest_PLineChart extends AbstractSwingPTest {
+	
 	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					SwingPTest_PLineChart window = new SwingPTest_PLineChart();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+		new SwingPTest_PLineChart();
 	}
 	
-	private final JFrame frame;
-	private final JCompPRoot root;
-	
 	public SwingPTest_PLineChart() {
-		frame = new JFrame();
-		frame.setSize(640, 480);
-		frame.setLocationRelativeTo(null);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		root = new JCompPRoot();
-		frame.setContentPane(root.getJPanel());
-		
-		Timer updateTimer = new Timer(10, new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				root.update();
-			}
-		});
-		updateTimer.setCoalesce(true);
-		updateTimer.setRepeats(true);
-		updateTimer.start();
-		
+		super(640, 480);
+	}
+	
+	public void buildGUI() {
 		PPanel bodyPnl = new PPanel();
 		bodyPnl.setLayout(new PBorderLayout(bodyPnl));
 		root.setBody(bodyPnl);

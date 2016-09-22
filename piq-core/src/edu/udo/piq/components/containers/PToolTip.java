@@ -133,7 +133,7 @@ public class PToolTip extends AbstractPFloatingPanel {
 		}
 	}
 	
-	protected void addToOverlay() {
+	protected void addToOverlay(double deltaTime) {
 		super.addToOverlay();
 		isShown = true;
 	}

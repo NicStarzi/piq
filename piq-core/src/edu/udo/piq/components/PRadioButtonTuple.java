@@ -1,9 +1,10 @@
 package edu.udo.piq.components;
 
+import java.util.function.Consumer;
+
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PComponentAction;
 import edu.udo.piq.PGlobalEventGenerator;
 import edu.udo.piq.PGlobalEventProvider;
 import edu.udo.piq.PKeyboard.Key;
@@ -24,19 +25,19 @@ import edu.udo.piq.util.ThrowException;
 
 public class PRadioButtonTuple extends AbstractPInputLayoutOwner implements PClickable, PGlobalEventGenerator {
 	
-	public static final PKeyInput INPUT_TRIGGER_ENTER = new DefaultPKeyInput(
-			KeyInputType.TRIGGER, Key.ENTER, (comp) -> 
-	{
-		PRadioButtonTuple btn = ThrowException.ifTypeCastFails(comp, PRadioButtonTuple.class, 
-				"!(comp instanceof PRadioButtonTuple)");
-		return btn.isEnabled() && btn.getRadioButton() != null && btn.getRadioButton().getModel() != null;
-	});
-	public static final PComponentAction REACTION_TRIGGER_ENTER = (comp) -> {
-		PRadioButtonTuple btn = ThrowException.ifTypeCastFails(comp, PRadioButtonTuple.class, 
-				"!(comp instanceof PRadioButtonTuple)");
-		btn.getRadioButton().setSelected();
-	};
+	public static final PKeyInput<PRadioButtonTuple> INPUT_TRIGGER_ENTER = 
+			new DefaultPKeyInput<>(KeyInputType.TRIGGER, Key.ENTER, PRadioButtonTuple::canTriggerEnter);
+	public static final Consumer<PRadioButtonTuple> REACTION_TRIGGER_ENTER = PRadioButtonTuple::onTriggerEnter;
 	public static final String INPUT_IDENTIFIER_TRIGGER_ENTER = "triggerEnter";
+	
+	protected static boolean canTriggerEnter(PRadioButtonTuple self) {
+		return self.isEnabled() && self.getRadioButton() != null 
+				&& self.getRadioButton().getModel() != null;
+	}
+	
+	protected static void onTriggerEnter(PRadioButtonTuple self) {
+		self.getRadioButton().setSelected();
+	}
 	
 	protected final ObserverList<PClickObs> obsList
 		= PCompUtil.createDefaultObserverList();

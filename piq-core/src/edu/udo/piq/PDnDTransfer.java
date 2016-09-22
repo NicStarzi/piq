@@ -12,6 +12,6 @@ public interface PDnDTransfer {
 	
 	public PModel getData();
 	
-	public PComponent getVisibleRepresentation();
+	public PDnDIndicator getIndicator();
 	
 }

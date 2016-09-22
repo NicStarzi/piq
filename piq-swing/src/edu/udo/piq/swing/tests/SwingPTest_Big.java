@@ -1,18 +1,11 @@
 package edu.udo.piq.swing.tests;
 
-import java.awt.EventQueue;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.swing.JFrame;
-import javax.swing.Timer;
 
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PFontResource.Style;
-import edu.udo.piq.PGlobalEventObs;
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PCheckBoxTuple;
 import edu.udo.piq.components.PClickObs;
@@ -48,73 +41,21 @@ import edu.udo.piq.layouts.PListLayout.ListAlignment;
 import edu.udo.piq.layouts.PSplitLayout.Orientation;
 import edu.udo.piq.layouts.PWrapLayout;
 import edu.udo.piq.scroll.PScrollPanel;
-import edu.udo.piq.swing.JCompPRoot;
 import edu.udo.piq.tools.AbstractPTextModel;
 
-public class SwingPTest {
+public class SwingPTest_Big extends AbstractSwingPTest {
 	
 	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					SwingPTest window = new SwingPTest();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+		new SwingPTest_Big();
 	}
 	
-	private final JFrame frame;
-	private final JCompPRoot root;
 	private final PStandardDesignSheet sDs = new PStandardDesignSheet();
 	
-	public SwingPTest() {
-		frame = new JFrame();
-		frame.setSize(640, 480);
-		frame.setLocationRelativeTo(null);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		root = new JCompPRoot();
-		root.setDesignSheet(sDs);
-//		root.setFocusTraversal(new DefaultPFocusTraversal2(root));
-//		root.addObs(new PKeyboardObs() {
-//			public void onKeyTriggered(PKeyboard keyboard, Key key) {
-//				if (key == Key.TAB) {
-//					root.getFocusTraversal().focusNext();
-////					System.out.println("###############################################");
-////					System.out.println("# FocusOwner="+root.getFocusOwner()+" #");
-////					System.out.println("###############################################");
-//				}
-//			}
-//		});
-//		root.addObs(new PFocusObs() {
-//			public void onFocusGained(PComponent oldOwner, PComponent newOwner) {
-//				System.out.println("SwingPTest.onFocusGained="+newOwner);
-//			}
-//		});
-		frame.setContentPane(root.getJPanel());
-		root.addObs(new PGlobalEventObs() {
-			public void onGlobalEvent(PComponent source, Object eventData) {
-				if ("CreateNew".equals(eventData)) {
-					System.out.println("Create New !!!");
-				} else {
-					System.out.println("UnknownGlobalEvent: "+eventData);
-				}
-			}
-		});
-		
-		
-		Timer updateTimer = new Timer(10, new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				root.update();
-			}
-		});
-		updateTimer.setCoalesce(true);
-		updateTimer.setRepeats(true);
-		updateTimer.start();
-		
+	public SwingPTest_Big() {
+		super(480, 320);
+	}
+	
+	public void buildGUI() {
 		PPanel bodyPnl = new PPanel();
 		bodyPnl.setID("Body Panel");
 		bodyPnl.setLayout(new PBorderLayout(bodyPnl));

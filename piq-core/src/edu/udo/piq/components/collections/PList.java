@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PComponentAction;
 import edu.udo.piq.PDnDSupport;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PKeyboard;
@@ -54,25 +54,9 @@ public class PList extends AbstractPInputLayoutOwner
 	 * @see #INPUT_ID_MOVE_UP
 	 * @see #REACTION_MOVE_UP
 	 */
-	public static final PKeyInput INPUT_MOVE_UP = new DefaultPKeyInput(Key.UP, (comp) -> {
-		PList list = ThrowException.ifTypeCastFails(comp, PList.class, "!(comp instanceof PList)");
-		return list.isEnabled() && list.getModel() != null 
-				&& list.getSelection() != null 
-				&& list.getSelection().getLastSelected() != null;
-	});
-	
-	/**
-	 * Calls the {@link #onUpKeyTriggered()} method of {@link PList}.
-	 * Throws an {@link IllegalArgumentException} if comp is not an instance of PList.
-	 * @see #INPUT_ID_MOVE_UP
-	 * @see #onUpKeyTriggered()
-	 */
-	public static final PComponentAction REACTION_MOVE_UP = (comp) -> 
-		ThrowException.ifTypeCastFails(comp, PList.class, 
-			"!(comp instanceof PList)").onUpKeyTriggered();
-	/**
-	 * @see #INPUT_ID_MOVE_UP
-	 */
+	public static final PKeyInput<PList> INPUT_MOVE_UP = 
+			new DefaultPKeyInput<>(Key.UP, PList::isKeyTriggerEnabled);
+	public static final Consumer<PList> REACTION_MOVE_UP = PList::onKeyTriggerUp;
 	public static final String INPUT_ID_MOVE_UP = "moveUp";
 	
 	/**
@@ -86,21 +70,34 @@ public class PList extends AbstractPInputLayoutOwner
 	 * @see #INPUT_ID_MOVE_DOWN
 	 * @see #REACTION_MOVE_DOWN
 	 */
-	public static final PKeyInput INPUT_MOVE_DOWN = new DefaultPKeyInput(Key.DOWN, 
-			INPUT_MOVE_UP.getOptionalCondition());
-	/**
-	 * Calls the {@link #onDownKeyTriggered()} method of {@link PList}.
-	 * Throws an {@link IllegalArgumentException} if comp is not an instance of PList.
-	 * @see #INPUT_ID_MOVE_DOWN
-	 * @see #onUpKeyTriggered()
-	 */
-	public static final PComponentAction REACTION_MOVE_DOWN = (comp) -> 
-		ThrowException.ifTypeCastFails(comp, PList.class, 
-				"!(comp instanceof PList)").onDownKeyTriggered();
-	/**
-	 * @see #INPUT_ID_MOVE_DOWN
-	*/
+	public static final PKeyInput<PList> INPUT_MOVE_DOWN = 
+			new DefaultPKeyInput<>(Key.DOWN, PList::isKeyTriggerEnabled);
+	public static final Consumer<PList> REACTION_MOVE_DOWN = PList::onKeyTriggerDown;
 	public static final String INPUT_ID_MOVE_DOWN = "moveDown";
+	
+	public static final PKeyInput<PList> INPUT_MOVE_LEFT = 
+			new DefaultPKeyInput<>(Key.LEFT, PList::isKeyTriggerEnabled);
+	public static final Consumer<PList> REACTION_MOVE_LEFT = PList::onKeyTriggerUp;
+	public static final String INPUT_ID_MOVE_LEFT = "moveLeft";
+	
+	public static final PKeyInput<PList> INPUT_MOVE_RIGHT = 
+			new DefaultPKeyInput<>(Key.RIGHT, PList::isKeyTriggerEnabled);
+	public static final Consumer<PList> REACTION_MOVE_RIGHT = PList::onKeyTriggerDown;
+	public static final String INPUT_ID_MOVE_RIGHT = "moveRight";
+	
+	protected static void onKeyTriggerUp(PList self) {
+		self.moveSelectedIndex(-1);
+	}
+	
+	protected static void onKeyTriggerDown(PList self) {
+		self.moveSelectedIndex(1);
+	}
+	
+	protected static boolean isKeyTriggerEnabled(PList self) {
+		return self.isEnabled() && self.getModel() != null 
+				&& self.getSelection() != null 
+				&& self.getSelection().getLastSelected() != null;
+	}
 	
 	protected final ObserverList<PModelObs> modelObsList
 		= PCompUtil.createDefaultObserverList();
@@ -122,15 +119,15 @@ public class PList extends AbstractPInputLayoutOwner
 		}
 	};
 	protected final PModelObs modelObs = new PModelObs() {
-		public void onContentAdded(PModel model, PModelIndex index, Object newContent) {
+		public void onContentAdded(PReadOnlyModel model, PModelIndex index, Object newContent) {
 			getSelection().clearSelection();
 			contentAdded((PListIndex) index, newContent);
 		}
-		public void onContentRemoved(PModel model, PModelIndex index, Object oldContent) {
+		public void onContentRemoved(PReadOnlyModel model, PModelIndex index, Object oldContent) {
 			contentRemoved((PListIndex) index, oldContent);
 			getSelection().removeSelection(index);
 		}
-		public void onContentChanged(PModel model, PModelIndex index, Object oldContent) {
+		public void onContentChanged(PReadOnlyModel model, PModelIndex index, Object oldContent) {
 			contentChanged((PListIndex) index, oldContent);
 		}
 	};
@@ -180,6 +177,8 @@ public class PList extends AbstractPInputLayoutOwner
 		
 		defineInput(INPUT_ID_MOVE_UP, INPUT_MOVE_UP, REACTION_MOVE_UP);
 		defineInput(INPUT_ID_MOVE_DOWN, INPUT_MOVE_DOWN, REACTION_MOVE_DOWN);
+		defineInput(INPUT_ID_MOVE_LEFT, INPUT_MOVE_LEFT, REACTION_MOVE_LEFT);
+		defineInput(INPUT_ID_MOVE_RIGHT, INPUT_MOVE_RIGHT, REACTION_MOVE_RIGHT);
 	}
 	
 	protected void onMouseButtonTriggred(PMouse mouse, MouseButton btn) {
@@ -224,14 +223,6 @@ public class PList extends AbstractPInputLayoutOwner
 				}
 			}
 		}
-	}
-	
-	protected void onUpKeyTriggered() {
-		moveSelectedIndex(-1);
-	}
-	
-	protected void onDownKeyTriggered() {
-		moveSelectedIndex(1);
 	}
 	
 	protected void moveSelectedIndex(int moveOffset) {
@@ -471,7 +462,6 @@ public class PList extends AbstractPInputLayoutOwner
 		}
 		
 		getLayoutInternal().clearChildren();
-		
 		PListModel model = getModel();
 		if (model != null) {
 			for (int i = 0; i < model.getSize(); i++) {

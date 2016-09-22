@@ -1,14 +1,14 @@
 package edu.udo.piq.components.containers;
 
 import edu.udo.piq.PKeyboard;
-import edu.udo.piq.PKeyboardObs;
 import edu.udo.piq.PKeyboard.Key;
+import edu.udo.piq.PKeyboardObs;
 import edu.udo.piq.components.collections.PList;
 import edu.udo.piq.components.collections.PListIndex;
 import edu.udo.piq.components.collections.PListSingleSelection;
-import edu.udo.piq.components.collections.PModel;
 import edu.udo.piq.components.collections.PModelIndex;
 import edu.udo.piq.components.collections.PModelObs;
+import edu.udo.piq.components.collections.PReadOnlyModel;
 import edu.udo.piq.components.collections.PSelection;
 import edu.udo.piq.components.collections.PSelectionObs;
 import edu.udo.piq.components.textbased.PLabel;
@@ -26,14 +26,14 @@ public class PDropDownList extends PDropDown {
 		}
 	};
 	protected final PModelObs modelObs = new PModelObs() {
-		public void onContentAdded(PModel model, PModelIndex index,
+		public void onContentAdded(PReadOnlyModel model, PModelIndex index,
 				Object newContent) 
 		{
 			if (displayedIndex == null) {
 				list.getSelection().addSelection(index);
 			}
 		}
-		public void onContentRemoved(PModel model, PModelIndex index,
+		public void onContentRemoved(PReadOnlyModel model, PModelIndex index,
 				Object oldContent) 
 		{
 			if (index.equals(displayedIndex)) {
@@ -43,7 +43,7 @@ public class PDropDownList extends PDropDown {
 				}
 			}
 		}
-		public void onContentChanged(PModel model, PModelIndex index,
+		public void onContentChanged(PReadOnlyModel model, PModelIndex index,
 				Object oldContent) 
 		{
 			if (index.equals(displayedIndex)) {

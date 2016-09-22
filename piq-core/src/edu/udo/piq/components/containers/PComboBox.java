@@ -1,7 +1,8 @@
 package edu.udo.piq.components.containers;
 
+import java.util.function.Consumer;
+
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PComponentAction;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PKeyboard.Key;
@@ -13,9 +14,9 @@ import edu.udo.piq.components.collections.PList;
 import edu.udo.piq.components.collections.PListIndex;
 import edu.udo.piq.components.collections.PListModel;
 import edu.udo.piq.components.collections.PListSingleSelection;
-import edu.udo.piq.components.collections.PModel;
 import edu.udo.piq.components.collections.PModelIndex;
 import edu.udo.piq.components.collections.PModelObs;
+import edu.udo.piq.components.collections.PReadOnlyModel;
 import edu.udo.piq.components.collections.PSelection;
 import edu.udo.piq.components.collections.PSelectionObs;
 import edu.udo.piq.components.textbased.PTextField;
@@ -62,21 +63,16 @@ public class PComboBox extends PDropDown {
 	 * @see #getComboBox(PComponent)
 	 * @see #showDropDown()
 	 */
-	public static final PKeyInput INPUT_PRESS_DOWN = new DefaultPKeyInput(
+	public static final PKeyInput<PComboBox> INPUT_PRESS_DOWN = new DefaultPKeyInput<>(
 			FocusPolicy.THIS_OR_CHILD_HAS_FOCUS, KeyInputType.TRIGGER, Key.DOWN, 
-		(comp) -> {
-			PComboBox comboBox = getComboBox(comp);
-			return comboBox.isEnabled() && !comboBox.isBodyVisible();
-		});
+		(self) -> self.isEnabled() && !self.isBodyVisible());
 	/**
 	 * Shows the drop down body of the combo box.
 	 * @see #INPUT_PRESS_DOWN
 	 * @see #getComboBox(PComponent)
 	 * @see #showDropDown()
 	 */
-	public static final PComponentAction REACTION_PRESS_DOWN = (comp) -> {
-		getComboBox(comp).showDropDown();
-	};
+	public static final Consumer<PComboBox> REACTION_PRESS_DOWN = self -> self.showDropDown();
 	
 	protected final PSelectionObs listSelectObs = new PSelectionObs() {
 		public void onSelectionAdded(PSelection selection, PModelIndex index) {
@@ -87,13 +83,13 @@ public class PComboBox extends PDropDown {
 		}
 	};
 	protected final PModelObs modelObs = new PModelObs() {
-		public void onContentAdded(PModel model, PModelIndex index, Object newContent) {
+		public void onContentAdded(PReadOnlyModel model, PModelIndex index, Object newContent) {
 			PComboBox.this.onContentAdded(model, index, newContent);
 		}
-		public void onContentRemoved(PModel model, PModelIndex index, Object oldContent) {
+		public void onContentRemoved(PReadOnlyModel model, PModelIndex index, Object oldContent) {
 			PComboBox.this.onContentRemoved(model, index, oldContent);
 		}
-		public void onContentChanged(PModel model, PModelIndex index, Object oldContent) {
+		public void onContentChanged(PReadOnlyModel model, PModelIndex index, Object oldContent) {
 			PComboBox.this.onContentChanged(model, index, oldContent);
 		}
 	};
@@ -229,13 +225,13 @@ public class PComboBox extends PDropDown {
 		}
 	}
 	
-	protected void onContentAdded(PModel model, PModelIndex index, Object newContent) {
+	protected void onContentAdded(PReadOnlyModel model, PModelIndex index, Object newContent) {
 		if (getDisplayedIndex() == null) {
 			getList().getSelection().addSelection(index);
 		}
 	}
 	
-	protected void onContentRemoved(PModel model, PModelIndex index, Object oldContent) {
+	protected void onContentRemoved(PReadOnlyModel model, PModelIndex index, Object oldContent) {
 		if (index.equals(getDisplayedIndex())) {
 			setDisplayedIndex(null);
 			if (getList().getModel().getSize() > 0) {
@@ -244,7 +240,7 @@ public class PComboBox extends PDropDown {
 		}
 	}
 	
-	protected void onContentChanged(PModel model, PModelIndex index, Object oldContent) {
+	protected void onContentChanged(PReadOnlyModel model, PModelIndex index, Object oldContent) {
 		if (index.equals(getDisplayedIndex())) {
 			setDisplayedIndex(index);
 		}

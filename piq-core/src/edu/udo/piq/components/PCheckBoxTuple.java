@@ -1,9 +1,10 @@
 package edu.udo.piq.components;
 
+import java.util.function.Consumer;
+
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PComponentAction;
 import edu.udo.piq.PGlobalEventGenerator;
 import edu.udo.piq.PGlobalEventProvider;
 import edu.udo.piq.PKeyboard.Key;
@@ -20,23 +21,22 @@ import edu.udo.piq.layouts.PTupleLayout.Constraint;
 import edu.udo.piq.tools.AbstractPInputLayoutOwner;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
-import edu.udo.piq.util.ThrowException;
 
 public class PCheckBoxTuple extends AbstractPInputLayoutOwner implements PClickable, PGlobalEventGenerator {
 	
-	public static final PKeyInput INPUT_TRIGGER_ENTER = new DefaultPKeyInput(
-			KeyInputType.TRIGGER, Key.ENTER, (comp) -> 
-	{
-		PCheckBoxTuple btn = ThrowException.ifTypeCastFails(comp, PCheckBoxTuple.class, 
-				"!(comp instanceof PButton)");
-		return btn.isEnabled() && btn.getCheckBox() != null && btn.getCheckBox().getModel() != null;
-	});
-	public static final PComponentAction REACTION_TRIGGER_ENTER = (comp) -> {
-		PCheckBoxTuple btn = ThrowException.ifTypeCastFails(comp, PCheckBoxTuple.class, 
-				"!(comp instanceof PCheckBoxTuple)");
-		btn.getCheckBox().toggleChecked();
-	};
+	public static final PKeyInput<PCheckBoxTuple> INPUT_TRIGGER_ENTER = 
+			new DefaultPKeyInput<>(KeyInputType.TRIGGER, Key.ENTER, PCheckBoxTuple::canTriggerEnter);
+	public static final Consumer<PCheckBoxTuple> REACTION_TRIGGER_ENTER = PCheckBoxTuple::onTriggerEnter;
 	public static final String INPUT_IDENTIFIER_TRIGGER_ENTER = "triggerEnter";
+	
+	protected static boolean canTriggerEnter(PCheckBoxTuple self) {
+		return self.isEnabled() && self.getCheckBox() != null 
+				&& self.getCheckBox().getModel() != null;
+	}
+	
+	protected static void onTriggerEnter(PCheckBoxTuple self) {
+		self.getCheckBox().toggleChecked();
+	}
 	
 	protected final ObserverList<PClickObs> obsList
 		= PCompUtil.createDefaultObserverList();

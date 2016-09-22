@@ -13,6 +13,6 @@ public interface PTimerCallback {
 	 * @see PTimer#setRepeating(boolean)
 	 * @see PTimer#setDelay(int)
 	 */
-	public void onTimerEvent();
+	public void onTimerEvent(double deltaTime);
 	
 }

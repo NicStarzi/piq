@@ -2,7 +2,6 @@ package edu.udo.piq.swing.tests;
 
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -13,8 +12,12 @@ import edu.udo.piq.swing.JCompPRoot;
 
 public abstract class AbstractSwingPTest {
 	
+	protected static final double MILLISECOND_FACTOR = 1000 * 1000;
+	
 	protected final JCompPRoot root;
 	protected JFrame frame;
+	protected int timerDelay = 12;
+	private double prevTime;
 	
 	public AbstractSwingPTest() {
 		root = new JCompPRoot();
@@ -26,6 +29,7 @@ public abstract class AbstractSwingPTest {
 	}
 	
 	protected final void buildSwing(int w, int h) {
+		prevTime = System.nanoTime() / MILLISECOND_FACTOR;
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -35,11 +39,7 @@ public abstract class AbstractSwingPTest {
 					frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 					frame.setContentPane(root.getJPanel());
 					
-					final Timer updateTimer = new Timer(10, new ActionListener() {
-						public void actionPerformed(ActionEvent e) {
-							root.update();
-						}
-					});
+					Timer updateTimer = new Timer(timerDelay, AbstractSwingPTest.this::onTimerTick);
 					updateTimer.setCoalesce(true);
 					updateTimer.setRepeats(true);
 					updateTimer.start();
@@ -63,6 +63,13 @@ public abstract class AbstractSwingPTest {
 				}
 			}
 		});
+	}
+	
+	private final void onTimerTick(ActionEvent e) {
+		double nanoTime = System.nanoTime() / MILLISECOND_FACTOR;
+		double delta = nanoTime - prevTime;
+		prevTime = nanoTime;
+		root.update(delta);
 	}
 	
 	protected abstract void buildGUI();

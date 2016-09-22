@@ -19,6 +19,14 @@ public interface PTableModel extends PModel {
 	
 	public int getRowCount();
 	
+	public default boolean canSet(PModelIndex index, Object content) {
+		return index instanceof PTableCellIndex && contains(index);
+	}
+	
+	public default boolean canSet(int column, int row, Object content) {
+		return contains(column, row);
+	}
+	
 	public void set(int column, int row, Object content);
 	
 	public default void set(PModelIndex index, Object content) {
@@ -98,7 +106,8 @@ public interface PTableModel extends PModel {
 			int col = asColumnIndex(index).getColumn();
 			return col >= 0 && col <= getColumnCount();
 		}
-		throw new WrongIndexType(index, PTableIndex.class);
+		throw new WrongIndexType(index, PRowIndex.class.getSimpleName()
+				+" or "+PColumnIndex.class.getSimpleName());
 	}
 	
 	public default boolean canRemove(PModelIndex index) {

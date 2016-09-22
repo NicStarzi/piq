@@ -1,19 +1,27 @@
 package edu.udo.piq.tools;
 
-import edu.udo.piq.PComponentAction;
-import edu.udo.piq.components.util.PKeyInputMap;
-import edu.udo.piq.components.util.PKeyInput;
+import java.util.function.Consumer;
 
-public class AbstractPInputComponent extends AbstractPComponent {
+import edu.udo.piq.PComponent;
+import edu.udo.piq.components.util.PKeyInput;
+import edu.udo.piq.components.util.PKeyInputMap;
+
+public class AbstractPInputComponent 
+	extends AbstractPComponent 
+{
 	
 	protected final PKeyInputMap inputMap = new PKeyInputMap(this);
 	protected boolean enabled = true;
 	
-	public void defineInput(PKeyInput input, PComponentAction reaction) {
+	public <COMP_TYPE extends PComponent> void defineInput(
+			PKeyInput<COMP_TYPE> input, Consumer<COMP_TYPE> reaction) 
+	{
 		defineInput(input.getDefaultIdentifier(), input, reaction);
 	}
 	
-	public void defineInput(Object identifier, PKeyInput input, PComponentAction reaction) {
+	public <COMP_TYPE extends PComponent> void defineInput(
+			Object identifier, PKeyInput<COMP_TYPE> input, Consumer<COMP_TYPE> reaction) 
+	{
 		inputMap.defineInput(identifier, input, reaction);
 	}
 	

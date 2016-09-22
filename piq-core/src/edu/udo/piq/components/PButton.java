@@ -1,9 +1,10 @@
 package edu.udo.piq.components;
 
+import java.util.function.Consumer;
+
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PComponentAction;
 import edu.udo.piq.PGlobalEventGenerator;
 import edu.udo.piq.PGlobalEventProvider;
 import edu.udo.piq.PInsets;
@@ -24,7 +25,6 @@ import edu.udo.piq.tools.AbstractPInputLayoutOwner;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
-import edu.udo.piq.util.ThrowException;
 
 public class PButton extends AbstractPInputLayoutOwner implements PClickable, PGlobalEventGenerator {
 	
@@ -35,19 +35,9 @@ public class PButton extends AbstractPInputLayoutOwner implements PClickable, PG
 	 */
 	
 	public static final String INPUT_IDENTIFIER_PRESS_ENTER = "pressEnter";
-	
-	public static final PKeyInput INPUT_PRESS_ENTER = new DefaultPKeyInput(
-			KeyInputType.TRIGGER, Key.ENTER, (comp) -> 
-	{
-		PButton btn = (PButton) comp;
-		return btn.isEnabled() && btn.getModel() != null;
-	});
-	
-	public static final PComponentAction REACTION_PRESS_ENTER = (comp) -> {
-		PButton btn = ThrowException.ifTypeCastFails(comp, PButton.class, 
-				"!(comp instanceof PButton)");
-		btn.getModel().setPressed(true);
-	};
+	public static final PKeyInput<PButton> INPUT_PRESS_ENTER = 
+			new DefaultPKeyInput<>(KeyInputType.TRIGGER, Key.ENTER, PButton::canTriggerEnter);
+	public static final Consumer<PButton> REACTION_PRESS_ENTER = PButton::onTriggerEnter;
 	
 	/*
 	 * Input: Release Enter
@@ -56,18 +46,24 @@ public class PButton extends AbstractPInputLayoutOwner implements PClickable, PG
 	 */
 	
 	public static final String INPUT_IDENTIFIER_RELEASE_ENTER = "releaseEnter";
+	public static final PKeyInput<PButton> INPUT_RELEASE_ENTER = 
+			new DefaultPKeyInput<>(KeyInputType.RELEASE, Key.ENTER, PButton::canTriggerEnter);
+	public static final Consumer<PButton> REACTION_RELEASE_ENTER = PButton::onReleaseEnter;
 	
-	public static final PKeyInput INPUT_RELEASE_ENTER = new DefaultPKeyInput(
-			KeyInputType.RELEASE, Key.ENTER, INPUT_PRESS_ENTER.getOptionalCondition());
+	protected static boolean canTriggerEnter(PButton self) {
+		return self.isEnabled() && self.getModel() != null;
+	}
 	
-	public static final PComponentAction REACTION_RELEASE_ENTER = (comp) -> {
-		PButton btn = ThrowException.ifTypeCastFails(comp, PButton.class, 
-				"!(comp instanceof PButton)");
-		if (btn.isPressed()) {
-			btn.getModel().setPressed(false);
-			btn.fireClickEvent();
+	protected static void onTriggerEnter(PButton self) {
+		self.getModel().setPressed(true);
+	}
+	
+	protected static void onReleaseEnter(PButton self) {
+		if (self.isPressed()) {
+			self.getModel().setPressed(false);
+			self.fireClickEvent();
 		}
-	};
+	}
 	
 	protected final ObserverList<PButtonModelObs> modelObsList
 		= PCompUtil.createDefaultObserverList();
@@ -152,7 +148,7 @@ public class PButton extends AbstractPInputLayoutOwner implements PClickable, PG
 		repeatTimerInitialDelay = initialDelay;
 		repeatTimerDelay = delayBetweenEvents;
 		if (repeatTimer == null) {
-			repeatTimer = new PTimer(this, () -> {
+			repeatTimer = new PTimer(this, (deltaTime) -> {
 				repeatTimer.setDelay(repeatTimerDelay);
 				if (isEnabled()) {
 					fireClickEvent();

@@ -34,15 +34,15 @@ public class PDnDManager {
 	/**
 	 * Is registered at the roots mouse only when needed
 	 */
-	private final PMouseObs mouseObs;
+	protected final PMouseObs mouseObs;
 	/**
 	 * The root for which this manager was created
 	 */
-	private final PRoot root;
-	private PComponent dropLocationComponent;
-	private PDnDTransfer activeTransfer;
-	private PRootOverlay currentOverlay;
-	private PMouse currentMouse;
+	protected final PRoot root;
+	protected PComponent dropLocationCmp;
+	protected PDnDTransfer activeTransfer;
+	protected PRootOverlay currentOverlay;
+	protected PMouse currentMouse;
 	
 	/**
 	 * Creates a new {@link PDnDManager} for the given {@link PRoot}.<br>
@@ -149,9 +149,9 @@ public class PDnDManager {
 		activeTransfer = transfer;
 		
 		currentOverlay = getRoot().getOverlay();
-		if (hasVisualRepresentation()) {
+		if (hasIndicator()) {
 			currentOverlay.getLayout().addChild(
-					transfer.getVisibleRepresentation(), 
+					transfer.getIndicator(), 
 					makeInitialConstraint(transfer));
 		}
 		
@@ -233,14 +233,14 @@ public class PDnDManager {
 			currentMouse.removeObs(mouseObs);
 		}
 		
-		if (dropLocationComponent != null) {
-			PDnDSupport dndSup = dropLocationComponent.getDragAndDropSupport();
-			dndSup.hideDropLocation(dropLocationComponent, activeTransfer, -1, -1);
+		if (dropLocationCmp != null) {
+			PDnDSupport dndSup = dropLocationCmp.getDragAndDropSupport();
+			dndSup.hideDropLocation(dropLocationCmp, activeTransfer, -1, -1);
 		}
 		
-		if (hasVisualRepresentation()) {
+		if (hasIndicator()) {
 			currentOverlay.getLayout().removeChild(
-					getActiveTransfer().getVisibleRepresentation());
+					getActiveTransfer().getIndicator());
 		}
 		
 		activeTransfer = null;
@@ -315,35 +315,37 @@ public class PDnDManager {
 		
 		// Hide old drop location if drop target changed
 		PComponent dropTarget = getDropTarget(x, y);
-		if (dropLocationComponent != null 
-				&& dropLocationComponent != dropTarget) 
+		if (dropLocationCmp != null 
+				&& dropLocationCmp != dropTarget) 
 		{
-			PDnDSupport dndSup = dropLocationComponent.getDragAndDropSupport();
-			dndSup.hideDropLocation(dropLocationComponent, getActiveTransfer(), x, y);
+			PDnDSupport dndSup = dropLocationCmp.getDragAndDropSupport();
+			dndSup.hideDropLocation(dropLocationCmp, getActiveTransfer(), x, y);
 		}
-		dropLocationComponent = dropTarget;
+		dropLocationCmp = dropTarget;
 		// Show drop location on drop target component
-		if (dropLocationComponent != null) {
-			PDnDSupport dndSup = dropLocationComponent.getDragAndDropSupport();
-			dndSup.showDropLocation(dropLocationComponent, getActiveTransfer(), x, y);
+		if (dropLocationCmp != null) {
+			PDnDSupport dndSup = dropLocationCmp.getDragAndDropSupport();
+			dndSup.showDropLocation(dropLocationCmp, getActiveTransfer(), x, y);
 		}
 		// Update position of visual representation of transfer
-		if (hasVisualRepresentation()) {
-			PComponent cmp = getActiveTransfer().getVisibleRepresentation();
-			PSize prefSize = PCompUtil.getPreferredSizeOf(cmp);
+		if (hasIndicator()) {
+			PDnDIndicator indicator = getActiveTransfer().getIndicator();
+			indicator.setDropPossible(dropLocationCmp != null);
+			
+			PSize prefSize = PCompUtil.getPreferredSizeOf(indicator);
 			int w = prefSize.getWidth();
 			int h = prefSize.getHeight();
 			x -= w / 2;
 			y -= h / 2;
 			FreeConstraint constr = new FreeConstraint(x, y, w, h, Integer.MAX_VALUE);
-			currentOverlay.getLayout().updateConstraint(cmp, constr);
+			currentOverlay.getLayout().updateConstraint(indicator, constr);
 		}
 	}
 	
 	protected FreeConstraint makeInitialConstraint(PDnDTransfer transfer) throws IllegalStateException {
 		throwExceptionIfNoDragActive();
 		
-		PComponent cmp = activeTransfer.getVisibleRepresentation();
+		PComponent cmp = getActiveTransfer().getIndicator();
 		PSize prefSize = PCompUtil.getPreferredSizeOf(cmp);
 		int w = prefSize.getWidth();
 		int h = prefSize.getHeight();
@@ -352,9 +354,9 @@ public class PDnDManager {
 		return new FreeConstraint(x, y, w, h, Integer.MAX_VALUE);
 	}
 	
-	protected boolean hasVisualRepresentation() {
+	protected boolean hasIndicator() {
 		return getActiveTransfer() != null && currentOverlay != null 
-				&& getActiveTransfer().getVisibleRepresentation() != null;
+				&& getActiveTransfer().getIndicator() != null;
 	}
 	
 	protected void throwExceptionIfNoDragActive() {

@@ -39,9 +39,11 @@ import edu.udo.piq.layouts.PRootLayout;
 import edu.udo.piq.layouts.PRootLayout.Constraint;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.ThrowException;
 
 public abstract class AbstractPRoot implements PRoot {
 	
+	public static final int DEFAULT_MAX_LAYOUT_ITERATION_COUNT = 100;
 	protected static final Comparator<PComponent> COMPONENT_COMPARATOR = (o1, o2) -> {
 		if (o1.equals(o2)) {
 			return 0;
@@ -104,9 +106,9 @@ public abstract class AbstractPRoot implements PRoot {
 	 * Updates
 	 */
 	
-	protected void update(int milliSeconds) {
-		tickAllTimers(milliSeconds);
-		reLayOutAll();
+	protected void update(double deltaTime) {
+		tickAllTimers(deltaTime);
+		reLayOutAll(DEFAULT_MAX_LAYOUT_ITERATION_COUNT);
 	}
 	
 	public void reLayOut() {
@@ -125,10 +127,10 @@ public abstract class AbstractPRoot implements PRoot {
 		}
 	}
 	
-	protected void tickAllTimers(int milliSeconds) {
+	protected void tickAllTimers(double deltaTime) {
 		timerIterationInProgress = true;
 		for (PTimer timer : timerSet) {
-			timer.tick(milliSeconds);
+			timer.tick(deltaTime);
 		}
 		timerIterationInProgress = false;
 		timerSet.removeAll(timersToRemove);
@@ -137,8 +139,9 @@ public abstract class AbstractPRoot implements PRoot {
 		timersToAdd.clear();
 	}
 	
-	protected void reLayOutAll() {
-		if (!reLayOutCompsFront.isEmpty()) {
+	protected void reLayOutAll(int maxIterationCount) {
+		int count = 0;
+		while (!reLayOutCompsFront.isEmpty() && count++ < maxIterationCount) {
 //			System.out.println();
 //			System.out.println("reLayOutAll");
 			
@@ -155,6 +158,9 @@ public abstract class AbstractPRoot implements PRoot {
 //			System.out.println("##############################");
 //			System.out.println();
 		}
+//		if (count > 0) {
+//			System.out.println("AbstractPRoot.reLayOutAll iterationCount="+count);
+//		}
 	}
 	
 	public void reRender(PComponent component) {
@@ -162,6 +168,7 @@ public abstract class AbstractPRoot implements PRoot {
 	}
 	
 	protected void defaultRootRender(PRenderer renderer, int rootClipX, int rootClipY, int rootClipFx, int rootClipFy) {
+//		System.out.println("### defaultRootRender ###");
 		Deque<RenderStackInfo> stack = createRenderStack(rootClipX, rootClipY, rootClipFx, rootClipFy);
 		
 		while (!stack.isEmpty()) {
@@ -194,6 +201,8 @@ public abstract class AbstractPRoot implements PRoot {
 			}
 		}
 		reRenderSet.clear();
+//		System.out.println("#######");
+//		System.out.println();
 	}
 	
 	private Deque<RenderStackInfo> createRenderStack(int rootClipX, int rootClipY, int rootClipFx, int rootClipFy) {
@@ -286,10 +295,10 @@ public abstract class AbstractPRoot implements PRoot {
 		while (component != null && !component.isFocusable()) {
 			component = component.getParent();
 		}
+		focusOwner = component;
 		if (oldOwner != null) {
 			fireFocusLostEvent(oldOwner);
 		}
-		focusOwner = component;
 		if (getFocusOwner() != null) {
 			fireFocusGainedEvent(oldOwner);
 		}
@@ -402,8 +411,9 @@ public abstract class AbstractPRoot implements PRoot {
 	}
 	
 	protected void fireFocusGainedEvent(PComponent oldFocusOwner) {
+		PComponent newOwner = getFocusOwner();
 		focusObsList.fireEvent((obs) -> obs.onFocusGained(
-				oldFocusOwner, getFocusOwner()));
+				oldFocusOwner, newOwner));
 	}
 	
 	protected void fireFocusLostEvent(PComponent oldFocusOwner) {
@@ -548,14 +558,15 @@ public abstract class AbstractPRoot implements PRoot {
 	 */
 	
 	protected static class FontInfo {
+		
 		protected final String name;
 		protected final double size;
 		protected final Style style;
 		
 		public FontInfo(String fontName, double pointSize, Style fontStyle) {
-			if (fontName == null || fontStyle == null) {
-				throw new NullPointerException();
-			}
+			ThrowException.ifNull(fontName, "fontName == null");
+			ThrowException.ifNull(fontStyle, "fontStyle == null");
+			ThrowException.ifLess(1, pointSize, "pointSize < 1");
 			name = fontName;
 			size = pointSize;
 			style = fontStyle;

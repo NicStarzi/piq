@@ -1,9 +1,9 @@
 package edu.udo.piq.components;
 
+import java.util.function.Consumer;
+
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
-import edu.udo.piq.PComponent;
-import edu.udo.piq.PComponentAction;
 import edu.udo.piq.PGlobalEventGenerator;
 import edu.udo.piq.PGlobalEventProvider;
 import edu.udo.piq.PKeyboard.Key;
@@ -21,7 +21,6 @@ import edu.udo.piq.tools.AbstractPInputComponent;
 import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
-import edu.udo.piq.util.ThrowException;
 
 public class PSlider extends AbstractPInputComponent implements PGlobalEventGenerator {
 	
@@ -29,18 +28,18 @@ public class PSlider extends AbstractPInputComponent implements PGlobalEventGene
 	protected static final int DEFAULT_SLIDER_HEIGHT = 12;
 	protected static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(100, DEFAULT_SLIDER_HEIGHT + 2);
 	
-	public static final PKeyInput INPUT_PRESS_UP = new PSliderKeyInput(Key.UP);
-	public static final PKeyInput INPUT_PRESS_RIGHT = new PSliderKeyInput(Key.RIGHT);
-	public static final PKeyInput INPUT_PRESS_DOWN = new PSliderKeyInput(Key.DOWN);
-	public static final PKeyInput INPUT_PRESS_LEFT = new PSliderKeyInput(Key.LEFT);
-	public static final PKeyInput INPUT_PRESS_CTRL_UP = new PSliderKeyInput(Key.UP, true);
-	public static final PKeyInput INPUT_PRESS_CTRL_RIGHT = new PSliderKeyInput(Key.RIGHT, true);
-	public static final PKeyInput INPUT_PRESS_CTRL_DOWN = new PSliderKeyInput(Key.DOWN, true);
-	public static final PKeyInput INPUT_PRESS_CTRL_LEFT = new PSliderKeyInput(Key.LEFT, true);
-	public static final PComponentAction REACTION_ADD = new PSliderAction(1, 0);
-	public static final PComponentAction REACTION_SUB = new PSliderAction(-1, 0);
-	public static final PComponentAction REACTION_ADD_FAST = new PSliderAction(0, 0.1);
-	public static final PComponentAction REACTION_SUB_FAST = new PSliderAction(0, -0.1);
+	public static final PKeyInput<PSlider> INPUT_PRESS_UP = new PSliderKeyInput(Key.UP);
+	public static final PKeyInput<PSlider> INPUT_PRESS_RIGHT = new PSliderKeyInput(Key.RIGHT);
+	public static final PKeyInput<PSlider> INPUT_PRESS_DOWN = new PSliderKeyInput(Key.DOWN);
+	public static final PKeyInput<PSlider> INPUT_PRESS_LEFT = new PSliderKeyInput(Key.LEFT);
+	public static final PKeyInput<PSlider> INPUT_PRESS_CTRL_UP = new PSliderKeyInput(Key.UP, true);
+	public static final PKeyInput<PSlider> INPUT_PRESS_CTRL_RIGHT = new PSliderKeyInput(Key.RIGHT, true);
+	public static final PKeyInput<PSlider> INPUT_PRESS_CTRL_DOWN = new PSliderKeyInput(Key.DOWN, true);
+	public static final PKeyInput<PSlider> INPUT_PRESS_CTRL_LEFT = new PSliderKeyInput(Key.LEFT, true);
+	public static final Consumer<PSlider> REACTION_ADD = new PSliderAction(1, 0);
+	public static final Consumer<PSlider> REACTION_SUB = new PSliderAction(-1, 0);
+	public static final Consumer<PSlider> REACTION_ADD_FAST = new PSliderAction(0, 0.1);
+	public static final Consumer<PSlider> REACTION_SUB_FAST = new PSliderAction(0, -0.1);
 	public static final String INPUT_ID_PRESS_UP = "up";
 	public static final String INPUT_ID_PRESS_DOWN = "down";
 	public static final String INPUT_ID_PRESS_LEFT = "left";
@@ -246,7 +245,7 @@ public class PSlider extends AbstractPInputComponent implements PGlobalEventGene
 		fireReRenderEvent();
 	}
 	
-	protected static class PSliderKeyInput implements PKeyInput {
+	protected static class PSliderKeyInput implements PKeyInput<PSlider> {
 		
 		protected final Key key;
 		protected final boolean ctrlDown;
@@ -268,12 +267,8 @@ public class PSlider extends AbstractPInputComponent implements PGlobalEventGene
 			return KeyInputType.PRESS;
 		}
 		
-		public OptionalCondition getOptionalCondition() {
-			return (comp) -> {
-				PSlider sld = ThrowException.ifTypeCastFails(comp, 
-						PSlider.class, "!(comp instanceof PSlider)");
-				return sld.isEnabled() && sld.getModel() != null;
-			};
+		public Condition<PSlider> getCondition() {
+			return self -> self.isEnabled() && self.getModel() != null;
 		}
 		
 		public int getModifierCount() {
@@ -285,7 +280,7 @@ public class PSlider extends AbstractPInputComponent implements PGlobalEventGene
 		}
 	}
 	
-	protected static class PSliderAction implements PComponentAction {
+	protected static class PSliderAction implements Consumer<PSlider> {
 		
 		protected final int bonus;
 		protected final double percent;
@@ -295,11 +290,13 @@ public class PSlider extends AbstractPInputComponent implements PGlobalEventGene
 			percent = factor;
 		}
 		
-		public void act(PComponent comp) {
-			PSlider sld = ThrowException.ifTypeCastFails(comp, 
-					PSlider.class, "!(comp instanceof PSlider)");
-			PSliderModel model = sld.getModel();
-			int newVal = model.getValue() + bonus + (int) Math.ceil(model.getValue() * percent);
+		public void accept(PSlider comp) {
+			PSliderModel model = comp.getModel();
+			
+			int oldVal = model.getValue();
+			int newValPercent = (int) Math.ceil(oldVal * percent);
+			int newValBonus = oldVal + bonus;
+			int newVal = Math.max(newValPercent, newValBonus);
 			model.setValue(newVal);
 		}
 	}

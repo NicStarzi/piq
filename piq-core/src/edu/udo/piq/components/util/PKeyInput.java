@@ -8,7 +8,7 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PKeyboard.Modifier;
 
-public interface PKeyInput {
+public interface PKeyInput<COMP_TYPE extends PComponent> {
 	
 	public Key getKey();
 	
@@ -16,7 +16,7 @@ public interface PKeyInput {
 	
 	public Modifier getModifier(int index);
 	
-	public default OptionalCondition getOptionalCondition() {
+	public default Condition<COMP_TYPE> getCondition() {
 		return null;
 	}
 	
@@ -41,8 +41,8 @@ public interface PKeyInput {
 	}
 	
 	@FunctionalInterface
-	public static interface OptionalCondition {
-		public boolean canTrigger(PComponent comp);
+	public static interface Condition<COMP_TYPE> {
+		public boolean canTrigger(COMP_TYPE comp);
 	}
 	
 	public static enum KeyInputType {

@@ -26,7 +26,7 @@ public class PScrollBarButton extends AbstractPComponent {
 	
 	private final List<PScrollBarButtonObs> obsList = new CopyOnWriteArrayList<>();
 	private final PTimer clickRepeatTimer = new PTimer(this, new PTimerCallback() {
-		public void onTimerEvent() {
+		public void onTimerEvent(double deltaTime) {
 			clickRepeatTimer.setDelay(CLICK_REPEAT_TIMER_REPEAT_DELAY);
 			fireClickEvent();
 		}

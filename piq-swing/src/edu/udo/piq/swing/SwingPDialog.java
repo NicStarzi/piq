@@ -105,6 +105,10 @@ public class SwingPDialog extends AbstractPDialog implements PDialog {
 		}
 	}
 	
+	public double getDeltaTime() {
+		return getSuperRoot().getDeltaTime();
+	}
+	
 	protected PRoot getSuperRoot() {
 		return root;
 	}

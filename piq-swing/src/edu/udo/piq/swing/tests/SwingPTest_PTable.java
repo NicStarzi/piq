@@ -1,31 +1,24 @@
 package edu.udo.piq.swing.tests;
 
-import edu.udo.piq.PComponent;
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PClickObs;
 import edu.udo.piq.components.PSpinner;
-import edu.udo.piq.components.collections.DefaultPTableModel;
-import edu.udo.piq.components.collections.PCellComponent;
-import edu.udo.piq.components.collections.PCellComponentWrapper;
-import edu.udo.piq.components.collections.PCellComponentWrapper.WrapperContentDelegator;
-import edu.udo.piq.components.collections.PCellFactory;
 import edu.udo.piq.components.collections.PColumnIndex;
-import edu.udo.piq.components.collections.PModel;
 import edu.udo.piq.components.collections.PModelIndex;
 import edu.udo.piq.components.collections.PRowIndex;
+import edu.udo.piq.components.collections.PSelection;
+import edu.udo.piq.components.collections.PSelectionObs;
 import edu.udo.piq.components.collections.PTable;
+import edu.udo.piq.components.collections.PTableMultiSelection;
 import edu.udo.piq.components.containers.PPanel;
+import edu.udo.piq.components.defaults.DefaultPTableModel;
 import edu.udo.piq.components.defaults.PSpinnerModelInt;
 import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.components.textbased.PTextField;
 import edu.udo.piq.components.textbased.PTextFieldObs;
-import edu.udo.piq.layouts.AlignmentX;
-import edu.udo.piq.layouts.AlignmentY;
 import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PBorderLayout.Constraint;
 import edu.udo.piq.layouts.PGridLayout;
-import edu.udo.piq.layouts.PGridLayout.GridConstraint;
-import edu.udo.piq.tools.ImmutablePInsets;
 
 public class SwingPTest_PTable extends AbstractSwingPTest {
 	
@@ -38,90 +31,66 @@ public class SwingPTest_PTable extends AbstractSwingPTest {
 	}
 	
 	public void buildGUI() {
+		PPanel bodyPnl = new PPanel();
+		bodyPnl.setLayout(new PBorderLayout(bodyPnl));
+		root.setBody(bodyPnl);
+		
+		/*
+		 * Table & Model
+		 */
+		
 		DefaultPTableModel tm = new DefaultPTableModel(3, 3);
 		tm.set(1, 0, "Aaaa");
 		tm.set(2, 1, "Bbbb");
 		tm.set(0, 2, "Cccc");
 		
-		PPanel bodyPnl = new PPanel();
-		bodyPnl.setLayout(new PBorderLayout(bodyPnl));
-		root.setBody(bodyPnl);
-		
-		PTable table = new PTable();
-		table.setCellFactory(new PCellFactory() {
-			public PCellComponent makeCellComponent(PModel model, PModelIndex index) {
-				PCellComponentWrapper cell = new PCellComponentWrapper();
-				cell.getLayout().setInsets(new ImmutablePInsets(2));
-				
-				PTextField input = new PTextField();
-				input.getModel().setValue(model.get(index));
-				input.addObs(new PTextFieldObs() {
-					public void onConfirm(PTextField textField) {
-						PModel model = cell.getElementModel();
-						PModelIndex index = cell.getElementIndex();
-						model.set(index, input.getText());
-					}
-				});
-				cell.setContentDelegator(new WrapperContentDelegator() {
-					public void setElement(PComponent content, Object element, PModel model, PModelIndex index) {
-						input.getModel().setValue(model.get(index));
-					}
-				});
-//				PModelObs obs = new PModelObs() {
-//					public void onContentChanged(PModel model, PModelIndex index, Object oldContent) {
-//						if (index.equals(cell.getElementIndex())) {
-//							input.getModel().setValue(model.get(index));
-//						}
-//					}
-//				};
-//				input.addObs(new PComponentObs() {
-//					public void onAdd(PComponent component) {
-//						model.addObs(obs);
-//					}
-//					public void onRemove(PComponent component) {
-//						model.removeObs(obs);
-//					}
-//				});
-				cell.setContent(input);
-				cell.setElement(model, index);
-				
-				return cell;
-			}
-		});
+		PTable table = new PTable(tm);
 //		table.setOutputEncoder((element) -> Objects.toString(element, ""));
-		table.setModel(tm);
+		table.setSelection(new PTableMultiSelection());
 		bodyPnl.addChild(table, Constraint.CENTER);
+		
+		/*
+		 * Control Elements
+		 */
 		
 		PPanel ctrlPnl = new PPanel();
 		bodyPnl.addChild(ctrlPnl, Constraint.BOTTOM);
-		PGridLayout layout = new PGridLayout(ctrlPnl, 4, 2);
-//		layout.setColumnGrowth(Growth.MAXIMIZE);
-//		layout.setRowGrowth(Growth.MAXIMIZE);
+		PGridLayout layout = new PGridLayout(ctrlPnl, 4, 3);
 		ctrlPnl.setLayout(layout);
 		
 		PLabel lblCol = new PLabel("Column");
-		ctrlPnl.addChild(lblCol, new GridConstraint(0, 0, AlignmentX.RIGHT, AlignmentY.CENTER));
+		ctrlPnl.addChild(lblCol, "0 0 alignX=R");
 		
 		PLabel lblRow = new PLabel("Row");
-		ctrlPnl.addChild(lblRow, new GridConstraint(0, 1, AlignmentX.RIGHT, AlignmentY.CENTER));
+		ctrlPnl.addChild(lblRow, "0 1 alignX=R");
+		
+		PLabel lblValue = new PLabel("Value");
+		ctrlPnl.addChild(lblValue, "0 2 alignX=R");
 		
 		PSpinner inputCol = new PSpinner(new PSpinnerModelInt(0, 0, 100));
-		ctrlPnl.addChild(inputCol, new GridConstraint(1, 0, AlignmentX.FILL, AlignmentY.CENTER));
+		ctrlPnl.addChild(inputCol, "1 0 alignX=F");
 		
 		PSpinner inputRow = new PSpinner(new PSpinnerModelInt(0, 0, 100));
-		ctrlPnl.addChild(inputRow, new GridConstraint(1, 1, AlignmentX.FILL, AlignmentY.CENTER));
+		ctrlPnl.addChild(inputRow, "1 1 alignX=F");
+		
+		PTextField inputValue = new PTextField();
+		ctrlPnl.addChild(inputValue, "1 2 3 1 alignX=F");
 		
 		PButton btnAddColumn = new PButton(new PLabel("Add Column"));
-		ctrlPnl.addChild(btnAddColumn, new GridConstraint(2, 0, AlignmentX.FILL, AlignmentY.FILL));
+		ctrlPnl.addChild(btnAddColumn, "2 0 alignX=F alignY=F");
 		
 		PButton btnRemoveColumn = new PButton(new PLabel("Remove Column"));
-		ctrlPnl.addChild(btnRemoveColumn, new GridConstraint(3, 0, AlignmentX.FILL, AlignmentY.FILL));
+		ctrlPnl.addChild(btnRemoveColumn, "3 0 alignX=F alignY=F");
 		
 		PButton btnAddRow = new PButton(new PLabel("Add Row"));
-		ctrlPnl.addChild(btnAddRow, new GridConstraint(2, 1, AlignmentX.FILL, AlignmentY.FILL));
+		ctrlPnl.addChild(btnAddRow, "2 1 alignX=F alignY=F");
 		
 		PButton btnRemoveRow = new PButton(new PLabel("Remove Row"));
-		ctrlPnl.addChild(btnRemoveRow, new GridConstraint(3, 1, AlignmentX.FILL, AlignmentY.FILL));
+		ctrlPnl.addChild(btnRemoveRow, "3 1 alignX=F alignY=F");
+		
+		/*
+		 * Observers & Program Logic
+		 */
 		
 		btnAddColumn.addObs((PClickObs) (c) -> {
 			int col = (int) inputCol.getModel().getValue();
@@ -138,6 +107,33 @@ public class SwingPTest_PTable extends AbstractSwingPTest {
 		btnRemoveRow.addObs((PClickObs) (c) -> {
 			int row = (int) inputRow.getModel().getValue();
 			tm.remove(new PRowIndex(row));
+		});
+		table.addObs(new PSelectionObs() {
+			public void onSelectionAdded(PSelection selection, PModelIndex index) {
+				update();
+			}
+			public void onSelectionRemoved(PSelection selection, PModelIndex index) {
+				update();
+			}
+			public void update() {
+				String text;
+				boolean enabled;
+				PModelIndex index = table.getSelection().getOneSelected();
+				if (index == null) {
+					text = "<No Selection>";
+					enabled = false;
+				} else {
+					Object selected = table.getModel().get(index);
+					text = selected == null ? "null" : selected.toString();
+					enabled = true;
+				}
+				inputValue.getModel().setValue(text);
+				inputValue.setEnabled(enabled);
+			}
+		});
+		inputValue.addObs((PTextFieldObs) self -> {
+			PModelIndex index = table.getSelection().getOneSelected();
+			table.getModel().set(index, self.getText());
 		});
 	}
 	

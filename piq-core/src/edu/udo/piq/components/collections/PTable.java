@@ -13,7 +13,8 @@ import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.defaults.DefaultPCellComponent;
 import edu.udo.piq.components.defaults.DefaultPCellFactory;
-import edu.udo.piq.components.defaults.DefaultPDnDSupport;
+import edu.udo.piq.components.defaults.FixedSizePTableModel;
+import edu.udo.piq.components.defaults.PTablePDnDSupport;
 import edu.udo.piq.components.defaults.ReRenderPFocusObs;
 import edu.udo.piq.components.util.ObjToStr;
 import edu.udo.piq.layouts.PTableLayout3;
@@ -34,7 +35,7 @@ public class PTable extends AbstractPInputLayoutOwner
 		= PCompUtil.createDefaultObserverList();
 	protected final ObserverList<PSelectionObs> selectionObsList
 		= PCompUtil.createDefaultObserverList();
-	private final PSelectionObs selectionObs = new PSelectionObs() {
+	protected final PSelectionObs selectionObs = new PSelectionObs() {
 		public void onSelectionAdded(PSelection selection, PModelIndex index) {
 			selectionAdded((PTableCellIndex) index);
 		}
@@ -49,16 +50,16 @@ public class PTable extends AbstractPInputLayoutOwner
 			}
 		}
 	};
-	private final PModelObs modelObs = new PModelObs() {
-		public void onContentAdded(PModel model, PModelIndex index, Object newContent) {
+	protected final PModelObs modelObs = new PModelObs() {
+		public void onContentAdded(PReadOnlyModel model, PModelIndex index, Object newContent) {
 			getSelection().clearSelection();
 			contentAdded((PTableIndex) index, null);
 		}
-		public void onContentRemoved(PModel model, PModelIndex index, Object oldContent) {
+		public void onContentRemoved(PReadOnlyModel model, PModelIndex index, Object oldContent) {
 			getSelection().clearSelection();
 			contentRemoved((PTableIndex) index, oldContent);
 		}
-		public void onContentChanged(PModel model, PModelIndex index, Object oldContent) {
+		public void onContentChanged(PReadOnlyModel model, PModelIndex index, Object oldContent) {
 			contentChanged((PTableCellIndex) index, oldContent);
 		}
 	};
@@ -88,7 +89,7 @@ public class PTable extends AbstractPInputLayoutOwner
 		}
 		
 		setLayout(new PTableLayout3(this));
-		setDragAndDropSupport(new DefaultPDnDSupport());
+		setDragAndDropSupport(new PTablePDnDSupport());
 		setSelection(new PTableSingleSelection());
 		setCellFactory(new DefaultPCellFactory());
 		setModel(model);
@@ -144,10 +145,9 @@ public class PTable extends AbstractPInputLayoutOwner
 			int disY = Math.abs(lastDragY - my);
 			int dis = Math.max(disX, disY);
 			if (dis >= DRAG_AND_DROP_DISTANCE) {
-				//FIXME
-//				if (dndSup.canDrag(this, mx, my)) {
-//					dndSup.startDrag(this, mx, my);
-//				}
+				if (dndSup.canDrag(this, mx, my)) {
+					dndSup.startDrag(this, mx, my);
+				}
 			}
 		}
 	}

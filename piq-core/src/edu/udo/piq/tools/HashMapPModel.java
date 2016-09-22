@@ -16,6 +16,10 @@ public class HashMapPModel extends AbstractPModel {
 	
 	protected final Map<PHashIndex, Object> hashMap = new HashMap<>();
 	
+	public boolean canSet(PModelIndex index, Object content) {
+		return canAdd(index, content);
+	}
+	
 	public void set(PModelIndex index, Object content) {
 		add(index, content);
 	}

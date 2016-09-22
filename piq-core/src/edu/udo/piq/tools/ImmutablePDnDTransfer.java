@@ -1,6 +1,7 @@
 package edu.udo.piq.tools;
 
 import edu.udo.piq.PComponent;
+import edu.udo.piq.PDnDIndicator;
 import edu.udo.piq.PDnDTransfer;
 import edu.udo.piq.components.collections.PModel;
 
@@ -10,21 +11,18 @@ public class ImmutablePDnDTransfer implements PDnDTransfer {
 	private final int x;
 	private final int y;
 	private final PModel data;
-//	private final List<IndexAndContentTuple> dataList;
-	private final PComponent visPres;
+	private final PDnDIndicator indic;
 	
 	public ImmutablePDnDTransfer(PComponent source, 
 			int fromX, int fromY,
 			PModel dataModel,
-//			List<IndexAndContentTuple> data, 
-			PComponent visibleRepresentation) 
+			PDnDIndicator indicator) 
 	{
 		src = source;
 		x = fromX;
 		y = fromY;
 		data = dataModel;
-//		dataList = data;
-		visPres = visibleRepresentation;
+		indic = indicator;
 	}
 	
 	public PComponent getSource() {
@@ -43,12 +41,8 @@ public class ImmutablePDnDTransfer implements PDnDTransfer {
 		return data;
 	}
 	
-//	public List<IndexAndContentTuple> getData() {
-//		return dataList;
-//	}
-	
-	public PComponent getVisibleRepresentation() {
-		return visPres;
+	public PDnDIndicator getIndicator() {
+		return indic;
 	}
 	
 	public String toString() {

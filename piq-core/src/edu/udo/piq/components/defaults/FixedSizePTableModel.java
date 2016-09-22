@@ -1,5 +1,10 @@
-package edu.udo.piq.components.collections;
+package edu.udo.piq.components.defaults;
 
+import edu.udo.piq.components.collections.AddImpossible;
+import edu.udo.piq.components.collections.PModelIndex;
+import edu.udo.piq.components.collections.PTableCellIndex;
+import edu.udo.piq.components.collections.PTableModel;
+import edu.udo.piq.components.collections.RemoveImpossible;
 import edu.udo.piq.tools.AbstractPTableModel;
 import edu.udo.piq.util.ThrowException;
 
@@ -55,6 +60,10 @@ public class FixedSizePTableModel extends AbstractPTableModel implements PTableM
 	
 	public int getRowCount() {
 		return rows;
+	}
+	
+	public boolean canSet(PModelIndex index, Object content) {
+		return index instanceof PTableCellIndex && contains(index);
 	}
 	
 	public boolean canAdd(PModelIndex index, Object content) {

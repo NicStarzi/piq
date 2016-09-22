@@ -2,6 +2,7 @@ package edu.udo.piq.tutorial;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
+import edu.udo.piq.PDnDIndicator;
 import edu.udo.piq.PDnDManager;
 import edu.udo.piq.PDnDSupport;
 import edu.udo.piq.PDnDTransfer;
@@ -73,7 +74,7 @@ public class DnDAreaSupport implements PDnDSupport {
 		PComponent comp = area.getLayout().getChildAt(x, y);
 		
 		PModel data = new SingletonPModel(comp);
-		PComponent previewComp = new DnDCompPreview(comp);
+		PDnDIndicator previewComp = new DnDCompPreview(comp);
 		DnDAreaTransfer areaTrans = new DnDAreaTransfer(source, x, y, data, previewComp);
 		areaTrans.compW = comp.getBounds().getWidth();
 		areaTrans.compH = comp.getBounds().getHeight();
@@ -151,7 +152,7 @@ public class DnDAreaSupport implements PDnDSupport {
 		
 		public DnDAreaTransfer(PComponent source, 
 				int fromX, int fromY, PModel dataModel,
-				PComponent visibleRepresentation) 
+				PDnDIndicator visibleRepresentation) 
 		{
 			super(source, fromX, fromY, dataModel, visibleRepresentation);
 		}

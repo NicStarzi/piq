@@ -40,7 +40,7 @@ public class PCompUtil {
 	 * @throws NullPointerException		if comp is null
 	 * @see PComponent#getBounds()
 	 * @see PComponent#getClippedBounds()
-	 * @see PBounds#makeIntersection(PBounds)
+	 * @see PBounds#createIntersection(PBounds)
 	 */
 	public static PBounds fillClippedBounds(MutablePBounds result, PComponent comp) {
 		ThrowException.ifNull(comp, "component == null");
@@ -173,6 +173,20 @@ public class PCompUtil {
 				return current;
 			}
 			stack.addAll(current.getChildren());
+		}
+		return null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> T getAncestorOfType(Class<T> ancestorType, PComponent descendant) {
+		ThrowException.ifNull(ancestorType, "ancestorType == null");
+		ThrowException.ifNull(descendant, "descendant == null");
+		PComponent current = descendant;
+		while (current != null) {
+			if (ancestorType.isInstance(current)) {
+				return (T) current;
+			}
+			current = current.getParent();
 		}
 		return null;
 	}

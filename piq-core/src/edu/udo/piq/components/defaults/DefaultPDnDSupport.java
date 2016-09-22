@@ -3,10 +3,10 @@ package edu.udo.piq.components.defaults;
 import java.util.List;
 
 import edu.udo.piq.PComponent;
+import edu.udo.piq.PDnDIndicator;
 import edu.udo.piq.PDnDManager;
 import edu.udo.piq.PDnDSupport;
 import edu.udo.piq.PDnDTransfer;
-import edu.udo.piq.components.PPicture;
 import edu.udo.piq.components.collections.PDropComponent;
 import edu.udo.piq.components.collections.PListIndex;
 import edu.udo.piq.components.collections.PModel;
@@ -21,7 +21,8 @@ public class DefaultPDnDSupport implements PDnDSupport {
 	protected PModelImport modelImport = null;
 	protected PModelExport modelExport = null;
 	protected PDnDTransfer activeTransfer;
-	protected Object dragImgID = "DragAndDrop.png";
+	protected Object dndPosImageID = "DnDPossible.png";
+	protected Object dndImpImageID = "DnDNotPossible.png";
 	protected boolean dragAllowed = true;
 	protected boolean dropAllowed = true;
 	protected boolean removeOnDrag = true;
@@ -42,12 +43,20 @@ public class DefaultPDnDSupport implements PDnDSupport {
 		return modelImport;
 	}
 	
-	public void setDragImageID(Object imgID) {
-		dragImgID = imgID;
+	public void setDragPossibleImageID(Object imgID) {
+		dndPosImageID = imgID;
 	}
 	
-	public Object getDragImageID() {
-		return dragImgID;
+	public Object getDropPossibleImageID() {
+		return dndPosImageID;
+	}
+	
+	public void setDropImpossibleImageID(Object imgID) {
+		dndImpImageID = imgID;
+	}
+	
+	public Object getDropImpossibleImageID() {
+		return dndImpImageID;
 	}
 	
 	public void setRemoveOnDrag(boolean isRemoveOnDrag) {
@@ -113,17 +122,21 @@ public class DefaultPDnDSupport implements PDnDSupport {
 		PModelImport dataImport = getModelImport();
 		if (dataImport == null) {
 			// If there is no known strategy we do a naive import
-			for (PModelIndex index : importData) {
-				Object element = importData.get(index);
-				if (!dstModel.canAdd(dstIndex, element)) {
-					return false;
-				}
-			}
-			return true;
+			return naiveCanImport(dstModel, dstIndex, importData);
 		} else {
 			// If a PModelImport was defined we delegate
 			return dataImport.canImportData(dstModel, dstIndex, importData);
 		}
+	}
+	
+	protected boolean naiveCanImport(PModel dstModel, PModelIndex dstIndex, PModel importData) {
+		for (PModelIndex index : importData) {
+			Object element = importData.get(index);
+			if (!dstModel.canAdd(dstIndex, element)) {
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	public void drop(PComponent target, PDnDTransfer transfer, int x, int y)
@@ -141,14 +154,16 @@ public class DefaultPDnDSupport implements PDnDSupport {
 		// Check if there is a PModelImport strategy defined
 		if (dataImport == null) {
 			// Do a naive import for unknown data
-			doNaiveImport(dstModel, dstIndex, importData);
+			doNaiveImport(dstComp, dstModel, dstIndex, importData);
 		} else {
 			// Delegate import to PModelImport strategy
 			dataImport.importData(dstModel, dstIndex, importData);
 		}
 	}
 	
-	protected void doNaiveImport(PModel dstModel, PModelIndex dstIndex, PModel importData) {
+	protected void doNaiveImport(PDropComponent dstComp, 
+			PModel dstModel, PModelIndex dstIndex, PModel importData) 
+	{
 		// Do a naive import for unknown data
 		for (PModelIndex index : importData) {
 			Object element = importData.get(index);
@@ -184,11 +199,15 @@ public class DefaultPDnDSupport implements PDnDSupport {
 		PModelExport modelExport = getModelExport();
 		if (modelExport == null) {
 			// Do a naive check
-			return !isRemoveOnDrag() || srcModel.canRemove(srcIndices);
+			return naiveCanExport(srcModel, srcIndices);
 		} else {
 			// Delegate to the PModelExport
 			return modelExport.canExport(srcModel, srcIndices);
 		}
+	}
+	
+	protected boolean naiveCanExport(PModel srcModel, List<PModelIndex> srcIndices) {
+		return !isRemoveOnDrag() || srcModel.canRemove(srcIndices);
 	}
 	
 	public void startDrag(PComponent source, int x, int y)
@@ -212,9 +231,9 @@ public class DefaultPDnDSupport implements PDnDSupport {
 			// Delegate export to PModelExport strategy
 			importData = modelExport.createExportModel(srcModel, srcIndices);
 		}
-		PComponent dragRepres = createVisibleRepresentation(importData);
+		PDnDIndicator dragIndicator = createIndicator(importData);
 		
-		activeTransfer = new ImmutablePDnDTransfer(source, x, y, importData, dragRepres);
+		activeTransfer = new ImmutablePDnDTransfer(source, x, y, importData, dragIndicator);
 		
 		source.getDragAndDropManager().startDrag(activeTransfer);
 	}
@@ -249,17 +268,21 @@ public class DefaultPDnDSupport implements PDnDSupport {
 		if (modelExport == null) {
 			// Do a naive remove after drag
 			if (isRemoveOnDrag()) {
-				/*
-				 * Iterating over all indices and removing them one by one will not always work 
-				 * since removing one index might change the validity of other indices. For this 
-				 * reason we let the model remove all indices as one atomic step.
-				 */
-				srcModel.removeAll(srcIndices);
+				doNaiveRemoveAll(srcModel, srcIndices);
 			}
 		} else {
 			// Delegate to PModelExport strategy
 			getModelExport().finishExport(srcModel, transfer, srcIndices);
 		}
+	}
+	
+	protected void doNaiveRemoveAll(PModel srcModel, List<PModelIndex> srcIndices) {
+		/*
+		 * Iterating over all indices and removing them one by one will not always work 
+		 * since removing one index might change the validity of other indices. For this 
+		 * reason we let the model remove all indices as one atomic step.
+		 */
+		srcModel.removeAll(srcIndices);
 	}
 	
 	public void abortDrag(PComponent source, PDnDTransfer transfer)
@@ -274,11 +297,17 @@ public class DefaultPDnDSupport implements PDnDSupport {
 		
 		// Check if there is a PModelExport strategy defined
 		PModelExport modelExport = getModelExport();
-		if (modelExport != null) {
+		if (modelExport == null) {
+			doNaiveAbortDrag(source, transfer);
+		} else {
 			// Delegate to PModelExport strategy
 			PModel srcModel = srcComp.getModel();
 			modelExport.abortExport(srcModel, transfer);
-		}// We dont do an 'else' here because there is no naive reaction to an abort
+		}
+	}
+	
+	protected void doNaiveAbortDrag(PComponent source, PDnDTransfer transfer) {
+		// We have nothing to do here.
 	}
 	
 	public void showDropLocation(PComponent source, PDnDTransfer transfer, int x, int y) {
@@ -298,12 +327,10 @@ public class DefaultPDnDSupport implements PDnDSupport {
 		dropComp.setDropHighlight(null);
 	}
 	
-	protected PComponent createVisibleRepresentation(PModel data) {
-		PPicture pic = new PPicture();
-		pic.getModel().setImageID(getDragImageID());
-		pic.setStretchToSize(true);
-		pic.setElusive(true);
-		return pic;
+	protected PDnDIndicator createIndicator(PModel data) {
+		Object imgIDAble = getDropPossibleImageID();
+		Object imgIDUnable = getDropImpossibleImageID();
+		return new DefaultPDndIndicator(imgIDAble, imgIDUnable);
 	}
 	
 }

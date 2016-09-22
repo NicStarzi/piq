@@ -33,7 +33,7 @@ public class PPopupSubMenu extends PPopupLabel implements PPopupComponent {
 			PPopupSubMenu.this.onMouseButtonReleased(mouse, btn);
 		}
 	};
-	protected final PTimer hoverTimer = new PTimer(this, () -> showSubMenu());
+	protected final PTimer hoverTimer = new PTimer(this, PPopupSubMenu.this::showSubMenu);
 	protected final MutablePSize prefSize = new MutablePSize();
 	protected boolean enabled = true;
 	protected boolean subMenuShown = false;
@@ -130,7 +130,7 @@ public class PPopupSubMenu extends PPopupLabel implements PPopupComponent {
 		return hoverTimer;
 	}
 	
-	protected void showSubMenu() {
+	protected void showSubMenu(double deltaTime) {
 		System.out.println("PPopupSubMenu.showSubMenu()");
 	}
 	

@@ -1,6 +1,7 @@
 package edu.udo.piq.components.defaults;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -17,7 +18,7 @@ import edu.udo.piq.util.ThrowException;
 
 public class DefaultPListModel extends AbstractPModel implements PListModel {
 	
-	private final List<Object> list = new ArrayList<>();
+	protected final List<Object> list = new ArrayList<>();
 	
 	public DefaultPListModel() {
 	}
@@ -36,6 +37,10 @@ public class DefaultPListModel extends AbstractPModel implements PListModel {
 	
 	public int getSize() {
 		return list.size();
+	}
+	
+	public boolean canSet(PModelIndex index, Object content) {
+		return index instanceof PListIndex && contains(index);
 	}
 	
 	public void set(PModelIndex index, Object content) {
@@ -104,6 +109,30 @@ public class DefaultPListModel extends AbstractPModel implements PListModel {
 	
 	public boolean canRemove(int index) {
 		return contains(index);
+	}
+	
+	public void removeAll(Iterable<PModelIndex> indices) {
+		ArrayList<PModelIndex> c = new ArrayList<>();
+		indices.forEach(c::add);
+		c.sort((i1, i2) -> {
+			PListIndex l1 = (PListIndex) i1;
+			PListIndex l2 = (PListIndex) i2;
+			return Integer.compare(l2.getIndexValue(), l1.getIndexValue());
+		});
+		for (PModelIndex idx : c) {
+			remove(idx);
+		}
+	}
+	
+	public void removeAll(PModelIndex ... indices) {
+		Arrays.sort(indices, (i1, i2) -> {
+			PListIndex l1 = (PListIndex) i1;
+			PListIndex l2 = (PListIndex) i2;
+			return Integer.compare(l2.getIndexValue(), l1.getIndexValue());
+		});
+		for (PModelIndex idx : indices) {
+			remove(idx);
+		}
 	}
 	
 	public void remove(PModelIndex index) {

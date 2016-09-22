@@ -83,6 +83,7 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 	private final SwingPClipboard clipboard = new SwingPClipboard();
 	private final PDnDManager dndManager = new PDnDManager(this);
 	private final JPanelPBounds bounds = new JPanelPBounds(panel);
+	protected double deltaTime = 0;
 	
 	public JCompPRoot() {
 		super();
@@ -119,7 +120,12 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 		mouse.mouseOverCursorChanged(component);
 	}
 	
-	public void update() {
+	public double getDeltaTime() {
+		return deltaTime;
+	}
+	
+	public void update(double deltaTime) {
+		this.deltaTime = deltaTime;
 		while (!openedDialogs.isEmpty()) {
 			PDialog dlg = openedDialogs.get(openedDialogs.size() - 1);
 			if (dlg.isDisposed()) {
@@ -130,7 +136,7 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 				return;
 			}
 		}
-		super.update(1);
+		super.update(deltaTime);
 		
 		mouse.update();
 	}
@@ -227,6 +233,7 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 	
 	public void reRender(PComponent component) {
 		if (panel != null) {
+//			System.out.println("JCompPRoot.reRender="+component);
 			if (SMART_RE_RENDER) {
 				reRenderSet.add(component);
 			} else {
@@ -237,6 +244,7 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 	}
 	
 	private void render(Graphics2D g) {
+//		System.out.println("### RENDER ALL ###");
 		renderer.setGraphics(g);
 		PBounds bnds = getBounds();
 		int rootFx = bnds.getWidth();
@@ -244,6 +252,10 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 		
 		// A JCompPRoot always has its origin at (0,0) as per Swing convention
 		defaultRootRender(renderer, 0, 0, rootFx, rootFy);
+	}
+
+	public boolean isElusive() {
+		return false;
 	}
 	
 }

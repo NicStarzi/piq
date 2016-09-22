@@ -162,7 +162,7 @@ public class SwingPTest_PGridLayout extends AbstractSwingPTest {
 			}
 			AlignmentX alignX = (AlignmentX) selectAlignX.getList().getSelectedValue();
 			AlignmentY alignY = (AlignmentY) selectAlignY.getList().getSelectedValue();
-			GridConstraint oldConstraint = (GridConstraint) getConstraintsAtParent();
+			GridConstraint oldConstraint = (GridConstraint) getConstraintAtParent();
 			if (alignX == oldConstraint.getAlignX() 
 					&& alignY == oldConstraint.getAlignY()) 
 			{

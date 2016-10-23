@@ -18,8 +18,12 @@ public class PCentricLayout extends AbstractArrayPLayout {
 		super(component, 1);
 	}
 	
-	public void setInsets(PInsets insets) {
-		this.insets = insets;
+	public void setInsets(PInsets value) {
+		ThrowException.ifNull(value, "value == null");
+		if (insets.equals(value)) {
+			return;
+		}
+		insets = value;
 		invalidate();
 	}
 	
@@ -57,10 +61,18 @@ public class PCentricLayout extends AbstractArrayPLayout {
 		return getCompAt(0);
 	}
 	
+	@Override
+	public boolean containsChild(PComponent child) {
+		ThrowException.ifNull(child, "child == null");
+		return child == getContent();
+	}
+	
+	@Override
 	protected boolean canAdd(PComponent component, Object constraint) {
 		return constraint == null;
 	}
 	
+	@Override
 	protected void onInvalidated() {
 		int prefW = getInsets().getHorizontal();
 		int prefH = getInsets().getVertical();
@@ -74,6 +86,7 @@ public class PCentricLayout extends AbstractArrayPLayout {
 		prefSize.setHeight(prefH);
 	}
 	
+	@Override
 	protected void layOutInternal() {
 		PComponent content = getContent();
 		if (content != null) {
@@ -115,11 +128,7 @@ public class PCentricLayout extends AbstractArrayPLayout {
 		}
 	}
 	
-	public boolean containsChild(PComponent child) {
-		ThrowException.ifNull(child, "child == null");
-		return child == getContent();
-	}
-	
+	@Override
 	protected int getIndexFor(Object constr) {
 		if (constr == null) {
 			return 0;

@@ -296,7 +296,7 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 			setSpinnerButtonOrientation(direction);
 			setLayout(null);
 			addObs((PClickObs) (btn) -> onClick());
-			setRepeatTimer(20, 5);
+			setRepeatTimer(300, 100);
 		}
 		
 		protected void onSpinnerModelValueChanged() {

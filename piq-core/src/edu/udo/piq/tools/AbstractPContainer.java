@@ -2,21 +2,23 @@ package edu.udo.piq.tools;
 
 import java.util.Collection;
 
+import edu.udo.piq.PBorder;
+import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PLayout;
+import edu.udo.piq.PRenderer;
+import edu.udo.piq.PSize;
 
-public abstract class AbstractPContainer extends AbstractPLayoutOwner {
+public abstract class AbstractPContainer<CONSTRAINT_CLASS> extends AbstractPLayoutOwner {
 	
-	/**
-	 * Makes the protected method from {@link AbstractPLayoutOwner} 
-	 * public to give access to the user.<br>
-	 */
-	public void setLayout(PLayout layout) {
-		super.setLayout(layout);
-	}
+	protected static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(20, 20);
 	
 	public PLayout getLayout() {
 		return (PLayout) super.getLayout();
+	}
+	
+	public void setBorder(PBorder border) {
+		super.setBorder(border);
 	}
 	
 	/**
@@ -28,7 +30,7 @@ public abstract class AbstractPContainer extends AbstractPLayoutOwner {
 	 * @see #getLayout()
 	 * @see PLayout#addChild(PComponent, Object)
 	 */
-	public void addChild(PComponent component, Object constraint) {
+	public void addChild(PComponent component, CONSTRAINT_CLASS constraint) {
 		getLayout().addChild(component, constraint);
 	}
 	
@@ -36,7 +38,7 @@ public abstract class AbstractPContainer extends AbstractPLayoutOwner {
 		getLayout().removeChild(component);
 	}
 	
-	public void removeChild(Object constraint) {
+	public void removeChild(CONSTRAINT_CLASS constraint) {
 		getLayout().removeChild(constraint);
 	}
 	
@@ -52,6 +54,10 @@ public abstract class AbstractPContainer extends AbstractPLayoutOwner {
 		return super.getChildren();
 	}
 	
+	public PComponent getChildForConstraint(CONSTRAINT_CLASS constraint) {
+		return getLayout().getChildForConstraint(constraint);
+	}
+	
 	public int getChildCount() {
 		return getLayout().getChildCount();
 	}
@@ -62,6 +68,18 @@ public abstract class AbstractPContainer extends AbstractPLayoutOwner {
 	 */
 	public boolean hasChildren() {
 		return super.hasChildren();
+	}
+	
+	public void defaultRender(PRenderer renderer) {
+		renderer.setColor(PColor.GREY75);
+		renderer.drawQuad(getBounds());
+	}
+	
+	public PSize getDefaultPreferredSize() {
+		if (getLayout() != null) {
+			return getLayout().getPreferredSize();
+		}
+		return DEFAULT_PREFERRED_SIZE;
 	}
 	
 }

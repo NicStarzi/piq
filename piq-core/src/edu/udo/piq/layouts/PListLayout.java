@@ -10,10 +10,12 @@ import edu.udo.piq.PLayoutDesign;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractMapPLayout;
 import edu.udo.piq.tools.ImmutablePInsets;
+import edu.udo.piq.util.ThrowException;
 
 public class PListLayout extends AbstractMapPLayout {
 	
 	public static final ListAlignment DEFAULT_ALIGNMENT = ListAlignment.TOP_TO_BOTTOM;
+	public static final PInsets DEFAULT_INSETS = new ImmutablePInsets(4);
 	public static final int DEFAULT_GAP = 2;
 	
 	/**
@@ -21,9 +23,9 @@ public class PListLayout extends AbstractMapPLayout {
 	 */
 	protected final List<PComponent> compList = new ArrayList<>();
 	protected PSize[] cachedPrefSizes;
-	protected ListAlignment align = ListAlignment.TOP_TO_BOTTOM;
-	protected PInsets insets = new ImmutablePInsets(4);
-	protected int gap = 2;
+	protected ListAlignment align = DEFAULT_ALIGNMENT;
+	protected PInsets insets = DEFAULT_INSETS;
+	protected int gap = DEFAULT_GAP;
 	
 	public PListLayout(PComponent owner) {
 		this(owner, DEFAULT_ALIGNMENT, DEFAULT_GAP);
@@ -74,35 +76,35 @@ public class PListLayout extends AbstractMapPLayout {
 	}
 	
 	public void setGap(int value) {
-		if (value < 0) {
-			throw new IllegalArgumentException("value="+gap);
+		ThrowException.ifLess(0, value, "value < 0");
+		if (getGap() != value) {
+			gap = value;
+			invalidate();
 		}
-		gap = value;
-		invalidate();
 	}
 	
 	public int getGap() {
 		return gap;
 	}
 	
-	public void setAlignment(ListAlignment alignment) {
-		if (alignment == null) {
-			throw new NullPointerException();
+	public void setAlignment(ListAlignment value) {
+		ThrowException.ifNull(value, "value == null");
+		if (getAlignment() != value) {
+			align = value;
+			invalidate();
 		}
-		align = alignment;
-		invalidate();
 	}
 	
 	public ListAlignment getAlignment() {
 		return align;
 	}
 	
-	public void setInsets(PInsets insets) {
-		if (insets == null) {
-			throw new NullPointerException();
+	public void setInsets(PInsets value) {
+		ThrowException.ifNull(value, "value == null");
+		if (!getInsets().equals(value)) {
+			insets = new ImmutablePInsets(value);
+			invalidate();
 		}
-		this.insets = new ImmutablePInsets(insets);
-		invalidate();
 	}
 	
 	public PInsets getInsets() {

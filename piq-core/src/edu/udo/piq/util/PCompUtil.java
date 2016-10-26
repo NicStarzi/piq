@@ -1,5 +1,7 @@
 package edu.udo.piq.util;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Deque;
 import java.util.LinkedList;
 
@@ -175,6 +177,40 @@ public class PCompUtil {
 			stack.addAll(current.getChildren());
 		}
 		return null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> T getDescendantOfType(Class<T> descendantType, PComponent ancestor) {
+		ThrowException.ifNull(descendantType, "descendantType == null");
+		ThrowException.ifNull(ancestor, "ancestor == null");
+		PGuiTreeIterator iter = new PGuiTreeIterator(ancestor);
+		while (iter.hasNext()) {
+			PComponent current = iter.next();
+			if (descendantType.isInstance(current)) {
+				return (T) current;
+			}
+		}
+		return null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> Collection<T> getAllDescendantsOfType(
+			Class<T> descendantType, PComponent ancestor) 
+	{
+		ThrowException.ifNull(descendantType, "descendantType == null");
+		ThrowException.ifNull(ancestor, "ancestor == null");
+		Collection<T> result = null;
+		PGuiTreeIterator iter = new PGuiTreeIterator(ancestor);
+		while (iter.hasNext()) {
+			PComponent current = iter.next();
+			if (descendantType.isInstance(current)) {
+				if (result == null) {
+					result = new ArrayList<>();
+				}
+				result.add((T) current);
+			}
+		}
+		return result;
 	}
 	
 	@SuppressWarnings("unchecked")

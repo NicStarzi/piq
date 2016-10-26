@@ -1,0 +1,41 @@
+package edu.udo.piq.components.containers;
+
+import edu.udo.piq.PInsets;
+import edu.udo.piq.layouts.PBorderLayout;
+import edu.udo.piq.layouts.PBorderLayout.Constraint;
+import edu.udo.piq.tools.AbstractPContainer;
+
+public class PBorderPanel extends AbstractPContainer<Constraint> {
+	
+	public PBorderPanel() {
+		super();
+		setLayout(new PBorderLayout(this));
+	}
+	
+	public PBorderPanel(int gap) {
+		this(PBorderLayout.DEFAULT_INSETS, gap);
+	}
+	
+	public PBorderPanel(PInsets insets) {
+		this(insets, PBorderLayout.DEFAULT_GAP);
+	}
+	
+	public PBorderPanel(PInsets insets, int gap) {
+		this();
+		getLayout().setInsets(insets);
+		getLayout().setGap(gap);
+	}
+	
+	public PBorderLayout getLayout() {
+		return (PBorderLayout) super.getLayout();
+	}
+	
+	public PInsets getInsets() {
+		return getLayout().getInsets();
+	}
+	
+	public int getGap() {
+		return getLayout().getGap();
+	}
+	
+}

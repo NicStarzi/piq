@@ -1,10 +1,10 @@
 package edu.udo.piq.components.popup;
 
 import edu.udo.piq.PComponent;
-import edu.udo.piq.tools.AbstractPContainer;
+import edu.udo.piq.components.containers.PListPanel;
 
 public interface PPopupBodyProvider {
 	
-	public AbstractPContainer createBody(PComponent component);
+	public PListPanel createBody(PComponent component);
 	
 }

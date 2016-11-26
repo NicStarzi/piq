@@ -10,7 +10,7 @@ import edu.udo.piq.PLayoutDesign;
 import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.tools.AbstractPDesignSheet;
-import edu.udo.piq.util.PGuiTreeIterator;
+import edu.udo.piq.util.DepthFirstDescendantIterator;
 
 public class PStandardDesignSheet extends AbstractPDesignSheet implements PDesignSheet {
 	
@@ -51,7 +51,7 @@ public class PStandardDesignSheet extends AbstractPDesignSheet implements PDesig
 			return;
 		}
 		PRoot root = from.getRoot();
-		for (PComponent comp : new PGuiTreeIterator(from)) {
+		for (PComponent comp : new DepthFirstDescendantIterator(from)) {
 			for (PCompFilter filter : filterListRender) {
 				if (filter.includeComponent(comp)) {
 					root.reRender(comp);
@@ -66,7 +66,7 @@ public class PStandardDesignSheet extends AbstractPDesignSheet implements PDesig
 		if (filterListLayout.isEmpty()) {
 			return;
 		}
-		for (PComponent comp : new PGuiTreeIterator(from)) {
+		for (PComponent comp : new DepthFirstDescendantIterator(from)) {
 			for (PCompFilter filter : filterListLayout) {
 				if (filter.includeComponent(comp)) {
 					if (comp.getParent() != null) {

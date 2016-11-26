@@ -5,7 +5,7 @@ import edu.udo.piq.components.containers.PGlassPanel;
 import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.layouts.PRootLayout;
 import edu.udo.piq.layouts.PRootLayout.Constraint;
-import edu.udo.piq.util.PGuiTreeIterator;
+import edu.udo.piq.util.DepthFirstDescendantIterator;
 
 /**
  * The root of a GUI tree. Such a root is also a {@link PComponent}.<br>
@@ -56,6 +56,14 @@ public interface PRoot extends PComponent {
 	 */
 	@Override
 	public default PComponent getParent() {
+		return null;
+	}
+	
+	public default void setBorder(PBorder value) {
+		throw new UnsupportedOperationException("this instanceof PRoot");
+	}
+	
+	public default PBorder getBorder() {
 		return null;
 	}
 	
@@ -160,7 +168,7 @@ public interface PRoot extends PComponent {
 	 */
 	public default void reLayOutTheEntireGui() {
 		//TODO: Not a very nice solution but it works.
-		for (PComponent comp : new PGuiTreeIterator(this)) {
+		for (PComponent comp : new DepthFirstDescendantIterator(this)) {
 			PReadOnlyLayout layout = comp.getLayout();
 			if (layout != null) {
 //				System.out.println("comp="+comp+", layout="+layout);

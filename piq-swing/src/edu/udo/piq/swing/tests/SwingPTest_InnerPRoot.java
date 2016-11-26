@@ -4,7 +4,6 @@ import edu.udo.piq.PColor;
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PClickObs;
 import edu.udo.piq.components.PClickable;
-import edu.udo.piq.components.containers.PLineBorder;
 import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.components.containers.PSizeTestArea;
 import edu.udo.piq.components.textbased.PLabel;
@@ -33,12 +32,13 @@ public class SwingPTest_InnerPRoot extends AbstractSwingPTest {
 //		body.addChild(new PButton(), new FreeConstraint(15, 246, 100, 20));
 		
 		InnerPRoot innerRoot = new InnerPRoot();
-		PLineBorder innerRootBorder = new PLineBorder(1);
-		innerRootBorder.setContent(innerRoot);
+//		PLineBorder innerRootBorder = new PLineBorder(1);
+//		innerRootBorder.setContent(innerRoot);
 		
 		PSizeTestArea innerRootArea = new PSizeTestArea();
 		innerRootArea.setBackgroundColor(PColor.WHITE);
-		innerRootArea.setContent(innerRootBorder);
+//		innerRootArea.setContent(innerRootBorder);
+		innerRootArea.setContent(innerRoot);
 		innerRootArea.setContentX(25);
 		innerRootArea.setContentY(25);
 		innerRootArea.setContentFinalX(125);

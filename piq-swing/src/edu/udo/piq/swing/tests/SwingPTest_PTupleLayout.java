@@ -2,6 +2,7 @@ package edu.udo.piq.swing.tests;
 
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PSize;
+import edu.udo.piq.borders.PLineBorder;
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PCheckBoxModelObs;
 import edu.udo.piq.components.PCheckBoxTuple;
@@ -9,7 +10,6 @@ import edu.udo.piq.components.PSlider;
 import edu.udo.piq.components.PSliderModel;
 import edu.udo.piq.components.PSliderModelObs;
 import edu.udo.piq.components.PSpinner;
-import edu.udo.piq.components.containers.PLineBorder;
 import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.components.containers.PTuple;
 import edu.udo.piq.components.defaults.DefaultPSliderModel;

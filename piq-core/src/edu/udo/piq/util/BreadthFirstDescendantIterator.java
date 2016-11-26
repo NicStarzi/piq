@@ -6,12 +6,12 @@ import java.util.Iterator;
 
 import edu.udo.piq.PComponent;
 
-public class PGuiTreeIterator implements Iterator<PComponent>, Iterable<PComponent> {
+public class BreadthFirstDescendantIterator implements Iterator<PComponent>, Iterable<PComponent> {
 	
 	private final Deque<PComponent> stack = new ArrayDeque<>();
 	private final PComponent root;
 	
-	public PGuiTreeIterator(PComponent rootComp) {
+	public BreadthFirstDescendantIterator(PComponent rootComp) {
 		root = rootComp;
 		stack.push(root);
 	}
@@ -23,14 +23,14 @@ public class PGuiTreeIterator implements Iterator<PComponent>, Iterable<PCompone
 	public PComponent next() {
 		PComponent cmp = stack.pop();
 		for (PComponent child : cmp.getChildren()) {
-			stack.push(child);
+			stack.addLast(child);
 		}
 		return cmp;
 	}
 	
 	public Iterator<PComponent> iterator() {
 		if (stack.peek() != root) {
-			return new PGuiTreeIterator(root);
+			return new BreadthFirstDescendantIterator(root);
 		}
 		return this;
 	}

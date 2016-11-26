@@ -1,5 +1,7 @@
 package edu.udo.piq.tools;
 
+import edu.udo.piq.PBorder;
+import edu.udo.piq.PBorderObs;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PComponentObs;
@@ -36,6 +38,7 @@ public class AbstractPComponent implements PComponent {
 	 * This field is null if this component has no parent.<br>
 	 */
 	private PComponent parent;
+	private PBorder border;
 	/**
 	 * Custom design used by this component.
 	 */
@@ -98,6 +101,14 @@ public class AbstractPComponent implements PComponent {
 				checkForBoundsChange();
 				AbstractPComponent.this.onThisLaidOut(constraint);
 			}
+		}
+	};
+	protected final PBorderObs borderObs = new PBorderObs() {
+		public void onReRender(PBorder border) {
+			fireReRenderEvent();
+		}
+		public void onInsetsChanged(PBorder border) {
+			firePreferredSizeChangedEvent();
 		}
 	};
 	/**
@@ -180,6 +191,7 @@ public class AbstractPComponent implements PComponent {
 	 * classes simple name.
 	 */
 	private String id = null;
+	private Object styleID = null;
 	/**
 	 * Cached for removing observers
 	 */
@@ -299,7 +311,19 @@ public class AbstractPComponent implements PComponent {
 		return parent;
 	}
 	
-	boolean a = false;
+	protected void setBorder(PBorder border) {
+		if (getBorder() != null) {
+			getBorder().removeObs(borderObs);
+		}
+		this.border = border;
+		if (getBorder() != null) {
+			getBorder().addObs(borderObs);
+		}
+	}
+	
+	public PBorder getBorder() {
+		return border;
+	}
 	
 	public PBounds getBounds() {
 		if (cachedBoundsInvalid) {
@@ -364,8 +388,9 @@ public class AbstractPComponent implements PComponent {
 	 * The returned size is immutable, it will not update to represent changes.<br>
 	 */
 	public PSize getDefaultPreferredSize() {
-		if (getLayout() != null) {
-			return getLayout().getPreferredSize();
+		PReadOnlyLayout layout = getLayout();
+		if (layout != null) {
+			return layout.getPreferredSize();
 		}
 		return PSize.ZERO_SIZE;
 	}
@@ -483,6 +508,7 @@ public class AbstractPComponent implements PComponent {
 	}
 	
 	protected void firePreferredSizeChangedEvent() {
+//		System.out.println(this+".firePreferredSizeChangedEvent()");
 		compObsList.fireEvent(obs -> obs.onPreferredSizeChanged(this));
 	}
 	
@@ -542,6 +568,9 @@ public class AbstractPComponent implements PComponent {
 				|| lastBndsW != currentW
 				|| lastBndsH != currentH) 
 		{
+//			System.out.println("checkForBoundsChange this="+this
+//					+"\n\told="+lastBndsX+", "+lastBndsY+", ="+lastBndsW+", ="+lastBndsH
+//					+"\n\tnew="+currentX+", "+currentY+", ="+currentW+", ="+currentH);
 			lastBndsX = currentX;
 			lastBndsY = currentY;
 			lastBndsW = currentW;
@@ -556,6 +585,8 @@ public class AbstractPComponent implements PComponent {
 		if (lastPrefW != currentPrefSize.getWidth() 
 				|| lastPrefH != currentPrefSize.getHeight()) 
 		{
+//			System.out.println(this+".checkForPreferredSizeChange lastPrefW="
+//					+lastPrefW+", lastPrefH="+lastPrefH+", size="+currentPrefSize);
 			lastPrefW = currentPrefSize.getWidth();
 			lastPrefH = currentPrefSize.getHeight();
 			firePreferredSizeChangedEvent();

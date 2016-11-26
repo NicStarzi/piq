@@ -11,12 +11,11 @@ import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PRootOverlay;
 import edu.udo.piq.PSize;
-import edu.udo.piq.components.containers.PBevelBorder;
-import edu.udo.piq.components.containers.PPanel;
+import edu.udo.piq.borders.PBevelBorder;
+import edu.udo.piq.components.containers.PListPanel;
 import edu.udo.piq.layouts.PFreeLayout.FreeConstraint;
 import edu.udo.piq.layouts.PListLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
-import edu.udo.piq.tools.AbstractPContainer;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
@@ -24,8 +23,10 @@ import edu.udo.piq.util.ThrowException;
 
 public class PPopup {
 	
-	public static final PPopupBorderProvider DEFAULT_BORDER_PROVIDER = (comp) -> new PBevelBorder();
-	public static final PPopupBodyProvider DEFAULT_BODY_PROVIDER = (comp) -> new PPanel();
+	public static final PPopupBorderProvider DEFAULT_BORDER_PROVIDER = 
+			(comp) -> new PBevelBorder();
+	public static final PPopupBodyProvider DEFAULT_BODY_PROVIDER = 
+			(comp) -> new PListPanel();
 	
 	protected final ObserverList<PPopupObs> obsList
 		= PCompUtil.createDefaultObserverList();
@@ -39,7 +40,7 @@ public class PPopup {
 	protected PPopupBodyProvider bodyProvider;
 	protected PPopupBorderProvider borderProvider;
 	protected PPopupOptionsProvider optionsProvider;
-	protected PComponent popupComp;
+	protected PListPanel popupComp;
 	protected boolean enabled;
 	
 	public PPopup(PComponent component) {
@@ -131,7 +132,7 @@ public class PPopup {
 		ThrowException.ifNull(getBorderProvider(), "getBorderProvider() == null");
 		ThrowException.ifNull(getOptionsProvider(), "getPopupProvider() == null");
 		
-		AbstractPContainer body = getBodyProvider().createBody(owner);
+		PListPanel body = getBodyProvider().createBody(owner);
 		if (body == null) {
 			return;
 		}
@@ -140,10 +141,9 @@ public class PPopup {
 			return;
 		}
 		
-		PListLayout listLayout = new PListLayout(body);
+		PListLayout listLayout = body.getLayout();
 		listLayout.setAlignment(ListAlignment.TOP_TO_BOTTOM);
 		listLayout.setInsets(new ImmutablePInsets(1));
-		body.setLayout(listLayout);
 		
 		for (int i = 0; i < options.size(); i++) {
 			PComponent optionsComp = options.get(i);
@@ -154,12 +154,10 @@ public class PPopup {
 		}
 		PRootOverlay overlay = root.getOverlay();
 		
+		popupComp = body;
 		PBorder border = getBorderProvider().createBorder(owner);
-		if (border == null) {
-			popupComp = body;
-		} else {
-			border.setContent(body);
-			popupComp = border;
+		if (border != null) {
+			popupComp.setBorder(border);
 		}
 		/*
 		 * We add the popup temporarily so that any components that need a

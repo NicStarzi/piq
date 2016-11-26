@@ -183,7 +183,7 @@ public class PCompUtil {
 	public static <T> T getDescendantOfType(Class<T> descendantType, PComponent ancestor) {
 		ThrowException.ifNull(descendantType, "descendantType == null");
 		ThrowException.ifNull(ancestor, "ancestor == null");
-		PGuiTreeIterator iter = new PGuiTreeIterator(ancestor);
+		DepthFirstDescendantIterator iter = new DepthFirstDescendantIterator(ancestor);
 		while (iter.hasNext()) {
 			PComponent current = iter.next();
 			if (descendantType.isInstance(current)) {
@@ -200,7 +200,7 @@ public class PCompUtil {
 		ThrowException.ifNull(descendantType, "descendantType == null");
 		ThrowException.ifNull(ancestor, "ancestor == null");
 		Collection<T> result = null;
-		PGuiTreeIterator iter = new PGuiTreeIterator(ancestor);
+		DepthFirstDescendantIterator iter = new DepthFirstDescendantIterator(ancestor);
 		while (iter.hasNext()) {
 			PComponent current = iter.next();
 			if (descendantType.isInstance(current)) {

@@ -8,6 +8,8 @@ import edu.udo.piq.components.containers.PGlassPanel;
 import edu.udo.piq.components.util.PFocusTraversal;
 import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.MutablePBounds;
+import edu.udo.piq.util.AncestorIterator;
+import edu.udo.piq.util.BreadthFirstDescendantIterator;
 import edu.udo.piq.util.PCompUtil;
 import edu.udo.piq.util.PGuiUtil;
 import edu.udo.piq.util.ThrowException;
@@ -75,6 +77,8 @@ public interface PComponent {
 	 * @see #setParent(PComponent)
 	 */
 	public PComponent getParent();
+	
+	public PBorder getBorder();
 	
 	/**
 	 * Returns the {@link PReadOnlyLayout} of this component.<br>
@@ -459,6 +463,18 @@ public interface PComponent {
 			return getLayout().getChildren();
 		}
 		return Collections.emptyList();
+	}
+	
+	public default Iterable<PComponent> getAncestors() {
+		return new AncestorIterator(this, false);
+	}
+	
+	public default Iterable<PComponent> getAncestorsAndSelf() {
+		return new AncestorIterator(this, true);
+	}
+	
+	public default Iterable<PComponent> getDescendants() {
+		return new BreadthFirstDescendantIterator(this);
 	}
 	
 	/**

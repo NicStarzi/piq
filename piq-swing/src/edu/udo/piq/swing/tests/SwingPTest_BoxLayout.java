@@ -15,6 +15,7 @@ public class SwingPTest_BoxLayout extends AbstractSwingPTest {
 		super(640, 480);
 	}
 	
+	@Override
 	public void buildGUI() {
 		PPanel pnl = new PPanel();
 		PBoxLayout boxLayout = new PBoxLayout(pnl);

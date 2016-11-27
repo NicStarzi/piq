@@ -400,7 +400,7 @@ public class AbstractPComponent implements PComponent {
 		} else {
 			bndsNoBorder.set(getBounds());
 		}
-		bndsNoBorder.subtract(border.getDefaultInsets(this));
+		bndsNoBorder.subtract(border.getInsets(this));
 		return bndsNoBorder;
 	}
 	
@@ -468,13 +468,12 @@ public class AbstractPComponent implements PComponent {
 		PReadOnlyLayout layout = getLayout();
 		if (layout != null) {
 			prefSize.set(layout.getPreferredSize());
-//			return layout.getPreferredSize();
 		} else {
 			prefSize.set(getConstantDefaultPreferredSize());
 		}
 		PBorder border = getBorder();
 		if (border != null) {
-			prefSize.add(border.getDefaultInsets(this));
+			prefSize.add(border.getInsets(this));
 		}
 		return prefSize;
 	}

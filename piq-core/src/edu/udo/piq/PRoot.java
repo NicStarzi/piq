@@ -217,6 +217,8 @@ public interface PRoot extends PComponent {
 	public PImageResource fetchImageResource(Object imgID)
 			throws NullPointerException;
 	
+	public boolean isImageSupported(PImageResource imageResource);
+	
 	/**
 	 * 
 	 * @param width				the width of the image, must be positive (> 0)

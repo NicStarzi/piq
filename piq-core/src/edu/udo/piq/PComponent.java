@@ -96,32 +96,6 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 	 */
 	public PReadOnlyLayout getLayout();
 	
-//	/**
-//	 * Sets a custom {@link PDesign} for this component.<br>
-//	 * When this component is being rendered and a custom
-//	 * design is set then the custom design will be used for
-//	 * rendering.<br>
-//	 * If no custom design is set the default design will
-//	 * be taken from the {@link PDesignSheet} of the root.<br>
-//	 *
-//	 * @param design		the custom design for this component or null to use the default design
-//	 */
-//	public void setDesign(PDesign design);
-//
-//	/**
-//	 * Returns the {@link PDesign} used to render this component.<br>
-//	 * If this component has a custom design set then the custom
-//	 * design is returned. Otherwise the returned design will be
-//	 * taken from the {@link PDesignSheet} of the root.<br>
-//	 * If this component is not part of a GUI tree, and thus does
-//	 * not have a root, null is returned.<br>
-//	 *
-//	 * @return				the design used to render this component
-//	 * @see PDesign
-//	 * @see PDesignSheet
-//	 */
-//	public PDesign getDesign();
-	
 	/**
 	 * Renders the default rendering of this component to the given
 	 * {@link PRenderer}.<br>
@@ -477,7 +451,7 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 		if (border == null) {
 			return PInsets.ZERO_INSETS;
 		}
-		return border.getDefaultInsets(this);
+		return border.getInsets(this);
 	}
 	
 	public default PBounds getBoundsWithoutBorder() {
@@ -485,7 +459,7 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 		if (border == null) {
 			return getBounds();
 		}
-		return getBounds().createCopyAndSubtract(border.getDefaultInsets(this));
+		return getBounds().createCopyAndSubtract(border.getInsets(this));
 	}
 	
 	public default Object getConstraintAtParent() {

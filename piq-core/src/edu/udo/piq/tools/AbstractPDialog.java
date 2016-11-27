@@ -58,6 +58,12 @@ public abstract class AbstractPDialog extends AbstractPRoot implements PDialog {
 	}
 	
 	@Override
+	public boolean isImageSupported(PImageResource imageResource) {
+		throwExceptionIfDisposed();
+		return getSuperRoot().isImageSupported(imageResource);
+	}
+	
+	@Override
 	public PImageResource createImageResource(int width, int height,
 			PImageMeta metaInfo) throws IllegalArgumentException
 	{

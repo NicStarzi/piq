@@ -35,10 +35,12 @@ public class SwingPRenderer implements PRenderer {
 	 * Metadata
 	 */
 	
+	@Override
 	public void setClipBounds(int x, int y, int width, int height) {
 		graphics.setClip(x, y, width, height);
 	}
 	
+	@Override
 	public void intersectClipBounds(int x, int y, int width, int height) {
 		graphics.clipRect(x, y, width, height);
 	}
@@ -48,15 +50,18 @@ public class SwingPRenderer implements PRenderer {
 		return new ImmutablePBounds(r.x, r.y, r.width, r.height);
 	}
 	
+	@Override
 	public void setColor(PColor color) {
 		setColor255(color.getRed255(), color.getGreen255(), color.getBlue255(), color.getAlpha255());
 	}
 	
+	@Override
 	public void setColor255(int r, int g, int b, int a) {
 		Color c = new Color(r, g, b, a);
 		graphics.setColor(c);
 	}
 	
+	@Override
 	public void setColor1(double r, double g, double b, double a) {
 		Color c = new Color((float) r, (float) g, (float) b, (float) a);
 		graphics.setColor(c);
@@ -71,43 +76,50 @@ public class SwingPRenderer implements PRenderer {
 	 * Primitive rendering
 	 */
 	
+	@Override
 	public void drawLine(
-			float x1, float y1, 
-			float x2, float y2, 
-			float lineWidth) 
+			float x1, float y1,
+			float x2, float y2,
+			float lineWidth)
 	{
 		renderMode.drawLine(graphics, x1, y1, x2, y2, lineWidth);
 	}
 	
+	@Override
 	public void drawTriangle(
-			float x1, float y1, 
-			float x2, float y2, 
-			float x3, float y3) 
+			float x1, float y1,
+			float x2, float y2,
+			float x3, float y3)
 	{
 		renderMode.drawTriangle(graphics, x1, y1, x2, y2, x3, y3);
 	}
 	
+	@Override
 	public void drawQuad(PBounds bounds) {
 		renderMode.drawQuad(graphics, bounds);
 	}
 	
+	@Override
 	public void drawQuad(float x, float y, float fx, float fy) {
 		renderMode.drawQuad(graphics, x, y, fx, fy);
 	}
 	
+	@Override
 	public void drawQuad(
-			float x1, float y1, 
-			float x2, float y2, 
-			float x3, float y3, 
-			float x4, float y4) 
+			float x1, float y1,
+			float x2, float y2,
+			float x3, float y3,
+			float x4, float y4)
 	{
 		renderMode.drawQuad(graphics, x1, y1, x2, y2, x3, y3, x4, y4);
 	}
 	
+	@Override
 	public void drawPolygon(float[] xCoords, float[] yCoords) {
 		renderMode.drawPolygon(graphics, xCoords, yCoords);
 	}
 	
+	@Override
 	public void drawEllipse(int x, int y, int width, int height) {
 		renderMode.drawEllipse(graphics, x, y, width, height);
 	}
@@ -116,27 +128,32 @@ public class SwingPRenderer implements PRenderer {
 	 * Non-Primitive rendering
 	 */
 	
+	@Override
 	public void drawImage(PImageResource imgRes, float x, float y, float fx, float fy) {
+		if (imgRes == null) {
+			return;
+		}
 		BufferedImage bufImg = ((BufferedPImageResource) imgRes).getBufferedImage();
 		if (bufImg == null) {
 			return;
 		}
-		graphics.drawImage(bufImg, 
-				(int) x, (int) y, 
-				(int) (fx - x), (int) (fy - y), 
+		graphics.drawImage(bufImg,
+				(int) x, (int) y,
+				(int) (fx - x), (int) (fy - y),
 				null);
 	}
 	
+	@Override
 	public void drawImage(PImageResource imgRes, int u, int v, int fu, int fv, float x, float y, float fx, float fy) {
 		BufferedImage bufImg = ((BufferedPImageResource) imgRes).getBufferedImage();
 		if (bufImg == null) {
 			return;
 		}
-		graphics.drawImage(bufImg, 
-				(int) x, (int) y, 
-				(int) fx, (int) fy, 
-				u, v, 
-				fu, fv, 
+		graphics.drawImage(bufImg,
+				(int) x, (int) y,
+				(int) fx, (int) fy,
+				u, v,
+				fu, fv,
 				null);
 	}
 	
@@ -144,10 +161,12 @@ public class SwingPRenderer implements PRenderer {
 		drawString(font, Character.toString(c), x, y);
 	}
 	
+	@Override
 	public boolean isFontSupported(PFontResource font) {
 		return font instanceof AwtPFontResource;
 	}
 	
+	@Override
 	public void drawString(PFontResource font, String text, float x, float y) {
 		Font awtFont = ((AwtPFontResource) font).getAwtFont();
 		FontMetrics fm = graphics.getFontMetrics(awtFont);
@@ -161,6 +180,7 @@ public class SwingPRenderer implements PRenderer {
 	 * Render modes
 	 */
 	
+	@Override
 	public void setRenderMode(PRenderMode mode) {
 		if (mode == null) {
 			throw new NullPointerException("mode");
@@ -171,22 +191,27 @@ public class SwingPRenderer implements PRenderer {
 		renderMode = (SwingPRenderMode) mode;
 	}
 	
+	@Override
 	public PRenderMode getActiveRenderMode() {
 		return renderMode;
 	}
 	
+	@Override
 	public PRenderMode getRenderModeFill() {
 		return MODE_FILL;
 	}
 	
+	@Override
 	public PRenderMode getRenderModeOutline() {
 		return MODE_OUTLINE;
 	}
 	
+	@Override
 	public PRenderMode getRenderModeOutlineDashed() {
 		return MODE_DASHED;
 	}
 	
+	@Override
 	public PRenderMode getRenderModeXOR() {
 		return MODE_XOR;
 	}

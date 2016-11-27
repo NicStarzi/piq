@@ -204,6 +204,11 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 	}
 	
 	@Override
+	public boolean isImageSupported(PImageResource imageResource) {
+		return imageResource instanceof BufferedPImageResource;
+	}
+	
+	@Override
 	public PImageResource fetchImageResource(Object imgID)
 			throws NullPointerException
 	{

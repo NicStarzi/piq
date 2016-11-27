@@ -16,13 +16,15 @@ public class PBevelBorder extends AbstractPBorder implements PBorder {
 	public PBevelBorder() {
 	}
 	
+	@Override
 	public PInsets getDefaultInsets(PComponent component) {
 		return insets;
 	}
 	
+	@Override
 	public void defaultRender(PRenderer renderer, PComponent component) {
 		PBounds bnds = component.getBounds();
-		PInsets insets = getDefaultInsets(component);
+		PInsets insets = getInsets(component);
 		int top = insets.getFromTop();
 		int lft = insets.getFromLeft();
 		int rgt = insets.getFromRight();
@@ -46,24 +48,25 @@ public class PBevelBorder extends AbstractPBorder implements PBorder {
 		renderer.strokeLeft(x, y, fx - 1, fy - 1, 1);
 	}
 	
+	@Override
 	public boolean defaultFillsAllPixels(PComponent component) {
 		return true;
 	}
 	
 //extends AbstractPBorder {
-//	
+//
 //	protected static final PInsets BEVEL_INSETS = new ImmutablePInsets(2, 2, 2, 2);
-//	
+//
 //	public PBevelBorder() {
 //		super();
 //		getLayout().setInsets(BEVEL_INSETS);
 //	}
-//	
+//
 //	public PBevelBorder(PComponent content) {
 //		super(content);
 //		getLayout().setInsets(BEVEL_INSETS);
 //	}
-//	
+//
 //	public void defaultRender(PRenderer renderer) {
 //		PBounds bnds = getBounds();
 //		PInsets insets = getLayout().getInsets();
@@ -71,12 +74,12 @@ public class PBevelBorder extends AbstractPBorder implements PBorder {
 //		int btm = insets.getFromBottom();
 //		int lft = insets.getFromLeft();
 //		int rgt = insets.getFromRight();
-//		
+//
 //		int x = bnds.getX();
 //		int y = bnds.getY();
 //		int fx = bnds.getFinalX();
 //		int fy = bnds.getFinalY();
-//		
+//
 //		renderer.setColor(PColor.GREY50);
 //		renderer.strokeBottom(x, y, fx, fy, btm);
 //		renderer.strokeRight(x, y, fx, fy, rgt);
@@ -90,7 +93,7 @@ public class PBevelBorder extends AbstractPBorder implements PBorder {
 //		renderer.strokeTop(x, y, fx - 1, fy - 1, 1);
 //		renderer.strokeLeft(x, y, fx - 1, fy - 1, 1);
 //	}
-//	
+//
 //	public boolean defaultFillsAllPixels() {
 //		return false;
 //	}

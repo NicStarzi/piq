@@ -161,6 +161,14 @@ public class DelegatePRoot extends AbstractPRoot implements PRoot {
 	}
 	
 	@Override
+	public boolean isImageSupported(PImageResource imageResource) {
+		if (delegateRoot != null) {
+			return delegateRoot.isImageSupported(imageResource);
+		}
+		return false;
+	}
+	
+	@Override
 	public PImageResource fetchImageResource(Object imgID) {
 		if (delegateRoot == null || !enableFetchImage) {
 			return null;

@@ -66,22 +66,31 @@ public class PColoredShape extends AbstractPComponent {
 		return prefSize;
 	}
 	
+	@Override
 	public void defaultRender(PRenderer renderer) {
 		renderer.setColor(getColor());
 		getShape().render(renderer, getBounds());
 	}
 	
-	public PSize getDefaultPreferredSize() {
+	@Override
+	protected PSize getConstantDefaultPreferredSize() {
 		return prefSize;
+	}
+	
+	@Override
+	public boolean defaultFillsAllPixels() {
+		return getShape() == Shape.RECTANGLE;
 	}
 	
 	public static enum Shape {
 		RECTANGLE {
+			@Override
 			public void render(PRenderer renderer, PBounds bounds) {
 				renderer.drawQuad(bounds);
 			}
 		},
 		CIRCLE {
+			@Override
 			public void render(PRenderer renderer, PBounds bounds) {
 				int x = bounds.getX();
 				int y = bounds.getY();
@@ -91,6 +100,7 @@ public class PColoredShape extends AbstractPComponent {
 			}
 		},
 		TRIANGLE_DOWN {
+			@Override
 			public void render(PRenderer renderer, PBounds bounds) {
 				int x = bounds.getX();
 				int y = bounds.getY();
@@ -100,6 +110,7 @@ public class PColoredShape extends AbstractPComponent {
 			}
 		},
 		TRIANGLE_UP {
+			@Override
 			public void render(PRenderer renderer, PBounds bounds) {
 				int x = bounds.getX();
 				int y = bounds.getY();

@@ -437,7 +437,7 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 		}
 		
 		@Override
-		public PSize getDefaultPreferredSize() {
+		protected PSize getConstantDefaultPreferredSize() {
 			return PREF_SIZE;
 		}
 		

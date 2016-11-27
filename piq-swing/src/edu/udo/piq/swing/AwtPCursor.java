@@ -1,8 +1,7 @@
 package edu.udo.piq.swing;
 
+import java.awt.Component;
 import java.awt.Cursor;
-
-import javax.swing.JComponent;
 
 import edu.udo.piq.PCursor;
 
@@ -23,7 +22,7 @@ public enum AwtPCursor implements PCursor {
 		awtCursor = Cursor.getPredefinedCursor(awtEnum);
 	}
 	
-	public void applyTo(JComponent component) {
+	public void applyTo(Component component) {
 		component.setCursor(awtCursor);
 	}
 	

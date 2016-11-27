@@ -16,20 +16,21 @@ public abstract class AbstractPColor implements PColor {
 		}
 	}
 	
+	@Override
 	public String toString() {
-		return toString255();
+		return toString1();
 	}
 	
 	public String toString255() {
 		StringBuilder builder = new StringBuilder();
 		builder.append(getClass().getSimpleName());
-		builder.append(" [red=");
+		builder.append(" [r=");
 		builder.append(getRed255());
-		builder.append(", green=");
+		builder.append(", g=");
 		builder.append(getGreen255());
-		builder.append(", blue=");
+		builder.append(", b=");
 		builder.append(getBlue255());
-		builder.append(", alpha=");
+		builder.append(", a=");
 		builder.append(getAlpha255());
 		builder.append("]");
 		return builder.toString();
@@ -38,32 +39,31 @@ public abstract class AbstractPColor implements PColor {
 	public String toString1() {
 		StringBuilder builder = new StringBuilder();
 		builder.append(getClass().getSimpleName());
-		builder.append(" [red=");
+		builder.append(" [r=");
 		builder.append(getRed1());
-		builder.append(", green=");
+		builder.append(", g=");
 		builder.append(getGreen1());
-		builder.append(", blue=");
+		builder.append(", b=");
 		builder.append(getBlue1());
-		builder.append(", alpha=");
+		builder.append(", a=");
 		builder.append(getAlpha1());
 		builder.append("]");
 		return builder.toString();
 	}
 	
+	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + getRed255();
-		result = prime * result + getGreen255();
-		result = prime * result + getBlue255();
-		result = prime * result + getAlpha255();
-		return result;
+		return getRed255()
+				+ getGreen255() * 255
+				+ getBlue255() * 255 * 255
+				+ getAlpha255() * 255 * 255 * 255;
 	}
 	
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
-		} else if (obj == null || !(obj instanceof PColor)) {
+		} else if (!(obj instanceof PColor)) {
 			return false;
 		}
 		PColor other = (PColor) obj;

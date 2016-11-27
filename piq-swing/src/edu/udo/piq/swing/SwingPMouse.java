@@ -1,11 +1,11 @@
 package edu.udo.piq.swing;
 
+import java.awt.Component;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.Arrays;
 
-import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 
 import edu.udo.piq.PComponent;
@@ -22,7 +22,7 @@ public class SwingPMouse implements PMouse {
 	protected final ObserverList<PMouseObs> obsList
 		= PCompUtil.createDefaultObserverList();
 	private final PRoot root;
-	private final JComponent base;
+	private final Component base;
 	private final boolean[] btnPressed;
 	private final boolean[] btnReleased;
 	private final boolean[] btnTriggered;
@@ -32,7 +32,7 @@ public class SwingPMouse implements PMouse {
 	private boolean compAtMouseCacheValid;
 	private PComponent compAtMouseCache;
 	
-	public SwingPMouse(PRoot root, JComponent base) {
+	public SwingPMouse(PRoot root, Component base) {
 		this.root = root;
 		this.base = base;
 		btnPressed = new boolean[3];
@@ -44,33 +44,40 @@ public class SwingPMouse implements PMouse {
 		dy = 0;
 		
 		base.addMouseListener(new MouseListener() {
+			@Override
 			public void mouseReleased(MouseEvent e) {
 				clickCount = e.getClickCount();
 				onRelease(getButtonID(e));
 			}
+			@Override
 			public void mousePressed(MouseEvent e) {
 				clickCount = e.getClickCount();
 				onPress(getButtonID(e));
 			}
+			@Override
 			public void mouseExited(MouseEvent e) {
 				clickCount = e.getClickCount();
 				setPosition(e.getX(), e.getY());
 			}
+			@Override
 			public void mouseEntered(MouseEvent e) {
 				clickCount = e.getClickCount();
 				setPosition(e.getX(), e.getY());
 			}
+			@Override
 			public void mouseClicked(MouseEvent e) {
 				clickCount = e.getClickCount();
 			}
 		});
 		base.addMouseMotionListener(new MouseMotionListener() {
+			@Override
 			public void mouseMoved(MouseEvent e) {
 				clickCount = e.getClickCount();
 				setPosition(e.getX(), e.getY());
 				invalidateCompAtMouseCache();
 				refreshCursor();
 			}
+			@Override
 			public void mouseDragged(MouseEvent e) {
 				clickCount = e.getClickCount();
 				setPosition(e.getX(), e.getY());
@@ -98,7 +105,7 @@ public class SwingPMouse implements PMouse {
 			return;
 		}
 		AwtPCursor cursor = ThrowException.ifTypeCastFails(
-				comp.getMouseOverCursor(this), 
+				comp.getMouseOverCursor(this),
 				AwtPCursor.class, "!(cursor instanceof AwtPCursor)");
 		if (cursor != currentCursor) {
 			currentCursor = cursor;
@@ -184,38 +191,47 @@ public class SwingPMouse implements PMouse {
 		}
 	}
 	
+	@Override
 	public int getX() {
 		return x;
 	}
 	
+	@Override
 	public int getY() {
 		return y;
 	}
 	
+	@Override
 	public int getDeltaX() {
 		return dx;
 	}
 	
+	@Override
 	public int getDeltaY() {
 		return dy;
 	}
 	
+	@Override
 	public int getClickCount() {
 		return clickCount;
 	}
 	
+	@Override
 	public boolean isPressed(MouseButton btn) {
 		return btnPressed[getMouseButtonID(btn)];
 	}
 	
+	@Override
 	public boolean isReleased(MouseButton btn) {
 		return btnReleased[getMouseButtonID(btn)];
 	}
 	
+	@Override
 	public boolean isTriggered(MouseButton btn) {
 		return btnTriggered[getMouseButtonID(btn)];
 	}
 	
+	@Override
 	public PComponent getComponentAtMouse() {
 		if (!compAtMouseCacheValid) {
 			compAtMouseCache = PCompUtil.getComponentAt(root, getX(), getY());
@@ -225,34 +241,42 @@ public class SwingPMouse implements PMouse {
 		return compAtMouseCache;
 	}
 	
+	@Override
 	public PCursor getCurrentCursor() {
 		return currentCursor;
 	}
 	
+	@Override
 	public PCursor getCursorDefault() {
 		return AwtPCursor.DEFAULT;
 	}
 	
+	@Override
 	public PCursor getCursorHand() {
 		return AwtPCursor.HAND;
 	}
 	
+	@Override
 	public PCursor getCursorText() {
 		return AwtPCursor.TEXT;
 	}
 	
+	@Override
 	public PCursor getCursorScroll() {
 		return AwtPCursor.SCROLL;
 	}
 	
+	@Override
 	public PCursor getCursorBusy() {
 		return AwtPCursor.BUSY;
 	}
 	
+	@Override
 	public void addObs(PMouseObs obs) {
 		obsList.add(obs);
 	}
 	
+	@Override
 	public void removeObs(PMouseObs obs) {
 		obsList.remove(obs);
 	}

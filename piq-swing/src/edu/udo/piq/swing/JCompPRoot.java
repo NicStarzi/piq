@@ -60,7 +60,8 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 			Component awtRoot = SwingUtilities.getRoot(panel);
 			if (awtRoot != null && awtRoot instanceof Window) {
 				if (wnd != null) {
-					throw new IllegalStateException("wnd="+wnd);
+					wnd.removeWindowListener(wndListener);
+					wnd = null;
 				}
 				wnd = (Window) awtRoot;
 				wnd.addWindowListener(wndListener);
@@ -269,7 +270,7 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 	
 	private void render(Graphics2D g) {
 //		System.out.println("### RENDER ALL ###");
-		renderer.setGraphics(g);
+		renderer.setAwtGraphics(g);
 		PBounds bnds = getBounds();
 		int rootFx = bnds.getWidth();
 		int rootFy = bnds.getHeight();

@@ -7,6 +7,8 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.font.LineMetrics;
 import java.awt.image.BufferedImage;
+import java.util.HashMap;
+import java.util.Map;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
@@ -19,16 +21,21 @@ import edu.udo.piq.tools.ImmutablePColor;
 
 public class SwingPRenderer implements PRenderer {
 	
-	private static final SwingPRenderMode MODE_FILL = new SwingPRenderModeFill();
-	private static final SwingPRenderMode MODE_OUTLINE = new SwingPRenderModeOutline();
-	private static final SwingPRenderMode MODE_DASHED = new SwingPRenderModeOutlineDashed();
-	private static final SwingPRenderMode MODE_XOR = new SwingPRenderModeXOR();
+	public static final SwingPRenderMode MODE_FILL		= new SwingPRenderModeFill();
+	public static final SwingPRenderMode MODE_OUTLINE	= new SwingPRenderModeOutline();
+	public static final SwingPRenderMode MODE_DASHED	= new SwingPRenderModeOutlineDashed();
+	public static final SwingPRenderMode MODE_XOR		= new SwingPRenderModeXOR();
 	
-	private SwingPRenderMode renderMode = MODE_FILL;
-	private Graphics2D graphics;
+	protected Map<PColor, Color> pColorToAwtColorMap = new HashMap<>();
+	protected SwingPRenderMode renderMode = MODE_FILL;
+	protected Graphics2D graphics;
 	
-	public void setGraphics(Graphics2D g) {
+	public void setAwtGraphics(Graphics2D g) {
 		graphics = g;
+	}
+	
+	public Graphics2D getAwtGraphics() {
+		return graphics;
 	}
 	
 	/*
@@ -51,8 +58,22 @@ public class SwingPRenderer implements PRenderer {
 	}
 	
 	@Override
-	public void setColor(PColor color) {
-		setColor255(color.getRed255(), color.getGreen255(), color.getBlue255(), color.getAlpha255());
+	public void setColor(PColor pColor) {
+		if (pColorToAwtColorMap == null) {
+			setColor255(pColor.getRed255(), pColor.getGreen255(),
+					pColor.getBlue255(), pColor.getAlpha255());
+			return;
+		}
+		Color awtColor = pColorToAwtColorMap.get(pColor);
+		if (awtColor == null) {
+			int r = pColor.getRed255();
+			int g = pColor.getGreen255();
+			int b = pColor.getBlue255();
+			int a = pColor.getAlpha255();
+			awtColor = new Color(r, g, b, a);
+			pColorToAwtColorMap.put(pColor, awtColor);
+		}
+		graphics.setColor(awtColor);
 	}
 	
 	@Override

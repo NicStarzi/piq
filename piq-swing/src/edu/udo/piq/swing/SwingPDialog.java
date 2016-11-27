@@ -139,7 +139,7 @@ public class SwingPDialog extends AbstractPDialog implements PDialog {
 	}
 	
 	private void render(Graphics2D g) {
-		renderer.setGraphics(g);
+		renderer.setAwtGraphics(g);
 		
 		class StackInfo {
 			PComponent child;

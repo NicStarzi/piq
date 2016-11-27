@@ -36,14 +36,16 @@ public class PScrollPanelLayout extends AbstractMapPLayout implements PLayout {
 		return getChildForConstraint(Constraint.BODY);
 	}
 	
+	@Override
 	protected boolean canAdd(PComponent component, Object constraint) {
-		if (constraint == null || !(constraint instanceof Constraint)) {
+		if (!(constraint instanceof Constraint)) {
 			return false;
 		}
-		return getChildForConstraint(constraint) == null 
+		return getChildForConstraint(constraint) == null
 				&& constraint != Constraint.BODY == component instanceof PScrollBar;
 	}
 	
+	@Override
 	protected void layOutInternal() {
 //		System.out.println("PScrollPanelLayout.layOut");
 		PComponent body = getBody();
@@ -89,13 +91,14 @@ public class PScrollPanelLayout extends AbstractMapPLayout implements PLayout {
 		}
 	}
 	
+	@Override
 	public PSize getPreferredSizeInternal() {
 		PComponent bodyCmp = getChildForConstraint(Constraint.BODY);
 		return getPreferredSizeOf(bodyCmp);
 	}
 	
 	public static enum Constraint {
-		BODY, 
+		BODY,
 		BAR_H,
 		BAR_V,
 		;

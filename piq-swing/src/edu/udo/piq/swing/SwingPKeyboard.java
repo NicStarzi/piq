@@ -1,5 +1,6 @@
 package edu.udo.piq.swing;
 
+import java.awt.Component;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.lang.Character.UnicodeBlock;
@@ -7,8 +8,6 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import javax.swing.JComponent;
 
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PKeyboardObs;
@@ -22,7 +21,7 @@ public class SwingPKeyboard implements PKeyboard {
 	private final boolean[] modState = new boolean[Modifier.values().length];
 	private boolean capsLockDown;
 	
-	public SwingPKeyboard(JComponent base) {
+	public SwingPKeyboard(Component base) {
 		ctrlMetaMap.put(Key.C, Key.COPY);
 		ctrlMetaMap.put(Key.X, Key.CUT);
 		ctrlMetaMap.put(Key.V, Key.PASTE);
@@ -31,6 +30,7 @@ public class SwingPKeyboard implements PKeyboard {
 		
 		base.setFocusTraversalKeysEnabled(false);
 		base.addKeyListener(new KeyListener() {
+			@Override
 			public void keyTyped(KeyEvent e) {
 				char c = e.getKeyChar();
 				if (isTypeable(c)) {
@@ -38,9 +38,11 @@ public class SwingPKeyboard implements PKeyboard {
 					fireStringTypedEvent(typedString);
 				}
 			}
+			@Override
 			public void keyReleased(KeyEvent e) {
 				updateKey(e, false);
 			}
+			@Override
 			public void keyPressed(KeyEvent e) {
 				updateKey(e, true);
 			}
@@ -99,26 +101,32 @@ public class SwingPKeyboard implements PKeyboard {
 		}
 	}
 	
+	@Override
 	public boolean isPressed(Key key) {
 		return nowPressed[key.ordinal()];
 	}
 	
+	@Override
 	public boolean isTriggered(Key key) {
 		return nowPressed[key.ordinal()] && !prevPressed[key.ordinal()];
 	}
 	
+	@Override
 	public boolean isReleased(Key key) {
 		return !nowPressed[key.ordinal()] && prevPressed[key.ordinal()];
 	}
 	
+	@Override
 	public boolean isModifierToggled(Modifier modifier) {
 		return modState[modifier.ordinal()];
 	}
 	
+	@Override
 	public void addObs(PKeyboardObs obs) {
 		obsList.add(obs);
 	}
 	
+	@Override
 	public void removeObs(PKeyboardObs obs) {
 		obsList.remove(obs);
 	}

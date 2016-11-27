@@ -1,11 +1,5 @@
 package edu.udo.piq.swing.tests;
 
-import edu.udo.piq.PBounds;
-import edu.udo.piq.PColor;
-import edu.udo.piq.PComponent;
-import edu.udo.piq.PDesign;
-import edu.udo.piq.PDesignSheet;
-import edu.udo.piq.PRenderer;
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PCheckBoxTuple;
 import edu.udo.piq.components.PSlider;
@@ -17,7 +11,6 @@ import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.layouts.PFreeLayout;
 import edu.udo.piq.layouts.PWrapLayout;
-import edu.udo.piq.tools.AbstractPDesignSheet;
 
 public class SwingPTest_FreeLayout extends AbstractSwingPTest {
 	
@@ -29,6 +22,7 @@ public class SwingPTest_FreeLayout extends AbstractSwingPTest {
 		super(640, 480);
 	}
 	
+	@Override
 	public void buildGUI() {
 		PPanel bodyPnl = new PPanel();
 		bodyPnl.setLayout(new PFreeLayout(bodyPnl));
@@ -36,42 +30,45 @@ public class SwingPTest_FreeLayout extends AbstractSwingPTest {
 		
 		Person p = new Person("Max", "Mustermann");
 		
-		PDesignSheet sheet = new AbstractPDesignSheet() {
-			protected PDesign getDesignInternally(PComponent component) {
-				if (component.getClass() == PButton.class) {
-					return new PDesign() {
-						public void render(PRenderer renderer, PComponent component) {
-							PBounds bnds = component.getBounds();
-							PButton btn = (PButton) component;
-							
-							if (btn.isPressed()) {
-								renderer.setColor(PColor.RED);
-							} else {
-								renderer.setColor(PColor.BLUE);
-							}
-							renderer.drawQuad(bnds);
-						}
-					};
-				}
-				return super.getDesignInternally(component);
-			}
-		};
-		root.setDesignSheet(sheet);
+//		PDesignSheet sheet = new AbstractPDesignSheet() {
+//			@Override
+//			protected PDesign getDesignInternally(PComponent component) {
+//				if (component.getClass() == PButton.class) {
+//					return new PDesign() {
+//						@Override
+//						public void render(PRenderer renderer, PComponent component) {
+//							PBounds bnds = component.getBounds();
+//							PButton btn = (PButton) component;
+//
+//							if (btn.isPressed()) {
+//								renderer.setColor(PColor.RED);
+//							} else {
+//								renderer.setColor(PColor.BLUE);
+//							}
+//							renderer.drawQuad(bnds);
+//						}
+//					};
+//				}
+//				return super.getDesignInternally(component);
+//			}
+//		};
+//		root.setDesignSheet(sheet);
 		
 		PButton btn = new PButton();
 		btn.setContent(new PLabel(new DefaultPTextModel(p) {
+			@Override
 			public String getText() {
 				Person p = (Person) getValue();
 				return p.firstName + ": " + p.lastName;
 			}
 		}));
-		btn.setDesign(new PDesign() {
-			public void render(PRenderer renderer, PComponent component) {
-				PBounds bnds = component.getBounds();
-				renderer.setColor(PColor.YELLOW);
-				renderer.drawQuad(bnds);
-			}
-		});
+//		btn.setDesign(new PDesign() {
+//			public void render(PRenderer renderer, PComponent component) {
+//				PBounds bnds = component.getBounds();
+//				renderer.setColor(PColor.YELLOW);
+//				renderer.drawQuad(bnds);
+//			}
+//		});
 //		btn.setDesign();
 		bodyPnl.getLayout().addChild(btn, new PFreeLayout.FreeConstraint(36, 53));
 		
@@ -98,6 +95,7 @@ public class SwingPTest_FreeLayout extends AbstractSwingPTest {
 		dd.setPreview(new PLabel(new DefaultPTextModel("Click Me!")));
 		dd.setBody(pnlDd);
 		dd.addObs(new PDropDownObs() {
+			@Override
 			public void onBodyShown(PDropDown dropDown) {
 //				System.out.println();
 //				System.out.println("bodyShown");
@@ -108,6 +106,7 @@ public class SwingPTest_FreeLayout extends AbstractSwingPTest {
 //					System.out.println(child.getDebugInfo());
 //				}
 			}
+			@Override
 			public void onBodyHidden(PDropDown dropDown) {
 //				System.out.println();
 //				System.out.println("bodyHidden");

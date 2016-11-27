@@ -17,7 +17,7 @@ import edu.udo.piq.components.PButtonModel;
 import edu.udo.piq.components.PButtonModelObs;
 import edu.udo.piq.components.PClickObs;
 import edu.udo.piq.components.defaults.DefaultPButtonModel;
-import edu.udo.piq.layouts.PCentricLayout;
+import edu.udo.piq.layouts.PAnchorLayout;
 import edu.udo.piq.layouts.PFreeLayout;
 import edu.udo.piq.layouts.PFreeLayout.FreeConstraint;
 import edu.udo.piq.layouts.PTupleLayout;
@@ -37,14 +37,17 @@ public class PDropDown extends AbstractPInputLayoutOwner {
 	protected final ObserverList<PDropDownObs> obsList
 		= PCompUtil.createDefaultObserverList();
 	protected final PMouseObs mouseObs = new PMouseObs() {
+		@Override
 		public void onButtonTriggered(PMouse mouse, MouseButton btn) {
 			PDropDown.this.onMouseButtonTriggered(mouse, btn);
 		}
+		@Override
 		public void onButtonReleased(PMouse mouse, MouseButton btn) {
 			PDropDown.this.onMouseButtonReleased(mouse, btn);
 		}
 	};
 	protected final PComponentObs containerObs = new PComponentObs() {
+		@Override
 		public void onPreferredSizeChanged(PComponent component) {
 			PDropDown.this.onPreferredSizeChanged();
 		}
@@ -145,6 +148,7 @@ public class PDropDown extends AbstractPInputLayoutOwner {
 		return getModel().isPressed();
 	}
 	
+	@Override
 	public void defaultRender(PRenderer renderer) {
 		PBounds bnds = getBounds();
 		int x = bnds.getX();
@@ -169,6 +173,7 @@ public class PDropDown extends AbstractPInputLayoutOwner {
 		}
 	}
 	
+	@Override
 	public PSize getDefaultPreferredSize() {
 		return getLayout().getPreferredSize();
 	}
@@ -191,7 +196,7 @@ public class PDropDown extends AbstractPInputLayoutOwner {
 	}
 	
 	protected void repositionDropDownContainer() {
-		PSize ownSize = PCompUtil.getPreferredSizeOf(dropDownContainer);
+		PSize ownSize = dropDownContainer.getPreferredSize();
 		int ownX = getBounds().getX();
 		int ownY = getBounds().getFinalY();
 		int ownW = ownSize.getWidth();
@@ -220,8 +225,8 @@ public class PDropDown extends AbstractPInputLayoutOwner {
 	
 	protected void onMouseButtonTriggered(PMouse mouse, MouseButton btn) {
 		PButtonModel model = getModel();
-		if (btn == MouseButton.LEFT && model != null 
-				&& !model.isPressed() && isMouseOverThisOrChild()) 
+		if (btn == MouseButton.LEFT && model != null
+				&& !model.isPressed() && isMouseOverThisOrChild())
 		{
 			model.setPressed(true);
 		}
@@ -273,9 +278,10 @@ public class PDropDown extends AbstractPInputLayoutOwner {
 		public PDropDownContainer(PDropDown dropDown) {
 			super();
 			this.dropDown = dropDown;
-			setLayout(new PCentricLayout(this));
+			setLayout(new PAnchorLayout(this));
 			getLayout().setInsets(new ImmutablePInsets(1));
 			addObs(new PMouseObs() {
+				@Override
 				public void onButtonTriggered(PMouse mouse, MouseButton btn) {
 					if (!dropDown.isMouseOverThisOrChild() && !isMouseOverThisOrChild()) {
 						dropDown.hideDropDown();
@@ -288,8 +294,9 @@ public class PDropDown extends AbstractPInputLayoutOwner {
 			return dropDown;
 		}
 		
-		public PCentricLayout getLayout() {
-			return (PCentricLayout) super.getLayout();
+		@Override
+		public PAnchorLayout getLayout() {
+			return (PAnchorLayout) super.getLayout();
 		}
 		
 		public void setContent(PComponent component) {
@@ -300,6 +307,7 @@ public class PDropDown extends AbstractPInputLayoutOwner {
 			return getLayout().getContent();
 		}
 		
+		@Override
 		public void defaultRender(PRenderer renderer) {
 			PBounds bnds = getBounds();
 			int x = bnds.getX();
@@ -313,6 +321,7 @@ public class PDropDown extends AbstractPInputLayoutOwner {
 			renderer.drawQuad(x + 1, y + 1, fx - 1, fy - 1);
 		}
 		
+		@Override
 		public PSize getDefaultPreferredSize() {
 			return getLayout().getPreferredSize();
 		}
@@ -324,14 +333,17 @@ public class PDropDown extends AbstractPInputLayoutOwner {
 		public static final PSize DEFAULT_PREF_SIZE = new ImmutablePSize(14, 14);
 		private MutablePSize prefSize = null;
 		
+		@Override
 		public PCursor getMouseOverCursor(PMouse mouse) {
 			return mouse.getCursorHand();
 		}
 		
+		@Override
 		public boolean isFocusable() {
 			return false;
 		}
 		
+		@Override
 		public void defaultRender(PRenderer renderer) {
 			PBounds bnds = getBounds();
 			int x = bnds.getX();
@@ -365,10 +377,11 @@ public class PDropDown extends AbstractPInputLayoutOwner {
 			renderer.drawTriangle(triaX1, triaY1, triaX2, triaY2, triaX3, triaY3);
 		}
 		
+		@Override
 		public PSize getDefaultPreferredSize() {
 			PBounds bnds = getBounds();
-			if (bnds != null && (bnds.getWidth() > DEFAULT_PREF_SIZE.getWidth() 
-					|| bnds.getHeight() > DEFAULT_PREF_SIZE.getHeight())) 
+			if (bnds != null && (bnds.getWidth() > DEFAULT_PREF_SIZE.getWidth()
+					|| bnds.getHeight() > DEFAULT_PREF_SIZE.getHeight()))
 			{
 				if (prefSize == null) {
 					prefSize = new MutablePSize(DEFAULT_PREF_SIZE);

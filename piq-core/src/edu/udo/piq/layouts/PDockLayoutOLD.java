@@ -6,7 +6,6 @@ import java.util.List;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
-import edu.udo.piq.PLayoutDesign;
 import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PSize;
@@ -23,10 +22,12 @@ public class PDockLayoutOLD extends AbstractMapPLayout {
 	public PDockLayoutOLD(PComponent component) {
 		super(component);
 		addObs(new PLayoutObs() {
+			@Override
 			public void onChildAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
 				Constraint constr = (Constraint) constraint;
 				addToRow(child, constr);
 			}
+			@Override
 			public void onChildRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
 				Constraint constr = (Constraint) constraint;
 				removeFromRow(child, constr);
@@ -43,15 +44,7 @@ public class PDockLayoutOLD extends AbstractMapPLayout {
 	}
 	
 	public PInsets getInsets() {
-		PLayoutDesign design = getDesign();
-		if (design == null) {
-			return insets;
-		}
-		Object maybeInsets = getDesign().getAttribute(ATTRIBUTE_KEY_INSETS);
-		if (maybeInsets != null && maybeInsets instanceof PInsets) {
-			return (PInsets) maybeInsets;
-		}
-		return insets;
+		return getStyleAttribute(ATTRIBUTE_KEY_INSETS, insets);
 	}
 	
 	public void setGap(int value) {
@@ -60,7 +53,7 @@ public class PDockLayoutOLD extends AbstractMapPLayout {
 	}
 	
 	public int getGap() {
-		return gap;
+		return getStyleAttribute(ATTRIBUTE_KEY_GAP, gap);
 	}
 	
 	private void addToRow(PComponent comp, Constraint constr) {
@@ -82,11 +75,13 @@ public class PDockLayoutOLD extends AbstractMapPLayout {
 		rows.get(y).set(x, null);
 	}
 	
+	@Override
 	protected boolean canAdd(PComponent component, Object constraint) {
-		return constraint != null && constraint instanceof Constraint 
+		return constraint != null && constraint instanceof Constraint
 				&& getChildForConstraint(constraint) == null;
 	}
 	
+	@Override
 	public void layOutInternal() {
 		PBounds ob = getOwner().getBounds();
 		PInsets insets = getInsets();
@@ -127,7 +122,7 @@ public class PDockLayoutOLD extends AbstractMapPLayout {
 //		for (int y = 0; y < rows.size(); y++) {
 //			List<PComponent> row = rows.get(y);
 //			int colPrefH = 0;
-//			
+//
 //			for (int x = 0; x < row.size(); x++) {
 //				PComponent comp = row.get(x);
 //				if (comp != null) {
@@ -137,7 +132,7 @@ public class PDockLayoutOLD extends AbstractMapPLayout {
 //					if (compH > colPrefH) {
 //						colPrefH = compH;
 //					}
-//					
+//
 //					Constraint constr = null;
 //					colGrowH[y] |= constr.growVertical();
 //				}
@@ -146,6 +141,7 @@ public class PDockLayoutOLD extends AbstractMapPLayout {
 //		}
 	}
 	
+	@Override
 	protected void onInvalidated() {
 		int gap = getGap();
 		int maxW = 0;
@@ -206,6 +202,7 @@ public class PDockLayoutOLD extends AbstractMapPLayout {
 			return growth == Growth.GROW_Y || growth == Growth.GROW_BOTH;
 		}
 		
+		@Override
 		public int hashCode() {
 			final int prime = 31;
 			int result = 1;
@@ -214,11 +211,14 @@ public class PDockLayoutOLD extends AbstractMapPLayout {
 			return result;
 		}
 		
+		@Override
 		public boolean equals(Object obj) {
-			if (this == obj)
+			if (this == obj) {
 				return true;
-			if (obj == null || getClass() != obj.getClass())
+			}
+			if (obj == null || getClass() != obj.getClass()) {
 				return false;
+			}
 			Constraint other = (Constraint) obj;
 			return x == other.x && y == other.y;
 		}

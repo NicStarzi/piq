@@ -26,7 +26,6 @@ import javax.swing.SwingUtilities;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PCursor;
-import edu.udo.piq.PDesignSheet;
 import edu.udo.piq.PDialog;
 import edu.udo.piq.PDnDManager;
 import edu.udo.piq.PFontResource;
@@ -34,6 +33,7 @@ import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.PImageMeta;
 import edu.udo.piq.PImageResource;
 import edu.udo.piq.PRoot;
+import edu.udo.piq.PStyleSheet;
 import edu.udo.piq.tools.AbstractPRoot;
 import edu.udo.piq.util.ThrowException;
 
@@ -43,15 +43,18 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 	
 	private Window wnd;
 	private final WindowListener wndListener = new WindowAdapter() {
+		@Override
 		public void windowIconified(WindowEvent e) {
 			reRender(JCompPRoot.this);
 		}
+		@Override
 		public void windowDeiconified(WindowEvent e) {
 			reRender(JCompPRoot.this);
 		}
 	};
 	private final JPanel panel = new JPanel() {
 		private static final long serialVersionUID = 1L;
+		@Override
 		public void addNotify() {
 			super.addNotify();
 			Component awtRoot = SwingUtilities.getRoot(panel);
@@ -63,6 +66,7 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 				wnd.addWindowListener(wndListener);
 			}
 		}
+		@Override
 		public void removeNotify() {
 			super.removeNotify();
 			if (wnd != null) {
@@ -70,6 +74,7 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 				wnd = null;
 			}
 		}
+		@Override
 		public void paintComponent(Graphics g) {
 			render((Graphics2D) g);
 		}
@@ -90,10 +95,12 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 		panel.setFocusable(true);
 		panel.requestFocus();
 		panel.addComponentListener(new ComponentAdapter() {
+			@Override
 			public void componentShown(ComponentEvent e) {
 				reRender(JCompPRoot.this);
 				fireSizeChanged();
 			}
+			@Override
 			public void componentResized(ComponentEvent e) {
 				reRender(JCompPRoot.this);
 				fireSizeChanged();
@@ -112,18 +119,22 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 	/*
 	 * Overwrites the protected super method
 	 */
-	public void setDesignSheet(PDesignSheet designSheet) {
-		super.setDesignSheet(designSheet);
+	@Override
+	public void setStyleSheet(PStyleSheet styleSheet) {
+		super.setStyleSheet(styleSheet);
 	}
 	
+	@Override
 	public void onMouseOverCursorChanged(PComponent component) {
 		mouse.mouseOverCursorChanged(component);
 	}
 	
+	@Override
 	public double getDeltaTime() {
 		return deltaTime;
 	}
 	
+	@Override
 	public void update(double deltaTime) {
 		this.deltaTime = deltaTime;
 		while (!openedDialogs.isEmpty()) {
@@ -141,6 +152,7 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 		mouse.update();
 	}
 	
+	@Override
 	public PDialog createDialog() {
 		JDialog jDlg = new JDialog(SwingUtilities.getWindowAncestor(panel));
 		jDlg.setSize(320, 240);
@@ -153,12 +165,14 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 		return pDlg;
 	}
 	
+	@Override
 	public boolean isFontSupported(PFontResource font) {
 		return font instanceof AwtPFontResource;
 	}
 	
-	public PFontResource fetchFontResource(String fontName, double pointSize, Style style) 
-			throws NullPointerException, IllegalArgumentException 
+	@Override
+	public PFontResource fetchFontResource(String fontName, double pointSize, Style style)
+			throws NullPointerException, IllegalArgumentException
 	{
 		FontInfo info = new FontInfo(fontName, pointSize, style);
 		AwtPFontResource fontRes = fontMap.get(info);
@@ -189,8 +203,14 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 		return awtStyle;
 	}
 	
-	public PImageResource fetchImageResource(Object imgID) 
-			throws NullPointerException 
+	@Override
+	public boolean isImageSupported(PImageResource imageResource) {
+		return imageResource instanceof BufferedPImageResource;
+	}
+	
+	@Override
+	public PImageResource fetchImageResource(Object imgID)
+			throws NullPointerException
 	{
 		ThrowException.ifNull(imgID, "imgID == null");
 		String imgPath;
@@ -214,23 +234,27 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 		return imgRes;
 	}
 	
+	@Override
 	public PImageResource createImageResource(int width, int height,
-			PImageMeta metaInfo) throws IllegalArgumentException 
+			PImageMeta metaInfo) throws IllegalArgumentException
 	{
 		BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		BufferedPImageResource res = new BufferedPImageResource(img);
 		return res;
 	}
 	
+	@Override
 	public PCursor createCustomCursor(PImageResource image, int offsetX,
 			int offsetY) throws IllegalArgumentException {
 		return null;
 	}
 	
+	@Override
 	public PBounds getBounds() {
 		return bounds;
 	}
 	
+	@Override
 	public void reRender(PComponent component) {
 		if (panel != null) {
 //			System.out.println("JCompPRoot.reRender="+component);
@@ -254,6 +278,7 @@ public class JCompPRoot extends AbstractPRoot implements PRoot {
 		defaultRootRender(renderer, 0, 0, rootFx, rootFy);
 	}
 
+	@Override
 	public boolean isElusive() {
 		return false;
 	}

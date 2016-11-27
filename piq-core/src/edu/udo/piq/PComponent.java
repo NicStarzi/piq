@@ -8,32 +8,34 @@ import edu.udo.piq.components.containers.PGlassPanel;
 import edu.udo.piq.components.util.PFocusTraversal;
 import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.MutablePBounds;
+import edu.udo.piq.util.AncestorIterator;
+import edu.udo.piq.util.BreadthFirstDescendantIterator;
 import edu.udo.piq.util.PCompUtil;
 import edu.udo.piq.util.PGuiUtil;
 import edu.udo.piq.util.ThrowException;
 
 /**
  * The key part of the piq GUI widget toolkit.<br>
- * PComponents define a tree like architecture where each component has a 
- * reference to its parent and every parent has, in turn, a {@link PReadOnlyLayout} 
+ * PComponents define a tree like architecture where each component has a
+ * reference to its parent and every parent has, in turn, a {@link PReadOnlyLayout}
  * that manages the components children.<br>
- * All kinds of user interaction is done by components and everything that 
- * is displayed graphically is a component that is being rendered to a 
+ * All kinds of user interaction is done by components and everything that
+ * is displayed graphically is a component that is being rendered to a
  * {@link PRenderer}.<br>
- * This interface is supposed to provide the most basic key functionalities 
- * that are needed to make the piq library work. All implementations of 
+ * This interface is supposed to provide the most basic key functionalities
+ * that are needed to make the piq library work. All implementations of
  * PComponents may opt to add additional useful utility methods.<br>
- * When implementing a PComponent it is of prime importance that all methods 
- * of the implementation act exactly as defined by their documentation. 
- * Otherwise the newly implemented component might not correctly work together 
+ * When implementing a PComponent it is of prime importance that all methods
+ * of the implementation act exactly as defined by their documentation.
+ * Otherwise the newly implemented component might not correctly work together
  * with other components and could potentially derange the entire GUI.<br>
- * PComponents can be observed by {@link PComponentObs}ervers using the observer 
- * pattern. All implementations of PComponent should provide a way of adding 
- * and removing observers without throwing {@link ConcurrentModificationException}s 
- * if an observer is added / removed while an event is fired. The use of 
+ * PComponents can be observed by {@link PComponentObs}ervers using the observer
+ * pattern. All implementations of PComponent should provide a way of adding
+ * and removing observers without throwing {@link ConcurrentModificationException}s
+ * if an observer is added / removed while an event is fired. The use of
  * {@link PCompUtil#createDefaultObserverList()} is encouraged but is not enforced.<br>
  * <br>
- * For an easy to use abstract implementation of the PComponent interface 
+ * For an easy to use abstract implementation of the PComponent interface
  * have a look at the {@link AbstractPComponent} class.
  * 
  * @author Nic Starzi
@@ -45,12 +47,18 @@ import edu.udo.piq.util.ThrowException;
  * @see PDesign
  * @see PComponentObs
  */
-public interface PComponent {
+public interface PComponent extends PStyleable<PStyleComponent> {
+	
+	@Override
+	public void setStyle(PStyleComponent style);
+	
+	@Override
+	public PStyleComponent getStyle();
 	
 	/**
-	 * This method is supposed to be used internally by a {@link PReadOnlyLayout} to set 
+	 * This method is supposed to be used internally by a {@link PReadOnlyLayout} to set
 	 * the newly added or removed child's parent.<br>
-	 * This method should not be used by the end user or unpredictable, and most 
+	 * This method should not be used by the end user or unpredictable, and most
 	 * likely erroneous, behavior will occur.<br>
 	 * If parent is null this component will no longer have a parent.<br>
 	 * 
@@ -68,7 +76,7 @@ public interface PComponent {
 	
 	/**
 	 * Returns the parent component of this component in the GUI-tree.<br>
-	 * If this component is not part of a GUI-tree this method 
+	 * If this component is not part of a GUI-tree this method
 	 * will return null.<br>
 	 * 
 	 * @return the parent of this component or null
@@ -76,9 +84,11 @@ public interface PComponent {
 	 */
 	public PComponent getParent();
 	
+	public PBorder getBorder();
+	
 	/**
 	 * Returns the {@link PReadOnlyLayout} of this component.<br>
-	 * If this component does not have a layout or does not 
+	 * If this component does not have a layout or does not
 	 * support layouts this method will return null.<br>
 	 * 
 	 * @return the layout of this component or null.
@@ -87,36 +97,10 @@ public interface PComponent {
 	public PReadOnlyLayout getLayout();
 	
 	/**
-	 * Sets a custom {@link PDesign} for this component.<br>
-	 * When this component is being rendered and a custom 
-	 * design is set then the custom design will be used for 
-	 * rendering.<br>
-	 * If no custom design is set the default design will 
-	 * be taken from the {@link PDesignSheet} of the root.<br>
-	 * 
-	 * @param design		the custom design for this component or null to use the default design
-	 */
-	public void setDesign(PDesign design);
-	
-	/**
-	 * Returns the {@link PDesign} used to render this component.<br>
-	 * If this component has a custom design set then the custom 
-	 * design is returned. Otherwise the returned design will be 
-	 * taken from the {@link PDesignSheet} of the root.<br>
-	 * If this component is not part of a GUI tree, and thus does 
-	 * not have a root, null is returned.<br>
-	 * 
-	 * @return				the design used to render this component
-	 * @see PDesign
-	 * @see PDesignSheet
-	 */
-	public PDesign getDesign();
-	
-	/**
-	 * Renders the default rendering of this component to the given 
+	 * Renders the default rendering of this component to the given
 	 * {@link PRenderer}.<br>
-	 * This method is called if the {@link PDesignSheet} of the 
-	 * {@link PRoot} of this component does not associate a 
+	 * This method is called if the {@link PDesignSheet} of the
+	 * {@link PRoot} of this component does not associate a
 	 * {@link PDesign} with this component.<br>
 	 * 
 	 * @param renderer the renderer to be used for rendering
@@ -126,14 +110,23 @@ public interface PComponent {
 	 */
 	public default void defaultRender(PRenderer renderer) {}
 	
+	public default void render(PRenderer renderer) {
+		PStyleComponent style = getStyle();
+		if (style == null) {
+			defaultRender(renderer);
+		} else {
+			style.render(renderer, this);
+		}
+	}
+	
 	/**
-	 * Returns true if this component fills all pixels within its 
-	 * {@link PBounds} when the {@link #defaultRender(PRenderer)} 
+	 * Returns true if this component fills all pixels within its
+	 * {@link PBounds} when the {@link #defaultRender(PRenderer)}
 	 * method is invoked.<br>
-	 * This method is important for the {@link PRenderer} to 
-	 * determine whether the parent of this component needs to be 
+	 * This method is important for the {@link PRenderer} to
+	 * determine whether the parent of this component needs to be
 	 * re-rendered when this component is re-rendered.<br>
-	 * For a component which is translucent or has transparent parts 
+	 * For a component which is translucent or has transparent parts
 	 * this method should always return false.<br>
 	 * 
 	 * @return true if the component is completely opaque
@@ -147,15 +140,19 @@ public interface PComponent {
 	}
 	
 	public default boolean fillsAllPixels() {
-		PDesign design = getDesign();
-		if (design == null) {
+		PBorder border = getBorder();
+		if (border != null && !border.fillsAllPixels(this)) {
+			return false;
+		}
+		PStyleComponent style = getStyle();
+		if (style == null) {
 			return defaultFillsAllPixels();
 		}
-		return design.fillsAllPixels(this);
+		return style.fillsAllPixels(this);
 	}
 	
 	/**
-	 * Returns the mouse cursor to be used when the mouse is over 
+	 * Returns the mouse cursor to be used when the mouse is over
 	 * this component.<br>
 	 * @param mouse		a non-null mouse that belongs to the root of this components GUI tree
 	 * @return			a non-null instance of PCursor compatible with the given mouse
@@ -177,11 +174,11 @@ public interface PComponent {
 	public void setMouseOverCursor(PCursor cursor);
 	
 	/**
-	 * This method returns the default preferred size for this component 
+	 * This method returns the default preferred size for this component
 	 * used by the default rendering mechanism.<br>
-	 * This method should return a size as small as possible for rendering 
+	 * This method should return a size as small as possible for rendering
 	 * itself with the {@link #defaultRender(PRenderer)} method.<br>
-	 * {@link PReadOnlyLayout}s and {@link PDesign}s might use this value or ignore 
+	 * {@link PReadOnlyLayout}s and {@link PDesign}s might use this value or ignore
 	 * it completely.<br>
 	 * This method never returns null.<br>
 	 * 
@@ -201,12 +198,20 @@ public interface PComponent {
 		return PSize.ZERO_SIZE;
 	}
 	
+	public default PSize getPreferredSize() {
+		PStyleComponent style = getStyle();
+		if (style == null) {
+			return getDefaultPreferredSize();
+		}
+		return style.getPreferredSize(this);
+	}
+	
 	/**
 	 * Returns true if this {@link PComponent} may become the focus owner of a GUI.<br>
-	 * If this method returns false this method will be ignored when the user is 
+	 * If this method returns false this method will be ignored when the user is
 	 * traversing the focus through the GUI.<br>
-	 * A component that is not focusable may still get the focus programmatically 
-	 * through the use of the {@link PRoot#setFocusOwner(PComponent)} or 
+	 * A component that is not focusable may still get the focus programmatically
+	 * through the use of the {@link PRoot#setFocusOwner(PComponent)} or
 	 * {@link #takeFocus()} method.<br>
 	 * 
 	 * @return true if this component should be included in focus traversal
@@ -218,12 +223,12 @@ public interface PComponent {
 	public boolean isFocusable();
 	
 	/**
-	 * Returns the {@link PFocusTraversal} for this component or null if this 
+	 * Returns the {@link PFocusTraversal} for this component or null if this
 	 * component is not part of a GUI tree.<br>
 	 * <br>
-	 * If this component does not have its own focus traversal the focus traversal 
-	 * of the parent component will be returned. A PRoot does always have a focus 
-	 * traversal.<br> 
+	 * If this component does not have its own focus traversal the focus traversal
+	 * of the parent component will be returned. A PRoot does always have a focus
+	 * traversal.<br>
 	 * 
 	 * @return an instance of {@link PFocusTraversal} or null
 	 */
@@ -235,10 +240,10 @@ public interface PComponent {
 	}
 	
 	/**
-	 * Returns true if this {@link PComponent} should not be returned by the 
+	 * Returns true if this {@link PComponent} should not be returned by the
 	 * {@link PReadOnlyLayout#getChildAt(int, int)} method.<br>
-	 * This property can be used to construct components that can be placed on top 
-	 * of other components without obstructing the components below. For example to 
+	 * This property can be used to construct components that can be placed on top
+	 * of other components without obstructing the components below. For example to
 	 * keep their original behavior unchanged.<br>
 	 * One component that makes use of this attribute is the {@link PGlassPanel}.<br>
 	 * Most components return false for this attribute.<br>
@@ -248,7 +253,7 @@ public interface PComponent {
 	public boolean isElusive();
 	
 	/**
-	 * Returns either an instance of {@link PDnDSupport} if this component supports 
+	 * Returns either an instance of {@link PDnDSupport} if this component supports
 	 * drag and drop or returns null if this component does not support drag and drop.<br>
 	 * The {@link PDnDSupport} of a component may change within the components life-
 	 * cycle but this must never happen while a drag is taking place on the support.<br>
@@ -261,11 +266,11 @@ public interface PComponent {
 	public PDnDSupport getDragAndDropSupport();
 	
 	/**
-	 * Calls the {@link PLayout#layOut()} method on the {@link PLayout} of this 
+	 * Calls the {@link PLayout#layOut()} method on the {@link PLayout} of this
 	 * {@link PComponent} if it exists. Otherwise nothing happens.<br>
-	 * If this {@link PComponent PComponents} preferred size, as returned by 
-	 * {@link PCompUtil#getPreferredSizeOf(PComponent)} changes as a result of 
-	 * the layouting this component will call the {@link PRoot#reLayOut(PComponent)} 
+	 * If this {@link PComponent PComponents} preferred size, as returned by
+	 * {@link PCompUtil#getPreferredSizeOf(PComponent)} changes as a result of
+	 * the layouting this component will call the {@link PRoot#reLayOut(PComponent)}
 	 * method of its {@link PRoot}.<br>
 	 * 
 	 * @see #getRoot()
@@ -275,7 +280,7 @@ public interface PComponent {
 	
 	/**
 	 * Adds an observer to this {@link PComponent}.<br>
-	 * A component can have any number of observers and observers may be added 
+	 * A component can have any number of observers and observers may be added
 	 * more then once to a component.<br>
 	 * 
 	 * @param obs the obs to be registered
@@ -296,7 +301,7 @@ public interface PComponent {
 	
 	/**
 	 * Adds an observer to this {@link PComponent}.<br>
-	 * A component can have any number of observers and observers may be added 
+	 * A component can have any number of observers and observers may be added
 	 * more then once to a component.<br>
 	 * 
 	 * @param obs the obs to be registered
@@ -327,7 +332,7 @@ public interface PComponent {
 	
 	/**
 	 * Sets the id of this {@link PComponent}.<br>
-	 * The id should only be used for debugging purposes and has no meaning to the end 
+	 * The id should only be used for debugging purposes and has no meaning to the end
 	 * user whatsoever.<br>
 	 * The id might be null.<br>
 	 * 
@@ -340,9 +345,9 @@ public interface PComponent {
 	public void setID(String value);
 	
 	/**
-	 * The id of a {@link PComponent} should only be used for debugging purposes and 
+	 * The id of a {@link PComponent} should only be used for debugging purposes and
 	 * has no meaning to the end user whatsoever.<br>
-	 * The id might be null in which case it should be treated as if it was equal to 
+	 * The id might be null in which case it should be treated as if it was equal to
 	 * the simple name of the components class.<br>
 	 * 
 	 * @return the id use for debugging purposes
@@ -354,14 +359,19 @@ public interface PComponent {
 	public String getID();
 	
 	/**
-	 * Returns a detailed representation of this {@link PComponent PComponents} inner 
-	 * state. The returned String should at least contain the components class, id, 
+	 * Returns a detailed representation of this {@link PComponent PComponents} inner
+	 * state. The returned String should at least contain the components class, id,
 	 * if these exists the bounds and the layout.<br>
 	 * A component implementation is free to provide any other useful information.<br>
 	 * 
 	 * @return a String representing all important information for this component
 	 */
 	public String getDebugInfo();
+	
+	@Override
+	public default Object getStyleID() {
+		return getClass();
+	}
 	
 	/*
 	 * Default convenience methods
@@ -387,10 +397,10 @@ public interface PComponent {
 	}
 	
 	/**
-	 * Returns the number of times one has to call the {@link #getParent()} method 
-	 * recursively until one reaches the {@link PRoot} of this {@link PComponent}.<br> 
+	 * Returns the number of times one has to call the {@link #getParent()} method
+	 * recursively until one reaches the {@link PRoot} of this {@link PComponent}.<br>
 	 * If this {@link PComponent} is a {@link PRoot} this method returns 0.<br>
-	 * If this {@link PComponent} is not part of a GUI and thus does not have a 
+	 * If this {@link PComponent} is not part of a GUI and thus does not have a
 	 * {@link PRoot} this method returns -1;
 	 * 
 	 * @return the number of steps to the root or -1
@@ -412,11 +422,11 @@ public interface PComponent {
 	}
 	
 	/**
-	 * If this component has a parent then the {@link PBounds} of this component 
+	 * If this component has a parent then the {@link PBounds} of this component
 	 * will be defined by the parents {@link PReadOnlyLayout}.<br>
-	 * If this component is a {@link PRoot} then the {@link PBounds} will be 
+	 * If this component is a {@link PRoot} then the {@link PBounds} will be
 	 * returned directly.<br>
-	 * If this component does neither have a parent nor is a {@link PRoot} null 
+	 * If this component does neither have a parent nor is a {@link PRoot} null
 	 * is returned.<br>
 	 * 
 	 * @return the {@link PBounds} of this component or null
@@ -424,8 +434,9 @@ public interface PComponent {
 	 * @see PRoot#getBounds()
 	 */
 	public default PBounds getBounds() {
-		if (getParent() != null) {
-			PBounds bnds = getParent().getLayout().getChildBounds(this);
+		PComponent parent = getParent();
+		if (parent != null) {
+			PBounds bnds = parent.getLayout().getChildBounds(this);
 			ThrowException.ifNull(bnds, "bounds == null");
 			return bnds;
 		}
@@ -435,6 +446,22 @@ public interface PComponent {
 		return null;
 	}
 	
+	public default PInsets getBorderInsets() {
+		PBorder border = getBorder();
+		if (border == null) {
+			return PInsets.ZERO_INSETS;
+		}
+		return border.getInsets(this);
+	}
+	
+	public default PBounds getBoundsWithoutBorder() {
+		PBorder border = getBorder();
+		if (border == null) {
+			return getBounds();
+		}
+		return getBounds().createCopyAndSubtract(border.getInsets(this));
+	}
+	
 	public default Object getConstraintAtParent() {
 		ThrowException.ifNull(getParent(), "getParent() == null");
 		return getParent().getLayout().getChildConstraint(this);
@@ -442,13 +469,13 @@ public interface PComponent {
 	
 	/**
 	 * Returns a {@link Collection} of all child components of this component.<br>
-	 * If this component has a {@link PReadOnlyLayout} then the method {@link PReadOnlyLayout#getChildren()} 
+	 * If this component has a {@link PReadOnlyLayout} then the method {@link PReadOnlyLayout#getChildren()}
 	 * is used on the layout to retrieve the children.<br>
-	 * If this component does not have a {@link PReadOnlyLayout} an unmodifiable empty list is 
+	 * If this component does not have a {@link PReadOnlyLayout} an unmodifiable empty list is
 	 * returned.<br>
 	 * This method does never return null.<br>
 	 * <br>
-	 * The returned Collection is unmodifiable and is not synchronized with the 
+	 * The returned Collection is unmodifiable and is not synchronized with the
 	 * layout.<br>
 	 * 
 	 * @return a Collection of {@link PComponent PComponents} that are children of this component
@@ -461,8 +488,20 @@ public interface PComponent {
 		return Collections.emptyList();
 	}
 	
+	public default Iterable<PComponent> getAncestors() {
+		return new AncestorIterator(this, false);
+	}
+	
+	public default Iterable<PComponent> getAncestorsAndSelf() {
+		return new AncestorIterator(this, true);
+	}
+	
+	public default Iterable<PComponent> getDescendants() {
+		return new BreadthFirstDescendantIterator(this);
+	}
+	
 	/**
-	 * Returns true if any positive number of steps up in the GUI hierarchy, 
+	 * Returns true if any positive number of steps up in the GUI hierarchy,
 	 * starting from maybeDescendant, will get to this component.<br>
 	 * A component is not an ancestor of itself.<br>
 	 * 
@@ -487,7 +526,7 @@ public interface PComponent {
 	}
 	
 	/**
-	 * Returns true if any positive number of steps up in the GUI hierarchy, 
+	 * Returns true if any positive number of steps up in the GUI hierarchy,
 	 * starting from this component, will get to maybeAncestor.<br>
 	 * A component is not a descendant of itself.<br>
 	 * 
@@ -505,9 +544,9 @@ public interface PComponent {
 	}
 	
 	/**
-	 * Returns the {@link PMouse} installed in the {@link PRoot} of this 
+	 * Returns the {@link PMouse} installed in the {@link PRoot} of this
 	 * component.<br>
-	 * If this component is not part of a GUI or the GUI does not support a 
+	 * If this component is not part of a GUI or the GUI does not support a
 	 * {@link PMouse} null is returned.<br>
 	 * 
 	 * @return the {@link PMouse} for this GUI or null
@@ -523,9 +562,9 @@ public interface PComponent {
 	}
 	
 	/**
-	 * Returns the {@link PKeyboard} installed in the {@link PRoot} of this 
+	 * Returns the {@link PKeyboard} installed in the {@link PRoot} of this
 	 * component.<br>
-	 * If this component is not part of a GUI or the GUI does not support a 
+	 * If this component is not part of a GUI or the GUI does not support a
 	 * {@link PKeyboard} null is returned.<br>
 	 * 
 	 * @return the {@link PKeyboard} for this GUI or null
@@ -541,9 +580,9 @@ public interface PComponent {
 	}
 	
 	/**
-	 * Returns the drag and drop manager installed in the {@link PRoot} of this 
+	 * Returns the drag and drop manager installed in the {@link PRoot} of this
 	 * component.<br>
-	 * If this component is not part of a GUI or the GUI does not support a 
+	 * If this component is not part of a GUI or the GUI does not support a
 	 * {@link PDnDManager} null is returned.<br>
 	 * 
 	 * @return the {@link PDnDManager} for this GUI or null
@@ -559,15 +598,15 @@ public interface PComponent {
 	}
 	
 	/**
-	 * Returns the portion of this components {@link PBounds} that is not 
+	 * Returns the portion of this components {@link PBounds} that is not
 	 * clipped by the bounds of an ancestor of this component.<br>
-	 * More specifically the returned {@link PBounds} are those bounds that 
-	 * are created by recursively intersecting this components bounds with 
+	 * More specifically the returned {@link PBounds} are those bounds that
+	 * are created by recursively intersecting this components bounds with
 	 * its parents bounds.<br>
-	 * The returned {@link PBounds} are not synchronized with this components 
+	 * The returned {@link PBounds} are not synchronized with this components
 	 * actual bounds and may or may not be immutable.<br>
 	 * <br>
-	 * If the clipped bounds of this component would have negative size, or 
+	 * If the clipped bounds of this component would have negative size, or
 	 * if this component has no parent, null is returned instead.<br>
 	 * 
 	 * @return the clipped {@link PBounds} of this component or null
@@ -583,13 +622,13 @@ public interface PComponent {
 	}
 	
 	/**
-	 * Returns true if this component is part of a GUI with a mouse and the mouse 
+	 * Returns true if this component is part of a GUI with a mouse and the mouse
 	 * is within the clipped bounds of this component.<br>
 	 * If any of the above conditions are not met false is returned.<br>
-	 * Please note the difference between this method and {@link #isMouseOver()} 
-	 * is, that this method will return true even if other components are displayed 
+	 * Please note the difference between this method and {@link #isMouseOver()}
+	 * is, that this method will return true even if other components are displayed
 	 * on top of this component.<br>
-	 *  
+	 * 
 	 * @return true if this component is part of a GUI with a mouse and the mouse position is within the clipped bounds of this component
 	 * @see #getClippedBounds()
 	 * @see #getMouse()
@@ -608,9 +647,9 @@ public interface PComponent {
 	}
 	
 	/**
-	 * Returns true if the {@link PMouse} of this {@link PComponent PComponents} {@link PRoot} 
+	 * Returns true if the {@link PMouse} of this {@link PComponent PComponents} {@link PRoot}
 	 * is currently sitting on top of this component.<br>
-	 * If this component is not part of a GUI or the GUI does not have a {@link PMouse} false 
+	 * If this component is not part of a GUI or the GUI does not have a {@link PMouse} false
 	 * is returned.<br>
 	 * 
 	 * @return true if the mouse is currently on top of this component
@@ -628,9 +667,9 @@ public interface PComponent {
 	}
 	
 	/**
-	 * Returns true if the {@link PMouse} of this {@link PComponent PComponents} {@link PRoot} 
+	 * Returns true if the {@link PMouse} of this {@link PComponent PComponents} {@link PRoot}
 	 * is currently sitting on top of this component.<br>
-	 * If this component is not part of a GUI or the GUI does not have a {@link PMouse} false 
+	 * If this component is not part of a GUI or the GUI does not have a {@link PMouse} false
 	 * is returned.<br>
 	 * 
 	 * @return true if the mouse is currently on top of this component
@@ -644,12 +683,12 @@ public interface PComponent {
 			return false;
 		}
 		PComponent compAtMouse = mouse.getComponentAtMouse();
-		return compAtMouse != null && (compAtMouse == this 
+		return compAtMouse != null && (compAtMouse == this
 				|| isAncestorOf(compAtMouse));
 	}
 	
 	/**
-	 * Returns true if this component is currently holding the focus within its 
+	 * Returns true if this component is currently holding the focus within its
 	 * GUI.<br>
 	 * If this component is not part of a GUI this method will return false.<br>
 	 * 
@@ -709,7 +748,7 @@ public interface PComponent {
 	}
 	
 	/**
-	 * If this component currently holds the focus within its GUI the focus will 
+	 * If this component currently holds the focus within its GUI the focus will
 	 * be released and the new focus owner will be null.<br>
 	 * 
 	 * @throws IllegalStateException if this component is not part of a GUI or if this component does not have the focus

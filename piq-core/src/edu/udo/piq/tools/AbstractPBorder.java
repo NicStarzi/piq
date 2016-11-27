@@ -1,43 +1,54 @@
 package edu.udo.piq.tools;
 
-import edu.udo.piq.PBorder;
-import edu.udo.piq.PComponent;
-import edu.udo.piq.layouts.PCentricLayout;
+import java.util.Objects;
 
-public abstract class AbstractPBorder extends AbstractPLayoutOwner implements PBorder {
+import edu.udo.piq.PBorder;
+import edu.udo.piq.PBorderObs;
+import edu.udo.piq.PStyleBorder;
+import edu.udo.piq.util.ObserverList;
+import edu.udo.piq.util.PCompUtil;
+
+public abstract class AbstractPBorder implements PBorder {
 	
-	public AbstractPBorder() {
-		super();
-		PCentricLayout layout = new PCentricLayout(this);
-		layout.setGrowContent(true);
-		setLayout(layout);
-	}
+	protected final ObserverList<PBorderObs> obsList = PCompUtil.createDefaultObserverList();
+	protected PStyleBorder style;
+	private Object styleID = getClass();
 	
-	public AbstractPBorder(PComponent content) {
-		this();
-		setContent(content);
-	}
-	
-	public PCentricLayout getLayout() {
-		return (PCentricLayout) super.getLayout();
-	}
-	
-	public void setContent(PComponent content) {
-		if (content == null) {
-			getLayout().removeChild(content);
-		} else {
-			getLayout().addChild(content, null);
+	@Override
+	public void setStyle(PStyleBorder style) {
+		if (!Objects.equals(getStyle(), style)) {
+			this.style = style;
+			fireInsetsChangedEvent();
+			fireReRenderEvent();
 		}
 	}
 	
-	public PComponent getContent() {
-		return getLayout().getContent();
+	@Override
+	public PStyleBorder getStyle() {
+		return style;
 	}
 	
-	public boolean defaultFillsAllPixels() {
-		PComponent content = getContent();
-		return getLayout().isGrowContent() && content != null 
-				&& content.defaultFillsAllPixels();
+	@Override
+	public Object getStyleID() {
+		return styleID;
+	}
+	
+	@Override
+	public void addObs(PBorderObs obs) {
+		obsList.add(obs);
+	}
+	
+	@Override
+	public void removeObs(PBorderObs obs) {
+		obsList.remove(obs);
+	}
+	
+	protected void fireInsetsChangedEvent() {
+		obsList.fireEvent(obs -> obs.onInsetsChanged(this));
+	}
+	
+	protected void fireReRenderEvent() {
+		obsList.fireEvent(obs -> obs.onReRender(this));
 	}
 	
 }

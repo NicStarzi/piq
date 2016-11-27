@@ -90,6 +90,10 @@ public interface PInsets {
 		return getFromLeft() + getFromRight();
 	}
 	
+	public default int getWidth() {
+		return getHorizontal();
+	}
+	
 	/**
 	 * Returns the total vertical distance, that is 
 	 * the distance from the top and the distance 
@@ -99,6 +103,10 @@ public interface PInsets {
 	 */
 	public default int getVertical() {
 		return getFromTop() + getFromBottom();
+	}
+	
+	public default int getHeight() {
+		return getVertical();
 	}
 	
 	/**

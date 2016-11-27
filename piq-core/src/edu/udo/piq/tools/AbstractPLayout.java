@@ -4,10 +4,9 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PComponentObs;
 import edu.udo.piq.PLayout;
-import edu.udo.piq.PLayoutDesign;
 import edu.udo.piq.PLayoutObs;
-import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
+import edu.udo.piq.PStyleLayout;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
 import edu.udo.piq.util.ThrowException;
@@ -15,11 +14,13 @@ import edu.udo.piq.util.ThrowException;
 public abstract class AbstractPLayout implements PLayout {
 	
 	protected final PComponentObs ownerObs = new PComponentObs() {
+		@Override
 		public void onBoundsChanged(PComponent component) {
 			AbstractPLayout.this.onOwnerBoundsChanged();
 		}
 	};
 	protected final PComponentObs childObs = new PComponentObs() {
+		@Override
 		public void onPreferredSizeChanged(PComponent component) {
 			AbstractPLayout.this.onChildPrefSizeChanged(component);
 		}
@@ -28,7 +29,8 @@ public abstract class AbstractPLayout implements PLayout {
 	protected final ObserverList<PLayoutObs> obsList
 		= PCompUtil.createDefaultObserverList();
 	protected final PComponent owner;
-	private PLayoutDesign design;
+	private PStyleLayout style;
+	private Object styleID = getClass();
 	protected MutablePSize prefSize = new MutablePSize();
 	protected boolean invalidated = true;
 	
@@ -50,10 +52,12 @@ public abstract class AbstractPLayout implements PLayout {
 	
 	protected abstract void removeInfoInternal(PCompInfo info);
 	
+	@Override
 	public PComponent getOwner() {
 		return owner;
 	}
 	
+	@Override
 	public void addChild(PComponent component, Object constraint) throws NullPointerException, IllegalArgumentException, IllegalStateException {
 		ThrowException.ifNull(component, "component == null");
 		ThrowException.ifFalse(canAdd(component, constraint), "canAdd(component, constraint) == false");
@@ -69,6 +73,7 @@ public abstract class AbstractPLayout implements PLayout {
 		invalidate();
 	}
 	
+	@Override
 	public void removeChild(PComponent child) throws NullPointerException, IllegalArgumentException {
 		ThrowException.ifNull(child, "child == null");
 		
@@ -85,12 +90,14 @@ public abstract class AbstractPLayout implements PLayout {
 		fireRemoveEvent(child, constraint);
 	}
 	
+	@Override
 	public void removeChild(Object constraint) throws IllegalArgumentException, IllegalStateException {
 		PComponent child = getChildForConstraint(constraint);
 		ThrowException.ifNull(child, "containsChild(constraint) == false");
 		removeChild(child);
 	}
 	
+	@Override
 	public void clearChildren() {
 		for (PCompInfo info : getAllInfos()) {
 			PComponent child = info.comp;
@@ -103,14 +110,17 @@ public abstract class AbstractPLayout implements PLayout {
 		clearAllInfosInternal();
 	}
 	
+	@Override
 	public boolean containsChild(PComponent child) throws NullPointerException {
 		return getOwner() == child.getParent();
 	}
 	
+	@Override
 	public boolean containsChild(Object constraint) throws IllegalArgumentException {
 		return getChildForConstraint(constraint) != null;
 	}
 	
+	@Override
 	public PComponent getChildForConstraint(Object constraint) {
 		for (PCompInfo info : getAllInfos()) {
 			if (constraintsAreEqual(info.constr, constraint)) {
@@ -120,6 +130,7 @@ public abstract class AbstractPLayout implements PLayout {
 		return null;
 	}
 	
+	@Override
 	public PComponent getChildAt(int x, int y) {
 		if (!getOwner().getBounds().contains(x, y)) {
 			return null;
@@ -142,8 +153,9 @@ public abstract class AbstractPLayout implements PLayout {
 		return null;
 	}
 	
-	public PBounds getChildBounds(Object constraint) 
-			throws IllegalStateException, IllegalArgumentException 
+	@Override
+	public PBounds getChildBounds(Object constraint)
+			throws IllegalStateException, IllegalArgumentException
 	{
 		PComponent child = getChildForConstraint(constraint);
 		if (child == null) {
@@ -152,6 +164,7 @@ public abstract class AbstractPLayout implements PLayout {
 		return getChildBounds(child);
 	}
 	
+	@Override
 	public PBounds getChildBounds(PComponent child) throws NullPointerException, IllegalArgumentException {
 		ThrowException.ifNull(child, "child == null");
 		PCompInfo info = getInfoFor(child);
@@ -159,6 +172,7 @@ public abstract class AbstractPLayout implements PLayout {
 		return info.bounds;
 	}
 	
+	@Override
 	public Object getChildConstraint(PComponent child) throws NullPointerException {
 		ThrowException.ifNull(child, "child == null");
 		PCompInfo info = getInfoFor(child);
@@ -196,35 +210,37 @@ public abstract class AbstractPLayout implements PLayout {
 		if (child == null) {
 			return PSize.ZERO_SIZE;
 		}
-		return PCompUtil.getPreferredSizeOf(child);
+		return child.getPreferredSize();
 	}
 	
 	protected boolean constraintsAreEqual(Object constr1, Object constr2) {
 		return constr1 == null ? constr2 == null : constr1.equals(constr2);
 	}
 	
-	public void setDesign(PLayoutDesign design) {
-		this.design = design;
+	@Override
+	public void setStyle(PStyleLayout style) {
+		this.style = style;
 		invalidate();
 	}
 	
-	public PLayoutDesign getDesign() {
-		if (design != null) {
-			return design;
-		}
-		PRoot root = getOwner().getRoot();
-		if (root != null) {
-			return root.getDesignSheet().getDesignFor(this);
-		}
-		return null;
+	@Override
+	public PStyleLayout getStyle() {
+		return style;
 	}
 	
+	@Override
+	public Object getStyleID() {
+		return styleID;
+	}
+	
+	@Override
 	public void invalidate() {
 		pushState(DebugState.INVALIDATED);
 		invalidated = true;
 		fireInvalidateEvent();
 	}
 	
+	@Override
 	public void layOut() {
 		if (getOwner().getBounds().isEmpty()) {
 			return;
@@ -240,6 +256,7 @@ public abstract class AbstractPLayout implements PLayout {
 	
 	protected abstract void layOutInternal();
 	
+	@Override
 	public PSize getPreferredSize() {
 		if (invalidated) {
 			invalidated = false;
@@ -277,10 +294,12 @@ public abstract class AbstractPLayout implements PLayout {
 	 * Observers & Events
 	 */
 	
+	@Override
 	public void addObs(PLayoutObs obs) throws NullPointerException {
 		obsList.add(obs);
 	}
 	
+	@Override
 	public void removeObs(PLayoutObs obs) throws NullPointerException {
 		obsList.remove(obs);
 	}
@@ -301,6 +320,7 @@ public abstract class AbstractPLayout implements PLayout {
 		obsList.fireEvent((obs) -> obs.onLayoutInvalidated(this));
 	}
 	
+	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append(getClass().getSimpleName());
@@ -361,14 +381,15 @@ public abstract class AbstractPLayout implements PLayout {
 			super();
 			this.x = x;
 			this.y = y;
-			this.w = width;
-			this.h = height;
+			w = width;
+			h = height;
 		}
 		
 		protected void setX(int value) {
 			x = value;
 		}
 		
+		@Override
 		public int getX() {
 			return x;
 		}
@@ -377,6 +398,7 @@ public abstract class AbstractPLayout implements PLayout {
 			y = value;
 		}
 		
+		@Override
 		public int getY() {
 			return y;
 		}
@@ -385,6 +407,7 @@ public abstract class AbstractPLayout implements PLayout {
 			w = value;
 		}
 		
+		@Override
 		public int getWidth() {
 			return w;
 		}
@@ -393,6 +416,7 @@ public abstract class AbstractPLayout implements PLayout {
 			h = value;
 		}
 		
+		@Override
 		public int getHeight() {
 			return h;
 		}
@@ -402,13 +426,13 @@ public abstract class AbstractPLayout implements PLayout {
 //	private DebugState curState;
 //	private int stateCounter;
 //	private static int[] staticStateCounter = new int[DebugState.values().length];
-//	
+//
 	private void pushState(DebugState state) {
 		//FIXME: This is just for debugging purposes
 //		boolean wasOnInv = curState == DebugState.ON_INVALIDATED;
 //		boolean wasGPS = curState == DebugState.GET_PREF_SIZE;
-//		if (getClass() != PRootLayout.class 
-//				&& state == DebugState.LAYOUT && !(wasOnInv || wasGPS)) 
+//		if (getClass() != PRootLayout.class
+//				&& state == DebugState.LAYOUT && !(wasOnInv || wasGPS))
 //		{
 //			System.err.println("current="+curState+", next="+state);
 //		}

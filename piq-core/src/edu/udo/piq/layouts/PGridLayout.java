@@ -31,8 +31,8 @@ public class PGridLayout extends AbstractMapPLayout {
 	protected int countGrowCol;
 	protected int countGrowRow;
 	
-	public PGridLayout(PComponent component, 
-			int numberOfColumns, int numberOfRows) 
+	public PGridLayout(PComponent component,
+			int numberOfColumns, int numberOfRows)
 	{
 		super(component);
 		componentGrid = new PCompInfo[numberOfColumns * numberOfRows];
@@ -49,6 +49,7 @@ public class PGridLayout extends AbstractMapPLayout {
 		Arrays.fill(gapRow, DEFAULT_GAP_BETWEEN_ROWS);
 	}
 	
+	@Override
 	protected void onChildAdded(PComponent child, Object constraint) {
 		if (constraint instanceof String) {
 			constraint = new GridConstraint((String) constraint);
@@ -62,6 +63,7 @@ public class PGridLayout extends AbstractMapPLayout {
 		}
 	}
 	
+	@Override
 	protected void onChildRemoved(PComponent child, Object constraint) {
 		GridConstraint constr = (GridConstraint) constraint;
 		for (int cx = constr.x; cx < constr.x + constr.w; cx++) {
@@ -79,7 +81,7 @@ public class PGridLayout extends AbstractMapPLayout {
 	}
 	
 	public PInsets getInsets() {
-		return insets;
+		return getStyleAttribute(ATTRIBUTE_KEY_INSETS, insets);
 	}
 	
 	public int getColumnCount() {
@@ -105,7 +107,7 @@ public class PGridLayout extends AbstractMapPLayout {
 	}
 	
 	public Growth getColumnGrowth(int colIndex) {
-		ThrowException.ifNotWithin(growCols, colIndex, 
+		ThrowException.ifNotWithin(growCols, colIndex,
 				"colIndex < 0 || colIndex >= getColumnCount()");
 		return growCols[colIndex];
 	}
@@ -125,7 +127,7 @@ public class PGridLayout extends AbstractMapPLayout {
 	}
 	
 	public Growth getRowGrowth(int rowIndex) {
-		ThrowException.ifNotWithin(growRows, rowIndex, 
+		ThrowException.ifNotWithin(growRows, rowIndex,
 				"rowIndex < 0 || rowIndex >= getRowCount()");
 		return growRows[rowIndex];
 	}
@@ -144,7 +146,7 @@ public class PGridLayout extends AbstractMapPLayout {
 	}
 	
 	public int getGapAfterColumn(int colIndex) {
-		ThrowException.ifNotWithin(gapCol, colIndex, 
+		ThrowException.ifNotWithin(gapCol, colIndex,
 				"colIndex < 0 || colIndex >= getColumnCount()");
 		return gapCol[colIndex];
 	}
@@ -163,11 +165,12 @@ public class PGridLayout extends AbstractMapPLayout {
 	}
 	
 	public int getGapAfterRow(int rowIndex) {
-		ThrowException.ifNotWithin(gapRow, rowIndex, 
+		ThrowException.ifNotWithin(gapRow, rowIndex,
 				"rowIndex < 0 || rowIndex >= getRowCount()");
 		return gapRow[rowIndex];
 	}
 	
+	@Override
 	protected boolean canAdd(PComponent component, Object constraint) {
 		if (constraint == null) {
 			return false;
@@ -203,9 +206,9 @@ public class PGridLayout extends AbstractMapPLayout {
 	}
 	
 	public PComponent getCell(int cx, int cy) {
-		ThrowException.ifNotWithin(0, getColumnCount(), cx, 
+		ThrowException.ifNotWithin(0, getColumnCount(), cx,
 				"cx < 0 || cx >= getColumnCount()");
-		ThrowException.ifNotWithin(0, getRowCount(), cy, 
+		ThrowException.ifNotWithin(0, getRowCount(), cy,
 				"cy < 0 || cy >= getRowCount()");
 		PCompInfo info = getCellInternal(cx, cy);
 		if (info == null) {
@@ -222,6 +225,7 @@ public class PGridLayout extends AbstractMapPLayout {
 		return cx + cy * getColumnCount();
 	}
 	
+	@Override
 	protected void layOutInternal() {
 		PInsets insets = getInsets();
 		PBounds bounds = getOwner().getBounds();
@@ -279,6 +283,7 @@ public class PGridLayout extends AbstractMapPLayout {
 		}
 	}
 	
+	@Override
 	protected void onInvalidated() {
 		// Reset row and column sizes first
 		for (int cy = 0; cy < getRowCount(); cy++) {
@@ -295,10 +300,10 @@ public class PGridLayout extends AbstractMapPLayout {
 					continue;
 				}
 				GridConstraint constr = (GridConstraint) info.getConstraint();
-				/* 
-				 * A component can be placed in more than one cell if the width 
+				/*
+				 * A component can be placed in more than one cell if the width
 				 * and/or height of its constraint are larger than 1.
-				 * In this case we want to only count the component once so we 
+				 * In this case we want to only count the component once so we
 				 * filter them here.
 				 */
 				if (cx != constr.x || cy != constr.y) {
@@ -427,8 +432,8 @@ public class PGridLayout extends AbstractMapPLayout {
 			ThrowException.ifNull(alignV, "alignV == null");
 			this.x = x;
 			this.y = y;
-			this.w = width;
-			this.h = height;
+			w = width;
+			h = height;
 			this.alignH = alignH;
 			this.alignV = alignV;
 		}
@@ -505,6 +510,7 @@ public class PGridLayout extends AbstractMapPLayout {
 			return getAlignY();
 		}
 		
+		@Override
 		public String toString() {
 			StringBuilder builder = new StringBuilder();
 			builder.append(getClass().getSimpleName());
@@ -527,10 +533,10 @@ public class PGridLayout extends AbstractMapPLayout {
 	}
 	
 	public static enum Growth {
-		PREFERRED, 
+		PREFERRED,
 		MAXIMIZE,
 		;
-		public static final List<Growth> ALL = 
+		public static final List<Growth> ALL =
 				Collections.unmodifiableList(Arrays.asList(values()));
 		public static final int COUNT = ALL.size();
 	}

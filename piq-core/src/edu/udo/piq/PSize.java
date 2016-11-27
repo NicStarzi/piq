@@ -1,6 +1,7 @@
 package edu.udo.piq;
 
 import edu.udo.piq.tools.AbstractPSize;
+import edu.udo.piq.tools.ImmutablePSize;
 
 /**
  * This interface represents an abstract two dimensional size in 
@@ -47,6 +48,18 @@ public interface PSize {
 	
 	public default boolean isEmpty() {
 		return getWidth() * getHeight() < 1;
+	}
+	
+	public default PSize createCopyAndAdd(int width, int height) {
+		return new ImmutablePSize(getWidth() + width, getHeight() + height);
+	}
+	
+	public default PSize createCopyAndAdd(PSize other) {
+		return createCopyAndAdd(other.getWidth(), other.getHeight());
+	}
+	
+	public default PSize createCopyAndAdd(PInsets insets) {
+		return createCopyAndAdd(insets.getWidth(), insets.getHeight());
 	}
 	
 }

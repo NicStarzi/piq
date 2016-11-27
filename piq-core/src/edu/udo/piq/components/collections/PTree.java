@@ -34,8 +34,8 @@ import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
 import edu.udo.piq.util.ThrowException;
 
-public class PTree extends AbstractPInputLayoutOwner 
-	implements PDropComponent 
+public class PTree extends AbstractPInputLayoutOwner
+	implements PDropComponent
 {
 	
 	protected static final PColor BACKGROUND_COLOR = PColor.WHITE;
@@ -44,22 +44,22 @@ public class PTree extends AbstractPInputLayoutOwner
 	protected static final PColor DROP_HIGHLIGHT_COLOR = PColor.RED;
 	protected static final int DRAG_AND_DROP_DISTANCE = 20;
 	
-	public static final PKeyInput<PTree> INPUT_MOVE_UP = 
+	public static final PKeyInput<PTree> INPUT_MOVE_UP =
 			new DefaultPKeyInput<>(Key.UP, PTree::isKeyTriggerEnabled);
 	public static final Consumer<PTree> REACTION_MOVE_UP = PTree::onKeyTriggerUp;
 	public static final String INPUT_ID_MOVE_UP = "moveUp";
 	
-	public static final PKeyInput<PTree> INPUT_MOVE_DOWN = 
+	public static final PKeyInput<PTree> INPUT_MOVE_DOWN =
 			new DefaultPKeyInput<>(Key.DOWN, PTree::isKeyTriggerEnabled);
 	public static final Consumer<PTree> REACTION_MOVE_DOWN = PTree::onKeyTriggerDown;
 	public static final String INPUT_ID_MOVE_DOWN = "moveDown";
 	
-	public static final PKeyInput<PTree> INPUT_MOVE_RIGHT = 
+	public static final PKeyInput<PTree> INPUT_MOVE_RIGHT =
 			new DefaultPKeyInput<>(Key.RIGHT, PTree::isKeyTriggerEnabled);
 	public static final Consumer<PTree> REACTION_MOVE_RIGHT = PTree::onKeyTriggerRight;
 	public static final String INPUT_ID_MOVE_RIGHT = "moveRight";
 	
-	public static final PKeyInput<PTree> INPUT_MOVE_LEFT = 
+	public static final PKeyInput<PTree> INPUT_MOVE_LEFT =
 			new DefaultPKeyInput<>(Key.LEFT, PTree::isKeyTriggerEnabled);
 	public static final Consumer<PTree> REACTION_MOVE_LEFT = PTree::onKeyTriggerLeft;
 	public static final String INPUT_ID_MOVE_LEFT = "moveLeft";
@@ -70,23 +70,29 @@ public class PTree extends AbstractPInputLayoutOwner
 		= PCompUtil.createDefaultObserverList();
 	protected final Set<PTreeIndex> hiddenIdxSet = new HashSet<>();
 	protected final PSelectionObs selectionObs = new PSelectionObs() {
+		@Override
 		public void onSelectionAdded(PSelection selection, PModelIndex index) {
 			PTree.this.onSelectionAdded((PTreeIndex) index);
 		}
+		@Override
 		public void onSelectionRemoved(PSelection selection, PModelIndex index) {
 			PTree.this.onSelectionRemoved((PTreeIndex) index);
 		}
+		@Override
 		public void onLastSelectedChanged(PSelection sel, PModelIndex oldIdx, PModelIndex newIdx) {
 			PTree.this.onLastSelectedChanged(oldIdx, newIdx);
 		}
 	};
 	protected final PModelObs modelObs = new PModelObs() {
+		@Override
 		public void onContentAdded(PReadOnlyModel model, PModelIndex index, Object newContent) {
 			PTree.this.onContentAdded((PTreeIndex) index, newContent);
 		}
+		@Override
 		public void onContentRemoved(PReadOnlyModel model, PModelIndex index, Object oldContent) {
 			PTree.this.onContentRemoved((PTreeIndex) index, oldContent);
 		}
+		@Override
 		public void onContentChanged(PReadOnlyModel model, PModelIndex index, Object oldContent) {
 			PTree.this.onContentChanged((PTreeIndex) index, oldContent);
 		}
@@ -123,15 +129,19 @@ public class PTree extends AbstractPInputLayoutOwner
 		setModel(defaultModel);
 		
 		addObs(new PMouseObs() {
+			@Override
 			public void onButtonTriggered(PMouse mouse, MouseButton btn) {
 				PTree.this.onMouseButtonTriggred(mouse, btn);
 			}
+			@Override
 			public void onButtonPressed(PMouse mouse, MouseButton btn) {
 				PTree.this.onMouseButtonPressed(mouse, btn);
 			}
+			@Override
 			public void onButtonReleased(PMouse mouse, MouseButton btn) {
 				PTree.this.onMouseReleased(mouse, btn);
 			}
+			@Override
 			public void onMouseMoved(PMouse mouse) {
 				PTree.this.onMouseMoved(mouse);
 			}
@@ -144,7 +154,10 @@ public class PTree extends AbstractPInputLayoutOwner
 		defineInput(INPUT_ID_MOVE_RIGHT, INPUT_MOVE_RIGHT, REACTION_MOVE_RIGHT);
 	}
 	
+	@Override
 	protected void setLayout(PLayout layout) {
+		ThrowException.ifTypeCastFails(layout, PTreeLayout.class,
+				"(layout instanceof PTreeLayout) == false");
 		if (getLayoutInternal() != null) {
 			getLayoutInternal().removeObs(cellMoveObs);
 		}
@@ -199,6 +212,7 @@ public class PTree extends AbstractPInputLayoutOwner
 		}
 	}
 	
+	@Override
 	public PTreeSelection getSelection() {
 		return selection;
 	}
@@ -210,7 +224,7 @@ public class PTree extends AbstractPInputLayoutOwner
 				getModel().removeObs(obs);
 			}
 		}
-		this.model = treeModel;
+		model = treeModel;
 		getLayoutInternal().clearChildren();
 		if (getModel() != null) {
 			PTreeModel model = getModel();
@@ -225,6 +239,7 @@ public class PTree extends AbstractPInputLayoutOwner
 		}
 	}
 	
+	@Override
 	public PTreeModel getModel() {
 		return model;
 	}
@@ -249,10 +264,12 @@ public class PTree extends AbstractPInputLayoutOwner
 		dndSup = support;
 	}
 	
+	@Override
 	public PDnDSupport getDragAndDropSupport() {
 		return dndSup;
 	}
 	
+	@Override
 	public PTreeIndex getIndexAt(int x, int y) {
 		if (getModel() == null) {
 			return null;
@@ -265,6 +282,7 @@ public class PTree extends AbstractPInputLayoutOwner
 		return (PTreeIndex) layout.getChildConstraint(child);
 	}
 	
+	@Override
 	public PTreeIndex getDropIndex(int x, int y) {
 		if (getModel() == null) {
 			return null;
@@ -298,10 +316,11 @@ public class PTree extends AbstractPInputLayoutOwner
 		}
 	}
 	
+	@Override
 	public List<PModelIndex> getDragIndices() {
 		PSelection selection = getSelection();
-		if (getModel() == null || selection == null 
-				|| selection.getAllSelected().isEmpty()) 
+		if (getModel() == null || selection == null
+				|| selection.getAllSelected().isEmpty())
 		{
 			return Collections.emptyList();
 		}
@@ -312,7 +331,7 @@ public class PTree extends AbstractPInputLayoutOwner
 		if (isExpanded) {
 			if (!hiddenIdxSet.isEmpty()) {
 				hiddenIdxSet.clear();
-				addSubTree(PTreeIndex.ROOT);				
+				addSubTree(PTreeIndex.ROOT);
 			}
 		} else {
 			setIndexExpanded(PTreeIndex.ROOT, false);
@@ -350,6 +369,7 @@ public class PTree extends AbstractPInputLayoutOwner
 		return !hiddenIdxSet.contains(index);
 	}
 	
+	@Override
 	public void setDropHighlight(PModelIndex index) {
 		if (currentDnDHighlightCmp != null) {
 			currentDnDHighlightCmp.setDropHighlighted(false);
@@ -357,7 +377,7 @@ public class PTree extends AbstractPInputLayoutOwner
 		if (index == null) {
 			currentDnDHighlightIdx = null;
 		} else {
-			currentDnDHighlightIdx = ThrowException.ifTypeCastFails(index, PTreeIndex.class, 
+			currentDnDHighlightIdx = ThrowException.ifTypeCastFails(index, PTreeIndex.class,
 					"!(index instanceof PTreeIndex)");
 			
 			currentDnDHighlightCmp = getCellComponent((PTreeIndex) index);
@@ -368,7 +388,7 @@ public class PTree extends AbstractPInputLayoutOwner
 	}
 	
 	public boolean isDropHighlighted() {
-		return currentDnDHighlightCmp != null 
+		return currentDnDHighlightCmp != null
 				|| currentDnDHighlightIdx != null;
 	}
 	
@@ -376,6 +396,7 @@ public class PTree extends AbstractPInputLayoutOwner
 		return (PCellComponent) getLayoutInternal().getComponentAt(index);
 	}
 	
+	@Override
 	public void defaultRender(PRenderer renderer) {
 		PBounds bounds = getBounds();
 		int x = bounds.getX();
@@ -438,9 +459,9 @@ public class PTree extends AbstractPInputLayoutOwner
 	protected void defaultRenderDropHighlighting(PRenderer renderer) {
 		// The drop highlight above a node is already handled by the DefaultPCellComponent.
 		// This method only has to draw the drop highlight for nodes that do not exist yet.
-		// Those nodes are always the last children of their parent. 
-		if (currentDnDHighlightIdx != null 
-				&& currentDnDHighlightCmp == null) 
+		// Those nodes are always the last children of their parent.
+		if (currentDnDHighlightIdx != null
+				&& currentDnDHighlightCmp == null)
 		{
 			PTreeIndex childIndex = currentDnDHighlightIdx;
 			PTreeIndex parentIndex = childIndex.createParentIndex();
@@ -498,6 +519,7 @@ public class PTree extends AbstractPInputLayoutOwner
 		}
 	}
 	
+	@Override
 	public boolean isFocusable() {
 		return true;
 	}
@@ -573,7 +595,7 @@ public class PTree extends AbstractPInputLayoutOwner
 	protected void onContentAdded(PTreeIndex index, Object content) {
 //		System.out.println("--- ADD --- "+content+", idx="+index);
 		addContent(index, content);
-//		
+//
 //		System.out.println(getModel());
 //		getLayoutInternal().debug();
 	}
@@ -590,8 +612,8 @@ public class PTree extends AbstractPInputLayoutOwner
 		if (!isIndexVisible(index)) {
 			makeIndexVisible(index);
 			/*
-			 * When we make an index visible we change the tree structure. This will result in 
-			 * the selection being cleared. So we re-select the index right again. The onSelectionAdded 
+			 * When we make an index visible we change the tree structure. This will result in
+			 * the selection being cleared. So we re-select the index right again. The onSelectionAdded
 			 * method will then be called again with the index now being visible.
 			 */
 			getSelection().addSelection(index);
@@ -641,8 +663,8 @@ public class PTree extends AbstractPInputLayoutOwner
 	}
 	
 	protected static boolean isKeyTriggerEnabled(PTree self) {
-		return self.isEnabled() && self.getModel() != null 
-				&& self.getSelection() != null 
+		return self.isEnabled() && self.getModel() != null
+				&& self.getSelection() != null
 				&& self.getSelection().getLastSelected() != null;
 	}
 	
@@ -729,6 +751,7 @@ public class PTree extends AbstractPInputLayoutOwner
 		}
 	}
 	
+	@Override
 	public void addObs(PModelObs obs) {
 		obsListModel.add(obs);
 		if (getModel() != null) {
@@ -736,6 +759,7 @@ public class PTree extends AbstractPInputLayoutOwner
 		}
 	}
 	
+	@Override
 	public void removeObs(PModelObs obs) {
 		obsListModel.remove(obs);
 		if (getModel() != null) {
@@ -743,6 +767,7 @@ public class PTree extends AbstractPInputLayoutOwner
 		}
 	}
 	
+	@Override
 	public void addObs(PSelectionObs obs) {
 		obsListSelection.add(obs);
 		if (getSelection() != null) {
@@ -750,6 +775,7 @@ public class PTree extends AbstractPInputLayoutOwner
 		}
 	}
 	
+	@Override
 	public void removeObs(PSelectionObs obs) {
 		obsListSelection.remove(obs);
 		if (getSelection() != null) {

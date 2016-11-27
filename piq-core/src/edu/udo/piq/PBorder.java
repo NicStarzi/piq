@@ -1,38 +1,42 @@
 package edu.udo.piq;
 
-import edu.udo.piq.layouts.PBorderLayout;
-
-/**
- * A {@link PBorder} is a special kind of {@link PComponent} that can be 
- * used to draw borders around components.<br>
- * A border traditionally belongs to one component that the border will 
- * be drawn around, this component is called the content of the border.<br>
- * Implementations of this interface usually use a {@link PBorderLayout} 
- * as their layout but are not needed to.<br> 
- * 
- * @author Nic Starzi
- */
-public interface PBorder extends PComponent {
+public interface PBorder extends PStyleable<PStyleBorder> {
 	
-	/**
-	 * Sets the {@link PComponent} that this border should be drawn 
-	 * around of.<br>
-	 * This can be null in which case this border is drawn around an 
-	 * empty space.<br>
-	 * 
-	 * @param component the content for this border
-	 * @see #getContent()
-	 */
-	public void setContent(PComponent component);
+	public PInsets getDefaultInsets(PComponent component);
 	
-	/**
-	 * The {@link PComponent} that this border belongs to.<br>
-	 * This can be null in which case the border should be drawn around 
-	 * an empty space.<br>
-	 * 
-	 * @return the component this border belongs to
-	 * @see #setContent(PComponent)
-	 */
-	public PComponent getContent();
+	public default PInsets getInsets(PComponent component) {
+		PStyleBorder style = getStyle();
+		if (style == null) {
+			return getDefaultInsets(component);
+		} else {
+			return style.getInsetsFor(this, component);
+		}
+	}
+	
+	public void defaultRender(PRenderer renderer, PComponent component);
+	
+	public default void render(PRenderer renderer, PComponent component) {
+		PStyleBorder style = getStyle();
+		if (style == null) {
+			defaultRender(renderer, component);
+		} else {
+			style.render(renderer, this, component);
+		}
+	}
+	
+	public boolean defaultFillsAllPixels(PComponent component);
+	
+	public default boolean fillsAllPixels(PComponent component) {
+		PStyleBorder style = getStyle();
+		if (style == null) {
+			return defaultFillsAllPixels(component);
+		} else {
+			return style.fillsAllPixels(this, component);
+		}
+	}
+	
+	public void addObs(PBorderObs obs);
+	
+	public void removeObs(PBorderObs obs);
 	
 }

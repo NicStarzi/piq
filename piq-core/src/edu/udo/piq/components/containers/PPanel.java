@@ -1,28 +1,20 @@
 package edu.udo.piq.components.containers;
 
-import edu.udo.piq.PColor;
-import edu.udo.piq.PRenderer;
-import edu.udo.piq.PSize;
+import edu.udo.piq.PLayout;
 import edu.udo.piq.tools.AbstractPContainer;
-import edu.udo.piq.tools.ImmutablePSize;
+import edu.udo.piq.tools.AbstractPLayoutOwner;
 
-public class PPanel extends AbstractPContainer {
-	
-	protected static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(20, 20);
+public class PPanel extends AbstractPContainer<Object> {
 	
 	public PPanel() {
 		super();
 	}
 	
-	public void defaultRender(PRenderer renderer) {
-		renderer.setColor(PColor.GREY75);
-		renderer.drawQuad(getBounds());
-	}
-	
-	public PSize getDefaultPreferredSize() {
-		if (getLayout() != null) {
-			return getLayout().getPreferredSize();
-		}
-		return DEFAULT_PREFERRED_SIZE;
+	/**
+	 * Makes the protected method from {@link AbstractPLayoutOwner} 
+	 * public to give access to the user.<br>
+	 */
+	public void setLayout(PLayout layout) {
+		super.setLayout(layout);
 	}
 }

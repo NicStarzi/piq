@@ -1,7 +1,7 @@
 package edu.udo.piq.tutorial;
 
 import edu.udo.piq.components.containers.PPanel;
-import edu.udo.piq.layouts.PCentricLayout;
+import edu.udo.piq.layouts.PAnchorLayout;
 import edu.udo.piq.swing.tests.AbstractSwingPTest;
 
 public class TestClickSpeedTester extends AbstractSwingPTest {
@@ -14,9 +14,10 @@ public class TestClickSpeedTester extends AbstractSwingPTest {
 		super(480, 320);
 	}
 	
+	@Override
 	public void buildGUI() {
 		PPanel body = new PPanel();
-		body.setLayout(new PCentricLayout(body));
+		body.setLayout(new PAnchorLayout(body));
 		root.setBody(body);
 		
 		ClickSpeedTester tester = new ClickSpeedTester();

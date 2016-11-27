@@ -2,33 +2,37 @@ package edu.udo.piq.tools;
 
 import java.util.Collection;
 
+import edu.udo.piq.PBorder;
+import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PLayout;
+import edu.udo.piq.PRenderer;
+import edu.udo.piq.PSize;
 
-public abstract class AbstractPContainer extends AbstractPLayoutOwner {
+public abstract class AbstractPContainer<CONSTRAINT_CLASS> extends AbstractPLayoutOwner {
 	
-	/**
-	 * Makes the protected method from {@link AbstractPLayoutOwner} 
-	 * public to give access to the user.<br>
-	 */
-	public void setLayout(PLayout layout) {
-		super.setLayout(layout);
-	}
+	protected static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(20, 20);
 	
+	@Override
 	public PLayout getLayout() {
 		return (PLayout) super.getLayout();
 	}
 	
+	@Override
+	public void setBorder(PBorder border) {
+		super.setBorder(border);
+	}
+	
 	/**
-	 * Delegates to the layout of this container.<br> 
+	 * Delegates to the layout of this container.<br>
 	 * This method exists solely for convenience.<br>
 	 * @param component		the component that will be added as a child
-	 * @param constraint	the constraint used to add the child. 
+	 * @param constraint	the constraint used to add the child.
 	 * 						Valid constraints depend on the layout being used.
 	 * @see #getLayout()
 	 * @see PLayout#addChild(PComponent, Object)
 	 */
-	public void addChild(PComponent component, Object constraint) {
+	public void addChild(PComponent component, CONSTRAINT_CLASS constraint) {
 		getLayout().addChild(component, constraint);
 	}
 	
@@ -36,7 +40,7 @@ public abstract class AbstractPContainer extends AbstractPLayoutOwner {
 		getLayout().removeChild(component);
 	}
 	
-	public void removeChild(Object constraint) {
+	public void removeChild(CONSTRAINT_CLASS constraint) {
 		getLayout().removeChild(constraint);
 	}
 	
@@ -45,11 +49,16 @@ public abstract class AbstractPContainer extends AbstractPLayoutOwner {
 	}
 	
 	/**
-	 * Makes the protected method from {@link AbstractPLayoutOwner} 
+	 * Makes the protected method from {@link AbstractPLayoutOwner}
 	 * public to give access to the user.<br>
 	 */
+	@Override
 	public Collection<PComponent> getChildren() {
 		return super.getChildren();
+	}
+	
+	public PComponent getChildForConstraint(CONSTRAINT_CLASS constraint) {
+		return getLayout().getChildForConstraint(constraint);
 	}
 	
 	public int getChildCount() {
@@ -57,11 +66,23 @@ public abstract class AbstractPContainer extends AbstractPLayoutOwner {
 	}
 	
 	/**
-	 * Makes the protected method from {@link AbstractPLayoutOwner} 
+	 * Makes the protected method from {@link AbstractPLayoutOwner}
 	 * public to give access to the user.<br>
 	 */
+	@Override
 	public boolean hasChildren() {
 		return super.hasChildren();
+	}
+	
+	@Override
+	public void defaultRender(PRenderer renderer) {
+		renderer.setColor(PColor.GREY75);
+		renderer.drawQuad(getBoundsWithoutBorder());
+	}
+	
+	@Override
+	protected PSize getConstantDefaultPreferredSize() {
+		return DEFAULT_PREFERRED_SIZE;
 	}
 	
 }

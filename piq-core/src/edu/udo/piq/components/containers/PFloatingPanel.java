@@ -5,7 +5,7 @@ import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRootOverlay;
-import edu.udo.piq.layouts.PCentricLayout;
+import edu.udo.piq.layouts.PAnchorLayout;
 import edu.udo.piq.layouts.PFreeLayout;
 import edu.udo.piq.util.ThrowException;
 
@@ -17,7 +17,7 @@ public class PFloatingPanel extends AbstractPFloatingPanel {
 	
 	public PFloatingPanel() {
 		super();
-		setLayout(new PCentricLayout(this));
+		setLayout(new PAnchorLayout(this));
 	}
 	
 	public void setLocation(int posX, int posY) {
@@ -43,14 +43,17 @@ public class PFloatingPanel extends AbstractPFloatingPanel {
 		return target;
 	}
 	
+	@Override
 	public int getOverlayPositionX() {
 		return showX;
 	}
 	
+	@Override
 	public int getOverlayPositionY() {
 		return showY;
 	}
 	
+	@Override
 	public PRootOverlay getOverlay() {
 		PComponent target = getTargetComponent();
 		if (target == null || target.getRoot() == null) {
@@ -59,6 +62,7 @@ public class PFloatingPanel extends AbstractPFloatingPanel {
 		return target.getRoot().getOverlay();
 	}
 	
+	@Override
 	public PFreeLayout getOverlayLayout() {
 		return super.getOverlayLayout();
 	}
@@ -75,6 +79,7 @@ public class PFloatingPanel extends AbstractPFloatingPanel {
 		}
 	}
 	
+	@Override
 	public void defaultRender(PRenderer renderer) {
 		PBounds bnds = getBounds();
 		int x = bnds.getX();

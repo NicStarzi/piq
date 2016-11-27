@@ -7,7 +7,7 @@ import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.components.containers.PTabComponent;
-import edu.udo.piq.layouts.PCentricLayout;
+import edu.udo.piq.layouts.PAnchorLayout;
 
 public class DefaultPTabComponent extends PPanel implements PTabComponent {
 	
@@ -16,18 +16,21 @@ public class DefaultPTabComponent extends PPanel implements PTabComponent {
 	private int index = -1;
 	
 	public DefaultPTabComponent() {
-		setLayout(new PCentricLayout(this));
+		setLayout(new PAnchorLayout(this));
 	}
 	
+	@Override
 	public void setSelected(boolean selected) {
 		this.selected = selected;
 		fireReRenderEvent();
 	}
 	
+	@Override
 	public boolean isSelected() {
 		return selected;
 	}
 	
+	@Override
 	public void setPreview(PComponent component) {
 		if (preview != null) {
 			getLayout().removeChild(preview);
@@ -39,19 +42,23 @@ public class DefaultPTabComponent extends PPanel implements PTabComponent {
 		fireReRenderEvent();
 	}
 	
+	@Override
 	public PComponent getPreview() {
 		return preview;
 	}
 	
+	@Override
 	public void setIndex(int index) {
 		this.index = index;
 		fireReRenderEvent();
 	}
 	
+	@Override
 	public int getIndex() {
 		return index;
 	}
 	
+	@Override
 	public void defaultRender(PRenderer renderer) {
 		PBounds bnds = getBounds();
 		int x = bnds.getX();
@@ -75,6 +82,7 @@ public class DefaultPTabComponent extends PPanel implements PTabComponent {
 		}
 	}
 	
+	@Override
 	public PSize getDefaultPreferredSize() {
 		if (getLayout() != null) {
 			return getLayout().getPreferredSize();

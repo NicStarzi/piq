@@ -11,36 +11,42 @@ import edu.udo.piq.PSize;
 import edu.udo.piq.scroll.PScrollBarLayout.Orientation;
 import edu.udo.piq.scroll.PScrollPanelLayout.Constraint;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
-import edu.udo.piq.util.PCompUtil;
 
 public class PScrollPanel extends AbstractPLayoutOwner {
 	
 	private final PScrollBarModelObs modelObs = new PScrollBarModelObs() {
+		@Override
 		public void sizeChanged(PScrollBarModel model, int oldValue, int newValue) {
 //			System.out.println("scrollPanel.sizeChanged="+newValue);
 			fireReLayOutEvent();
 		}
+		@Override
 		public void scrollChanged(PScrollBarModel model, double oldValue, double newValue) {
 //			System.out.println("scrollPanel.scrollChanged="+newValue);
 			fireReLayOutEvent();
 		}
+		@Override
 		public void preferredSizeChanged(PScrollBarModel model, int oldValue, int newValue) {
 //			System.out.println("scrollPanel.preferredSizeChanged="+newValue);
 			fireReLayOutEvent();
 		}
 	};
 	private final PComponentObs bodyObs = new PComponentObs() {
+		@Override
 		public void onPreferredSizeChanged(PComponent component) {
 			refreshPrefSize();
 		}
 	};
 	private final PLayoutObs layoutObs = new PLayoutObs() {
+		@Override
 		public void onChildAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
 			setChild(child, (Constraint) constraint);
 		}
+		@Override
 		public void onChildRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
 			setChild(null, (Constraint) constraint);
 		}
+		@Override
 		public void onChildLaidOut(PReadOnlyLayout layout, PComponent child, Object constraint) {
 			if (constraint == Constraint.BODY) {
 				refreshSize();
@@ -62,6 +68,7 @@ public class PScrollPanel extends AbstractPLayoutOwner {
 		setVerticalScrollBar(new PScrollBar());
 		
 		addObs(new PComponentObs() {
+			@Override
 			public void onBoundsChanged(PComponent component) {
 				refreshSize();
 			}
@@ -194,7 +201,7 @@ public class PScrollPanel extends AbstractPLayoutOwner {
 			prefW = 0;
 			prefH = 0;
 		} else {
-			PSize prefSize = PCompUtil.getPreferredSizeOf(body);
+			PSize prefSize = body.getPreferredSize();
 			prefW = prefSize.getWidth();
 			prefH = prefSize.getHeight();
 		}
@@ -208,6 +215,7 @@ public class PScrollPanel extends AbstractPLayoutOwner {
 		}
 	}
 	
+	@Override
 	public void defaultRender(PRenderer renderer) {
 		PBounds bnds = getBounds();
 		
@@ -215,10 +223,12 @@ public class PScrollPanel extends AbstractPLayoutOwner {
 		renderer.drawQuad(bnds);
 	}
 	
+	@Override
 	public PSize getDefaultPreferredSize() {
 		return getLayout().getPreferredSize();
 	}
 	
+	@Override
 	public boolean defaultFillsAllPixels() {
 		return true;
 	}

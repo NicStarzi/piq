@@ -12,7 +12,7 @@ import edu.udo.piq.components.PClickObs;
 import edu.udo.piq.components.PClickable;
 import edu.udo.piq.components.PIconLabel;
 import edu.udo.piq.components.PPicture;
-import edu.udo.piq.layouts.PCentricLayout;
+import edu.udo.piq.layouts.PAnchorLayout;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.util.ObserverList;
@@ -32,7 +32,7 @@ public class PPopupButton extends AbstractPLayoutOwner implements PPopupComponen
 	protected boolean highlighted;
 	
 	public PPopupButton(Object iconImgID, Object labelModelValue) {
-		this(new PIconLabel(new PPicture(iconImgID), 
+		this(new PIconLabel(new PPicture(iconImgID),
 				new PPopupLabel(labelModelValue)));
 	}
 	
@@ -47,35 +47,41 @@ public class PPopupButton extends AbstractPLayoutOwner implements PPopupComponen
 	
 	public PPopupButton() {
 		super();
-		setLayout(new PCentricLayout(this));
+		setLayout(new PAnchorLayout(this));
 		getLayoutInternal().setInsets(new ImmutablePInsets(1));
 		
 		addObs(new PMouseObs() {
+			@Override
 			public void onMouseMoved(PMouse mouse) {
 				PPopupButton.this.onMouseMoved(mouse);
 			}
+			@Override
 			public void onButtonTriggered(PMouse mouse, MouseButton btn) {
 				PPopupButton.this.onMouseButtonTriggered(mouse, btn);
 			}
+			@Override
 			public void onButtonPressed(PMouse mouse, MouseButton btn) {
 				PPopupButton.this.onMouseButtonPressed(mouse, btn);
 			}
+			@Override
 			public void onButtonReleased(PMouse mouse, MouseButton btn) {
 				PPopupButton.this.onMouseButtonReleased(mouse, btn);
 			}
 		});
 	}
 	
+	@Override
 	public void setGlobalEventProvider(PGlobalEventProvider provider) {
 		globEvProv = provider;
 	}
 	
+	@Override
 	public PGlobalEventProvider getGlobalEventProvider() {
 		return globEvProv;
 	}
 	
-	protected PCentricLayout getLayoutInternal() {
-		return (PCentricLayout) super.getLayout();
+	protected PAnchorLayout getLayoutInternal() {
+		return (PAnchorLayout) super.getLayout();
 	}
 	
 	public void setContent(PComponent component) {
@@ -96,6 +102,7 @@ public class PPopupButton extends AbstractPLayoutOwner implements PPopupComponen
 		}
 	}
 	
+	@Override
 	public void setHighlighted(boolean value) {
 		if (highlighted != value) {
 			highlighted = value;
@@ -106,6 +113,7 @@ public class PPopupButton extends AbstractPLayoutOwner implements PPopupComponen
 		}
 	}
 	
+	@Override
 	public boolean isHighlighted() {
 		return highlighted;
 	}
@@ -121,6 +129,7 @@ public class PPopupButton extends AbstractPLayoutOwner implements PPopupComponen
 		return pressed;
 	}
 	
+	@Override
 	public void setEnabled(boolean isEnabled) {
 		if (enabled != isEnabled) {
 			enabled = isEnabled;
@@ -133,14 +142,17 @@ public class PPopupButton extends AbstractPLayoutOwner implements PPopupComponen
 		}
 	}
 	
+	@Override
 	public boolean isEnabled() {
 		return enabled;
 	}
 	
+	@Override
 	public boolean isFocusable() {
 		return false;
 	}
 	
+	@Override
 	public void defaultRender(PRenderer renderer) {
 		if (isHighlighted()) {
 			renderer.setColor(getHighlightColor());
@@ -149,6 +161,7 @@ public class PPopupButton extends AbstractPLayoutOwner implements PPopupComponen
 		}
 	}
 	
+	@Override
 	public boolean defaultFillsAllPixels() {
 		return isHighlighted();
 	}
@@ -165,7 +178,7 @@ public class PPopupButton extends AbstractPLayoutOwner implements PPopupComponen
 	}
 	
 	protected void onMouseButtonTriggered(PMouse mouse, MouseButton btn) {
-		if (isEnabled() && btn == MouseButton.LEFT 
+		if (isEnabled() && btn == MouseButton.LEFT
 				&& isMouseOverThisOrChild())
 		{
 			setPressed(true);
@@ -182,6 +195,7 @@ public class PPopupButton extends AbstractPLayoutOwner implements PPopupComponen
 		}
 	}
 	
+	@Override
 	protected void onChildAdded(PComponent child, Object constraint) {
 		if (child instanceof PPopupComponent) {
 			PPopupComponent popupChild = (PPopupComponent) child;
@@ -191,6 +205,7 @@ public class PPopupButton extends AbstractPLayoutOwner implements PPopupComponen
 		}
 	}
 	
+	@Override
 	protected void onChildRemoved(PComponent child, Object constraint) {
 		if (child instanceof PPopupComponent) {
 			PPopupComponent popupChild = (PPopupComponent) child;
@@ -200,6 +215,7 @@ public class PPopupButton extends AbstractPLayoutOwner implements PPopupComponen
 		}
 	}
 	
+	@Override
 	public void addObs(PPopupComponentObs obs) {
 		obsListPopup.add(obs);
 		if (getContent() != null && getContent() instanceof PPopupComponent) {
@@ -208,6 +224,7 @@ public class PPopupButton extends AbstractPLayoutOwner implements PPopupComponen
 		}
 	}
 	
+	@Override
 	public void removeObs(PPopupComponentObs obs) {
 		if (getContent() != null && getContent() instanceof PPopupComponent) {
 			PPopupComponent popupChild = (PPopupComponent) getContent();

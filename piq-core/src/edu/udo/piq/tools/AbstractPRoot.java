@@ -4,16 +4,16 @@ import java.util.ArrayDeque;
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
+import edu.udo.piq.PBorder;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PClipboard;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PComponentObs;
 import edu.udo.piq.PCursor;
-import edu.udo.piq.PDesign;
-import edu.udo.piq.PDesignSheet;
 import edu.udo.piq.PDnDManager;
 import edu.udo.piq.PDnDSupport;
 import edu.udo.piq.PFocusObs;
@@ -27,8 +27,10 @@ import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
+import edu.udo.piq.PRootObs;
 import edu.udo.piq.PRootOverlay;
 import edu.udo.piq.PSize;
+import edu.udo.piq.PStyleSheet;
 import edu.udo.piq.PTimer;
 import edu.udo.piq.components.containers.DefaultPRootOverlay;
 import edu.udo.piq.components.containers.PPanel;
@@ -58,35 +60,40 @@ public abstract class AbstractPRoot implements PRoot {
 	
 	protected final ObserverList<PGlobalEventObs> globalObsList
 			= PCompUtil.createDefaultObserverList();
+	protected final ObserverList<PRootObs> rootObsList
+		= PCompUtil.createDefaultObserverList();
 	protected final PRootLayout layout;
-	protected PDesignSheet designSheet = new AbstractPDesignSheet();
+	protected PStyleSheet styleSheet = new AbstractPStyleSheet();
 	protected PMouse mouse;
 	protected PKeyboard keyboard;
 	protected PClipboard clipboard;
 	protected PDnDManager dndManager;
 	
 	protected final PLayoutObs layoutObs = new PLayoutObs() {
+		@Override
 		public void onLayoutInvalidated(PReadOnlyLayout layout) {
 			reLayOut(AbstractPRoot.this);
 		}
+		@Override
 		public void onChildRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
 			reLayOut(AbstractPRoot.this);
 		}
+		@Override
 		public void onChildAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
 			reLayOut(AbstractPRoot.this);
 			reLayOut(child);
 		}
 	};
+	protected final ObserverList<PComponentObs> compObsList
+		= PCompUtil.createDefaultObserverList();
+	protected final ObserverList<PFocusObs> focusObsList
+		= PCompUtil.createDefaultObserverList();
 	protected final Set<PTimer> timerSet = new HashSet<>();
 	protected final Set<PTimer> timersToAdd = new HashSet<>();
 	protected final Set<PTimer> timersToRemove = new HashSet<>();
 	protected Set<PComponent> reLayOutCompsFront = new TreeSet<>(COMPONENT_COMPARATOR);
 	protected Set<PComponent> reLayOutCompsBack = new TreeSet<>(COMPONENT_COMPARATOR);
 	protected final ReRenderSet reRenderSet = new ReRenderSet(this);
-	protected final ObserverList<PComponentObs> compObsList
-		= PCompUtil.createDefaultObserverList();
-	protected final ObserverList<PFocusObs> focusObsList
-		= PCompUtil.createDefaultObserverList();
 	protected PFocusTraversal focusTrav = new DefaultPFocusTraversal(this);
 	protected PComponent focusOwner;
 	protected String id;
@@ -111,6 +118,7 @@ public abstract class AbstractPRoot implements PRoot {
 		reLayOutAll(DEFAULT_MAX_LAYOUT_ITERATION_COUNT);
 	}
 	
+	@Override
 	public void reLayOut() {
 		if (needReLayout) {
 			getLayout().invalidate();
@@ -119,6 +127,7 @@ public abstract class AbstractPRoot implements PRoot {
 		}
 	}
 	
+	@Override
 	public void reLayOut(PComponent component) {
 //		System.out.println("reLayOut "+component);
 		reLayOutCompsFront.add(component);
@@ -163,11 +172,14 @@ public abstract class AbstractPRoot implements PRoot {
 //		}
 	}
 	
+	@Override
 	public void reRender(PComponent component) {
 		reRenderSet.add(component);
 	}
 	
-	protected void defaultRootRender(PRenderer renderer, int rootClipX, int rootClipY, int rootClipFx, int rootClipFy) {
+	protected void defaultRootRender(PRenderer renderer,
+			int rootClipX, int rootClipY, int rootClipFx, int rootClipFy)
+	{
 //		System.out.println("### defaultRootRender ###");
 		Deque<RenderStackInfo> stack = createRenderStack(rootClipX, rootClipY, rootClipFx, rootClipFy);
 		
@@ -192,7 +204,7 @@ public abstract class AbstractPRoot implements PRoot {
 			if (layout != null) {
 				for (PComponent child : layout.getChildren()) {
 					/*
-					 * We need to addLast to make sure children are rendered after their parents 
+					 * We need to addLast to make sure children are rendered after their parents
 					 * and before any siblings of the parent will be rendered. (we call pollLast)
 					 * Do NOT change to addFirst!
 					 */
@@ -221,7 +233,7 @@ public abstract class AbstractPRoot implements PRoot {
 				// We check to see whether the component is still part of this GUI tree (might have been removed by now)
 				if (child.getRoot() == this) {
 					PBounds clipBnds = PCompUtil.fillClippedBounds(tmpBnds, child);
-					// If the clipped bounds are null the component is completely 
+					// If the clipped bounds are null the component is completely
 					// concealed and does not need to be rendered
 					if (clipBnds == null) {
 						continue;
@@ -245,16 +257,20 @@ public abstract class AbstractPRoot implements PRoot {
 		return stack;
 	}
 	
-	private void renderComponent(PRenderer renderer, PComponent comp, 
-			int clipX, int clipY, int clipW, int clipH) 
+	private void renderComponent(PRenderer renderer, PComponent comp,
+			int clipX, int clipY, int clipW, int clipH)
 	{
 		renderer.setClipBounds(clipX, clipY, clipW, clipH);
 //		System.out.println("clip="+clipX+", "+clipY+", "+clipW+", "+clipH);
 		
+		PBorder border = comp.getBorder();
+		if (border != null) {
+			border.render(renderer, comp);
+		}
+		
 		renderer.setRenderMode(renderer.getRenderModeFill());
 		renderer.setColor1(1, 1, 1, 1);
-		PDesign design = comp.getDesign();
-		design.render(renderer, comp);
+		comp.render(renderer);
 	}
 	
 	protected static class RenderStackInfo {
@@ -264,8 +280,8 @@ public abstract class AbstractPRoot implements PRoot {
 		public final int clipFx;
 		public final int clipFy;
 		
-		public RenderStackInfo(PComponent child, int clipX, 
-				int clipY, int clipFx, int clipFy) 
+		public RenderStackInfo(PComponent child, int clipX,
+				int clipY, int clipFx, int clipFy)
 		{
 			this.child = child;
 			this.clipX = clipX;
@@ -274,6 +290,7 @@ public abstract class AbstractPRoot implements PRoot {
 			this.clipFy = clipFy;
 		}
 		
+		@Override
 		public String toString() {
 			return child.toString();
 		}
@@ -283,10 +300,12 @@ public abstract class AbstractPRoot implements PRoot {
 	 * Focus, Layout and Input
 	 */
 	
+	@Override
 	public PComponent getFocusOwner() {
 		return focusOwner;
 	}
 	
+	@Override
 	public void setFocusOwner(PComponent component) {
 		PComponent oldOwner = getFocusOwner();
 		if (component == oldOwner) {
@@ -304,32 +323,49 @@ public abstract class AbstractPRoot implements PRoot {
 		}
 	}
 	
+	@Override
 	public PRootLayout getLayout() {
 		return layout;
 	}
 	
-	protected void setDesignSheet(PDesignSheet designSheet) {
-		this.designSheet = designSheet;
+	protected void setStyleSheet(PStyleSheet styleSheet) {
+		PStyleSheet oldStyleSheet = getStyleSheet();
+		if (Objects.equals(oldStyleSheet, styleSheet)) {
+			return;
+		}
+		if (oldStyleSheet != null) {
+			oldStyleSheet.setRoot(null);
+		}
+		this.styleSheet = styleSheet;
+		if (getStyleSheet() != null) {
+			getStyleSheet().setRoot(this);
+		}
+		fireStyleSheetChanged(oldStyleSheet);
 		reLayOut(this);
 		reRender(this);
 	}
 	
-	public PDesignSheet getDesignSheet() {
-		return designSheet;
+	@Override
+	public PStyleSheet getStyleSheet() {
+		return styleSheet;
 	}
 	
+	@Override
 	public PMouse getMouse() {
 		return mouse;
 	}
 	
+	@Override
 	public PKeyboard getKeyboard() {
 		return keyboard;
 	}
 	
+	@Override
 	public PClipboard getClipboard() {
 		return clipboard;
 	}
 	
+	@Override
 	public PDnDManager getDragAndDropManager() {
 		return dndManager;
 	}
@@ -338,6 +374,7 @@ public abstract class AbstractPRoot implements PRoot {
 	 * Timers
 	 */
 	
+	@Override
 	public void registerTimer(PTimer timer) throws NullPointerException {
 		if (timer == null) {
 			throw new NullPointerException("timer="+timer);
@@ -349,6 +386,7 @@ public abstract class AbstractPRoot implements PRoot {
 		}
 	}
 	
+	@Override
 	public void unregisterTimer(PTimer timer) throws NullPointerException {
 		if (timer == null) {
 			throw new NullPointerException("timer="+timer);
@@ -364,40 +402,48 @@ public abstract class AbstractPRoot implements PRoot {
 	 * Observers and Events
 	 */
 	
+	@Override
 	public void addObs(PComponentObs obs) throws NullPointerException {
 		compObsList.add(obs);
 	}
 	
+	@Override
 	public void removeObs(PComponentObs obs) throws NullPointerException {
 		compObsList.remove(obs);
 	}
 	
+	@Override
 	public void addObs(PFocusObs obs) throws NullPointerException {
 		focusObsList.add(obs);
 	}
 	
+	@Override
 	public void removeObs(PFocusObs obs) throws NullPointerException {
 		focusObsList.remove(obs);
 	}
 	
+	@Override
 	public void addObs(PMouseObs obs) {
 		if (getMouse() != null) {
 			getMouse().addObs(obs);
 		}
 	}
 	
+	@Override
 	public void removeObs(PMouseObs obs) {
 		if (getMouse() != null) {
 			getMouse().removeObs(obs);
 		}
 	}
 	
+	@Override
 	public void addObs(PKeyboardObs obs) {
 		if (getKeyboard() != null) {
 			getKeyboard().addObs(obs);
 		}
 	}
 	
+	@Override
 	public void removeObs(PKeyboardObs obs) {
 		if (getKeyboard() != null) {
 			getKeyboard().removeObs(obs);
@@ -421,24 +467,58 @@ public abstract class AbstractPRoot implements PRoot {
 				oldFocusOwner));
 	}
 	
+	@Override
 	public void fireGlobalEvent(PComponent source, Object eventData)
-			throws NullPointerException 
+			throws NullPointerException
 	{
 		globalObsList.fireEvent((obs) -> obs.onGlobalEvent(source, eventData));
 	}
 	
-	public void addObs(PGlobalEventObs obs) throws NullPointerException {
+	@Override
+	public void addObs(PGlobalEventObs obs) {
 		globalObsList.add(obs);
 	}
 	
-	public void removeObs(PGlobalEventObs obs) throws NullPointerException {
+	@Override
+	public void removeObs(PGlobalEventObs obs) {
 		globalObsList.remove(obs);
+	}
+	
+	@Override
+	public void addObs(PRootObs obs) {
+		rootObsList.add(obs);
+	}
+	
+	@Override
+	public void removeObs(PRootObs obs) {
+		rootObsList.remove(obs);
+	}
+	
+	@Override
+	public void fireComponentAddedToGui(PComponent addedComponent) {
+		rootObsList.fireEvent(obs ->
+			obs.onComponentAddedToGui(addedComponent));
+	}
+	
+	@Override
+	public void fireComponentRemovedFromGui(PComponent parent,
+			PComponent removedComponent)
+	{
+		rootObsList.fireEvent(obs ->
+			obs.onComponentRemovedFromGui(parent, removedComponent));
+	}
+	
+	@Override
+	public void fireStyleSheetChanged(PStyleSheet oldStyleSheet) {
+		rootObsList.fireEvent(obs ->
+			obs.onStyleSheetChanged(AbstractPRoot.this, oldStyleSheet));
 	}
 	
 	/*
 	 * Uninteresting methods from component
 	 */
 	
+	@Override
 	public PRoot getRoot() {
 		return this;
 	}
@@ -447,6 +527,7 @@ public abstract class AbstractPRoot implements PRoot {
 		focusTrav = focusTraversal;
 	}
 	
+	@Override
 	public PFocusTraversal getFocusTraversal() {
 		return focusTrav;
 	}
@@ -454,6 +535,7 @@ public abstract class AbstractPRoot implements PRoot {
 	/**
 	 * Always returns null by default.<br>
 	 */
+	@Override
 	public PDnDSupport getDragAndDropSupport() {
 		return null;
 	}
@@ -461,6 +543,7 @@ public abstract class AbstractPRoot implements PRoot {
 	/**
 	 * Always returns zero by default.
 	 */
+	@Override
 	public int getDepth() {
 		return 0;
 	}
@@ -468,6 +551,7 @@ public abstract class AbstractPRoot implements PRoot {
 	/**
 	 * Always returns null by default.
 	 */
+	@Override
 	public PComponent getParent() {
 		return null;
 	}
@@ -476,6 +560,7 @@ public abstract class AbstractPRoot implements PRoot {
 	 * Always returns the {@link PBounds bounds} of this root.
 	 * @see #getBounds()
 	 */
+	@Override
 	public PSize getDefaultPreferredSize() {
 		return getBounds();
 	}
@@ -483,6 +568,7 @@ public abstract class AbstractPRoot implements PRoot {
 	/**
 	 * Always returns true by default.
 	 */
+	@Override
 	public boolean defaultFillsAllPixels() {
 		return true;
 	}
@@ -490,6 +576,7 @@ public abstract class AbstractPRoot implements PRoot {
 	/**
 	 * Returns false by default.
 	 */
+	@Override
 	public boolean isFocusable() {
 		return false;
 	}
@@ -498,34 +585,32 @@ public abstract class AbstractPRoot implements PRoot {
 	 * Unsupported inherited methods
 	 */
 	
-	public void setDesign(PDesign design) {
-		throw new UnsupportedOperationException("PRoot");
-	}
-	
-	public PDesign getDesign() {
-		throw new UnsupportedOperationException("PRoot");
-	}
-	
+	@Override
 	public void setParent(PComponent parent) throws UnsupportedOperationException {
 		throw new UnsupportedOperationException("PRoot");
 	}
 	
+	@Override
 	public void defaultRender(PRenderer renderer) throws UnsupportedOperationException {
 		throw new UnsupportedOperationException("PRoot");
 	}
 	
+	@Override
 	public void setMouseOverCursor(PCursor cursor) {
 		throw new UnsupportedOperationException("PRoot");
 	}
 	
+	@Override
 	public void setID(String value) {
 		id = value;
 	}
 	
+	@Override
 	public String getID() {
 		return id;
 	}
 	
+	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		if (id == null) {
@@ -539,6 +624,7 @@ public abstract class AbstractPRoot implements PRoot {
 		return builder.toString();
 	}
 	
+	@Override
 	public String getDebugInfo() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("[class=");
@@ -584,6 +670,7 @@ public abstract class AbstractPRoot implements PRoot {
 			return style;
 		}
 		
+		@Override
 		public int hashCode() {
 			final int prime = 31;
 			int result = 1;
@@ -593,6 +680,7 @@ public abstract class AbstractPRoot implements PRoot {
 			return result;
 		}
 		
+		@Override
 		public boolean equals(Object obj) {
 			if (this == obj) {
 				return true;
@@ -601,11 +689,12 @@ public abstract class AbstractPRoot implements PRoot {
 				return false;
 			}
 			FontInfo other = (FontInfo) obj;
-			return name.equals(other.name) 
-					&& size == other.size 
+			return name.equals(other.name)
+					&& size == other.size
 					&& style == other.style;
 		}
 		
+		@Override
 		public String toString() {
 			StringBuilder builder = new StringBuilder();
 			builder.append("FontInfo [name=");

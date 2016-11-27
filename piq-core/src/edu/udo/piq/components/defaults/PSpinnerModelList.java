@@ -67,10 +67,16 @@ public class PSpinnerModelList extends AbstractPSpinnerModel {
 	}
 	
 	public Object getNext() {
+		if (getValueIndex() == getValueList().size() - 1) {
+			return getValueList().get(getValueIndex());
+		}
 		return getValueList().get(getValueIndex() + 1);
 	}
 	
 	public Object getPrevious() {
+		if (getValueIndex() == 0) {
+			return getValueList().get(getValueIndex());
+		}
 		return getValueList().get(getValueIndex() - 1);
 	}
 	

@@ -2,6 +2,7 @@ package edu.udo.piq.swing.tests;
 
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PSize;
+import edu.udo.piq.borders.PLineBorder;
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PCheckBoxModelObs;
 import edu.udo.piq.components.PCheckBoxTuple;
@@ -9,7 +10,6 @@ import edu.udo.piq.components.PSlider;
 import edu.udo.piq.components.PSliderModel;
 import edu.udo.piq.components.PSliderModelObs;
 import edu.udo.piq.components.PSpinner;
-import edu.udo.piq.components.containers.PLineBorder;
 import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.components.containers.PTuple;
 import edu.udo.piq.components.defaults.DefaultPSliderModel;
@@ -21,7 +21,6 @@ import edu.udo.piq.layouts.PGridLayout.Growth;
 import edu.udo.piq.layouts.PTupleLayout.Distribution;
 import edu.udo.piq.layouts.PTupleLayout.Orientation;
 import edu.udo.piq.tools.ImmutablePSize;
-import edu.udo.piq.util.PGuiUtil;
 
 public class SwingPTest_PTupleLayout extends AbstractSwingPTest {
 	
@@ -33,6 +32,7 @@ public class SwingPTest_PTupleLayout extends AbstractSwingPTest {
 		super(480, 320);
 	}
 	
+	@Override
 	public void buildGUI() {
 		PPanel bodyPnl = new PPanel();
 		PGridLayout gridLayout = new PGridLayout(bodyPnl, 2, 5);
@@ -44,6 +44,7 @@ public class SwingPTest_PTupleLayout extends AbstractSwingPTest {
 		PComponent p1 = new PButton(new PLabel("First")) {
 			// This component gets a fixed preferred size to showcase the different distributions
 			final PSize SIZE = new ImmutablePSize(50, 50);
+			@Override
 			public PSize getDefaultPreferredSize() {
 				if (SIZE == null) {
 					return new ImmutablePSize(1, 1);
@@ -55,9 +56,7 @@ public class SwingPTest_PTupleLayout extends AbstractSwingPTest {
 		PTuple tuple = new PTuple(p1, p2);
 		bodyPnl.addChild(tuple, "0 0 1 5 alignX=F alignY=F");
 		
-		PLineBorder border = new PLineBorder(1);
-		border.setElusive(true);
-		PGuiUtil.addBorderTo(tuple, border);
+		tuple.setBorder(new PLineBorder(1));
 		
 		Distribution distPrim = tuple.getLayout().getDistribution();
 		PSpinner selectDistr = new PSpinner(
@@ -75,19 +74,21 @@ public class SwingPTest_PTupleLayout extends AbstractSwingPTest {
 		
 		PCheckBoxTuple selectOri = new PCheckBoxTuple(
 				new PLabel(new DefaultPTextModel() {
+			@Override
 			public String getText() {
 				return tuple.getLayout().getOrientation().toString();
 			}
 		}));
 		bodyPnl.addChild(selectOri, "1 3 alignX=F");
 		
-		selectDistr.getModel().addObs((mdl, old) -> 
+		selectDistr.getModel().addObs((mdl, old) ->
 			tuple.getLayout().setDistribution((Distribution) mdl.getValue())
 		);
-		selectScndDistr.getModel().addObs((mdl, old) -> 
+		selectScndDistr.getModel().addObs((mdl, old) ->
 			tuple.getLayout().setSecondaryDistribution((Distribution) mdl.getValue())
 		);
 		selectGap.addObs(new PSliderModelObs() {
+			@Override
 			public void onValueChanged(PSliderModel model) {
 				tuple.getLayout().setGap(model.getValue());
 			}

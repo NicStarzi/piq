@@ -1,4 +1,4 @@
-package edu.udo.piq.components.containers;
+package edu.udo.piq.borders;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
@@ -6,9 +6,11 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.tools.AbstractPBorder;
-import edu.udo.piq.tools.ImmutablePInsets;
+import edu.udo.piq.tools.MutablePInsets;
 
 public class PLineBorder extends AbstractPBorder {
+	
+	protected final MutablePInsets insets = new MutablePInsets();
 	
 	public PLineBorder() {
 		this(1);
@@ -19,22 +21,26 @@ public class PLineBorder extends AbstractPBorder {
 		setLineThickness(lineThickness);
 	}
 	
-	public PLineBorder(PComponent content) {
-		this(content, 1);
-	}
-	
-	public PLineBorder(PComponent content, int lineThickness) {
-		super(content);
-		setLineThickness(lineThickness);
-	}
-	
 	public void setLineThickness(int value) {
-		getLayout().setInsets(new ImmutablePInsets(value));
+		if (getLineThickness() != value) {
+			insets.set(value);
+			fireInsetsChangedEvent();
+		}
 	}
 	
-	public void defaultRender(PRenderer renderer) {
-		PBounds bnds = getBounds();
-		PInsets insets = getLayout().getInsets();
+	public int getLineThickness() {
+		return insets.getFromTop();
+	}
+	
+	@Override
+	public PInsets getDefaultInsets(PComponent component) {
+		return insets;
+	}
+	
+	@Override
+	public void defaultRender(PRenderer renderer, PComponent component) {
+		PBounds bnds = component.getBounds();
+		PInsets insets = getInsets(component);
 		int top = insets.getFromTop();
 		int lft = insets.getFromLeft();
 		int rgt = insets.getFromRight();
@@ -55,8 +61,9 @@ public class PLineBorder extends AbstractPBorder {
 		renderer.drawQuad( x - 0, fy - btm, fx + 0, fy + 0);
 	}
 	
-	public boolean defaultFillsAllPixels() {
-		return false;
+	@Override
+	public boolean defaultFillsAllPixels(PComponent component) {
+		return true;
 	}
 	
 }

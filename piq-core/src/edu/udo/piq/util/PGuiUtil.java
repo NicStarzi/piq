@@ -5,9 +5,7 @@ import java.util.Collection;
 import java.util.Deque;
 import java.util.Iterator;
 
-import edu.udo.piq.PBorder;
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PLayout;
 
 public class PGuiUtil {
 	
@@ -21,26 +19,10 @@ public class PGuiUtil {
 		return excHndlr;
 	}
 	
-	public static void addBorderTo(PComponent comp, PBorder border) {
-		PComponent parent = comp.getParent();
-		if (parent != null) {
-			PLayout layout = ThrowException.ifTypeCastFails(parent.getLayout(), 
-					PLayout.class, "Parent layout is read-only");
-			Object cnstr = parent.getLayout().getChildConstraint(comp);
-			layout.removeChild(cnstr);
-			layout.addChild(border, cnstr);
-		}
-		border.setContent(comp);
-	}
-	
-	public static String componentToString(PComponent comp) {
-		return comp.toString();
-	}
-	
 	/**
 	 * Returns the entire GUI hierarchy starting from root as String.<br>
 	 * Every component starts at its own line.<br>
-	 * Each level of the tree is properly indented with a number of tab 
+	 * Each level of the tree is properly indented with a number of tab
 	 * ('\t') characters corresponding to the depth of the level.<br>
 	 * 
 	 * @param root the point from where the method starts constructing the String
@@ -82,11 +64,11 @@ public class PGuiUtil {
 	/**
 	 * Returns an iterator that will traverse all components within a GUI tree.<br>
 	 * @param root						component used as root to the GUI tree
-	 * @return							a non-null instance of {@link PGuiTreeIterator}
+	 * @return							a non-null instance of {@link DepthFirstDescendantIterator}
 	 * @throws NullPointerException		if root is null
 	 */
 	public static Iterator<PComponent> guiTreeIterator(PComponent root) {
-		return new PGuiTreeIterator(root);
+		return new DepthFirstDescendantIterator(root);
 	}
 	
 }

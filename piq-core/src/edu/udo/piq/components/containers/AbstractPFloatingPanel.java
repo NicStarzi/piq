@@ -5,17 +5,16 @@ import edu.udo.piq.PColor;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRootOverlay;
 import edu.udo.piq.PSize;
-import edu.udo.piq.layouts.PCentricLayout;
+import edu.udo.piq.layouts.PAnchorLayout;
 import edu.udo.piq.layouts.PFreeLayout;
 import edu.udo.piq.layouts.PFreeLayout.FreeConstraint;
-import edu.udo.piq.util.PCompUtil;
 import edu.udo.piq.util.ThrowException;
 
 public abstract class AbstractPFloatingPanel extends PPanel {
 	
 	public AbstractPFloatingPanel() {
 		super();
-		setLayout(new PCentricLayout(this));
+		setLayout(new PAnchorLayout(this));
 	}
 	
 	protected abstract PRootOverlay getOverlay();
@@ -28,6 +27,7 @@ public abstract class AbstractPFloatingPanel extends PPanel {
 		return getParent() != null;
 	}
 	
+	@Override
 	public void defaultRender(PRenderer renderer) {
 		PBounds bnds = getBounds();
 		int x = bnds.getX();
@@ -44,7 +44,7 @@ public abstract class AbstractPFloatingPanel extends PPanel {
 	protected void repositionOnOverlay() {
 		ThrowException.ifNull(getParent(), "getParent() == null");
 		
-		PSize ownSize = PCompUtil.getPreferredSizeOf(this);
+		PSize ownSize = getPreferredSize();
 		int ownX = getOverlayPositionX();
 		int ownY = getOverlayPositionY();
 		int ownW = ownSize.getWidth();

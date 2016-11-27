@@ -5,16 +5,18 @@ import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.components.defaults.DefaultPCellComponent;
-import edu.udo.piq.layouts.PCentricLayout;
+import edu.udo.piq.layouts.AlignmentX;
+import edu.udo.piq.layouts.AlignmentY;
+import edu.udo.piq.layouts.PAnchorLayout;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
 
 public class PCellComponentWrapper extends AbstractPLayoutOwner implements PCellComponent {
 	
-	public static final PColor DEFAULT_BACKGROUND_COLOR				= 
+	public static final PColor DEFAULT_BACKGROUND_COLOR				=
 			PColor.WHITE;
-	public static final PColor DEFAULT_BACKGROUND_SELECTED_COLOR	= 
+	public static final PColor DEFAULT_BACKGROUND_SELECTED_COLOR	=
 			DefaultPCellComponent.DEFAULT_BACKGROUND_SELECTED_COLOR;
-	public static final PColor DEFAULT_DROP_HIGHLIGHT_COLOR			= 
+	public static final PColor DEFAULT_DROP_HIGHLIGHT_COLOR			=
 			DefaultPCellComponent.DEFAULT_DROP_HIGHLIGHT_COLOR;
 	
 	private WrapperContentDelegator contentDel;
@@ -30,13 +32,15 @@ public class PCellComponentWrapper extends AbstractPLayoutOwner implements PCell
 	
 	public PCellComponentWrapper(PComponent content) {
 		super();
-		setLayout(new PCentricLayout(this));
-		getLayout().setGrowContent(true);
+		setLayout(new PAnchorLayout(this));
+		getLayout().setAlignmentX(AlignmentX.FILL);
+		getLayout().setAlignmentY(AlignmentY.FILL);
 		setContent(content);
 	}
 	
-	public PCentricLayout getLayout() {
-		return (PCentricLayout) super.getLayout();
+	@Override
+	public PAnchorLayout getLayout() {
+		return (PAnchorLayout) super.getLayout();
 	}
 	
 	public void setContent(PComponent content) {
@@ -60,6 +64,7 @@ public class PCellComponentWrapper extends AbstractPLayoutOwner implements PCell
 		return contentDel;
 	}
 	
+	@Override
 	public void setSelected(boolean isSelected) {
 		if (selected != isSelected) {
 			selected = isSelected;
@@ -67,10 +72,12 @@ public class PCellComponentWrapper extends AbstractPLayoutOwner implements PCell
 		}
 	}
 	
+	@Override
 	public boolean isSelected() {
 		return selected;
 	}
 	
+	@Override
 	public void setDropHighlighted(boolean isHighlighted) {
 		if (dropHL != isHighlighted) {
 			dropHL = isHighlighted;
@@ -78,10 +85,12 @@ public class PCellComponentWrapper extends AbstractPLayoutOwner implements PCell
 		}
 	}
 	
+	@Override
 	public boolean isDropHighlighted() {
 		return dropHL;
 	}
 	
+	@Override
 	public void setElement(PModel model, PModelIndex index) {
 		this.model = model;
 		this.index = index;
@@ -93,18 +102,22 @@ public class PCellComponentWrapper extends AbstractPLayoutOwner implements PCell
 		}
 	}
 	
+	@Override
 	public PModel getElementModel() {
 		return model;
 	}
 	
+	@Override
 	public PModelIndex getElementIndex() {
 		return index;
 	}
 	
+	@Override
 	public Object getElement() {
 		return element;
 	}
 	
+	@Override
 	public void defaultRender(PRenderer renderer) {
 		PColor backgroundColor = DEFAULT_BACKGROUND_COLOR;
 		if (isSelected()) {
@@ -124,6 +137,7 @@ public class PCellComponentWrapper extends AbstractPLayoutOwner implements PCell
 		}
 	}
 	
+	@Override
 	public boolean defaultFillsAllPixels() {
 		return true;
 	}

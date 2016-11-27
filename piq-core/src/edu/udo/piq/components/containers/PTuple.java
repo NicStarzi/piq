@@ -1,5 +1,6 @@
 package edu.udo.piq.components.containers;
 
+import edu.udo.piq.PBorder;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.layouts.PTupleLayout;
@@ -30,8 +31,8 @@ public class PTuple extends AbstractPLayoutOwner {
 		setSecondComponent(second);
 	}
 	
-	public PTuple(Orientation orientation, Distribution distribution, 
-			PComponent first, PComponent second) 
+	public PTuple(Orientation orientation, Distribution distribution,
+			PComponent first, PComponent second)
 	{
 		this(orientation, distribution);
 		setFirstComponent(first);
@@ -50,6 +51,12 @@ public class PTuple extends AbstractPLayoutOwner {
 		getLayout().setInsets(DEFAULT_INSETS);
 	}
 	
+	@Override
+	public void setBorder(PBorder border) {
+		super.setBorder(border);
+	}
+	
+	@Override
 	public PTupleLayout getLayout() {
 		return (PTupleLayout) layout;
 	}
@@ -118,6 +125,7 @@ public class PTuple extends AbstractPLayoutOwner {
 		return getLayout().getSecond();
 	}
 	
+	@Override
 	public boolean defaultFillsAllPixels() {
 		return false;
 	}

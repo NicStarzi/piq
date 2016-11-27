@@ -9,11 +9,11 @@ import edu.udo.piq.util.DepthFirstDescendantIterator;
 
 /**
  * The root of a GUI tree. Such a root is also a {@link PComponent}.<br>
- * A {@link PRoot} holds information about how a GUI is supposed to be 
- * rendered, how user input is obtained and how other system resources 
+ * A {@link PRoot} holds information about how a GUI is supposed to be
+ * rendered, how user input is obtained and how other system resources
  * can be accessed.<br>
- * This interface is usually implemented by a platform dependent third 
- * party implementation. There is also an abstract default implementation 
+ * This interface is usually implemented by a platform dependent third
+ * party implementation. There is also an abstract default implementation
  * which can be used as a base for new PRoot implementations.
  * 
  * @author Nic Starzi
@@ -30,25 +30,25 @@ public interface PRoot extends PComponent {
 	}
 	
 	/**
-	 * Throws an {@link UnsupportedOperationException}.<br>
-	 * @throws UnsupportedOperationException
-	 */
-	@Override
-	public default void setParent(PComponent parent) 
-			throws UnsupportedOperationException 
-	{
-		throw new UnsupportedOperationException("this instanceof PRoot");
-	}
-	
-	/**
 	 * Returns the {@link PReadOnlyLayout} of this {@link PRoot}.<br>
-	 * The layout of a root is always an instance of {@link PRootLayout} as it is 
+	 * The layout of a root is always an instance of {@link PRootLayout} as it is
 	 * needed to support {@link PRootOverlay PRootOverlays} and body {@link PPanel panels}.<br>
 	 * 
 	 * @see #getOverlay()
 	 */
 	@Override
 	public PRootLayout getLayout();
+	
+	/**
+	 * Throws an {@link UnsupportedOperationException}.<br>
+	 * @throws UnsupportedOperationException
+	 */
+	@Override
+	public default void setParent(PComponent parent)
+			throws UnsupportedOperationException
+	{
+		throw new UnsupportedOperationException("this instanceof PRoot");
+	}
 	
 	/**
 	 * Returns null.<br>
@@ -59,10 +59,31 @@ public interface PRoot extends PComponent {
 		return null;
 	}
 	
-	public default void setBorder(PBorder value) {
+	/**
+	 * Throws an {@link UnsupportedOperationException}.<br>
+	 * @throws UnsupportedOperationException
+	 */
+	@Override
+	public default void setStyle(PStyleComponent style)
+			throws UnsupportedOperationException
+	{
 		throw new UnsupportedOperationException("this instanceof PRoot");
 	}
 	
+	/**
+	 * Returns null.<br>
+	 * @return null
+	 */
+	@Override
+	public default PStyleComponent getStyle() {
+		return null;
+	}
+	
+	/**
+	 * Returns null.<br>
+	 * @return null
+	 */
+	@Override
 	public default PBorder getBorder() {
 		return null;
 	}
@@ -72,30 +93,8 @@ public interface PRoot extends PComponent {
 	 * @throws UnsupportedOperationException
 	 */
 	@Override
-	public default void setDesign(PDesign design) 
-			throws UnsupportedOperationException  
-	{
-		throw new UnsupportedOperationException("this instanceof PRoot");
-	}
-	
-	/**
-	 * Throws an {@link UnsupportedOperationException}.<br>
-	 * @throws UnsupportedOperationException
-	 */
-	@Override
-	public default PDesign getDesign() 
-			throws UnsupportedOperationException  
-	{
-		throw new UnsupportedOperationException("this instanceof PRoot");
-	}
-	
-	/**
-	 * Throws an {@link UnsupportedOperationException}.<br>
-	 * @throws UnsupportedOperationException
-	 */
-	@Override
-	public default void defaultRender(PRenderer renderer) 
-			throws UnsupportedOperationException  
+	public default void defaultRender(PRenderer renderer)
+			throws UnsupportedOperationException
 	{
 		throw new UnsupportedOperationException("this instanceof PRoot");
 	}
@@ -120,8 +119,8 @@ public interface PRoot extends PComponent {
 	
 	/**
 	 * Returns the {@link PBounds} of this {@link PRoot}.<br>
-	 * Since a root does not have a parent its bounds are not defined 
-	 * by a layout, instead the bounds of a root should be set directly 
+	 * Since a root does not have a parent its bounds are not defined
+	 * by a layout, instead the bounds of a root should be set directly
 	 * by the user.<br>
 	 * 
 	 * @return the bounds of this root
@@ -129,21 +128,10 @@ public interface PRoot extends PComponent {
 	@Override
 	public PBounds getBounds();
 	
-	/**
-	 * Returns the {@link PDesignSheet} for this GUI.<br>
-	 * This method never returns null.<br>
-	 * A design sheet is used to determine how {@link PComponent}s are 
-	 * supposed to be rendered.<br>
-	 * 
-	 * @return the design sheet for this GUI tree
-	 * @see PDesignSheet
-	 * @see PDesign
-	 * @see PRenderer
-	 */
-	public PDesignSheet getDesignSheet();
+	public PStyleSheet getStyleSheet();
 	
 	/**
-	 * This method should be called if a {@link PComponent} needs to 
+	 * This method should be called if a {@link PComponent} needs to
 	 * be re-rendered.<br>
 	 * 
 	 * @param component the component that needs re-rendering
@@ -155,7 +143,7 @@ public interface PRoot extends PComponent {
 	
 	/**
 	 * Registers that a {@link PComponent} needs a refresh for its {@link PLayout} in the near future.<br>
-	 * The refresh should happen soon but not necessarily immediately to have the possibility of combining 
+	 * The refresh should happen soon but not necessarily immediately to have the possibility of combining
 	 * several re-layouting operations into one.<br>
 	 * 
 	 * @param component a non-null component
@@ -163,7 +151,7 @@ public interface PRoot extends PComponent {
 	public void reLayOut(PComponent component);
 	
 	/**
-	 * Immediately lays out all components within this GUI. This method is costly and should only be used 
+	 * Immediately lays out all components within this GUI. This method is costly and should only be used
 	 * when the entire GUI needs a refresh, for example when the {@link PDesignSheet} was changed.<br>
 	 */
 	public default void reLayOutTheEntireGui() {
@@ -181,7 +169,7 @@ public interface PRoot extends PComponent {
 	/**
 	 * Creates a new instance of {@link PDialog} and returns it.<br>
 	 * The implementation is platform dependent.<br>
-	 * The returned dialog will use the same {@link PDesignSheet} 
+	 * The returned dialog will use the same {@link PDesignSheet}
 	 * as this root.<br>
 	 * 
 	 * @return a newly created dialog
@@ -191,34 +179,34 @@ public interface PRoot extends PComponent {
 	public PDialog createDialog();
 	
 	/**
-	 * Returns an instance of {@link PFontResource} that represents the 
+	 * Returns an instance of {@link PFontResource} that represents the
 	 * desired font defined by the name, size and style.<br>
 	 * The implementation is platform dependent.<br>
 	 * <br>
-	 * The root is free to cache font resources and return the same 
-	 * instance for each invocation of this method with the same 
+	 * The root is free to cache font resources and return the same
+	 * instance for each invocation of this method with the same
 	 * arguments.<br>
 	 * This method should never return null.<br>
 	 * 
 	 * @param fontName the name of the font, for example "Arial"
-	 * @param pointSize the point size of the font 
+	 * @param pointSize the point size of the font
 	 * @param style the style of the font, either PLAIN, BOLD, ITALIC or BOLD_ITALIC
 	 * @return an instance of {@link PFontResource}
 	 * @throws NullPointerException if fontName is null or style is null
 	 * @throws IllegalArgumentException if an arguments value is not supported
 	 */
-	public PFontResource fetchFontResource(String fontName, double pointSize, Style style) 
+	public PFontResource fetchFontResource(String fontName, double pointSize, Style style)
 			throws NullPointerException, IllegalArgumentException;
 	
 	public boolean isFontSupported(PFontResource font);
 	
 	/**
-	 * Returns an instance of {@link PImageResource} that was loaded from 
+	 * Returns an instance of {@link PImageResource} that was loaded from
 	 * the given path.<br>
 	 * The implementation is platform dependent.<br>
 	 * <br>
-	 * The root is free to cache image resources and return the same 
-	 * instance for each invocation of this method with the same 
+	 * The root is free to cache image resources and return the same
+	 * instance for each invocation of this method with the same
 	 * arguments.<br>
 	 * This method should never return null.<br>
 	 * 
@@ -226,25 +214,25 @@ public interface PRoot extends PComponent {
 	 * @return						an instance of {@link PImageResource}
 	 * @throws NullPointerException	if imgID is null
 	 */
-	public PImageResource fetchImageResource(Object imgID) 
+	public PImageResource fetchImageResource(Object imgID)
 			throws NullPointerException;
 	
 	/**
 	 * 
 	 * @param width				the width of the image, must be positive (> 0)
 	 * @param height			the height of the image, must be positive (> 0)
-	 * @param metaInfo			platform dependent meta information needed to create an image. 
-	 * 							<code>null</code> is always a valid input which will result in a 
+	 * @param metaInfo			platform dependent meta information needed to create an image.
+	 * 							<code>null</code> is always a valid input which will result in a
 	 * 							default value being used.
 	 * @return					a newly created {@link PImageResource}
 	 * @throws IllegalArgumentException		if either width or height are less then or equal to 0
 	 */
-	public PImageResource createImageResource(int width, int height, PImageMeta metaInfo) 
+	public PImageResource createImageResource(int width, int height, PImageMeta metaInfo)
 			throws IllegalArgumentException;
 	
 	/**
-	 * Constructs and returns an instance of {@link PCursor} that uses the given 
-	 * image as its graphic. The offset is a translation of the image relative to 
+	 * Constructs and returns an instance of {@link PCursor} that uses the given
+	 * image as its graphic. The offset is a translation of the image relative to
 	 * the mouse location.<br>
 	 * 
 	 * @param image		an {@link PImageResource image resource} to be used for the cursors graphic
@@ -261,7 +249,7 @@ public interface PRoot extends PComponent {
 	/**
 	 * Returns an implementation of {@link PMouse}.<br>
 	 * The implementation is platform dependent.<br>
-	 * This method might return null if the GUI does not support a 
+	 * This method might return null if the GUI does not support a
 	 * mouse.<br>
 	 * 
 	 * @return an implementation of {@link PMouse} or null if a mouse is not supported
@@ -274,7 +262,7 @@ public interface PRoot extends PComponent {
 	/**
 	 * Returns an implementation of {@link PKeyboard}.<br>
 	 * The implementation is platform dependent.<br>
-	 * This method might return null if the GUI does not support a 
+	 * This method might return null if the GUI does not support a
 	 * keyboard.<br>
 	 * 
 	 * @return an implementation of {@link PKeyboard} or null if a keyboard is not supported
@@ -287,7 +275,7 @@ public interface PRoot extends PComponent {
 	/**
 	 * Returns an implementation of {@link PClipboard}.<br>
 	 * The implementation is platform dependent.<br>
-	 * This method might return null if the GUI does not support a 
+	 * This method might return null if the GUI does not support a
 	 * clipboard.<br>
 	 * 
 	 * @return an implementation of {@link PClipboard} or null if a clipboard is not supported
@@ -296,11 +284,11 @@ public interface PRoot extends PComponent {
 	
 	/**
 	 * Returns the overlay for this {@link PRoot} or null if no overlay is supported.<br>
-	 * The overlay is used (among other possible uses) for drop down menus, tool tips and the 
+	 * The overlay is used (among other possible uses) for drop down menus, tool tips and the
 	 * visual representation of a drag and drop.<br>
-	 * Custom components are free to use the overlay for other effects that need to be drawn 
+	 * Custom components are free to use the overlay for other effects that need to be drawn
 	 * freely on top of the rest of the GUI.<br>
-	 * If the returned overlay is not null it will never be null within the life cycle of 
+	 * If the returned overlay is not null it will never be null within the life cycle of
 	 * this {@link PRoot}.<br>
 	 * <br>
 	 * A common default implementation for {@link PRootOverlay} is {@link PGlassPanel}.<br>
@@ -316,8 +304,8 @@ public interface PRoot extends PComponent {
 	
 	/**
 	 * Sets the body {@link PComponent} of this {@link PRoot} to the given component.<br>
-	 * Although it does not seem to be very useful it is possible to set the body to null. 
-	 * If the body of a root is null the GUI will not contain anything except the overlay 
+	 * Although it does not seem to be very useful it is possible to set the body to null.
+	 * If the body of a root is null the GUI will not contain anything except the overlay
 	 * and he root will fill the background with an arbitrary default color.<br>
 	 * 
 	 * @param component			the new body for this {@link PRoot} or null
@@ -328,7 +316,7 @@ public interface PRoot extends PComponent {
 	}
 	
 	/**
-	 * Returns the body {@link PComponent} of this {@link PRoot}, this is usually a 
+	 * Returns the body {@link PComponent} of this {@link PRoot}, this is usually a
 	 * {@link PPanel} but could be any kind of component or even null.<br>
 	 * 
 	 * @return					the body component of this root or null
@@ -347,19 +335,19 @@ public interface PRoot extends PComponent {
 	}
 	
 	/**
-	 * Returns the drag and drop manager for this {@link PRoot} or null if drag and drop is 
+	 * Returns the drag and drop manager for this {@link PRoot} or null if drag and drop is
 	 * not supported.<br>
-	 * The returned value for this method does never change during the life cycle of this 
+	 * The returned value for this method does never change during the life cycle of this
 	 * {@link PRoot}.<br>
 	 * <br>
-	 * A drag and drop manager is used to manage the dragging and dropping of a 
+	 * A drag and drop manager is used to manage the dragging and dropping of a
 	 * {@link PDnDTransfer} after it was dispatched by a {@link PDnDSupport} of a component.<br>
-	 * The drag and drop manager is also responsible for adding the visual representation of 
-	 * a drag to the {@link PRootOverlay} of this root.<br> 
+	 * The drag and drop manager is also responsible for adding the visual representation of
+	 * a drag to the {@link PRootOverlay} of this root.<br>
 	 * <br>
-	 * It does not make sense to support a drag and drop manager without a {@link PMouse} 
-	 * since the mouse is the standard way of controlling a drag and drop action. It is, 
-	 * however, possible to subclass the {@link PDnDManager} class to create custom drag 
+	 * It does not make sense to support a drag and drop manager without a {@link PMouse}
+	 * since the mouse is the standard way of controlling a drag and drop action. It is,
+	 * however, possible to subclass the {@link PDnDManager} class to create custom drag
 	 * and drop controls.<br>
 	 * 
 	 * @return an instance of {@link PDnDManager} or null if drag and drop is not supported
@@ -372,7 +360,7 @@ public interface PRoot extends PComponent {
 	public PDnDManager getDragAndDropManager();
 	
 	/**
-	 * Returns the {@link PComponent} that currently has the focus within 
+	 * Returns the {@link PComponent} that currently has the focus within
 	 * the GUI.<br>
 	 * This can be null if no component has focus right now.<br>
 	 * 
@@ -391,7 +379,7 @@ public interface PRoot extends PComponent {
 	public void setFocusOwner(PComponent component);
 	
 	/**
-	 * Returns the number of milliseconds in between the two most recent update ticks of 
+	 * Returns the number of milliseconds in between the two most recent update ticks of
 	 * all {@link PTimer PTimers}.
 	 * @return	the milliseconds between the last two ticks of all PTimers
 	 */
@@ -413,7 +401,7 @@ public interface PRoot extends PComponent {
 	/**
 	 * Unregisters the given {@link PTimer} from this root.<br>
 	 * The unregistered timer will no longer be ticked.<br>
-	 * If the timer has not been registered before, an 
+	 * If the timer has not been registered before, an
 	 * {@link IllegalArgumentException} will be thrown.<br>
 	 * 
 	 * @param timer						the timer that is to be unregistered
@@ -426,7 +414,7 @@ public interface PRoot extends PComponent {
 	
 	/**
 	 * Registers a {@link PFocusObs} at this {@link PRoot}.<br>
-	 * Whenever a {@link PComponent} takes or loses focus all registered focus 
+	 * Whenever a {@link PComponent} takes or loses focus all registered focus
 	 * observers will be notified.<br>
 	 * 
 	 * @param obs the observer to be registered
@@ -452,9 +440,9 @@ public interface PRoot extends PComponent {
 	public void removeObs(PFocusObs obs) throws NullPointerException;
 	
 	/**
-	 * Notifies all {@link PGlobalEventObs global event observers} registered at this 
-	 * {@link PRoot} of the event by calling the 
-	 * {@link PGlobalEventObs#onGlobalEvent(PComponent, Object)} method with the given 
+	 * Notifies all {@link PGlobalEventObs global event observers} registered at this
+	 * {@link PRoot} of the event by calling the
+	 * {@link PGlobalEventObs#onGlobalEvent(PComponent, Object)} method with the given
 	 * <code>source</code> and <code>eventData</code>.<br>
 	 * @param source					the component that generated the event
 	 * @param eventData					the event data
@@ -469,4 +457,16 @@ public interface PRoot extends PComponent {
 	
 	//TODO:
 	public void removeObs(PGlobalEventObs obs) throws NullPointerException;
+	
+	//TODO:
+	public void addObs(PRootObs obs) throws NullPointerException;
+	
+	//TODO:
+	public void removeObs(PRootObs obs) throws NullPointerException;
+	
+	public void fireComponentAddedToGui(PComponent addedComponent);
+	
+	public void fireComponentRemovedFromGui(PComponent parent, PComponent removedComponent);
+	
+	public void fireStyleSheetChanged(PStyleSheet oldStyleSheet);
 }

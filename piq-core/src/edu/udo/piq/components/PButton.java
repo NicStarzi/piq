@@ -15,12 +15,13 @@ import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PTimer;
+import edu.udo.piq.borders.PButtonBorder;
 import edu.udo.piq.components.defaults.DefaultPButtonModel;
 import edu.udo.piq.components.defaults.ReRenderPFocusObs;
 import edu.udo.piq.components.util.DefaultPKeyInput;
 import edu.udo.piq.components.util.PKeyInput;
 import edu.udo.piq.components.util.PKeyInput.KeyInputType;
-import edu.udo.piq.layouts.PCentricLayout;
+import edu.udo.piq.layouts.PAnchorLayout;
 import edu.udo.piq.tools.AbstractPInputLayoutOwner;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.util.ObserverList;
@@ -30,23 +31,23 @@ public class PButton extends AbstractPInputLayoutOwner implements PClickable, PG
 	
 	/*
 	 * Input: Press Enter
-	 * If the ENTER key is pressed while the button has focus, a model and 
+	 * If the ENTER key is pressed while the button has focus, a model and
 	 * is enabled, the button will become pressed.
 	 */
 	
 	public static final String INPUT_IDENTIFIER_PRESS_ENTER = "pressEnter";
-	public static final PKeyInput<PButton> INPUT_PRESS_ENTER = 
+	public static final PKeyInput<PButton> INPUT_PRESS_ENTER =
 			new DefaultPKeyInput<>(KeyInputType.TRIGGER, Key.ENTER, PButton::canTriggerEnter);
 	public static final Consumer<PButton> REACTION_PRESS_ENTER = PButton::onTriggerEnter;
 	
 	/*
 	 * Input: Release Enter
-	 * When ENTER is released while button has focus, is enabled and pressed, 
+	 * When ENTER is released while button has focus, is enabled and pressed,
 	 * the button will become unpressed.
 	 */
 	
 	public static final String INPUT_IDENTIFIER_RELEASE_ENTER = "releaseEnter";
-	public static final PKeyInput<PButton> INPUT_RELEASE_ENTER = 
+	public static final PKeyInput<PButton> INPUT_RELEASE_ENTER =
 			new DefaultPKeyInput<>(KeyInputType.RELEASE, Key.ENTER, PButton::canTriggerEnter);
 	public static final Consumer<PButton> REACTION_RELEASE_ENTER = PButton::onReleaseEnter;
 	
@@ -84,6 +85,7 @@ public class PButton extends AbstractPInputLayoutOwner implements PClickable, PG
 	
 	public PButton() {
 		super();
+		setBorder(new PButtonBorder());
 		
 		PModelFactory modelFac = PModelFactory.getGlobalModelFactory();
 		PButtonModel defaultModel = new DefaultPButtonModel();
@@ -91,20 +93,24 @@ public class PButton extends AbstractPInputLayoutOwner implements PClickable, PG
 			defaultModel = (PButtonModel) modelFac.getModelFor(this, defaultModel);
 		}
 		
-		PCentricLayout defaultLayout = new PCentricLayout(this);
+		PAnchorLayout defaultLayout = new PAnchorLayout(this);
 		defaultLayout.setInsets(new ImmutablePInsets(8));
 		setLayout(defaultLayout);
 		setModel(defaultModel);
 		addObs(new PMouseObs() {
+			@Override
 			public void onMouseMoved(PMouse mouse) {
 				PButton.this.onMouseMoved(mouse);
 			}
+			@Override
 			public void onButtonTriggered(PMouse mouse, MouseButton btn) {
 				PButton.this.onMouseButtonTriggered(mouse, btn);
 			}
+			@Override
 			public void onButtonPressed(PMouse mouse, MouseButton btn) {
 				PButton.this.onMouseButtonPressed(mouse, btn);
 			}
+			@Override
 			public void onButtonReleased(PMouse mouse, MouseButton btn) {
 				PButton.this.onMouseButtonReleased(mouse, btn);
 			}
@@ -115,16 +121,22 @@ public class PButton extends AbstractPInputLayoutOwner implements PClickable, PG
 		defineInput(INPUT_IDENTIFIER_RELEASE_ENTER, INPUT_RELEASE_ENTER, REACTION_RELEASE_ENTER);
 	}
 	
+	@Override
 	public void setGlobalEventProvider(PGlobalEventProvider provider) {
 		globEvProv = provider;
 	}
 	
+	@Override
 	public PGlobalEventProvider getGlobalEventProvider() {
 		return globEvProv;
 	}
 	
-	protected PCentricLayout getLayoutInternal() {
-		return (PCentricLayout) super.getLayout();
+	protected PAnchorLayout getLayoutInternal() {
+		return (PAnchorLayout) super.getLayout();
+	}
+	
+	public PInsets getDefaultFocusInsets() {
+		return getLayoutInternal().getInsets();
 	}
 	
 	public void setContent(PComponent component) {
@@ -194,32 +206,18 @@ public class PButton extends AbstractPInputLayoutOwner implements PClickable, PG
 		return isEnabled() && getModel().isPressed();
 	}
 	
+	@Override
 	public void defaultRender(PRenderer renderer) {
-		PBounds bnds = getBounds();
+		PBounds bnds = getBoundsWithoutBorder();
 		int x = bnds.getX();
 		int y = bnds.getY();
 		int fx = bnds.getFinalX();
 		int fy = bnds.getFinalY();
+		renderer.setColor(PColor.GREY75);
+		renderer.drawQuad(x, y, fx, fy);
 		
-		if (isPressed()) {
-			renderer.setRenderMode(renderer.getRenderModeOutline());
-			renderer.setColor(PColor.GREY25);
-			renderer.drawQuad(x, y, fx, fy);
-			renderer.setRenderMode(renderer.getRenderModeFill());
-			renderer.setColor(PColor.GREY75);
-			renderer.drawQuad(x + 1, y + 1, fx - 1, fy - 1);
-		} else {
-			renderer.setColor(PColor.BLACK);
-			renderer.strokeBottom(x, y, fx, fy);
-			renderer.strokeRight(x, y, fx, fy);
-			renderer.setColor(PColor.WHITE);
-			renderer.strokeTop(x, y, fx, fy);
-			renderer.strokeLeft(x, y, fx, fy);
-			renderer.setColor(PColor.GREY75);
-			renderer.drawQuad(x + 1, y + 1, fx - 1, fy - 1);
-		}
 		if (hasFocus()) {
-			PInsets insets = getLayoutInternal().getInsets();
+			PInsets insets = getDefaultFocusInsets();
 			int innerX = x + insets.getFromLeft() - 1;
 			int innerY = y + insets.getFromTop() - 1;
 			int innerFx = fx - insets.getFromRight() + 1;
@@ -231,6 +229,7 @@ public class PButton extends AbstractPInputLayoutOwner implements PClickable, PG
 		}
 	}
 	
+	@Override
 	public boolean defaultFillsAllPixels() {
 		return true;
 	}
@@ -250,7 +249,7 @@ public class PButton extends AbstractPInputLayoutOwner implements PClickable, PG
 	}
 	
 	protected void onMouseButtonTriggered(PMouse mouse, MouseButton btn) {
-		if (isEnabled() && btn == MouseButton.LEFT && getModel() != null 
+		if (isEnabled() && btn == MouseButton.LEFT && getModel() != null
 				&& isMouseOverThisOrChild())
 		{
 			getModel().setPressed(true);
@@ -262,7 +261,7 @@ public class PButton extends AbstractPInputLayoutOwner implements PClickable, PG
 		if (btn == MouseButton.LEFT && oldPressed) {
 			getModel().setPressed(false);
 			if (isEnabled() && isIgnoreClickOnChildren() ?
-					isMouseOver() : isMouseOverThisOrChild()) 
+					isMouseOver() : isMouseOverThisOrChild())
 			{
 				takeFocus();
 				fireClickEvent();

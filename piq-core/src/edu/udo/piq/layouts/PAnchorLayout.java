@@ -36,7 +36,7 @@ public class PAnchorLayout extends AbstractArrayPLayout {
 	}
 	
 	public PInsets getInsets() {
-		return insets;
+		return getStyleAttribute(ATTRIBUTE_KEY_INSETS, insets);
 	}
 	
 	public void setAlignmentX(AlignmentX value) {
@@ -48,7 +48,7 @@ public class PAnchorLayout extends AbstractArrayPLayout {
 	}
 	
 	public AlignmentX getAlignmentX() {
-		return alignX;
+		return getStyleAttribute(ATTRIBUTE_KEY_ALIGNMENT_X, alignX);
 	}
 	
 	public void setAlignmentY(AlignmentY value) {
@@ -60,7 +60,7 @@ public class PAnchorLayout extends AbstractArrayPLayout {
 	}
 	
 	public AlignmentY getAlignmentY() {
-		return alignY;
+		return getStyleAttribute(ATTRIBUTE_KEY_ALIGNMENT_Y, alignY);
 	}
 	
 	public void setContent(PComponent component) {

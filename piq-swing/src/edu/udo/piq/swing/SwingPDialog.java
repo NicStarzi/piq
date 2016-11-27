@@ -14,7 +14,6 @@ import javax.swing.JPanel;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PDesign;
 import edu.udo.piq.PDialog;
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PMouse;
@@ -28,6 +27,7 @@ public class SwingPDialog extends AbstractPDialog implements PDialog {
 	private final JDialog jDialog;
 	private final JPanel panel = new JPanel() {
 		private static final long serialVersionUID = 1L;
+		@Override
 		public void paintComponent(Graphics g) {
 //			g.setColor(Color.BLACK);
 //			g.fillRect(0, 0, getWidth(), getHeight());
@@ -44,11 +44,13 @@ public class SwingPDialog extends AbstractPDialog implements PDialog {
 		this.root = root;
 		this.jDialog = jDialog;
 		jDialog.addWindowListener(new WindowAdapter() {
+			@Override
 			public void windowClosing(WindowEvent e) {
 				if (!isDisposed()) {
 					dispose();
 				}
 			}
+			@Override
 			public void windowClosed(WindowEvent e) {
 				if (!isDisposed()) {
 					dispose();
@@ -58,9 +60,11 @@ public class SwingPDialog extends AbstractPDialog implements PDialog {
 		panel.setFocusable(true);
 		panel.requestFocus();
 		panel.addComponentListener(new ComponentAdapter() {
+			@Override
 			public void componentShown(ComponentEvent e) {
 				fireSizeChanged();
 			}
+			@Override
 			public void componentResized(ComponentEvent e) {
 				fireSizeChanged();
 			}
@@ -82,6 +86,7 @@ public class SwingPDialog extends AbstractPDialog implements PDialog {
 //		updateComponents();
 	}
 	
+	@Override
 	public void show() throws IllegalStateException {
 		if (getJDialog().isVisible()) {
 			throw new IllegalStateException("PDialog is already shown.");
@@ -90,37 +95,45 @@ public class SwingPDialog extends AbstractPDialog implements PDialog {
 		getJDialog().setVisible(true);
 	}
 	
+	@Override
 	public void dispose() {
 		super.dispose();
 		getJDialog().dispose();
 	}
 	
+	@Override
 	public PBounds getBounds() {
 		return bounds;
 	}
 	
+	@Override
 	public void reRender(PComponent component) {
 		if (panel != null) {
 			panel.repaint();
 		}
 	}
 	
+	@Override
 	public double getDeltaTime() {
 		return getSuperRoot().getDeltaTime();
 	}
 	
+	@Override
 	protected PRoot getSuperRoot() {
 		return root;
 	}
 	
+	@Override
 	public PMouse getMouse() {
 		return mouse;
 	}
 	
+	@Override
 	public PKeyboard getKeyboard() {
 		return keyboard;
 	}
 	
+	@Override
 	public void onMouseOverCursorChanged(PComponent component) {
 		mouse.mouseOverCursorChanged(component);
 	}
@@ -163,8 +176,7 @@ public class SwingPDialog extends AbstractPDialog implements PDialog {
 			}
 			renderer.setClipBounds(clipX, clipY, clipW, clipH);
 			
-			PDesign design = comp.getDesign();
-			design.render(renderer, comp);
+			comp.render(renderer);
 			
 			PReadOnlyLayout layout = comp.getLayout();
 			if (layout != null) {

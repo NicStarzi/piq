@@ -23,14 +23,15 @@ import edu.udo.piq.util.ThrowException;
 
 public class PPopup {
 	
-	public static final PPopupBorderProvider DEFAULT_BORDER_PROVIDER = 
+	public static final PPopupBorderProvider DEFAULT_BORDER_PROVIDER =
 			(comp) -> new PBevelBorder();
-	public static final PPopupBodyProvider DEFAULT_BODY_PROVIDER = 
+	public static final PPopupBodyProvider DEFAULT_BODY_PROVIDER =
 			(comp) -> new PListPanel();
 	
 	protected final ObserverList<PPopupObs> obsList
 		= PCompUtil.createDefaultObserverList();
 	protected final PMouseObs mouseObs = new PMouseObs() {
+		@Override
 		public void onButtonTriggered(PMouse mouse, MouseButton btn) {
 			PPopup.this.onMouseTrigger(mouse, btn);
 		}
@@ -103,8 +104,8 @@ public class PPopup {
 		if (isShown() && popupComp.isMouseOverThisOrChild()) {
 			return;
 		}
-		if (mouse.isPressed(MouseButton.POPUP_TRIGGER) 
-				&& getOwner().isMouseOverThisOrChild()) 
+		if (mouse.isPressed(MouseButton.POPUP_TRIGGER)
+				&& getOwner().isMouseOverThisOrChild())
 		{
 			hidePopup();
 			showPopup(mouse.getX(), mouse.getY());
@@ -163,11 +164,11 @@ public class PPopup {
 		 * We add the popup temporarily so that any components that need a
 		 * PRoot to correctly calculate their size (for example PLabels)
 		 * can do so. We need this to calculate the correct position for
-		 * the popup. 
+		 * the popup.
 		 */
 		overlay.getLayout().addChild(popupComp, new FreeConstraint(x, y));
 		
-		PSize popupSize = PCompUtil.getPreferredSizeOf(popupComp);
+		PSize popupSize = popupComp.getPreferredSize();
 		PBounds overlayBnds = overlay.getBounds();
 		
 		int popupX = Math.min(x, overlayBnds.getFinalX() - popupSize.getWidth());

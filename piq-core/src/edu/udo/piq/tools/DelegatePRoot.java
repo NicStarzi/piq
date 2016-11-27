@@ -4,7 +4,6 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PClipboard;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PCursor;
-import edu.udo.piq.PDesignSheet;
 import edu.udo.piq.PDialog;
 import edu.udo.piq.PDnDManager;
 import edu.udo.piq.PFontResource;
@@ -15,6 +14,7 @@ import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
+import edu.udo.piq.PStyleSheet;
 
 public class DelegatePRoot extends AbstractPRoot implements PRoot {
 	
@@ -66,25 +66,29 @@ public class DelegatePRoot extends AbstractPRoot implements PRoot {
 		fireSizeChanged();
 	}
 	
+	@Override
 	public PBounds getBounds() {
 		return bounds;
 	}
 	
-	public void setDesignSheet(PDesignSheet designSheet) {
-		super.setDesignSheet(designSheet);
+	@Override
+	public void setStyleSheet(PStyleSheet styleSheet) {
+		super.setStyleSheet(styleSheet);
 	}
 	
-	public PDesignSheet getDesignSheet() {
+	@Override
+	public PStyleSheet getStyleSheet() {
 		if (delegateRoot != null && inheritDesignSheet) {
-			return delegateRoot.getDesignSheet();
+			return delegateRoot.getStyleSheet();
 		}
-		return super.getDesignSheet();
+		return super.getStyleSheet();
 	}
 	
 	public void setClipboard(PClipboard clipboard) {
 		this.clipboard = clipboard;
 	}
 	
+	@Override
 	public PClipboard getClipboard() {
 		if (delegateRoot != null && inheritClipBoard) {
 			return delegateRoot.getClipboard();
@@ -96,6 +100,7 @@ public class DelegatePRoot extends AbstractPRoot implements PRoot {
 		this.dndManager = dndManager;
 	}
 	
+	@Override
 	public PDnDManager getDragAndDropManager() {
 		if (delegateRoot != null && inheritDnDManager) {
 			return delegateRoot.getDragAndDropManager();
@@ -107,6 +112,7 @@ public class DelegatePRoot extends AbstractPRoot implements PRoot {
 		getMouse().setDelegate(mouse);
 	}
 	
+	@Override
 	public DelegatePMouse getMouse() {
 		return (DelegatePMouse) super.getMouse();
 	}
@@ -115,6 +121,7 @@ public class DelegatePRoot extends AbstractPRoot implements PRoot {
 		this.keyboard = keyboard;
 	}
 	
+	@Override
 	public PKeyboard getKeyboard() {
 		if (delegateRoot != null && inheritKeyboard) {
 			return delegateRoot.getKeyboard();
@@ -122,12 +129,14 @@ public class DelegatePRoot extends AbstractPRoot implements PRoot {
 		return keyboard;
 	}
 	
+	@Override
 	public void onMouseOverCursorChanged(PComponent component) {
 		if (delegateRoot != null && enableMouseOverCursor) {
 			delegateRoot.onMouseOverCursorChanged(component);
 		}
 	}
 	
+	@Override
 	public PDialog createDialog() {
 		if (delegateRoot == null || !enableCreateDialog) {
 			return null;
@@ -135,6 +144,7 @@ public class DelegatePRoot extends AbstractPRoot implements PRoot {
 		return delegateRoot.createDialog();
 	}
 	
+	@Override
 	public boolean isFontSupported(PFontResource font) {
 		if (delegateRoot != null) {
 			return delegateRoot.isFontSupported(font);
@@ -142,6 +152,7 @@ public class DelegatePRoot extends AbstractPRoot implements PRoot {
 		return false;
 	}
 	
+	@Override
 	public PFontResource fetchFontResource(String fontName, double pointSize, Style style) {
 		if (delegateRoot == null || !enableFetchFont) {
 			return null;
@@ -149,6 +160,7 @@ public class DelegatePRoot extends AbstractPRoot implements PRoot {
 		return delegateRoot.fetchFontResource(fontName, pointSize, style);
 	}
 	
+	@Override
 	public PImageResource fetchImageResource(Object imgID) {
 		if (delegateRoot == null || !enableFetchImage) {
 			return null;
@@ -156,6 +168,7 @@ public class DelegatePRoot extends AbstractPRoot implements PRoot {
 		return delegateRoot.fetchImageResource(imgID);
 	}
 	
+	@Override
 	public PImageResource createImageResource(int width, int height, PImageMeta metaInfo) {
 		if (delegateRoot == null || !enableCreateImage) {
 			return null;
@@ -163,6 +176,7 @@ public class DelegatePRoot extends AbstractPRoot implements PRoot {
 		return delegateRoot.createImageResource(width, height, metaInfo);
 	}
 	
+	@Override
 	public PCursor createCustomCursor(PImageResource image, int offsetX, int offsetY) {
 		if (delegateRoot == null || !enableCreateCursor) {
 			return null;
@@ -170,6 +184,7 @@ public class DelegatePRoot extends AbstractPRoot implements PRoot {
 		return delegateRoot.createCustomCursor(image, offsetX, offsetY);
 	}
 
+	@Override
 	public boolean isElusive() {
 		return false;
 	}
@@ -178,6 +193,7 @@ public class DelegatePRoot extends AbstractPRoot implements PRoot {
 		super.update(milliSeconds);
 	}
 	
+	@Override
 	public double getDeltaTime() {
 		return getDelegateRoot().getDeltaTime();
 	}
@@ -186,10 +202,12 @@ public class DelegatePRoot extends AbstractPRoot implements PRoot {
 		super.tickAllTimers(milliSeconds);
 	}
 	
+	@Override
 	public void reLayOutAll(int maxIterationCount) {
 		super.reLayOutAll(maxIterationCount);
 	}
 	
+	@Override
 	public void reRender(PComponent component) {
 		reRenderSet.add(component);
 		if (getDelegateRoot() != null && getRepresentative() != null) {

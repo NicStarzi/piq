@@ -6,7 +6,6 @@ import java.util.List;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
-import edu.udo.piq.PLayoutDesign;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractMapPLayout;
 import edu.udo.piq.tools.ImmutablePInsets;
@@ -46,6 +45,7 @@ public class PListLayout extends AbstractMapPLayout {
 		setGap(gap);
 	}
 	
+	@Override
 	protected void onChildAdded(PComponent child, Object constraint) {
 		if (constraint == null) {
 			compList.add(child);
@@ -60,6 +60,7 @@ public class PListLayout extends AbstractMapPLayout {
 		invalidate();
 	}
 	
+	@Override
 	protected void onChildRemoved(PComponent child, Object constraint) {
 		int index = compList.indexOf(child);
 		compList.remove(index);
@@ -70,6 +71,7 @@ public class PListLayout extends AbstractMapPLayout {
 		invalidate();
 	}
 	
+	@Override
 	protected void clearAllInfosInternal() {
 		super.clearAllInfosInternal();
 		compList.clear();
@@ -84,7 +86,7 @@ public class PListLayout extends AbstractMapPLayout {
 	}
 	
 	public int getGap() {
-		return gap;
+		return getStyleAttribute(ATTRIBUTE_KEY_GAP, gap);
 	}
 	
 	public void setAlignment(ListAlignment value) {
@@ -108,15 +110,7 @@ public class PListLayout extends AbstractMapPLayout {
 	}
 	
 	public PInsets getInsets() {
-		PLayoutDesign design = getDesign();
-		if (design == null) {
-			return insets;
-		}
-		Object maybeInsets = getDesign().getAttribute(ATTRIBUTE_KEY_INSETS);
-		if (maybeInsets != null && maybeInsets instanceof PInsets) {
-			return (PInsets) maybeInsets;
-		}
-		return insets;
+		return getStyleAttribute(ATTRIBUTE_KEY_INSETS, insets);
 	}
 	
 	public PComponent getChild(int index) {
@@ -126,6 +120,7 @@ public class PListLayout extends AbstractMapPLayout {
 		return compList.get(index);
 	}
 	
+	@Override
 	public PComponent getChildAt(int x, int y) {
 		for (int i = 0; i < compList.size(); i++) {
 			PComponent child = compList.get(i);
@@ -167,18 +162,22 @@ public class PListLayout extends AbstractMapPLayout {
 		return compList.indexOf(child);
 	}
 	
+	@Override
 	public Object getChildConstraint(PComponent child) throws NullPointerException {
 		return Integer.valueOf(getChildIndex(child));
 	}
 	
+	@Override
 	public PComponent getChildForConstraint(Object constraint) {
 		return getChild((Integer) constraint);
 	}
 	
+	@Override
 	protected boolean canAdd(PComponent cmp, Object constraint) {
 		return (constraint == null || constraint instanceof Integer) && !compList.contains(cmp);
 	}
 	
+	@Override
 	protected void onInvalidated() {
 		int gap = getGap();
 		int prefW = 0;
@@ -220,6 +219,7 @@ public class PListLayout extends AbstractMapPLayout {
 		prefSize.setHeight(prefH);
 	}
 	
+	@Override
 	protected void layOutInternal() {
 		PInsets insets = getInsets();
 		PBounds ob = getOwner().getBounds();
@@ -282,7 +282,7 @@ public class PListLayout extends AbstractMapPLayout {
 		;
 		
 		public boolean isHorizontal() {
-			return this == LEFT_TO_RIGHT || this == RIGHT_TO_LEFT 
+			return this == LEFT_TO_RIGHT || this == RIGHT_TO_LEFT
 					|| this == CENTERED_LEFT_TO_RIGHT;
 		}
 		

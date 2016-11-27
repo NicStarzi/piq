@@ -7,9 +7,9 @@ import edu.udo.piq.components.charts.PLineChart;
 import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.components.textbased.PLabel;
+import edu.udo.piq.layouts.PAnchorLayout;
 import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PBorderLayout.Constraint;
-import edu.udo.piq.layouts.PCentricLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
 import edu.udo.piq.layouts.PWrapLayout;
 
@@ -23,6 +23,7 @@ public class SwingPTest_PLineChart extends AbstractSwingPTest {
 		super(640, 480);
 	}
 	
+	@Override
 	public void buildGUI() {
 		PPanel bodyPnl = new PPanel();
 		bodyPnl.setLayout(new PBorderLayout(bodyPnl));
@@ -47,7 +48,7 @@ public class SwingPTest_PLineChart extends AbstractSwingPTest {
 		btm.addChild(btnRmv, null);
 		
 		PPanel cnt = new PPanel();
-		cnt.setLayout(new PCentricLayout(cnt));
+		cnt.setLayout(new PAnchorLayout(cnt));
 		bodyPnl.addChild(cnt, Constraint.CENTER);
 		
 		PLineChart chart = new PLineChart();
@@ -73,20 +74,16 @@ public class SwingPTest_PLineChart extends AbstractSwingPTest {
 		cnt.addChild(chart, null);
 		
 		btnAdd.addObs((PClickObs) (cmp) -> {
-				new Thread(new Runnable() {
-					public void run() {
-						int index = chart.getModel().getDataCount();
-						chart.getModel().addDataPoint(index, sldAdd.getModel().getValue());
-					}
+				new Thread(() -> {
+					int index = chart.getModel().getDataCount();
+					chart.getModel().addDataPoint(index, sldAdd.getModel().getValue());
 				}).run();
 			});
 		btnRmv.addObs((PClickObs) (cmp) -> {
-				new Thread(new Runnable() {
-					public void run() {
-						int index = chart.getModel().getDataCount() - 1;
-						if (chart.getModel().canRemoveDataPoint(index)) {
-							chart.getModel().removeDataPoint(index);
-						}
+				new Thread(() -> {
+					int index = chart.getModel().getDataCount() - 1;
+					if (chart.getModel().canRemoveDataPoint(index)) {
+						chart.getModel().removeDataPoint(index);
 					}
 				}).run();
 			});

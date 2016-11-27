@@ -31,7 +31,7 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 	
 	/*
 	 * Input: Press Up
-	 * If the UP key is pressed while the spinner has focus, a model and 
+	 * If the UP key is pressed while the spinner has focus, a model and
 	 * is enabled, the next value of the spinners model will be selected.
 	 */
 	public static final String INPUT_IDENTIFIER_PRESS_UP = "pressUp";
@@ -41,7 +41,7 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 	
 	/*
 	 * Input: Press Down
-	 * If the DOWN key is pressed while the spinner has focus, a model and 
+	 * If the DOWN key is pressed while the spinner has focus, a model and
 	 * is enabled, the previous value of the spinners model will be selected.
 	 */
 	public static final String INPUT_IDENTIFIER_PRESS_DOWN = "pressDown";
@@ -53,7 +53,7 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 		return self.isEnabled() && self.getModel() != null;
 	}
 	
-	protected final ObserverList<PSpinnerModelObs> modelObsList = 
+	protected final ObserverList<PSpinnerModelObs> modelObsList =
 			PCompUtil.createDefaultObserverList();
 	protected final PSpinnerModelObs modelObs = this::onModelValueChanged;
 	protected PSpinnerModel model;
@@ -81,8 +81,9 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 		defineInput(INPUT_IDENTIFIER_PRESS_DOWN, INPUT_PRESS_DOWN, REACTION_PRESS_DOWN);
 	}
 	
+	@Override
 	protected void setLayout(PLayout layout) {
-		ThrowException.ifTypeCastFails(layout, PSpinnerLayout.class, 
+		ThrowException.ifTypeCastFails(layout, PSpinnerLayout.class,
 				"! layout instanceof PSpinnerLayout");
 		super.setLayout(layout);
 	}
@@ -169,16 +170,18 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 		}
 	}
 	
+	@Override
 	public void defaultRender(PRenderer renderer) {
 	}
 	
+	@Override
 	public boolean defaultFillsAllPixels() {
 		PComponent editor = getEditor();
 		PComponent btnNext = getNextButton();
 		PComponent btnPrev = getPrevButton();
-		return editor != null && PCompUtil.fillsAllPixels(editor)
-				&& btnNext != null && PCompUtil.fillsAllPixels(btnNext)
-				&& btnPrev != null && PCompUtil.fillsAllPixels(btnPrev);
+		return editor != null && editor.fillsAllPixels()
+				&& btnNext != null && btnNext.fillsAllPixels()
+				&& btnPrev != null && btnPrev.fillsAllPixels();
 	}
 	
 	public void addObs(PSpinnerModelObs obs) throws NullPointerException {
@@ -201,7 +204,7 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 	
 	public static class PSpinnerEditor extends PTextField implements PSpinnerPart {
 		
-		protected final PSpinnerModelObs spnrModelObs = 
+		protected final PSpinnerModelObs spnrModelObs =
 				(model, oldVal) -> synchronizeModelValue();
 		protected PSpinnerModel spnrModel;
 		protected ObjToStr encoder;
@@ -212,6 +215,7 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 			addObs((PTextFieldObs) (self) -> onUserInput());
 		}
 		
+		@Override
 		public void setOutputEncoder(ObjToStr outputEncoder) {
 			encoder = outputEncoder;
 			synchronizeModelValue();
@@ -221,6 +225,7 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 			return encoder;
 		}
 		
+		@Override
 		public void setSpinnerModel(PSpinnerModel model) {
 			if (getSpinnerModel() != null) {
 				getSpinnerModel().removeObs(spnrModelObs);
@@ -239,6 +244,7 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 			return spnrModel;
 		}
 		
+		@Override
 		public PSpinner getSpinner() {
 			if (getParent() instanceof PSpinner) {
 				return (PSpinner) getParent();
@@ -246,6 +252,7 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 			return null;
 		}
 		
+		@Override
 		public boolean isEnabled() {
 			PSpinner parent = getSpinner();
 			if (parent != null) {
@@ -285,7 +292,7 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 		
 		protected static final PSize PREF_SIZE = new ImmutablePSize(16, 12);
 		
-		protected final PSpinnerModelObs spnrModelObs = 
+		protected final PSpinnerModelObs spnrModelObs =
 				(model, oldVal) -> onSpinnerModelValueChanged();
 		protected PSpinnerBtnDir dir;
 		protected PSpinnerModel spnrModel;
@@ -323,15 +330,18 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 			}
 		}
 		
+		@Override
 		public void setContent(PComponent component) {
 			throw new IllegalStateException(
 					getClass().getSimpleName()+" does not support content.");
 		}
 		
+		@Override
 		public PComponent getContent() {
 			return null;
 		}
 		
+		@Override
 		public void setOutputEncoder(ObjToStr outputEncoder) {
 			encoder = outputEncoder;
 		}
@@ -340,6 +350,7 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 			return encoder;
 		}
 		
+		@Override
 		public void setSpinnerModel(PSpinnerModel model) {
 			if (getSpinnerModel() != null) {
 				getSpinnerModel().removeObs(spnrModelObs);
@@ -366,6 +377,7 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 			return dir;
 		}
 		
+		@Override
 		public boolean isEnabled() {
 			PComponent parent = getParent();
 			if (parent instanceof PSpinner) {
@@ -374,6 +386,7 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 			return super.isEnabled();
 		}
 		
+		@Override
 		public void defaultRender(PRenderer renderer) {
 			PBounds bnds = getBounds();
 			int x = bnds.getX();
@@ -423,6 +436,7 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 			renderer.drawTriangle(triaX1, triaY1, triaX2, triaY2, triaX3, triaY3);
 		}
 		
+		@Override
 		public PSize getDefaultPreferredSize() {
 			return PREF_SIZE;
 		}

@@ -13,19 +13,21 @@ public abstract class AbstractPContainer<CONSTRAINT_CLASS> extends AbstractPLayo
 	
 	protected static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(20, 20);
 	
+	@Override
 	public PLayout getLayout() {
 		return (PLayout) super.getLayout();
 	}
 	
+	@Override
 	public void setBorder(PBorder border) {
 		super.setBorder(border);
 	}
 	
 	/**
-	 * Delegates to the layout of this container.<br> 
+	 * Delegates to the layout of this container.<br>
 	 * This method exists solely for convenience.<br>
 	 * @param component		the component that will be added as a child
-	 * @param constraint	the constraint used to add the child. 
+	 * @param constraint	the constraint used to add the child.
 	 * 						Valid constraints depend on the layout being used.
 	 * @see #getLayout()
 	 * @see PLayout#addChild(PComponent, Object)
@@ -47,9 +49,10 @@ public abstract class AbstractPContainer<CONSTRAINT_CLASS> extends AbstractPLayo
 	}
 	
 	/**
-	 * Makes the protected method from {@link AbstractPLayoutOwner} 
+	 * Makes the protected method from {@link AbstractPLayoutOwner}
 	 * public to give access to the user.<br>
 	 */
+	@Override
 	public Collection<PComponent> getChildren() {
 		return super.getChildren();
 	}
@@ -63,22 +66,22 @@ public abstract class AbstractPContainer<CONSTRAINT_CLASS> extends AbstractPLayo
 	}
 	
 	/**
-	 * Makes the protected method from {@link AbstractPLayoutOwner} 
+	 * Makes the protected method from {@link AbstractPLayoutOwner}
 	 * public to give access to the user.<br>
 	 */
+	@Override
 	public boolean hasChildren() {
 		return super.hasChildren();
 	}
 	
+	@Override
 	public void defaultRender(PRenderer renderer) {
 		renderer.setColor(PColor.GREY75);
-		renderer.drawQuad(getBounds());
+		renderer.drawQuad(getBoundsWithoutBorder());
 	}
 	
-	public PSize getDefaultPreferredSize() {
-		if (getLayout() != null) {
-			return getLayout().getPreferredSize();
-		}
+	@Override
+	protected PSize getConstantDefaultPreferredSize() {
 		return DEFAULT_PREFERRED_SIZE;
 	}
 	

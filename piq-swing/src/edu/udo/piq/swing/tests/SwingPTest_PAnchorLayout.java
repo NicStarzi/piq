@@ -11,6 +11,7 @@ import edu.udo.piq.layouts.AlignmentX;
 import edu.udo.piq.layouts.AlignmentY;
 import edu.udo.piq.layouts.PGridLayout;
 import edu.udo.piq.layouts.PGridLayout.Growth;
+import edu.udo.piq.style.standard.StandardStyleSheet;
 
 public class SwingPTest_PAnchorLayout extends AbstractSwingPTest {
 	
@@ -22,7 +23,10 @@ public class SwingPTest_PAnchorLayout extends AbstractSwingPTest {
 		super(480, 320);
 	}
 	
+	@Override
 	public void buildGUI() {
+		root.setStyleSheet(new StandardStyleSheet());
+		
 		PPanel bodyPnl = new PPanel();
 		PGridLayout gridLayout = new PGridLayout(bodyPnl, 2, 4);
 		gridLayout.setColumnGrowth(0, Growth.MAXIMIZE);
@@ -32,12 +36,10 @@ public class SwingPTest_PAnchorLayout extends AbstractSwingPTest {
 		
 		PAnchorPanel ancPnl = new PAnchorPanel();
 		ancPnl.setContent(new PButton(new PLabel("Button")));
-		bodyPnl.addChild(ancPnl, "0 0 1 6 alignX=F alignY=F");
+		bodyPnl.addChild(ancPnl, "0 0 1 4 alignX=F alignY=F");
 		
-//		PLineBorder border = new PLineBorder(1);
-//		border.setElusive(true);
-//		PGuiUtil.addBorderTo(ancPnl, border);
 		ancPnl.setBorder(new PLineBorder(1));
+//		ancPnl.setBorder(new PBevelBorder());
 		
 		PSpinner selectAlignX = new PSpinner(
 				new PSpinnerModelList(AlignmentX.ALL, ancPnl.getAlignmentX()));

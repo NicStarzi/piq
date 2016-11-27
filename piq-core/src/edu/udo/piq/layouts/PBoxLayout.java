@@ -3,7 +3,6 @@ package edu.udo.piq.layouts;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
-import edu.udo.piq.PLayoutDesign;
 import edu.udo.piq.tools.AbstractMapPLayout;
 import edu.udo.piq.tools.ImmutablePInsets;
 
@@ -17,6 +16,7 @@ public class PBoxLayout extends AbstractMapPLayout {
 		rootBox = new Box();
 	}
 	
+	@Override
 	protected void onChildAdded(PComponent child, Object constraint) {
 		Box box = (Box) constraint;
 		if (box.isBox()) {
@@ -33,27 +33,21 @@ public class PBoxLayout extends AbstractMapPLayout {
 	}
 	
 	public PInsets getInsets() {
-		PLayoutDesign design = getDesign();
-		if (design == null) {
-			return insets;
-		}
-		Object maybeInsets = getDesign().getAttribute(ATTRIBUTE_KEY_INSETS);
-		if (maybeInsets != null && maybeInsets instanceof PInsets) {
-			return (PInsets) maybeInsets;
-		}
-		return insets;
+		return getStyleAttribute(ATTRIBUTE_KEY_INSETS, insets);
 	}
 	
 	public Box getRootBox() {
 		return rootBox;
 	}
 	
+	@Override
 	protected boolean canAdd(PComponent component, Object constraint) {
-		return constraint != null && constraint instanceof Box 
-				&& !((Box) constraint).isBox() 
+		return constraint != null && constraint instanceof Box
+				&& !((Box) constraint).isBox()
 				&& getChildForConstraint(constraint) == null;
 	}
 	
+	@Override
 	protected void layOutInternal() {
 		PBounds ob = getOwner().getBounds();
 		PInsets insets = getInsets();
@@ -112,6 +106,7 @@ public class PBoxLayout extends AbstractMapPLayout {
 		}
 	}
 	
+	@Override
 	protected void onInvalidated() {
 		Box root = getRootBox();
 		int w = recursiveGetPrefW(root);

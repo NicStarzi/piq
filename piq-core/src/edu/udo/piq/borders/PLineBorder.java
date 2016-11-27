@@ -21,35 +21,26 @@ public class PLineBorder extends AbstractPBorder {
 		setLineThickness(lineThickness);
 	}
 	
-//	public PLineBorder(PComponent content) {
-//		this(content, 1);
-//	}
-//	
-//	public PLineBorder(PComponent content, int lineThickness) {
-//		super(content);
-//		setLineThickness(lineThickness);
-//	}
-	
 	public void setLineThickness(int value) {
 		if (getLineThickness() != value) {
 			insets.set(value);
 			fireInsetsChangedEvent();
 		}
-//		getLayout().setInsets(new ImmutablePInsets(value));
 	}
 	
 	public int getLineThickness() {
 		return insets.getFromTop();
 	}
 	
+	@Override
 	public PInsets getDefaultInsets(PComponent component) {
 		return insets;
 	}
 	
+	@Override
 	public void defaultRender(PRenderer renderer, PComponent component) {
 		PBounds bnds = component.getBounds();
-//		PInsets insets = getLayout().getInsets();
-		PInsets insets = getDefaultInsets(component);
+		PInsets insets = getInsets(component);
 		int top = insets.getFromTop();
 		int lft = insets.getFromLeft();
 		int rgt = insets.getFromRight();
@@ -70,6 +61,7 @@ public class PLineBorder extends AbstractPBorder {
 		renderer.drawQuad( x - 0, fy - btm, fx + 0, fy + 0);
 	}
 	
+	@Override
 	public boolean defaultFillsAllPixels(PComponent component) {
 		return true;
 	}

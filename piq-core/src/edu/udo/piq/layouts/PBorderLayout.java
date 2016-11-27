@@ -33,7 +33,7 @@ public class PBorderLayout extends AbstractEnumPLayout<Constraint> {
 	}
 	
 	public PInsets getInsets() {
-		return insets;
+		return getStyleAttribute(ATTRIBUTE_KEY_INSETS, insets);
 	}
 	
 	public void setGap(int value) {
@@ -45,13 +45,15 @@ public class PBorderLayout extends AbstractEnumPLayout<Constraint> {
 	}
 	
 	public int getGap() {
-		return gap;
+		return getStyleAttribute(ATTRIBUTE_KEY_GAP, gap);
 	}
 	
+	@Override
 	protected String getErrorMsgConstraintIllegal() {
 		return "constraint.getClass() != Constraint.class";
 	}
 	
+	@Override
 	protected void onInvalidated() {
 		PSize prefLft = getPreferredSizeOf(getChildForConstraint(Constraint.LEFT));
 		PSize prefRgt = getPreferredSizeOf(getChildForConstraint(Constraint.RIGHT));
@@ -78,6 +80,7 @@ public class PBorderLayout extends AbstractEnumPLayout<Constraint> {
 		prefSize.setHeight(prefH);
 	}
 	
+	@Override
 	protected void layOutInternal() {
 		PBounds ob = getOwner().getBounds();
 		PInsets insets = getInsets();
@@ -118,6 +121,7 @@ public class PBorderLayout extends AbstractEnumPLayout<Constraint> {
 		}
 	}
 	
+	@Override
 	protected void onChildPrefSizeChanged(PComponent child) {
 		ThrowException.ifFalse(containsChild(child), "containsChild(child) == false");
 		if (child != getChildForConstraint(Constraint.CENTER)) {
@@ -132,7 +136,7 @@ public class PBorderLayout extends AbstractEnumPLayout<Constraint> {
 		BOTTOM,
 		CENTER,
 		;
-		public static final List<Constraint> ALL = 
+		public static final List<Constraint> ALL =
 				Collections.unmodifiableList(Arrays.asList(values()));
 		public static final int COUNT = ALL.size();
 	}

@@ -2,8 +2,8 @@ package edu.udo.piq;
 
 /**
  * An observer for {@link PComponent}s.<br>
- * These observers can be used to get a notification when 
- * a {@link PComponent} changes its preferred size or is 
+ * These observers can be used to get a notification when
+ * a {@link PComponent} changes its preferred size or is
  * added to or removed from a {@link PReadOnlyLayout}.<br>
  * 
  * @author Nic Starzi
@@ -28,16 +28,16 @@ public interface PComponentObs {
 	
 	/**
 	 * This event is fired when the {@link PBounds} of a {@link PComponent} have changed.<br>
-	 * The bounds of a component change when the component is laid out by its parents 
+	 * The bounds of a component change when the component is laid out by its parents
 	 * {@link PLayout} or when the component is added to or removed from a {@link PLayout}.<br>
-	 * The bounds of a component may be null.<br> 
+	 * The bounds of a component may be null.<br>
 	 * 
 	 * @param component the component that fired the event
 	 */
 	public default void onBoundsChanged(PComponent component) {}
 	
 	/**
-	 * This event is fired by a {@link PComponent} when the component 
+	 * This event is fired by a {@link PComponent} when the component
 	 * was added to a {@link PReadOnlyLayout layout}.<br>
 	 * 
 	 * @param component the component that fired the event
@@ -45,11 +45,11 @@ public interface PComponentObs {
 	public default void onAdd(PComponent component) {}
 	
 	/**
-	 * This event is fired by a {@link PComponent} when the component 
+	 * This event is fired by a {@link PComponent} when the component
 	 * was removed from a {@link PReadOnlyLayout layout}.<br>
-	 * 
+	 * @param oldParent the component from which a component was removed
 	 * @param component the component that fired the event
 	 */
-	public default void onRemove(PComponent component) {}
+	public default void onRemove(PComponent oldParent, PComponent component) {}
 	
 }

@@ -7,11 +7,9 @@ import java.util.LinkedList;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PDesign;
 import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PRootOverlay;
-import edu.udo.piq.PSize;
 import edu.udo.piq.tools.ImmutablePBounds;
 import edu.udo.piq.tools.MutablePBounds;
 
@@ -20,24 +18,24 @@ public class PCompUtil {
 	private PCompUtil() {}
 	
 	/**
-	 * Returns the portion of the components {@link PBounds} that is not 
+	 * Returns the portion of the components {@link PBounds} that is not
 	 * clipped by the bounds of an ancestor of the component.<br>
-	 * More specifically the returned {@link PBounds} are those bounds that 
-	 * are created by recursively intersecting the components bounds with 
+	 * More specifically the returned {@link PBounds} are those bounds that
+	 * are created by recursively intersecting the components bounds with
 	 * its parents bounds.<br>
-	 * The returned {@link PBounds} are not synchronized with the components 
+	 * The returned {@link PBounds} are not synchronized with the components
 	 * actual bounds and may or may not be immutable.<br>
 	 * <br>
-	 * If the clipped bounds of the component would have negative size, or 
+	 * If the clipped bounds of the component would have negative size, or
 	 * if the component has no parent, null is returned instead.<br>
 	 * 
-	 * @param result					used to store the result. If this is 
-	 * 									null a new instance of {@link PBounds} 
-	 * 									will be created and returned. If the  
+	 * @param result					used to store the result. If this is
+	 * 									null a new instance of {@link PBounds}
+	 * 									will be created and returned. If the
 	 * 									argument is not null it will be returned.
-	 * @param comp						the component for which the clipped 
+	 * @param comp						the component for which the clipped
 	 * 									bounds are calculated. Must not be null.
-	 * @return							the clipped {@link PBounds} of this 
+	 * @return							the clipped {@link PBounds} of this
 	 * 									component or null
 	 * @throws NullPointerException		if comp is null
 	 * @see PComponent#getBounds()
@@ -84,9 +82,9 @@ public class PCompUtil {
 	
 	/**
 	 * Creates a new instance of {@link ObserverList} and returns it.<br>
-	 * Use this method if you are not sure which implementation of 
-	 * {@link ObserverList} is the best for your use case. This method 
-	 * will always return the default implementation that should be used 
+	 * Use this method if you are not sure which implementation of
+	 * {@link ObserverList} is the best for your use case. This method
+	 * will always return the default implementation that should be used
 	 * in the most general case.<br>
 	 * @return		a non-null instance of {@link ObserverList}
 	 * @see ObserverList
@@ -96,46 +94,8 @@ public class PCompUtil {
 	}
 	
 	/**
-	 * Returns the preferred {@link PSize} of the component as returned by the 
-	 * components {@link PDesign}.<br>
-	 * This method never returns null.<br>
-	 * 
-	 * @param component
-	 * @return the preferred PSize of the component as determined by the components design
-	 * @throws NullPointerException if component is null
-	 */
-	public static PSize getPreferredSizeOf(PComponent component) throws NullPointerException {
-		PDesign design = component.getDesign();
-		if (design == null) {
-			return component.getDefaultPreferredSize();
-		}
-		return design.getPreferredSize(component);
-	}
-	
-	/**
-	 * Returns whether or not the given component fills all of its pixels with its render 
-	 * method. If the component has a {@link PDesign} the returned value will be taken 
-	 * from the design. If the component does not have a design the 
-	 * {@link PComponent#defaultFillsAllPixels()} will be used.<br>
-	 * 
-	 * @param component
-	 * @return whether the component fills all pixels when being rendered
-	 * @throws NullPointerException if component is null
-	 */
-	public static boolean fillsAllPixels(PComponent component) throws NullPointerException {
-		if (component instanceof PRoot) {
-			return true;
-		}
-		PDesign design = component.getDesign();
-		if (design == null) {
-			return component.defaultFillsAllPixels();
-		}
-		return design.fillsAllPixels(component);
-	}
-	
-	/**
-	 * If component is part of a GUI hierarchy with a {@link PRoot} at the 
-	 * top the {@link PRoot#reRender(PComponent)} method is called on the root 
+	 * If component is part of a GUI hierarchy with a {@link PRoot} at the
+	 * top the {@link PRoot#reRender(PComponent)} method is called on the root
 	 * of component with component as an argument.<br>
 	 * If no such PRoot exists for component this method does nothing.<br>
 	 * 
@@ -195,7 +155,7 @@ public class PCompUtil {
 	
 	@SuppressWarnings("unchecked")
 	public static <T> Collection<T> getAllDescendantsOfType(
-			Class<T> descendantType, PComponent ancestor) 
+			Class<T> descendantType, PComponent ancestor)
 	{
 		ThrowException.ifNull(descendantType, "descendantType == null");
 		ThrowException.ifNull(ancestor, "ancestor == null");
@@ -228,11 +188,11 @@ public class PCompUtil {
 	}
 	
 	/**
-	 * Returns the deepest {@link PComponent} within the GUI tree of root that contains 
+	 * Returns the deepest {@link PComponent} within the GUI tree of root that contains
 	 * the point at the coordinates (x, y).<br>
-	 * If (x, y) is not within the clipped bounds of root null is returned, otherwise 
+	 * If (x, y) is not within the clipped bounds of root null is returned, otherwise
 	 * the return value will be non-null.<br>
-	 * The returned value might be root either if root does not have any children or if 
+	 * The returned value might be root either if root does not have any children or if
 	 * no child of root contains (x, y) but root does.<br>
 	 * 
 	 * @param root the component that spans the GUI tree that will be searched

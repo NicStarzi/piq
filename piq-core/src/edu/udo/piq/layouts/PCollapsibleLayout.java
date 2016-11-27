@@ -72,7 +72,7 @@ public class PCollapsibleLayout extends AbstractEnumPLayout<PCollapsibleLayout.C
 	}
 	
 	public PInsets getInsets() {
-		return insets;
+		return getStyleAttribute(ATTRIBUTE_KEY_INSETS, insets);
 	}
 	
 	public void setHeaderBodyGap(int value) {
@@ -99,6 +99,7 @@ public class PCollapsibleLayout extends AbstractEnumPLayout<PCollapsibleLayout.C
 		return btnLblGap;
 	}
 	
+	@Override
 	protected void onInvalidated() {
 		PComponent btn = getChildForConstraint(Constraint.EXPAND_BUTTON);
 		PComponent lbl = getChildForConstraint(Constraint.LABEL);
@@ -117,7 +118,7 @@ public class PCollapsibleLayout extends AbstractEnumPLayout<PCollapsibleLayout.C
 			prefSizeBdy = PSize.ZERO_SIZE;
 			prefH = prefHeaderH;
 		}
-		int prefW = Math.max(prefSizeBdy.getWidth(), 
+		int prefW = Math.max(prefSizeBdy.getWidth(),
 				prefSizeBtn.getWidth() + prefSizeLbl.getWidth());
 		
 		PInsets insets = getInsets();
@@ -128,6 +129,7 @@ public class PCollapsibleLayout extends AbstractEnumPLayout<PCollapsibleLayout.C
 		prefSize.setHeight(prefH);
 	}
 	
+	@Override
 	protected void layOutInternal() {
 		PInsets insets = getInsets();
 		PBounds ob = getOwner().getBounds();

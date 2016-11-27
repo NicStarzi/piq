@@ -3,7 +3,6 @@ package edu.udo.piq.layouts;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
-import edu.udo.piq.PLayoutDesign;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractMapPLayout;
 import edu.udo.piq.tools.ImmutablePInsets;
@@ -18,6 +17,7 @@ public class PLayeredLayout extends AbstractMapPLayout {
 		super(component);
 	}
 	
+	@Override
 	protected void onChildAdded(PComponent component, Object constraint) {
 		if (shownLayerKey == null) {
 			shownLayerKey = constraint;
@@ -25,8 +25,8 @@ public class PLayeredLayout extends AbstractMapPLayout {
 	}
 	
 	public void setShownLayerKey(Object layerKey) {
-		if (shownLayerKey != layerKey || (layerKey != null 
-				&& !layerKey.equals(shownLayerKey))) 
+		if (shownLayerKey != layerKey || (layerKey != null
+				&& !layerKey.equals(shownLayerKey)))
 		{
 			shownLayerKey = layerKey;
 			invalidate();
@@ -43,15 +43,7 @@ public class PLayeredLayout extends AbstractMapPLayout {
 	}
 	
 	public PInsets getInsets() {
-		PLayoutDesign design = getDesign();
-		if (design == null) {
-			return insets;
-		}
-		Object maybeInsets = getDesign().getAttribute(ATTRIBUTE_KEY_INSETS);
-		if (maybeInsets != null && maybeInsets instanceof PInsets) {
-			return (PInsets) maybeInsets;
-		}
-		return insets;
+		return getStyleAttribute(ATTRIBUTE_KEY_INSETS, insets);
 	}
 	
 	public void setGrowContent(boolean isGrowContent) {
@@ -65,10 +57,12 @@ public class PLayeredLayout extends AbstractMapPLayout {
 		return growContent;
 	}
 	
+	@Override
 	protected boolean canAdd(PComponent component, Object constraint) {
 		return constraint != null;
 	}
 	
+	@Override
 	protected void onInvalidated() {
 		int prefW = 0;
 		int prefH = 0;
@@ -89,6 +83,7 @@ public class PLayeredLayout extends AbstractMapPLayout {
 		prefSize.setHeight(prefH);
 	}
 	
+	@Override
 	protected void layOutInternal() {
 		if (getShownLayerKey() == null) {
 			return;

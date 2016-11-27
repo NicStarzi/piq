@@ -11,13 +11,14 @@ import edu.udo.piq.PRootOverlay;
 import edu.udo.piq.PTimer;
 import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.components.textbased.PTextModel;
-import edu.udo.piq.layouts.PCentricLayout;
+import edu.udo.piq.layouts.PAnchorLayout;
 
 public class PToolTip extends AbstractPFloatingPanel {
 	
 	public static final int DEFAULT_SHOW_DELAY = 60;
 	
 	protected final PMouseObs mouseObs = new PMouseObs() {
+		@Override
 		public void onMouseMoved(PMouse mouse) {
 			PToolTip.this.onMouseMoved(mouse);
 		}
@@ -30,11 +31,12 @@ public class PToolTip extends AbstractPFloatingPanel {
 	
 	public PToolTip() {
 		super();
-		setLayout(new PCentricLayout(this));
+		setLayout(new PAnchorLayout(this));
 		showTimer.setRepeating(false);
 		showTimer.setDelay(DEFAULT_SHOW_DELAY);
 		
 		addObs(new PComponentObs() {
+			@Override
 			public void onPreferredSizeChanged(PComponent component) {
 				if (isShown) {
 					repositionOnOverlay();
@@ -84,18 +86,22 @@ public class PToolTip extends AbstractPFloatingPanel {
 		return getLayout().getContent();
 	}
 	
+	@Override
 	public int getOverlayPositionX() {
 		return showX;
 	}
 	
+	@Override
 	public int getOverlayPositionY() {
 		return showY;
 	}
 	
-	public PCentricLayout getLayout() {
-		return (PCentricLayout) super.getLayout();
+	@Override
+	public PAnchorLayout getLayout() {
+		return (PAnchorLayout) super.getLayout();
 	}
 	
+	@Override
 	public void defaultRender(PRenderer renderer) {
 		PBounds bnds = getBounds();
 		int x = bnds.getX();
@@ -138,11 +144,13 @@ public class PToolTip extends AbstractPFloatingPanel {
 		isShown = true;
 	}
 	
+	@Override
 	protected void removeFromOverlay() {
 		super.removeFromOverlay();
 		isShown = false;
 	}
 	
+	@Override
 	protected PRootOverlay getOverlay() {
 		if (target == null || target.getRoot() == null) {
 			return null;

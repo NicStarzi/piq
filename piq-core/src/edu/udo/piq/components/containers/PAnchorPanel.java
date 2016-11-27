@@ -34,6 +34,7 @@ public class PAnchorPanel extends AbstractPContainer<Integer> {
 		getLayout().setContent(component);
 	}
 	
+	@Override
 	public PAnchorLayout getLayout() {
 		return (PAnchorLayout) super.getLayout();
 	}

@@ -1,6 +1,8 @@
 package edu.udo.piq.tools;
 
 import edu.udo.piq.PBounds;
+import edu.udo.piq.PInsets;
+import edu.udo.piq.PSize;
 
 public class MutablePBounds extends AbstractPBounds implements PBounds {
 	
@@ -17,12 +19,16 @@ public class MutablePBounds extends AbstractPBounds implements PBounds {
 		this(0, 0, width, height);
 	}
 	
+	public MutablePBounds(PBounds other) {
+		this(other.getX(), other.getY(), other.getWidth(), other.getHeight());
+	}
+	
 	public MutablePBounds(int x, int y, int width, int height) {
 		super();
 		this.x = x;
 		this.y = y;
-		this.w = width;
-		this.h = height;
+		w = width;
+		h = height;
 	}
 	
 	public void set(PBounds other) {
@@ -36,6 +42,7 @@ public class MutablePBounds extends AbstractPBounds implements PBounds {
 		x = value;
 	}
 	
+	@Override
 	public int getX() {
 		return x;
 	}
@@ -44,6 +51,7 @@ public class MutablePBounds extends AbstractPBounds implements PBounds {
 		y = value;
 	}
 	
+	@Override
 	public int getY() {
 		return y;
 	}
@@ -52,6 +60,7 @@ public class MutablePBounds extends AbstractPBounds implements PBounds {
 		w = value;
 	}
 	
+	@Override
 	public int getWidth() {
 		return w;
 	}
@@ -60,8 +69,26 @@ public class MutablePBounds extends AbstractPBounds implements PBounds {
 		h = value;
 	}
 	
+	@Override
 	public int getHeight() {
 		return h;
+	}
+	
+	public void add(PSize size) {
+		w += size.getWidth();
+		h += size.getHeight();
+	}
+	
+	public void subtract(PSize size) {
+		w -= size.getWidth();
+		h -= size.getHeight();
+	}
+	
+	public void subtract(PInsets insets) {
+		x += insets.getFromLeft();
+		y += insets.getFromTop();
+		w -= insets.getWidth();
+		h -= insets.getHeight();
 	}
 	
 }

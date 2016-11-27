@@ -6,13 +6,12 @@ import java.util.List;
 
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PRoot;
-import edu.udo.piq.util.PCompUtil;
 
 public class ReRenderSet implements Iterable<PComponent> {
 	
 	private final PRoot root;
 	/**
-	 * This is a {@link LinkedList} because we need to clear it 
+	 * This is a {@link LinkedList} because we need to clear it
 	 * regularly and delete elements at arbitrary indices.<br>
 	 */
 	private final List<PComponent> buffer = new LinkedList<>();
@@ -26,7 +25,7 @@ public class ReRenderSet implements Iterable<PComponent> {
 		if (containsRoot) {
 			 return false;
 		}
-		while (component != root && !PCompUtil.fillsAllPixels(component)) {
+		while (component != root && !component.fillsAllPixels()) {
 			component = component.getParent();
 		}
 		if (root == component) {
@@ -82,6 +81,7 @@ public class ReRenderSet implements Iterable<PComponent> {
 		return buffer.toArray(new PComponent[buffer.size()]);
 	}
 	
+	@Override
 	public Iterator<PComponent> iterator() {
 		return buffer.iterator();
 	}

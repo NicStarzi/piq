@@ -7,20 +7,20 @@ import edu.udo.piq.util.PCompUtil;
 import edu.udo.piq.util.ThrowException;
 
 /**
- * The {@link PDnDManager} is a part of a {@link PRoot} and handles dragging and 
- * dropping of {@link PDnDTransfer PDnDTransfers} from one {@link PComponent} to 
+ * The {@link PDnDManager} is a part of a {@link PRoot} and handles dragging and
+ * dropping of {@link PDnDTransfer PDnDTransfers} from one {@link PComponent} to
  * another within the same GUI.<br>
- * There should be one instance of this class per {@link PRoot} that never changes 
+ * There should be one instance of this class per {@link PRoot} that never changes
  * within the {@link PRoot} life cycle.<br>
  * <br>
- * {@link PDnDManager PDnDManagers} make use of the {@link PRootOverlay} of the 
- * {@link PRoot} as it is returned by the {@link PRoot#getOverlay()} method to 
+ * {@link PDnDManager PDnDManagers} make use of the {@link PRootOverlay} of the
+ * {@link PRoot} as it is returned by the {@link PRoot#getOverlay()} method to
  * render the visible representation of a drag and drop.<br>
- * For the control of the drag a {@link PMouseObs} is installed in the 
+ * For the control of the drag a {@link PMouseObs} is installed in the
  * {@link PRoot PRoots} {@link PMouse}.<br>
  * <br>
- * The default {@link PDnDManager} implementation can only manage one drag at a 
- * time and does not allow another drag to start until the previous drag has either 
+ * The default {@link PDnDManager} implementation can only manage one drag at a
+ * time and does not allow another drag to start until the previous drag has either
  * finished or was aborted.<br>
  * 
  * @see PDnDSupport
@@ -47,10 +47,10 @@ public class PDnDManager {
 	/**
 	 * Creates a new {@link PDnDManager} for the given {@link PRoot}.<br>
 	 * The root for the manager can not be changed after creation.<br>
-	 * The root will be used to get the {@link PGlassPanel} and the {@link PMouse} to 
+	 * The root will be used to get the {@link PGlassPanel} and the {@link PMouse} to
 	 * be used.<br>
 	 * 
-	 * @param root the root that the manager will use 
+	 * @param root the root that the manager will use
 	 * @throws NullPointerException if root is null
 	 * @see PRoot#getMouse()
 	 * @see PRoot#getOverlay()
@@ -60,9 +60,11 @@ public class PDnDManager {
 		ThrowException.ifNull(root, "root == null");
 		this.root = root;
 		mouseObs = new PMouseObs() {
+			@Override
 			public void onMouseMoved(PMouse mouse) {
 				onMouseMove(mouse);
 			}
+			@Override
 			public void onButtonReleased(PMouse mouse, MouseButton btn) {
 				onMouseRelease(mouse, btn);
 			}
@@ -70,9 +72,9 @@ public class PDnDManager {
 	}
 	
 	/**
-	 * Is called by the {@link PMouseObs} when the mouse has moved while a drag and 
+	 * Is called by the {@link PMouseObs} when the mouse has moved while a drag and
 	 * drop is currently taking place.<br>
-	 * This method should be used to update the position of the visual representation 
+	 * This method should be used to update the position of the visual representation
 	 * of the active drag and drop.<br>
 	 * 
 	 * @param mouse never null
@@ -82,10 +84,10 @@ public class PDnDManager {
 	}
 	
 	/**
-	 * Is called by the {@link PMouseObs} when a mouse button was released while a 
+	 * Is called by the {@link PMouseObs} when a mouse button was released while a
 	 * drag and drop is currently taking place.<br>
-	 * If the released mouse button was the left mouse button the drag we will either 
-	 * drop the active transfer on a component or abort the drag the component at the 
+	 * If the released mouse button was the left mouse button the drag we will either
+	 * drop the active transfer on a component or abort the drag the component at the
 	 * mouse location is not accepting the transfer.<br>
 	 * 
 	 * @param mouse never null
@@ -114,7 +116,7 @@ public class PDnDManager {
 	}
 	
 	/**
-	 * If this method returns true then the given transfer can be used as an argument to the 
+	 * If this method returns true then the given transfer can be used as an argument to the
 	 * {@link #startDrag(PDnDTransfer)} method without causing an exception to be thrown.<br>
 	 * 
 	 * @return true if drag is possible
@@ -125,10 +127,10 @@ public class PDnDManager {
 	
 	/**
 	 * Initializes a drag.<br>
-	 * If the root supports an overlay and the transfer supports a visual representation 
+	 * If the root supports an overlay and the transfer supports a visual representation
 	 * then the visual representation will be added to the overlay and updated as needed.<br>
 	 * <br>
-	 * If a drag is already taking place when this method is called an exception is 
+	 * If a drag is already taking place when this method is called an exception is
 	 * thrown since a {@link PDnDManager} does not support multiple drags at once.<br>
 	 * <br>
 	 * The drag can be aborted with the {@link #abortDrag()} method.<br>
@@ -141,8 +143,8 @@ public class PDnDManager {
 	 * @see PDnDTransfer
 	 * @see #abortDrag()
 	 */
-	public void startDrag(PDnDTransfer transfer) 
-			throws IllegalStateException, IllegalArgumentException 
+	public void startDrag(PDnDTransfer transfer)
+			throws IllegalStateException, IllegalArgumentException
 	{
 		ThrowException.ifNotNull(getActiveTransfer(), "activeTransfer != null");
 		ThrowException.ifNull(transfer, "transfer == null");
@@ -151,7 +153,7 @@ public class PDnDManager {
 		currentOverlay = getRoot().getOverlay();
 		if (hasIndicator()) {
 			currentOverlay.getLayout().addChild(
-					transfer.getIndicator(), 
+					transfer.getIndicator(),
 					makeInitialConstraint(transfer));
 		}
 		
@@ -162,7 +164,7 @@ public class PDnDManager {
 	}
 	
 	/**
-	 * Returns the {@link PDnDTransfer} that is currently active, that is, being actively 
+	 * Returns the {@link PDnDTransfer} that is currently active, that is, being actively
 	 * dragged and shown on the overlay.<br>
 	 * If no transfer is taking place at the moment the returned value will be null.<br>
 	 * 
@@ -176,8 +178,8 @@ public class PDnDManager {
 	
 	/**
 	 * Called when the drag is supposed to be successfully finished.<br>
-	 * Invokes {@link PDnDSupport#finishDrag(PComponent, PComponent, PDnDTransfer)} on the drag 
-	 * and drop support of the source of the active drag. Also removes the visual representation 
+	 * Invokes {@link PDnDSupport#finishDrag(PComponent, PComponent, PDnDTransfer)} on the drag
+	 * and drop support of the source of the active drag. Also removes the visual representation
 	 * from the overlay if it exists and unregisters the {@link PMouseObs}.<br>
 	 * Afterwards the active transfer will be null.<br>
 	 * <br>
@@ -198,10 +200,10 @@ public class PDnDManager {
 	}
 	
 	/**
-	 * Aborts the drag that is currently taking place by calling the 
-	 * {@link PDnDSupport#abortDrag(PComponent, PDnDTransfer)} method on the {@link PDnDSupport} 
+	 * Aborts the drag that is currently taking place by calling the
+	 * {@link PDnDSupport#abortDrag(PComponent, PDnDTransfer)} method on the {@link PDnDSupport}
 	 * of the source of the active {@link PDnDTransfer}.<br>
-	 * After this method has finished no {@link PDnDTransfer} will be active and the visual 
+	 * After this method has finished no {@link PDnDTransfer} will be active and the visual
 	 * representation of the transfer will be removed from the overlay if it exists.<br>
 	 * 
 	 * @throws IllegalStateException if no drag is currently taking place
@@ -218,7 +220,7 @@ public class PDnDManager {
 	}
 	
 	/**
-	 * Unregisters the {@link PMouseObs} and removes the visible representation of the drag 
+	 * Unregisters the {@link PMouseObs} and removes the visible representation of the drag
 	 * from the overlay if it exists.<br>
 	 * After this method has finished the active transfer is null.<br>
 	 * 
@@ -247,8 +249,8 @@ public class PDnDManager {
 	}
 	
 	/**
-	 * Finishes the drag as defined by {@link #finishDrag(PComponent)}, then drops the transfer on 
-	 * the target component by invoking {@link PDnDSupport#drop(PComponent, PDnDTransfer, int, int)} 
+	 * Finishes the drag as defined by {@link #finishDrag(PComponent)}, then drops the transfer on
+	 * the target component by invoking {@link PDnDSupport#drop(PComponent, PDnDTransfer, int, int)}
 	 * on the components drag and drop support.<br>
 	 * 
 	 * @param x where to drop the transfer
@@ -275,10 +277,10 @@ public class PDnDManager {
 	
 	/**
 	 * Returns true if the active transfer can be dropped on the given point.<br>
-	 * If this method returns true the {@link #getDropTarget(int, int)} method will return a 
+	 * If this method returns true the {@link #getDropTarget(int, int)} method will return a
 	 * non null component as the drop target.<br>
-	 * Furthermore the drop target will have a {@link PDnDSupport} that returns true with 
-	 * its {@link PDnDSupport#canDrop(PComponent, PDnDTransfer, int, int)} method for the 
+	 * Furthermore the drop target will have a {@link PDnDSupport} that returns true with
+	 * its {@link PDnDSupport#canDrop(PComponent, PDnDTransfer, int, int)} method for the
 	 * active transfer.<br>
 	 * 
 	 * @param x where to drop the transfer
@@ -315,8 +317,8 @@ public class PDnDManager {
 		
 		// Hide old drop location if drop target changed
 		PComponent dropTarget = getDropTarget(x, y);
-		if (dropLocationCmp != null 
-				&& dropLocationCmp != dropTarget) 
+		if (dropLocationCmp != null
+				&& dropLocationCmp != dropTarget)
 		{
 			PDnDSupport dndSup = dropLocationCmp.getDragAndDropSupport();
 			dndSup.hideDropLocation(dropLocationCmp, getActiveTransfer(), x, y);
@@ -332,7 +334,7 @@ public class PDnDManager {
 			PDnDIndicator indicator = getActiveTransfer().getIndicator();
 			indicator.setDropPossible(dropLocationCmp != null);
 			
-			PSize prefSize = PCompUtil.getPreferredSizeOf(indicator);
+			PSize prefSize = indicator.getPreferredSize();
 			int w = prefSize.getWidth();
 			int h = prefSize.getHeight();
 			x -= w / 2;
@@ -346,7 +348,7 @@ public class PDnDManager {
 		throwExceptionIfNoDragActive();
 		
 		PComponent cmp = getActiveTransfer().getIndicator();
-		PSize prefSize = PCompUtil.getPreferredSizeOf(cmp);
+		PSize prefSize = cmp.getPreferredSize();
 		int w = prefSize.getWidth();
 		int h = prefSize.getHeight();
 		int x = transfer.getDragStartX() - w / 2;
@@ -355,7 +357,7 @@ public class PDnDManager {
 	}
 	
 	protected boolean hasIndicator() {
-		return getActiveTransfer() != null && currentOverlay != null 
+		return getActiveTransfer() != null && currentOverlay != null
 				&& getActiveTransfer().getIndicator() != null;
 	}
 	

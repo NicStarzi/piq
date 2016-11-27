@@ -5,7 +5,7 @@ import edu.udo.piq.tools.MutablePBounds;
 
 /**
  * A simple bounding box that can be used for all kinds of purposes.<br>
- * All {@link PComponent}s have a bounding box when they are part of a 
+ * All {@link PComponent}s have a bounding box when they are part of a
  * GUI, its defined by the {@link PReadOnlyLayout} of their parent.<br>
  * 
  * @author Nic Starzi
@@ -13,7 +13,7 @@ import edu.udo.piq.tools.MutablePBounds;
 public interface PBounds extends PSize {
 	
 	/**
-	 * The x coordinate of the upper left corner of the 
+	 * The x coordinate of the upper left corner of the
 	 * rectangle defined by this PBounds instance.<br>
 	 * 
 	 * @return x coordinate
@@ -21,7 +21,7 @@ public interface PBounds extends PSize {
 	public int getX();
 	
 	/**
-	 * The y coordinate of the upper left corner of the 
+	 * The y coordinate of the upper left corner of the
 	 * rectangle defined by this PBounds instance.<br>
 	 * 
 	 * @return y coordinate
@@ -29,23 +29,25 @@ public interface PBounds extends PSize {
 	public int getY();
 	
 	/**
-	 * The width of the rectangle defined by this PBounds 
+	 * The width of the rectangle defined by this PBounds
 	 * instance.<br>
 	 * 
 	 * @return width of bounds
 	 */
+	@Override
 	public int getWidth();
 	
 	/**
-	 * The height of the rectangle defined by this PBounds 
+	 * The height of the rectangle defined by this PBounds
 	 * instance.<br>
 	 * 
 	 * @return height of bounds
 	 */
+	@Override
 	public int getHeight();
 	
 	/**
-	 * The x coordinate of the lower right corner of the 
+	 * The x coordinate of the lower right corner of the
 	 * rectangle defined by this PBounds instance.<br>
 	 * 
 	 * @return x + width
@@ -55,7 +57,7 @@ public interface PBounds extends PSize {
 	}
 	
 	/**
-	 * The y coordinate of the lower right corner of the 
+	 * The y coordinate of the lower right corner of the
 	 * rectangle defined by this PBounds instance.<br>
 	 * 
 	 * @return y + height
@@ -65,7 +67,7 @@ public interface PBounds extends PSize {
 	}
 	
 	/**
-	 * The x coordinate of the center of the rectangle 
+	 * The x coordinate of the center of the rectangle
 	 * defined by this PBounds instance.<br>
 	 * 
 	 * @return x + width / 2
@@ -75,7 +77,7 @@ public interface PBounds extends PSize {
 	}
 	
 	/**
-	 * The y coordinate of the center of the rectangle 
+	 * The y coordinate of the center of the rectangle
 	 * defined by this PBounds instance.<br>
 	 * 
 	 * @return y + height / 2
@@ -85,7 +87,7 @@ public interface PBounds extends PSize {
 	}
 	
 	/**
-	 * Returns true if the point defined by x and y is 
+	 * Returns true if the point defined by x and y is
 	 * within these bounds. Otherwise false is returned.<br>
 	 * 
 	 * @param x
@@ -109,9 +111,9 @@ public interface PBounds extends PSize {
 	}
 	
 	/**
-	 * Creates and returns a new instance of {@link PBounds} that is the 
+	 * Creates and returns a new instance of {@link PBounds} that is the
 	 * intersection between these bounds and the other bounds.<br>
-	 * If these two PBounds are disjunct, that means there is no intersection, 
+	 * If these two PBounds are disjunct, that means there is no intersection,
 	 * null will be returned.<br>
 	 * @param other		a non-null instance of PBounds
 	 * @return			a new PBounds object or null if no intersection exists
@@ -131,12 +133,32 @@ public interface PBounds extends PSize {
 			return null;
 		}
 		if (result == null) {
-			return new ImmutablePBounds(x, y, w, h); 
+			return new ImmutablePBounds(x, y, w, h);
 		}
 		result.setX(x);
 		result.setY(y);
 		result.setWidth(w);
 		result.setHeight(h);
 		return result;
+	}
+	
+	public default PBounds createCopyAndSubtract(PInsets insets) {
+		int x = getX() + insets.getFromLeft();
+		int fx = getFinalX() - insets.getFromRight();
+		if (fx < x) {
+			int tmp = fx;
+			fx = x;
+			x = tmp;
+		}
+		int y = getY() + insets.getFromTop();
+		int fy = getFinalY() - insets.getFromBottom();
+		if (fy < y) {
+			int tmp = fy;
+			fy = y;
+			y = tmp;
+		}
+		int w = fx - x;
+		int h = fy - y;
+		return new ImmutablePBounds(x, y, w, h);
 	}
 }

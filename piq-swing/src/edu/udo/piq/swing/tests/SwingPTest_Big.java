@@ -66,7 +66,7 @@ public class SwingPTest_Big extends AbstractSwingPTest {
 		
 		PPicture pic = new PPicture();
 		pic.setID("Picture");
-		pic.getModel().setImageID("Tex.png");
+		pic.getModel().setValue("Tex.png");
 		pic.setStretchToSize(true);
 		splitH.setFirstComponent(pic);
 		

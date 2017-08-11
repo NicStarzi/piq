@@ -23,9 +23,9 @@ import edu.udo.piq.tools.AbstractPDialog;
 
 public class SwingPDialog extends AbstractPDialog implements PDialog {
 	
-	private final JCompPRoot root;
-	private final JDialog jDialog;
-	private final JPanel panel = new JPanel() {
+	protected final PRoot root;
+	protected final JDialog jDialog;
+	protected final JPanel panel = new JPanel() {
 		private static final long serialVersionUID = 1L;
 		@Override
 		public void paintComponent(Graphics g) {
@@ -34,12 +34,12 @@ public class SwingPDialog extends AbstractPDialog implements PDialog {
 			render((Graphics2D) g);
 		}
 	};
-	private final SwingPRenderer renderer = new SwingPRenderer();
-	private final SwingPMouse mouse = new SwingPMouse(this, panel);
-	private final SwingPKeyboard keyboard = new SwingPKeyboard(panel);
-	private final JPanelPBounds bounds = new JPanelPBounds(panel);
+	protected final SwingPRenderer renderer = new SwingPRenderer();
+	protected final SwingPMouse mouse = new SwingPMouse(this, panel);
+	protected final SwingPKeyboard keyboard = new SwingPKeyboard(panel);
+	protected final JCompPBounds bounds = new JCompPBounds(panel);
 	
-	public SwingPDialog(JCompPRoot root, JDialog jDialog) {
+	public SwingPDialog(PRoot root, JDialog jDialog) {
 		super();
 		this.root = root;
 		this.jDialog = jDialog;

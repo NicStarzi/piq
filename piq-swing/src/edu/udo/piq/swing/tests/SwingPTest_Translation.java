@@ -35,6 +35,7 @@ public class SwingPTest_Translation extends AbstractSwingPTest {
 		super(480, 120);
 	}
 	
+	@Override
 	public void buildGUI() {
 //		EnumPDictionary<Term> dict = new EnumPDictionary<>(Term.class);
 //		dict.setTranslation(Term.CONFIRM, "Best�tigen");
@@ -119,6 +120,7 @@ public class SwingPTest_Translation extends AbstractSwingPTest {
 	}
 	
 	public static class MyModelFactory extends PModelFactory {
+		@Override
 		protected Object getLabelModel() {
 			return new TranslationTextModel();
 		}
@@ -144,6 +146,7 @@ public class SwingPTest_Translation extends AbstractSwingPTest {
 			instances.add(this);
 		}
 		
+		@Override
 		public void setValue(Object value) {
 			if (value != null && !(value instanceof Term)) {
 				throw new IllegalArgumentException("value="+value);
@@ -154,10 +157,12 @@ public class SwingPTest_Translation extends AbstractSwingPTest {
 			}
 		}
 		
+		@Override
 		public Term getValue() {
 			return term;
 		}
 		
+		@Override
 		public String getText() {
 			Term actualTerm = term;
 			if (actualTerm == null) {
@@ -175,7 +180,7 @@ public class SwingPTest_Translation extends AbstractSwingPTest {
 		
 	}
 	
-	public static enum Term {
+	private static enum Term {
 		
 		NO_TERM,
 		GREETINGS,

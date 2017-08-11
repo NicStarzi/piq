@@ -1,6 +1,8 @@
 package edu.udo.piq.swing;
 
 import java.awt.Component;
+import java.awt.MouseInfo;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -11,33 +13,29 @@ import javax.swing.SwingUtilities;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PCursor;
 import edu.udo.piq.PMouse;
-import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRoot;
-import edu.udo.piq.util.ObserverList;
+import edu.udo.piq.tools.AbstractPMouse;
 import edu.udo.piq.util.PCompUtil;
 import edu.udo.piq.util.ThrowException;
 
-public class SwingPMouse implements PMouse {
+public class SwingPMouse extends AbstractPMouse implements PMouse {
 	
-	protected final ObserverList<PMouseObs> obsList
-		= PCompUtil.createDefaultObserverList();
-	private final PRoot root;
-	private final Component base;
-	private final boolean[] btnPressed;
-	private final boolean[] btnReleased;
-	private final boolean[] btnTriggered;
-	private AwtPCursor currentCursor = AwtPCursor.DEFAULT;
-	private int x, y, dx, dy;
-	private int clickCount;
-	private boolean compAtMouseCacheValid;
-	private PComponent compAtMouseCache;
+	protected final PRoot root;
+	protected final Component base;
+	protected final boolean[] btnPressed = new boolean[3];
+	protected final boolean[] btnReleased = new boolean[3];
+	protected final boolean[] btnTriggered = new boolean[3];
+	protected AwtPCursor currentCursor = AwtPCursor.DEFAULT;
+	protected int x, y, dx, dy;
+	protected int ox;
+	protected int oy;
+	protected boolean compAtMouseCacheValid;
+	protected PComponent compAtMouseCache;
+	protected boolean updateMousePosOutsideBaseComponent = true;
 	
 	public SwingPMouse(PRoot root, Component base) {
 		this.root = root;
 		this.base = base;
-		btnPressed = new boolean[3];
-		btnReleased = new boolean[3];
-		btnTriggered = new boolean[3];
 		x = 0;
 		y = 0;
 		dx = 0;
@@ -46,40 +44,33 @@ public class SwingPMouse implements PMouse {
 		base.addMouseListener(new MouseListener() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				clickCount = e.getClickCount();
-				onRelease(getButtonID(e));
+				onRelease(getButtonID(e), e.getClickCount());
 			}
 			@Override
 			public void mousePressed(MouseEvent e) {
-				clickCount = e.getClickCount();
-				onPress(getButtonID(e));
+				onPress(getButtonID(e), e.getClickCount());
 			}
 			@Override
 			public void mouseExited(MouseEvent e) {
-				clickCount = e.getClickCount();
 				setPosition(e.getX(), e.getY());
 			}
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				clickCount = e.getClickCount();
 				setPosition(e.getX(), e.getY());
 			}
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				clickCount = e.getClickCount();
 			}
 		});
 		base.addMouseMotionListener(new MouseMotionListener() {
 			@Override
 			public void mouseMoved(MouseEvent e) {
-				clickCount = e.getClickCount();
 				setPosition(e.getX(), e.getY());
 				invalidateCompAtMouseCache();
 				refreshCursor();
 			}
 			@Override
 			public void mouseDragged(MouseEvent e) {
-				clickCount = e.getClickCount();
 				setPosition(e.getX(), e.getY());
 				invalidateCompAtMouseCache();
 				refreshCursor();
@@ -87,13 +78,13 @@ public class SwingPMouse implements PMouse {
 		});
 	}
 	
-	protected void mouseOverCursorChanged(PComponent component) {
+	public void mouseOverCursorChanged(PComponent component) {
 		if (compAtMouseCache == component) {
 			refreshCursor();
 		}
 	}
 	
-	protected void refreshCursor() {
+	public void refreshCursor() {
 //		System.out.println("SwingPMouse.refreshCursor()");
 		PComponent comp = getComponentAtMouse();
 //		if (compAtMouseCache == null || !compAtMouseCacheValid) {
@@ -113,21 +104,35 @@ public class SwingPMouse implements PMouse {
 		}
 	}
 	
-	protected void update() {
+	public void update() {
 		Arrays.fill(btnReleased, false);
 		Arrays.fill(btnTriggered, false);
 		dx = 0;
 		dy = 0;
+		if (isUpdateMousePosOutsideBaseComponent()) {
+			Point mousePos = MouseInfo.getPointerInfo().getLocation();
+			SwingUtilities.convertPointFromScreen(mousePos, base);
+			setPosition(mousePos.x, mousePos.y);
+		}
+		
 		invalidateCompAtMouseCache();
 	}
 	
-	private void invalidateCompAtMouseCache() {
+	public void setUpdateMousePosOutsideBaseComponent(boolean value) {
+		updateMousePosOutsideBaseComponent = value;
+	}
+	
+	public boolean isUpdateMousePosOutsideBaseComponent() {
+		return updateMousePosOutsideBaseComponent;
+	}
+	
+	protected void invalidateCompAtMouseCache() {
 		compAtMouseCacheValid = false;
 //		compAtMouseCache = null;
 //		refreshCursor();
 	}
 	
-	private void onPress(MouseButton btn) {
+	protected void onPress(MouseButton btn, int clickCount) {
 		if (btn == null) {
 			return;
 		}
@@ -138,10 +143,10 @@ public class SwingPMouse implements PMouse {
 			btnReleased[index] = false;
 			fireTriggerEvent(btn);
 		}
-		firePressEvent(btn);
+		firePressEvent(btn, clickCount);
 	}
 	
-	private void onRelease(MouseButton btn) {
+	protected void onRelease(MouseButton btn, int clickCount) {
 		if (btn == null) {
 			return;
 		}
@@ -149,11 +154,11 @@ public class SwingPMouse implements PMouse {
 		if (!btnReleased[index]) {
 			btnReleased[index] = true;
 			btnPressed[index] = false;
-			fireReleaseEvent(btn);
+			fireReleaseEvent(btn, clickCount);
 		}
 	}
 	
-	private MouseButton getButtonID(MouseEvent e) {
+	protected MouseButton getButtonID(MouseEvent e) {
 		if (SwingUtilities.isLeftMouseButton(e)) {
 			return MouseButton.LEFT;
 		}
@@ -166,7 +171,7 @@ public class SwingPMouse implements PMouse {
 		return null;
 	}
 	
-	private int getMouseButtonID(MouseButton btn) {
+	protected int getMouseButtonID(MouseButton btn) {
 		switch (btn) {
 		case LEFT:
 		case DRAG_AND_DROP:
@@ -181,7 +186,9 @@ public class SwingPMouse implements PMouse {
 		}
 	}
 	
-	private void setPosition(int mx, int my) {
+	protected void setPosition(int mx, int my) {
+		mx += ox;
+		my += oy;
 		dx = mx - x;
 		dy = my - y;
 		x = mx;
@@ -189,6 +196,11 @@ public class SwingPMouse implements PMouse {
 		if (dx != 0 || dy != 0) {
 			fireMoveEvent();
 		}
+	}
+	
+	public void setOffset(int offsetX, int offsetY) {
+		ox = offsetX;
+		oy = offsetY;
 	}
 	
 	@Override
@@ -209,11 +221,6 @@ public class SwingPMouse implements PMouse {
 	@Override
 	public int getDeltaY() {
 		return dy;
-	}
-	
-	@Override
-	public int getClickCount() {
-		return clickCount;
 	}
 	
 	@Override
@@ -272,29 +279,8 @@ public class SwingPMouse implements PMouse {
 	}
 	
 	@Override
-	public void addObs(PMouseObs obs) {
-		obsList.add(obs);
-	}
-	
-	@Override
-	public void removeObs(PMouseObs obs) {
-		obsList.remove(obs);
-	}
-	
-	protected void fireMoveEvent() {
-		obsList.fireEvent((obs) -> obs.onMouseMoved(this));
-	}
-	
-	protected void fireTriggerEvent(MouseButton btn) {
-		obsList.fireEvent((obs) -> obs.onButtonTriggered(this, btn));
-	}
-	
-	protected void fireReleaseEvent(MouseButton btn) {
-		obsList.fireEvent((obs) -> obs.onButtonReleased(this, btn));
-	}
-	
-	protected void firePressEvent(MouseButton btn) {
-		obsList.fireEvent((obs) -> obs.onButtonPressed(this, btn));
+	public boolean isCursorSupported(PCursor cursor) {
+		return cursor instanceof AwtPCursor;
 	}
 	
 }

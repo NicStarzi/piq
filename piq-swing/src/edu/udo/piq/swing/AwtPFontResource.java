@@ -35,14 +35,17 @@ public class AwtPFontResource implements PFontResource {
 		return font;
 	}
 	
+	@Override
 	public String getName() {
 		return font.getName();
 	}
 	
-	public double getPointSize() {
-		return font.getSize2D();
+	@Override
+	public int getPixelSize() {
+		return font.getSize();
 	}
 	
+	@Override
 	public PSize getSize(String str) {
 		Rectangle2D rect = metrics.getStringBounds(str, graphics);
 		int w = (int) (rect.getWidth() + 0.5);
@@ -50,8 +53,35 @@ public class AwtPFontResource implements PFontResource {
 		return new ImmutablePSize(w, h);
 	}
 	
+	@Override
 	public Style getStyle() {
-		int awtStyle = font.getStyle();
+		return getStyleFromAwt(font.getStyle());
+	}
+	
+	@Override
+	public void dispose() {
+	}
+	
+	public static int getAwtStyle(Style style) {
+		int awtStyle;
+		switch (style) {
+		case BOLD:
+			awtStyle = Font.BOLD;
+			break;
+		case BOLD_ITALIC:
+			awtStyle = Font.ITALIC | Font.BOLD;
+			break;
+		case ITALIC:
+			awtStyle = Font.ITALIC;
+			break;
+		case PLAIN:
+		default:
+			awtStyle = Font.PLAIN;
+		}
+		return awtStyle;
+	}
+	
+	public static Style getStyleFromAwt(int awtStyle) {
 		switch (awtStyle) {
 		case Font.ITALIC:
 			return Style.ITALIC;
@@ -63,9 +93,6 @@ public class AwtPFontResource implements PFontResource {
 		default:
 			return Style.PLAIN;
 		}
-	}
-	
-	public void dispose() {
 	}
 	
 }

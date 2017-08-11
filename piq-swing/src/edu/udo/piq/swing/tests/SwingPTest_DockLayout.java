@@ -38,7 +38,7 @@ public class SwingPTest_DockLayout extends AbstractSwingPTest {
 		pnl.addChild(lbl1, new PDockLayoutOLD.Constraint(0, 1));
 		
 		PPicture pic1 = new PPicture();
-		pic1.getModel().setImageID("Tex.png");
+		pic1.getModel().setValue("Tex.png");
 		pnl.addChild(pic1, new PDockLayoutOLD.Constraint(643, 0));
 	}
 	

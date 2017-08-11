@@ -11,7 +11,7 @@ import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PBorderLayout.Constraint;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
 import edu.udo.piq.layouts.PWrapLayout;
-import edu.udo.piq.scroll.PScrollPanel;
+import edu.udo.piq.scroll2.PScrollPanel;
 
 public class SwingPTest_ScrollBar extends AbstractSwingPTest {
 	
@@ -25,6 +25,7 @@ public class SwingPTest_ScrollBar extends AbstractSwingPTest {
 		super(640, 480);
 	}
 	
+	@Override
 	public void buildGUI() {
 		PPanel bodyPnl = new PPanel();
 		bodyPnl.setLayout(new PBorderLayout(bodyPnl));
@@ -58,10 +59,10 @@ public class SwingPTest_ScrollBar extends AbstractSwingPTest {
 //		PPanel bodyPnl2 = new PPanel();
 //		bodyPnl2.setLayout(new PFreeLayout(bodyPnl2));
 //		root.setBody(bodyPnl2);
-//		
+//
 //		PScrollPanel scrlPnl2 = new PScrollPanel();
 //		bodyPnl2.addChild(scrlPnl2, new PFreeLayout.FreeConstraint(31, 46, 256, 256));
-//		
+//
 //		PPicture content = new PPicture();
 //		content.getModel().setImageID("Tex3.png");
 //		content.setStretchToSize(false);

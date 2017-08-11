@@ -5,21 +5,18 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.lang.Character.UnicodeBlock;
 import java.util.EnumMap;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import edu.udo.piq.PKeyboard;
-import edu.udo.piq.PKeyboardObs;
+import edu.udo.piq.tools.AbstractPKeyboard;
 
-public class SwingPKeyboard implements PKeyboard {
+public class SwingPKeyboard extends AbstractPKeyboard implements PKeyboard {
 	
-	private final List<PKeyboardObs> obsList = new CopyOnWriteArrayList<>();
-	private final Map<Key, Key> ctrlMetaMap = new EnumMap<>(Key.class);
-	private final boolean[] nowPressed = new boolean[Key.values().length];
-	private final boolean[] prevPressed = new boolean[nowPressed.length];
-	private final boolean[] modState = new boolean[Modifier.values().length];
-	private boolean capsLockDown;
+	protected final Map<Key, Key> ctrlMetaMap = new EnumMap<>(Key.class);
+	protected final boolean[] nowPressed = new boolean[Key.COUNT];
+	protected final boolean[] prevPressed = new boolean[nowPressed.length];
+	protected final boolean[] modState = new boolean[Modifier.COUNT];
+	protected boolean capsLockDown;
 	
 	public SwingPKeyboard(Component base) {
 		ctrlMetaMap.put(Key.C, Key.COPY);
@@ -49,7 +46,7 @@ public class SwingPKeyboard implements PKeyboard {
 		});
 	}
 	
-	private boolean isTypeable(char c) {
+	protected boolean isTypeable(char c) {
 		if (c == KeyEvent.CHAR_UNDEFINED) {
 			return false;
 		}
@@ -60,7 +57,7 @@ public class SwingPKeyboard implements PKeyboard {
 		return block != null && block != UnicodeBlock.SPECIALS;
 	}
 	
-	private void updateKey(KeyEvent e, boolean newPressedValue) {
+	protected void updateKey(KeyEvent e, boolean newPressedValue) {
 		setModifierState(Modifier.ALT, e.isAltDown());
 		setModifierState(Modifier.ALT_GRAPH, e.isAltGraphDown());
 		setModifierState(Modifier.CTRL, e.isControlDown());
@@ -79,7 +76,7 @@ public class SwingPKeyboard implements PKeyboard {
 			}
 		}
 		if (key != null) {
-			int index = key.ordinal();
+			int index = key.ID;
 			prevPressed[index] = nowPressed[index];
 			nowPressed[index] = newPressedValue;
 			if (isTriggered(key)) {
@@ -93,72 +90,32 @@ public class SwingPKeyboard implements PKeyboard {
 		}
 	}
 	
-	private void setModifierState(Modifier mod, boolean newState) {
-		boolean oldState = modState[mod.ordinal()];
+	protected void setModifierState(Modifier mod, boolean newState) {
+		boolean oldState = modState[mod.ID];
 		if (oldState != newState) {
-			modState[mod.ordinal()] = newState;
+			modState[mod.ID] = newState;
 			fireModifierToggledEvent(mod);
 		}
 	}
 	
 	@Override
 	public boolean isPressed(Key key) {
-		return nowPressed[key.ordinal()];
+		return nowPressed[key.ID];
 	}
 	
 	@Override
 	public boolean isTriggered(Key key) {
-		return nowPressed[key.ordinal()] && !prevPressed[key.ordinal()];
+		return nowPressed[key.ID] && !prevPressed[key.ID];
 	}
 	
 	@Override
 	public boolean isReleased(Key key) {
-		return !nowPressed[key.ordinal()] && prevPressed[key.ordinal()];
+		return !nowPressed[key.ID] && prevPressed[key.ID];
 	}
 	
 	@Override
 	public boolean isModifierToggled(Modifier modifier) {
-		return modState[modifier.ordinal()];
-	}
-	
-	@Override
-	public void addObs(PKeyboardObs obs) {
-		obsList.add(obs);
-	}
-	
-	@Override
-	public void removeObs(PKeyboardObs obs) {
-		obsList.remove(obs);
-	}
-	
-	protected void firePressEvent(Key key) {
-		for (PKeyboardObs obs : obsList) {
-			obs.onKeyPressed(this, key);
-		}
-	}
-	
-	protected void fireTriggerEvent(Key key) {
-		for (PKeyboardObs obs : obsList) {
-			obs.onKeyTriggered(this, key);
-		}
-	}
-	
-	protected void fireReleaseEvent(Key key) {
-		for (PKeyboardObs obs : obsList) {
-			obs.onKeyReleased(this, key);
-		}
-	}
-	
-	protected void fireModifierToggledEvent(Modifier mod) {
-		for (PKeyboardObs obs : obsList) {
-			obs.onModifierToggled(this, mod);
-		}
-	}
-	
-	protected void fireStringTypedEvent(String string) {
-		for (PKeyboardObs obs : obsList) {
-			obs.onStringTyped(this, string);
-		}
+		return modState[modifier.ID];
 	}
 	
 	public static Key keyCodeToKey(int keyCode) {

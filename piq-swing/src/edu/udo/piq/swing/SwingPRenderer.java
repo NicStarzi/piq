@@ -57,12 +57,13 @@ public class SwingPRenderer implements PRenderer {
 		return new ImmutablePBounds(r.x, r.y, r.width, r.height);
 	}
 	
-	@Override
-	public void setColor(PColor pColor) {
+	public Color getAwtColorForPColor(PColor pColor) {
 		if (pColorToAwtColorMap == null) {
-			setColor255(pColor.getRed255(), pColor.getGreen255(),
-					pColor.getBlue255(), pColor.getAlpha255());
-			return;
+			int r = pColor.getRed255();
+			int g = pColor.getGreen255();
+			int b = pColor.getBlue255();
+			int a = pColor.getAlpha255();
+			return new Color(r, g, b, a);
 		}
 		Color awtColor = pColorToAwtColorMap.get(pColor);
 		if (awtColor == null) {
@@ -73,6 +74,12 @@ public class SwingPRenderer implements PRenderer {
 			awtColor = new Color(r, g, b, a);
 			pColorToAwtColorMap.put(pColor, awtColor);
 		}
+		return awtColor;
+	}
+	
+	@Override
+	public void setColor(PColor pColor) {
+		Color awtColor = getAwtColorForPColor(pColor);
 		graphics.setColor(awtColor);
 	}
 	
@@ -154,7 +161,7 @@ public class SwingPRenderer implements PRenderer {
 		if (imgRes == null) {
 			return;
 		}
-		BufferedImage bufImg = ((BufferedPImageResource) imgRes).getBufferedImage();
+		BufferedImage bufImg = ((AwtPImageResource) imgRes).getBufferedImage();
 		if (bufImg == null) {
 			return;
 		}
@@ -166,7 +173,7 @@ public class SwingPRenderer implements PRenderer {
 	
 	@Override
 	public void drawImage(PImageResource imgRes, int u, int v, int fu, int fv, float x, float y, float fx, float fy) {
-		BufferedImage bufImg = ((BufferedPImageResource) imgRes).getBufferedImage();
+		BufferedImage bufImg = ((AwtPImageResource) imgRes).getBufferedImage();
 		if (bufImg == null) {
 			return;
 		}

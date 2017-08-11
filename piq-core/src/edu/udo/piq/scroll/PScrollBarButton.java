@@ -42,7 +42,7 @@ public class PScrollBarButton extends AbstractPComponent {
 				}
 			}
 		}
-		public void onButtonReleased(PMouse mouse, MouseButton btn) {
+		public void onButtonReleased(PMouse mouse, MouseButton btn, int clickCount) {
 			if (isActive() && btn == MouseButton.LEFT) {
 				clickRepeatTimer.stop();
 				getModel().setPressed(false);

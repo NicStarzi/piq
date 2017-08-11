@@ -60,11 +60,11 @@ public class PPopupButton extends AbstractPLayoutOwner implements PPopupComponen
 				PPopupButton.this.onMouseButtonTriggered(mouse, btn);
 			}
 			@Override
-			public void onButtonPressed(PMouse mouse, MouseButton btn) {
+			public void onButtonPressed(PMouse mouse, MouseButton btn, int clickCount) {
 				PPopupButton.this.onMouseButtonPressed(mouse, btn);
 			}
 			@Override
-			public void onButtonReleased(PMouse mouse, MouseButton btn) {
+			public void onButtonReleased(PMouse mouse, MouseButton btn, int clickCount) {
 				PPopupButton.this.onMouseButtonReleased(mouse, btn);
 			}
 		});

@@ -2,9 +2,9 @@ package edu.udo.piq.components;
 
 public interface PPictureModel {
 	
-	public void setImageID(Object obj);
+	public void setValue(Object obj);
 	
-	public Object getImageID();
+	public Object getValue();
 	
 	public void addObs(PPictureModelObs obs);
 	

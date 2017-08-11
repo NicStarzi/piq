@@ -4,9 +4,9 @@ import edu.udo.piq.tools.DoNothingRenderer;
 
 /**
  * This interface defines abstract platform independent image resources.<br>
- * The implementation of these image resources depends heavily on the used 
+ * The implementation of these image resources depends heavily on the used
  * rendering techniques used by the {@link PRenderer}.<br>
- * Instances of image resources can be obtained from a {@link PRoot} 
+ * Instances of image resources can be obtained from a {@link PRoot}
  * implementation.<br>
  * 
  * @author Nic Starzi
@@ -21,10 +21,18 @@ public interface PImageResource extends PDisposable {
 	 */
 	public PSize getSize();
 	
+	public default int getWidth() {
+		return getSize().getWidth();
+	}
+	
+	public default int getHeight() {
+		return getSize().getHeight();
+	}
+	
 	/**
-	 * Creates a new {@link PRenderer} that can be used to paint this 
+	 * Creates a new {@link PRenderer} that can be used to paint this
 	 * {@link PImageResource}.<br>
-	 * The returned renderer is never null but might do nothing at all if 
+	 * The returned renderer is never null but might do nothing at all if
 	 * custom painting of images is not possible.<br>
 	 * @return			a non-null instance of {@link PRenderer}
 	 */

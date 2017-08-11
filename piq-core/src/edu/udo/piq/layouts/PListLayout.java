@@ -222,7 +222,7 @@ public class PListLayout extends AbstractMapPLayout {
 	@Override
 	protected void layOutInternal() {
 		PInsets insets = getInsets();
-		PBounds ob = getOwner().getBounds();
+		PBounds ob = getOwner().getBoundsWithoutBorder();
 		int gap = getGap();
 		int minX = ob.getX() + insets.getFromLeft();
 		int minY = ob.getY() + insets.getFromTop();

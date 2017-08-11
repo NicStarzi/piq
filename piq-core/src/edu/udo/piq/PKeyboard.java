@@ -1,11 +1,15 @@
 package edu.udo.piq;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import edu.udo.piq.components.util.PFocusTraversal;
 
 public interface PKeyboard {
 	
 	/**
-	 * Returns true if the given {@link Key} is being pressed 
+	 * Returns true if the given {@link Key} is being pressed
 	 * down at this update cycle.<br>
 	 * 
 	 * @param key the key
@@ -15,7 +19,7 @@ public interface PKeyboard {
 	public boolean isPressed(Key key);
 	
 	/**
-	 * Returns true if the given {@link Key} has just been 
+	 * Returns true if the given {@link Key} has just been
 	 * released in the last update cycle.<br>
 	 * 
 	 * @param key the key
@@ -25,7 +29,7 @@ public interface PKeyboard {
 	public boolean isReleased(Key key);
 	
 	/**
-	 * Returns true if the given {@link Key} has just been 
+	 * Returns true if the given {@link Key} has just been
 	 * triggered in the last update cycle.<br>
 	 * 
 	 * @param key the key
@@ -49,74 +53,79 @@ public interface PKeyboard {
 	public void removeObs(PKeyboardObs obs);
 	
 	/**
-	 * An enumeration of all Keyboard keys that are supported by 
+	 * An enumeration of all Keyboard keys that are supported by
 	 * a {@link PKeyboard} implementation.<br>
-	 * A particular keyboard implementation does not need to support 
-	 * all of these keys. If a key is not supported by a 
-	 * {@link PKeyboard} implementation its methods will simply ignore 
+	 * A particular keyboard implementation does not need to support
+	 * all of these keys. If a key is not supported by a
+	 * {@link PKeyboard} implementation its methods will simply ignore
 	 * this key.
 	 */
 	public static enum Key {
-		A, B, C, D, E, F, G, H, I, 
-		J, K, L, M, N, O, P, Q, R, 
+		A, B, C, D, E, F, G, H, I,
+		J, K, L, M, N, O, P, Q, R,
 		S, T, U, V, W, X, Y, Z,
 		
-		NUM_0, NUM_1, NUM_2, NUM_3, NUM_4, 
+		NUM_0, NUM_1, NUM_2, NUM_3, NUM_4,
 		NUM_5, NUM_6, NUM_7, NUM_8, NUM_9,
 		
 		UP, DOWN, LEFT, RIGHT,
 		
-		SHIFT, TAB, CTRL, SPACE, ENTER, BACKSPACE, 
-		DEL, HOME, PAGE_UP, PAGE_DOWN, ALT_GR, 
+		SHIFT, TAB, CTRL, SPACE, ENTER, BACKSPACE,
+		DEL, HOME, PAGE_UP, PAGE_DOWN, ALT_GR,
 		ESC, CAPSLOCK, ALT, END,
 		
 		/**
-		 * When this key is triggered the next component in the 
+		 * When this key is triggered the next component in the
 		 * current {@link PFocusTraversal} will become focused.<br>
 		 */
 		FOCUS_NEXT,
 		/**
-		 * When this key is triggered the previous component in the 
+		 * When this key is triggered the previous component in the
 		 * current {@link PFocusTraversal} will become focused.<br>
 		 */
-		FOCUS_PREV, 
+		FOCUS_PREV,
 		/**
-		 * When this key is triggered the current {@link PFocusTraversal} 
+		 * When this key is triggered the current {@link PFocusTraversal}
 		 * will go up by one level if possible.<br>
 		 */
 		FOCUS_UP,
 		/**
-		 * When this key is triggered the current {@link PFocusTraversal} 
+		 * When this key is triggered the current {@link PFocusTraversal}
 		 * will go down by one level if possible.<br>
 		 */
-		FOCUS_DOWN, 
+		FOCUS_DOWN,
 		/**
-		 * This key is used for the COPY-shortcuts. On windows this is Ctrl + C.<br>
+		 * This key is used for the COPY-shortcuts. By default this is Ctrl + C.<br>
 		 */
-		COPY, 
+		COPY,
 		/**
-		 * This key is used for the CUT-shortcuts. On windows this is Ctrl + X.<br>
+		 * This key is used for the CUT-shortcuts. By default this is Ctrl + X.<br>
 		 */
-		CUT, 
+		CUT,
 		/**
-		 * This key is used for the PASTE-shortcuts. On windows this is Ctrl + V.<br>
+		 * This key is used for the PASTE-shortcuts. By default this is Ctrl + V.<br>
 		 */
-		PASTE, 
+		PASTE,
 		/**
-		 * This key is used for the UNDO-shortcuts. On windows this is Ctrl + Z.<br>
+		 * This key is used for the UNDO-shortcuts. By default this is Ctrl + Z.<br>
 		 */
-		UNDO, 
+		UNDO,
 		/**
-		 * This key is used for the REDO-shortcuts. On windows this is Ctrl + Y.<br>
+		 * This key is used for the REDO-shortcuts. By default this is Ctrl + Y.<br>
 		 */
-		REDO, 
+		REDO,
 		;
+		public static final List<PKeyboard.Key> ALL =
+				Collections.unmodifiableList(Arrays.asList(values()));
+		public static final int COUNT = ALL.size();
+		
+		public final int ID = ordinal();
 	}
 	
 	/**
 	 * An enumeration of all modifier keys that can be supported by a
-	 * {@link PKeyboard}. An implementation is not required to support 
-	 * all of these modifier keys. If a modifier is not supported it 
+	 * {@link PKeyboard}. An implementation is not required to support
+	 * all of these modifier keys. If a modifier is not supported it
 	 * will be reported as never being toggled.<br>
 	 */
 	public static enum Modifier {
@@ -126,6 +135,12 @@ public interface PKeyboard {
 		CTRL,
 		META,
 		;
+		public static final List<PKeyboard.Modifier> ALL =
+				Collections.unmodifiableList(Arrays.asList(values()));
+		public static final int COUNT = ALL.size();
+		
+		public final int ID = ordinal();
+		
 		public static final Modifier SHIFT = CAPS;
 	}
 	

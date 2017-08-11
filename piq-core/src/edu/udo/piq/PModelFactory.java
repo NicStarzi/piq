@@ -1,5 +1,10 @@
 package edu.udo.piq;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Supplier;
+
+import edu.udo.piq.borders.PTitleBorder;
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PCheckBox;
 import edu.udo.piq.components.PPicture;
@@ -18,12 +23,14 @@ import edu.udo.piq.components.defaults.DefaultPProgressBarModel;
 import edu.udo.piq.components.defaults.DefaultPRadioButtonModel;
 import edu.udo.piq.components.defaults.DefaultPSliderModel;
 import edu.udo.piq.components.defaults.DefaultPSplitPanelModel;
+import edu.udo.piq.components.defaults.DefaultPTableModel;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.components.defaults.DefaultPTreeModel;
 import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.components.textbased.PTextArea;
+import edu.udo.piq.tools.AbstractPTextComponent;
 
-public abstract class PModelFactory {
+public class PModelFactory {
 	
 	private static PModelFactory modelFact = null;
 	
@@ -35,82 +42,66 @@ public abstract class PModelFactory {
 		modelFact = modelFactory;
 	}
 	
-	public Object getModelFor(PComponent component, Object defaultModel) {
-		if (component instanceof PLabel) {
-			return getLabelModel();
-		} if (component instanceof PButton) {
-			return getButtonModel();
-		} if (component instanceof PCheckBox) {
-			return getCheckBoxModel();
-		} if (component instanceof PRadioButton) {
-			return getRadioButtonModel();
-		} if (component instanceof PSlider) {
-			return getSliderModel();
-		} if (component instanceof PProgressBar) {
-			return getProgressBarModel();
-		} if (component instanceof PPicture) {
-			return getPictureModel();
-		} if (component instanceof PSplitPanel) {
-			return getSplitPanelModel();
-		} if (component instanceof PTextArea) {
-			return getTextAreaModel();
-		} if (component instanceof PList) {
-			return getListModel();
-		} if (component instanceof PTable) {
-			return getTableModel();
-		} if (component instanceof PTree) {
-			return getTreeModel();
+	@SuppressWarnings("unchecked")
+	public static <E> E createModelFor(Object component, E defaultModel) {
+		return createModelFor(component, () -> defaultModel, (Class<E>) defaultModel.getClass());
+	}
+	
+	public static <E> E createModelFor(Object component,
+			Supplier<? extends E> defaultModel,
+			Class<? extends E> expectedModelClass)
+	{
+		PModelFactory factory = getGlobalModelFactory();
+		if (factory == null) {
+			return defaultModel.get();
 		}
-		return defaultModel;
+		return factory.getModelFor(component, defaultModel, expectedModelClass);
 	}
 	
-	protected Object getLabelModel() {
-		return new DefaultPTextModel();
+	protected final Map<Class<?>, Supplier<?>> classToModelFactoryMap = new HashMap<>();
+	{
+		classToModelFactoryMap.put(AbstractPTextComponent.class, DefaultPTextModel::new);
+		classToModelFactoryMap.put(PLabel.class, DefaultPTextModel::new);
+		classToModelFactoryMap.put(PButton.class, DefaultPButtonModel::new);
+		classToModelFactoryMap.put(PCheckBox.class, DefaultPCheckBoxModel::new);
+		classToModelFactoryMap.put(PRadioButton.class, DefaultPRadioButtonModel::new);
+		classToModelFactoryMap.put(PSlider.class, DefaultPSliderModel::new);
+		classToModelFactoryMap.put(PProgressBar.class, DefaultPProgressBarModel::new);
+		classToModelFactoryMap.put(PPicture.class, DefaultPPictureModel::new);
+		classToModelFactoryMap.put(PSplitPanel.class, DefaultPSplitPanelModel::new);
+		classToModelFactoryMap.put(PTextArea.class, DefaultPTextModel::new);
+		classToModelFactoryMap.put(PList.class, DefaultPListModel::new);
+		classToModelFactoryMap.put(PTable.class, DefaultPTableModel::new);
+		classToModelFactoryMap.put(PTree.class, DefaultPTreeModel::new);
+		classToModelFactoryMap.put(PTitleBorder.class, DefaultPTextModel::new);
 	}
 	
-	protected Object getButtonModel() {
-		return new DefaultPButtonModel();
+	@SuppressWarnings("unchecked")
+	public <E> E getModelFor(Object component,
+			Supplier<? extends E> defaultModel,
+			Class<? extends E> expectedModelClass)
+	{
+		Object result = createModelBasedOnClass(component.getClass());
+		if (expectedModelClass.isInstance(result)) {
+			return (E) result;
+		}
+		return defaultModel.get();
 	}
 	
-	protected Object getCheckBoxModel() {
-		return new DefaultPCheckBoxModel();
+	protected Object createModelBasedOnClass(Class<?> objClass) {
+		Supplier<?> fact = classToModelFactoryMap.get(objClass);
+		if (fact == null) {
+			return null;
+		}
+		return fact.get();
 	}
 	
-	protected Object getSliderModel() {
-		return new DefaultPSliderModel();
+	public void setDefaultModelFactoryFor(Class<?> componentClass, Supplier<?> modelFactory) {
+		classToModelFactoryMap.put(componentClass, modelFactory);
 	}
 	
-	protected Object getRadioButtonModel() {
-		return new DefaultPRadioButtonModel();
-	}
-	
-	protected Object getProgressBarModel() {
-		return new DefaultPProgressBarModel();
-	}
-	
-	protected Object getPictureModel() {
-		return new DefaultPPictureModel();
-	}
-	
-	protected Object getSplitPanelModel() {
-		return new DefaultPSplitPanelModel();
-	}
-	
-	protected Object getTextAreaModel() {
-		return new DefaultPTextModel();
-	}
-	
-	protected Object getListModel() {
-		return new DefaultPListModel();
-	}
-	
-	protected Object getTableModel() {
-//		return new DefaultPTableModel();
-		return null;
-	}
-	
-	protected Object getTreeModel() {
-		return new DefaultPTreeModel();
+	public Supplier<?> getDefaultModelFactoryFor(Class<?> componentClass) {
+		return classToModelFactoryMap.get(componentClass);
 	}
 	
 }

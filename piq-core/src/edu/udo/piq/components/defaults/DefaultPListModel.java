@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 import edu.udo.piq.components.collections.AddImpossible;
 import edu.udo.piq.components.collections.IllegalIndex;
@@ -18,7 +20,14 @@ import edu.udo.piq.util.ThrowException;
 
 public class DefaultPListModel extends AbstractPModel implements PListModel {
 	
-	protected final List<Object> list = new ArrayList<>();
+	protected final List<Object> list = createListImplementation();
+	protected BiPredicate<Integer, Object> testCanSet;
+	protected BiPredicate<Integer, Object> testCanAdd;
+	protected Predicate<Integer> testCanRemove;
+	
+	protected List<Object> createListImplementation() {
+		return new ArrayList<>();
+	}
 	
 	public DefaultPListModel() {
 	}
@@ -35,14 +44,22 @@ public class DefaultPListModel extends AbstractPModel implements PListModel {
 		}
 	}
 	
+	@Override
 	public int getSize() {
 		return list.size();
 	}
 	
+	@Override
 	public boolean canSet(PModelIndex index, Object content) {
-		return index instanceof PListIndex && contains(index);
+		return canSet(asListIndex(index), content);
 	}
 	
+	public boolean canSet(int index, Object content) {
+		return contains(index)
+				&& (testCanSet == null || testCanSet.test(index, content));
+	}
+	
+	@Override
 	public void set(PModelIndex index, Object content) {
 		int indexVal = asListIndex(index);
 		if (!withinBounds(indexVal, 0)) {
@@ -55,6 +72,7 @@ public class DefaultPListModel extends AbstractPModel implements PListModel {
 		list.set(indexVal, content);
 	}
 	
+	@Override
 	public Object get(PModelIndex index) {
 		int indexVal = asListIndex(index);
 		if (!withinBounds(indexVal, 0)) {
@@ -63,18 +81,22 @@ public class DefaultPListModel extends AbstractPModel implements PListModel {
 		return get(indexVal);
 	}
 	
+	@Override
 	public Object get(int indexVal) {
 		return list.get(indexVal);
 	}
 	
+	@Override
 	public boolean contains(PModelIndex index) {
 		return withinBounds(asListIndex(index), 0);
 	}
 	
+	@Override
 	public boolean contains(int index) {
 		return withinBounds(index, 0);
 	}
 	
+	@Override
 	public PListIndex getIndexOf(Object content) {
 		int indexVal = list.indexOf(content);
 		if (indexVal == -1) {
@@ -83,14 +105,18 @@ public class DefaultPListModel extends AbstractPModel implements PListModel {
 		return new PListIndex(indexVal);
 	}
 	
+	@Override
 	public boolean canAdd(PModelIndex index, Object content) {
 		return canAdd(asListIndex(index), content);
 	}
 	
+	@Override
 	public boolean canAdd(int index, Object content) {
-		return content != null && withinBounds(index, 1);
+		return content != null && withinBounds(index, 1)
+				&& (testCanAdd == null || testCanAdd.test(index, content));
 	}
 	
+	@Override
 	public void add(PModelIndex index, Object content) {
 		if (!canAdd(index, content)) {
 			throw new AddImpossible(this, index, content);
@@ -99,18 +125,23 @@ public class DefaultPListModel extends AbstractPModel implements PListModel {
 		fireAddEvent(index, content);
 	}
 	
+	@Override
 	public void add(int index, Object content) {
 		add(new PListIndex(index), content);
 	}
 	
+	@Override
 	public boolean canRemove(PModelIndex index) {
 		return contains(index);
 	}
 	
+	@Override
 	public boolean canRemove(int index) {
-		return contains(index);
+		return contains(index)
+				&& (testCanRemove == null || testCanRemove.test(index));
 	}
 	
+	@Override
 	public void removeAll(Iterable<PModelIndex> indices) {
 		ArrayList<PModelIndex> c = new ArrayList<>();
 		indices.forEach(c::add);
@@ -124,6 +155,7 @@ public class DefaultPListModel extends AbstractPModel implements PListModel {
 		}
 	}
 	
+	@Override
 	public void removeAll(PModelIndex ... indices) {
 		Arrays.sort(indices, (i1, i2) -> {
 			PListIndex l1 = (PListIndex) i1;
@@ -135,6 +167,7 @@ public class DefaultPListModel extends AbstractPModel implements PListModel {
 		}
 	}
 	
+	@Override
 	public void remove(PModelIndex index) {
 		if (!canRemove(index)) {
 			throw new RemoveImpossible(this, index);
@@ -143,10 +176,12 @@ public class DefaultPListModel extends AbstractPModel implements PListModel {
 		fireRemoveEvent(index, oldContent);
 	}
 	
+	@Override
 	public void remove(int index) {
 		remove(new PListIndex(index));
 	}
 	
+	@Override
 	public Iterator<PModelIndex> iterator() {
 		return new PListModelIterator(this);
 	}
@@ -163,6 +198,7 @@ public class DefaultPListModel extends AbstractPModel implements PListModel {
 		throw new WrongIndexType(index, PListIndex.class);
 	}
 	
+	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(getClass().getSimpleName());
@@ -179,10 +215,12 @@ public class DefaultPListModel extends AbstractPModel implements PListModel {
 			this.model = model;
 		}
 		
+		@Override
 		public boolean hasNext() {
 			return pos < model.getSize();
 		}
 		
+		@Override
 		public PListIndex next() {
 			if (!hasNext()) {
 				throw new NoSuchElementException();

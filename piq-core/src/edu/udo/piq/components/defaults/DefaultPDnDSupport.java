@@ -83,17 +83,19 @@ public class DefaultPDnDSupport implements PDnDSupport {
 		return dropAllowed;
 	}
 	
+	@Override
 	public PDnDTransfer getActiveTransfer() {
 		return activeTransfer;
 	}
 	
-	public boolean canDrop(PComponent target, PDnDTransfer transfer, int x, int y) 
-			throws NullPointerException 
+	@Override
+	public boolean canDrop(PComponent target, PDnDTransfer transfer, int x, int y)
+			throws NullPointerException
 	{
 		// Throw exceptions for illegal input
 		ThrowException.ifNull(target, "target == null");
 		ThrowException.ifNull(transfer, "transfer == null");
-		PDropComponent dstComp = ThrowException.ifTypeCastFails(target, 
+		PDropComponent dstComp = ThrowException.ifTypeCastFails(target,
 				PDropComponent.class, "target instanceof PDropComponent == false");
 		// If dropping is disabled for this DnD support
 		if (!isDropAllowed()) {
@@ -110,7 +112,7 @@ public class DefaultPDnDSupport implements PDnDSupport {
 			return false;
 		}
 		// If the source is the destination we don't need to export & import the data,
-		// instead we do a naive data transfer 
+		// instead we do a naive data transfer
 		if (dstComp == transfer.getSource()) {
 			List<PModelIndex> dragIndices = dstComp.getDragIndices();
 			if (dragIndices.size() == 1 && dragIndices.contains(dstIndex)) {
@@ -139,8 +141,9 @@ public class DefaultPDnDSupport implements PDnDSupport {
 		return true;
 	}
 	
+	@Override
 	public void drop(PComponent target, PDnDTransfer transfer, int x, int y)
-			throws NullPointerException, IllegalArgumentException 
+			throws NullPointerException, IllegalArgumentException
 	{
 		// Check if drop is allowed
 		ThrowException.ifFalse(canDrop(target, transfer, x, y), "canDrop(target, transfer, x, y) == false");
@@ -161,8 +164,8 @@ public class DefaultPDnDSupport implements PDnDSupport {
 		}
 	}
 	
-	protected void doNaiveImport(PDropComponent dstComp, 
-			PModel dstModel, PModelIndex dstIndex, PModel importData) 
+	protected void doNaiveImport(PDropComponent dstComp,
+			PModel dstModel, PModelIndex dstIndex, PModel importData)
 	{
 		// Do a naive import for unknown data
 		for (PModelIndex index : importData) {
@@ -170,14 +173,15 @@ public class DefaultPDnDSupport implements PDnDSupport {
 			if (element != PTreePDnDSupport.EXPORT_MODEL_ROOT_CONTENT) {
 				dstModel.add(dstIndex, element);
 			}
-		}		
+		}
 	}
 	
+	@Override
 	public boolean canDrag(PComponent source, int x, int y)
-			throws NullPointerException 
+			throws NullPointerException
 	{
 		ThrowException.ifNull(source, "source == null");
-		PDropComponent srcComp = ThrowException.ifTypeCastFails(source, 
+		PDropComponent srcComp = ThrowException.ifTypeCastFails(source,
 				PDropComponent.class, "(source instanceof PDropComponent) == false");
 		if (!isDragAllowed()) {
 			return false;
@@ -210,12 +214,13 @@ public class DefaultPDnDSupport implements PDnDSupport {
 		return !isRemoveOnDrag() || srcModel.canRemove(srcIndices);
 	}
 	
+	@Override
 	public void startDrag(PComponent source, int x, int y)
-			throws NullPointerException, IllegalArgumentException 
+			throws NullPointerException, IllegalArgumentException
 	{
 		ThrowException.ifFalse(canDrag(source, x, y), "canDrag(source, x, y) == false");
 		ThrowException.ifNotNull(activeTransfer, "activeTransfer != null");
-		PDropComponent srcComp = ThrowException.ifTypeCastFails(source, 
+		PDropComponent srcComp = ThrowException.ifTypeCastFails(source,
 				PDropComponent.class, "(source instanceof PDropComponent) == false");
 		
 		PModel srcModel = srcComp.getModel();
@@ -248,14 +253,15 @@ public class DefaultPDnDSupport implements PDnDSupport {
 		return exportModel;
 	}
 	
-	public void finishDrag(PComponent source, PComponent target, PDnDTransfer transfer) 
-			throws NullPointerException, IllegalArgumentException 
+	@Override
+	public void finishDrag(PComponent source, PComponent target, PDnDTransfer transfer)
+			throws NullPointerException, IllegalArgumentException
 	{
 		ThrowException.ifNull(source, "source == null");
 		ThrowException.ifNull(target, "target == null");
 		ThrowException.ifNull(transfer, "transfer == null");
 		ThrowException.ifNotEqual(transfer, activeTransfer, "transfer != activeTransfer");
-		PDropComponent srcComp = ThrowException.ifTypeCastFails(source, 
+		PDropComponent srcComp = ThrowException.ifTypeCastFails(source,
 				PDropComponent.class, "(source instanceof PDropComponent) == false");
 		
 		activeTransfer = null;
@@ -278,20 +284,21 @@ public class DefaultPDnDSupport implements PDnDSupport {
 	
 	protected void doNaiveRemoveAll(PModel srcModel, List<PModelIndex> srcIndices) {
 		/*
-		 * Iterating over all indices and removing them one by one will not always work 
-		 * since removing one index might change the validity of other indices. For this 
+		 * Iterating over all indices and removing them one by one will not always work
+		 * since removing one index might change the validity of other indices. For this
 		 * reason we let the model remove all indices as one atomic step.
 		 */
 		srcModel.removeAll(srcIndices);
 	}
 	
+	@Override
 	public void abortDrag(PComponent source, PDnDTransfer transfer)
-			throws NullPointerException 
+			throws NullPointerException
 	{
 		ThrowException.ifNull(source, "source == null");
 		ThrowException.ifNull(transfer, "transfer == null");
 		ThrowException.ifNotEqual(transfer, activeTransfer, "transfer != activeTransfer");
-		PDropComponent srcComp = ThrowException.ifTypeCastFails(source, 
+		PDropComponent srcComp = ThrowException.ifTypeCastFails(source,
 				PDropComponent.class, "(source instanceof PDropComponent) == false");
 		activeTransfer = null;
 		
@@ -310,19 +317,21 @@ public class DefaultPDnDSupport implements PDnDSupport {
 		// We have nothing to do here.
 	}
 	
+	@Override
 	public void showDropLocation(PComponent source, PDnDTransfer transfer, int x, int y) {
 		ThrowException.ifNull(source, "source == null");
 		ThrowException.ifNull(transfer, "transfer == null");
-		PDropComponent dropComp = ThrowException.ifTypeCastFails(source, 
+		PDropComponent dropComp = ThrowException.ifTypeCastFails(source,
 				PDropComponent.class, "(source instanceof PDropComponent) == false");
 		PModelIndex dropIndex = dropComp.getDropIndex(x, y);
 		dropComp.setDropHighlight(dropIndex);
 	}
 	
+	@Override
 	public void hideDropLocation(PComponent source, PDnDTransfer transfer, int x, int y) {
 		ThrowException.ifNull(source, "source == null");
 		ThrowException.ifNull(transfer, "transfer == null");
-		PDropComponent dropComp = ThrowException.ifTypeCastFails(source, 
+		PDropComponent dropComp = ThrowException.ifTypeCastFails(source,
 				PDropComponent.class, "(source instanceof PDropComponent) == false");
 		dropComp.setDropHighlight(null);
 	}

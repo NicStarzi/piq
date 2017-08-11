@@ -10,10 +10,10 @@ public interface PTimerCallback {
 	/**
 	 * When the {@link PTimer}, that this callback is registered at, expires
 	 * this method will be called.<br>
-	 * @param deltaTime
+	 * @param deltaMilliSc
 	 * @see PTimer#setRepeating(boolean)
 	 * @see PTimer#setDelay(int)
 	 */
-	public void onTimerEvent(double deltaTime);
+	public void onTimerEvent(double deltaMilliSc);
 	
 }

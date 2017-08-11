@@ -92,6 +92,7 @@ public class PTupleLayout extends AbstractEnumPLayout<Constraint> {
 		return getChildForConstraint(Constraint.SECOND);
 	}
 	
+	@Override
 	protected void layOutInternal() {
 		Distribution distPrim = getDistribution();
 		Distribution distScnd = getSecondaryDistribution();
@@ -154,6 +155,7 @@ public class PTupleLayout extends AbstractEnumPLayout<Constraint> {
 		}
 	}
 	
+	@Override
 	protected void onInvalidated() {
 		PComponent first = getChildForConstraint(Constraint.FIRST);
 		PComponent second = getChildForConstraint(Constraint.SECOND);
@@ -182,6 +184,7 @@ public class PTupleLayout extends AbstractEnumPLayout<Constraint> {
 		prefSize.setHeight(prefH);
 	}
 	
+	@Override
 	protected void onChildPrefSizeChanged(PComponent child) {
 		ThrowException.ifFalse(containsChild(child), "containsChild(child) == false");
 		boolean primRespect = getDistribution() != Distribution.RESPECT_NONE;
@@ -200,7 +203,7 @@ public class PTupleLayout extends AbstractEnumPLayout<Constraint> {
 		LEFT_TO_RIGHT,
 		TOP_TO_BOTTOM,
 		;
-		public static final List<Orientation> ALL = 
+		public static final List<Orientation> ALL =
 				Collections.unmodifiableList(Arrays.asList(values()));
 		public static final int COUNT = ALL.size();
 	}
@@ -211,6 +214,7 @@ public class PTupleLayout extends AbstractEnumPLayout<Constraint> {
 		public int size2;
 		public int sizeTotal;
 		public int gap;
+		@Override
 		public String toString() {
 			StringBuilder builder = new StringBuilder();
 			builder.append("{pos1=");
@@ -228,44 +232,67 @@ public class PTupleLayout extends AbstractEnumPLayout<Constraint> {
 	
 	public static enum Distribution {
 		RESPECT_BOTH {
+			@Override
 			protected void transformPrimary(LayoutData data) {
 				int sizePref = data.size1 + data.size2 + data.gap;
 				data.pos1 = data.pos1 + data.sizeTotal / 2 - sizePref / 2;
 			}
+			@Override
 			protected void transformSecondary(LayoutData data) {
 				data.pos1 = data.sizeTotal / 2;// - sizeMax / 2;
 			}
 		},
 		RESPECT_NONE {
+			@Override
 			protected void transformPrimary(LayoutData data) {
 				int size = (data.sizeTotal - data.gap) / 2;
 				data.size1 = data.size2 = size;
 			}
+			@Override
 			protected void transformSecondary(LayoutData data) {
 				data.size1 = data.size2 = data.sizeTotal;
 				data.pos1 = data.sizeTotal / 2;// - data.size1 / 2
 			}
 		},
+		RESPECT_LARGER {
+			@Override
+			protected void transformPrimary(LayoutData data) {
+				int size = Math.max(data.size1, data.size2);
+				int sizePref = size * 2 + data.gap;
+				data.size1 = data.size2 = size;
+				data.pos1 = data.pos1 + data.sizeTotal / 2 - sizePref / 2;
+			}
+			@Override
+			protected void transformSecondary(LayoutData data) {
+				int size = Math.max(data.size1, data.size2);
+				data.size1 = data.size2 = size;
+				data.pos1 = data.sizeTotal / 2;
+			}
+		},
 		RESPECT_FIRST {
+			@Override
 			protected void transformPrimary(LayoutData data) {
 				data.size2 = data.sizeTotal - (data.size1 + data.gap);
 			}
+			@Override
 			protected void transformSecondary(LayoutData data) {
 				data.size2 = data.size1;
 				data.pos1 = data.sizeTotal / 2;// - data.size1 / 2
 			}
 		},
 		RESPECT_SECOND {
+			@Override
 			protected void transformPrimary(LayoutData data) {
 				data.size1 = data.sizeTotal - (data.size2 + data.gap);
 			}
+			@Override
 			protected void transformSecondary(LayoutData data) {
 				data.size1 = data.size2;
 				data.pos1 = data.sizeTotal / 2;// - data.size1 / 2
 			}
 		},
 		;
-		public static final List<Distribution> ALL = 
+		public static final List<Distribution> ALL =
 				Collections.unmodifiableList(Arrays.asList(values()));
 		public static final int COUNT = ALL.size();
 		

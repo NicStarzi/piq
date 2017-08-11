@@ -87,11 +87,8 @@ public class PButton extends AbstractPInputLayoutOwner implements PClickable, PG
 		super();
 		setBorder(new PButtonBorder());
 		
-		PModelFactory modelFac = PModelFactory.getGlobalModelFactory();
-		PButtonModel defaultModel = new DefaultPButtonModel();
-		if (modelFac != null) {
-			defaultModel = (PButtonModel) modelFac.getModelFor(this, defaultModel);
-		}
+		PButtonModel defaultModel = PModelFactory.createModelFor(this,
+				DefaultPButtonModel::new, PButtonModel.class);
 		
 		PAnchorLayout defaultLayout = new PAnchorLayout(this);
 		defaultLayout.setInsets(new ImmutablePInsets(8));
@@ -107,11 +104,11 @@ public class PButton extends AbstractPInputLayoutOwner implements PClickable, PG
 				PButton.this.onMouseButtonTriggered(mouse, btn);
 			}
 			@Override
-			public void onButtonPressed(PMouse mouse, MouseButton btn) {
+			public void onButtonPressed(PMouse mouse, MouseButton btn, int clickCount) {
 				PButton.this.onMouseButtonPressed(mouse, btn);
 			}
 			@Override
-			public void onButtonReleased(PMouse mouse, MouseButton btn) {
+			public void onButtonReleased(PMouse mouse, MouseButton btn, int clickCount) {
 				PButton.this.onMouseButtonReleased(mouse, btn);
 			}
 		});
@@ -197,6 +194,15 @@ public class PButton extends AbstractPInputLayoutOwner implements PClickable, PG
 	
 	public PButtonModel getModel() {
 		return model;
+	}
+	
+	public void simulateClick() {
+		if (isEnabled() && getModel() != null) {
+			getModel().setPressed(true);
+			getModel().setPressed(false);
+			takeFocus();
+			fireClickEvent();
+		}
 	}
 	
 	public boolean isPressed() {

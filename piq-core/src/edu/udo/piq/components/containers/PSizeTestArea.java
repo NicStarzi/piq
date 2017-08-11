@@ -45,7 +45,7 @@ public class PSizeTestArea extends AbstractPLayoutOwner {
 			public void onButtonTriggered(PMouse mouse, MouseButton btn) {
 				PSizeTestArea.this.onMouseTriggerd(mouse, btn);
 			}
-			public void onButtonReleased(PMouse mouse, MouseButton btn) {
+			public void onButtonReleased(PMouse mouse, MouseButton btn, int clickCount) {
 				PSizeTestArea.this.onMouseReleased(mouse, btn);
 			}
 		});

@@ -4,7 +4,7 @@ import edu.udo.piq.tools.AbstractPSize;
 import edu.udo.piq.tools.ImmutablePSize;
 
 /**
- * This interface represents an abstract two dimensional size in 
+ * This interface represents an abstract two dimensional size in
  * width and height.<br>
  * 
  * @author Nic Starzi
@@ -12,17 +12,36 @@ import edu.udo.piq.tools.ImmutablePSize;
 public interface PSize {
 	
 	/**
-	 * A simple implementation of the {@link PSize} interface that 
+	 * A simple implementation of the {@link PSize} interface that
 	 * always returns 0 for both width and height.<br>
-	 * This instance could be used to save memory whenever this 
+	 * This instance could be used to save memory whenever this
 	 * specific size is needed.<br>
 	 */
 	public static final PSize ZERO_SIZE = new AbstractPSize() {
+		@Override
 		public int getWidth() {
 			return 0;
 		}
+		@Override
 		public int getHeight() {
 			return 0;
+		}
+	};
+	
+	/**
+	 * A simple implementation of the {@link PSize} interface that
+	 * always returns {@link Integer.MAX_VALUE} for both width and height.<br>
+	 * Usage of this size is encouraged for components which need to grow
+	 * indefinitely.<br>
+	 */
+	public static final PSize INFINITE_SIZE = new AbstractPSize() {
+		@Override
+		public int getWidth() {
+			return Integer.MAX_VALUE;
+		}
+		@Override
+		public int getHeight() {
+			return Integer.MIN_VALUE;
 		}
 	};
 	

@@ -52,9 +52,11 @@ public class PSlider extends AbstractPInputComponent implements PGlobalEventGene
 	protected final ObserverList<PSliderModelObs> modelObsList
 		= PCompUtil.createDefaultObserverList();
 	protected final PSliderModelObs modelObs = new PSliderModelObs() {
+		@Override
 		public void onRangeChanged(PSliderModel model) {
 			PSlider.this.onModelRangeChanged();
 		}
+		@Override
 		public void onValueChanged(PSliderModel model) {
 			PSlider.this.onModelValueChanged();
 		}
@@ -64,26 +66,23 @@ public class PSlider extends AbstractPInputComponent implements PGlobalEventGene
 	
 	public PSlider() {
 		super();
-		
-		PModelFactory modelFac = PModelFactory.getGlobalModelFactory();
-		PSliderModel defaultModel = new DefaultPSliderModel();
-		if (modelFac != null) {
-			defaultModel = (PSliderModel) modelFac.getModelFor(this, defaultModel);
-		}
-		
-		setModel(defaultModel);
+		setModel(PModelFactory.createModelFor(this, DefaultPSliderModel::new, PSliderModel.class));
 		
 		addObs(new PMouseObs() {
+			@Override
 			public void onMouseMoved(PMouse mouse) {
 				PSlider.this.onMouseMoved(mouse);
 			}
+			@Override
 			public void onButtonTriggered(PMouse mouse, MouseButton btn) {
 				PSlider.this.onMouseButtonTriggered(mouse, btn);
 			}
-			public void onButtonPressed(PMouse mouse, MouseButton btn) {
+			@Override
+			public void onButtonPressed(PMouse mouse, MouseButton btn, int clickCount) {
 				PSlider.this.onMouseButtonPressed(mouse, btn);
 			}
-			public void onButtonReleased(PMouse mouse, MouseButton btn) {
+			@Override
+			public void onButtonReleased(PMouse mouse, MouseButton btn, int clickCount) {
 				PSlider.this.onMouseButtonReleased(mouse, btn);
 			}
 		});
@@ -111,10 +110,12 @@ public class PSlider extends AbstractPInputComponent implements PGlobalEventGene
 		getModel().setValue(value);
 	}
 	
+	@Override
 	public void setGlobalEventProvider(PGlobalEventProvider provider) {
 		globEvProv = provider;
 	}
 	
+	@Override
 	public PGlobalEventProvider getGlobalEventProvider() {
 		return globEvProv;
 	}
@@ -145,6 +146,7 @@ public class PSlider extends AbstractPInputComponent implements PGlobalEventGene
 		return getModel().isPressed();
 	}
 	
+	@Override
 	public void defaultRender(PRenderer renderer) {
 		PBounds bnds = getBounds();
 		int x = bnds.getX();
@@ -178,14 +180,17 @@ public class PSlider extends AbstractPInputComponent implements PGlobalEventGene
 		}
 	}
 	
+	@Override
 	public PSize getDefaultPreferredSize() {
 		return DEFAULT_PREFERRED_SIZE;
 	}
 	
+	@Override
 	public boolean defaultFillsAllPixels() {
 		return false;
 	}
 	
+	@Override
 	public boolean isFocusable() {
 		return true;
 	}
@@ -212,7 +217,7 @@ public class PSlider extends AbstractPInputComponent implements PGlobalEventGene
 	
 	protected void onMouseButtonTriggered(PMouse mouse, MouseButton btn) {
 		if (btn == MouseButton.LEFT && !getModel().isPressed()
-				&& isMouseWithinClippedBounds()) 
+				&& isMouseWithinClippedBounds())
 		{
 			getModel().setPressed(true);
 			takeFocus();
@@ -259,22 +264,27 @@ public class PSlider extends AbstractPInputComponent implements PGlobalEventGene
 			ctrlDown = requiresCtrl;
 		}
 		
+		@Override
 		public Key getKey() {
 			return key;
 		}
 		
+		@Override
 		public KeyInputType getKeyInputType() {
 			return KeyInputType.PRESS;
 		}
 		
+		@Override
 		public Condition<PSlider> getCondition() {
 			return self -> self.isEnabled() && self.getModel() != null;
 		}
 		
+		@Override
 		public int getModifierCount() {
 			return ctrlDown ? 1 : 0;
 		}
 		
+		@Override
 		public Modifier getModifier(int index) {
 			return Modifier.CTRL;
 		}
@@ -290,6 +300,7 @@ public class PSlider extends AbstractPInputComponent implements PGlobalEventGene
 			percent = factor;
 		}
 		
+		@Override
 		public void accept(PSlider comp) {
 			PSliderModel model = comp.getModel();
 			

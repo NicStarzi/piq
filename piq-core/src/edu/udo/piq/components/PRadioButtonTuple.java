@@ -52,10 +52,10 @@ public class PRadioButtonTuple extends AbstractPInputLayoutOwner implements PCli
 			public void onButtonTriggered(PMouse mouse, MouseButton btn) {
 				PRadioButtonTuple.this.onMouseButtonTriggered(mouse, btn);
 			}
-			public void onButtonPressed(PMouse mouse, MouseButton btn) {
+			public void onButtonPressed(PMouse mouse, MouseButton btn, int clickCount) {
 				PRadioButtonTuple.this.onMouseButtonPressed(mouse, btn);
 			}
-			public void onButtonReleased(PMouse mouse, MouseButton btn) {
+			public void onButtonReleased(PMouse mouse, MouseButton btn, int clickCount) {
 				PRadioButtonTuple.this.onMouseButtonReleased(mouse, btn);
 			}
 			public void onMouseMoved(PMouse mouse) {

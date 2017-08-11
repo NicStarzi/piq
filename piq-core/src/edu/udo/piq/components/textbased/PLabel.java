@@ -22,25 +22,16 @@ public class PLabel extends AbstractPComponent {
 	
 	protected final ObserverList<PTextModelObs> modelObsList
 		= PCompUtil.createDefaultObserverList();
-	protected final PTextModelObs modelObs = new PTextModelObs() {
-		public void onTextChanged(PTextModel model) {
-			firePreferredSizeChangedEvent();
-			fireReRenderEvent();
-		}
+	protected final PTextModelObs modelObs = model -> {
+		firePreferredSizeChangedEvent();
+		fireReRenderEvent();
 	};
 	protected PFontResource cachedFont;
 	protected PTextModel model;
 	
 	public PLabel() {
 		super();
-		
-		PModelFactory modelFac = PModelFactory.getGlobalModelFactory();
-		PTextModel defaultModel = new DefaultPTextModel();
-		if (modelFac != null) {
-			defaultModel = (PTextModel) modelFac.getModelFor(this, defaultModel);
-		}
-		
-		setModel(defaultModel);
+		setModel(PModelFactory.createModelFor(this, DefaultPTextModel::new, PTextModel.class));
 	}
 	
 	public PLabel(PTextModel model) {
@@ -57,16 +48,12 @@ public class PLabel extends AbstractPComponent {
 		PTextModel oldModel = getModel();
 		if (oldModel != null) {
 			oldModel.removeObs(modelObs);
-			for (PTextModelObs obs : modelObsList) {
-				oldModel.removeObs(obs);
-			}
+			modelObsList.fireEvent(obs -> oldModel.removeObs(obs));
 		}
 		this.model = model;
 		if (model != null) {
 			model.addObs(modelObs);
-			for (PTextModelObs obs : modelObsList) {
-				model.addObs(obs);
-			}
+			modelObsList.fireEvent(obs -> model.addObs(obs));
 		}
 		firePreferredSizeChangedEvent();
 		fireReRenderEvent();
@@ -87,22 +74,28 @@ public class PLabel extends AbstractPComponent {
 		return text.toString();
 	}
 	
+	@Override
 	public void defaultRender(PRenderer renderer) {
 		String text = getText();
 		if (text == null || text.isEmpty()) {
 			return;
 		}
 		PFontResource font = getDefaultFont();
+		if (font == null) {
+			return;
+		}
 		PBounds bounds = getBounds();
 		
 		renderer.setColor(getDefaultTextColor());
 		renderer.drawString(font, text, bounds.getX(), bounds.getY());
 	}
 	
+	@Override
 	public boolean defaultFillsAllPixels() {
 		return false;
 	}
 	
+	@Override
 	public PSize getDefaultPreferredSize() {
 		String text = getText();
 		if (text == null || text.isEmpty()) {
@@ -127,7 +120,7 @@ public class PLabel extends AbstractPComponent {
 		if (cachedFont != null && root.isFontSupported(cachedFont)) {
 			return cachedFont;
 		}
-		cachedFont = root.fetchFontResource(DEFAULT_FONT_NAME, 
+		cachedFont = root.fetchFontResource(DEFAULT_FONT_NAME,
 				DEFAULT_FONT_SIZE, DEFAULT_FONT_STYLE);
 		return cachedFont;
 	}

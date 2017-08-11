@@ -85,10 +85,8 @@ public class AbstractPComponent implements PComponent {
 	};
 	protected final PComponentObs parentObs = new PComponentObs() {
 		@Override
-		public void onRootChanged(PComponent component, PRoot currentRoot) {
-			PRoot oldRoot = cachedRoot;
+		public void onRootChanged(PComponent component, PRoot currentRoot, PRoot oldRoot) {
 			setCachedRoot(getParent(), currentRoot);
-			AbstractPComponent.this.onRootChanged(oldRoot);
 		}
 	};
 	/**
@@ -131,12 +129,12 @@ public class AbstractPComponent implements PComponent {
 			mouseObsList.fireEvent(obs -> obs.onButtonTriggered(mouse, btn));
 		}
 		@Override
-		public void onButtonReleased(PMouse mouse, MouseButton btn) {
-			mouseObsList.fireEvent(obs -> obs.onButtonReleased(mouse, btn));
+		public void onButtonReleased(PMouse mouse, MouseButton btn, int clickCount) {
+			mouseObsList.fireEvent(obs -> obs.onButtonReleased(mouse, btn, clickCount));
 		}
 		@Override
-		public void onButtonPressed(PMouse mouse, MouseButton btn) {
-			mouseObsList.fireEvent(obs -> obs.onButtonPressed(mouse, btn));
+		public void onButtonPressed(PMouse mouse, MouseButton btn, int clickCount) {
+			mouseObsList.fireEvent(obs -> obs.onButtonPressed(mouse, btn, clickCount));
 		}
 	};
 	/**
@@ -269,12 +267,8 @@ public class AbstractPComponent implements PComponent {
 		}
 		cachedBoundsInvalid = true;
 		cachedBounds = null;
-		lastPrefW = -1;
-		lastPrefH = -1;
-		lastBndsX = -1;
-		lastBndsY = -1;
-		lastBndsW = -1;
-		lastBndsH = -1;
+		lastPrefW = lastPrefH = -1;
+		lastBndsX = lastBndsY = lastBndsW = lastBndsH = -1;
 		PComponent oldParent = this.parent;
 		if (oldParent != null) {
 			oldParent.getLayout().removeObs(parentLayoutObs);
@@ -300,19 +294,21 @@ public class AbstractPComponent implements PComponent {
 	}
 	
 	private void setCachedRoot(PComponent oldParent, PRoot root) {
-		if (cachedRoot == root) {
+		PRoot oldCachedRoot = cachedRoot;
+		if (oldCachedRoot == root) {
 			return;
 		}
-		if (cachedRoot != null) {
-			cachedRoot.removeObs(rootFocusObs);
-			cachedRoot.fireComponentRemovedFromGui(oldParent, this);
+		cachedRoot = null;
+		if (oldCachedRoot != null) {
+			oldCachedRoot.removeObs(rootFocusObs);
+			oldCachedRoot.fireComponentRemovedFromGui(oldParent, this);
 		}
 		cachedRoot = root;
 		if (cachedRoot != null) {
 			cachedRoot.addObs(rootFocusObs);
 			cachedRoot.fireComponentAddedToGui(this);
 		}
-		fireRootChangedEvent();
+		fireRootChangedEvent(oldCachedRoot);
 		if (keyObsRegistered) {
 			currentKeyboard.removeObs(delegateKeyObs);
 		}
@@ -323,10 +319,8 @@ public class AbstractPComponent implements PComponent {
 			currentMouse.removeObs(delegateMouseObs);
 		}
 		currentMouse = cachedRoot == null ? null : cachedRoot.getMouse();
-		if (currentMouse == null) {
+		if (currentMouse != null && !currentMouse.isCursorSupported(mouseOverCursor)) {
 			mouseOverCursor = null;
-		} else {
-			mouseOverCursor = cachedRoot.getMouse().getCursorDefault();
 		}
 		mouseObsRegistered = false;
 		registerMouseObs();
@@ -390,15 +384,19 @@ public class AbstractPComponent implements PComponent {
 	
 	@Override
 	public PBounds getBoundsWithoutBorder() {
+		PBounds bounds = getBounds();
+		if (bounds == null) {
+			return null;
+		}
 		PBorder border = getBorder();
 		if (border == null) {
 			bndsNoBorder = null;
-			return getBounds();
+			return bounds;
 		}
 		if (bndsNoBorder == null) {
-			bndsNoBorder = new MutablePBounds(getBounds());
+			bndsNoBorder = new MutablePBounds(bounds);
 		} else {
-			bndsNoBorder.set(getBounds());
+			bndsNoBorder.set(bounds);
 		}
 		bndsNoBorder.subtract(border.getInsets(this));
 		return bndsNoBorder;
@@ -596,8 +594,9 @@ public class AbstractPComponent implements PComponent {
 		keyboardObsList.remove(obs);
 	}
 	
-	protected void fireRootChangedEvent() {
-		compObsList.fireEvent(obs -> obs.onRootChanged(this, cachedRoot));
+	protected void fireRootChangedEvent(PRoot oldRoot) {
+		AbstractPComponent.this.onRootChanged(oldRoot);
+		compObsList.fireEvent(obs -> obs.onRootChanged(this, cachedRoot, oldRoot));
 	}
 	
 	protected void fireAddedEvent() {

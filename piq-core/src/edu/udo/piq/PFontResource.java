@@ -4,13 +4,13 @@ import edu.udo.piq.util.PCompUtil;
 
 /**
  * This interface defines abstract platform independent font resources.<br>
- * A font resource offers methods to query its font-name, style and point 
+ * A font resource offers methods to query its font-name, style and point
  * size.<br>
- * It also calculates the size for a text that is being rendered with this 
- * font. Since this depends on the {@link PRenderer} being used as well as 
- * internal settings this is indented to be implemented by platform dependent  
+ * It also calculates the size for a text that is being rendered with this
+ * font. Since this depends on the {@link PRenderer} being used as well as
+ * internal settings this is indented to be implemented by platform dependent
  * classes.<br>
- * Instances of font resources can be obtained from a {@link PRoot} 
+ * Instances of font resources can be obtained from a {@link PRoot}
  * implementation.<br>
  * 
  * @author Nic Starzi
@@ -28,21 +28,21 @@ public interface PFontResource extends PDisposable {
 	public String getName();
 	
 	/**
-	 * Returns the point size of the font.<br>
-	 * The point size is always positive.<br>
+	 * Returns the size of the font in pixels.<br>
+	 * The size is always a positive number.<br>
 	 * 
 	 * @return point size of the font
 	 */
-	public double getPointSize();
+	public int getPixelSize();
 	
 	/**
-	 * Returns the {@link PSize} that the given text would have when rendered 
+	 * Returns the {@link PSize} that the given text would have when rendered
 	 * with this font.<br>
-	 * This method is useful for {@link PDesign}s and all text based components 
+	 * This method is useful for {@link PDesign}s and all text based components
 	 * that need to calculate their preferred sizes.<br>
 	 * This method should never return null.<br>
 	 * <br>
-	 * For empty texts (or texts with no size) the usage of {@link PSize#ZERO_SIZE} 
+	 * For empty texts (or texts with no size) the usage of {@link PSize#ZERO_SIZE}
 	 * is encouraged.<br>
 	 * 
 	 * @param text the string for which the size is to be determined
@@ -59,7 +59,7 @@ public interface PFontResource extends PDisposable {
 	
 	/**
 	 * Returns the {@link Style} of the font.<br>
-	 * This is either PLAIN, BOLD, ITALIC or BOLD_ITALIC for fonts that are both 
+	 * This is either PLAIN, BOLD, ITALIC or BOLD_ITALIC for fonts that are both
 	 * bold and italic.<br>
 	 * This method never returns null.<br>
 	 * 
@@ -69,7 +69,7 @@ public interface PFontResource extends PDisposable {
 	
 	/**
 	 * The style of a font resource.<br>
-	 * This is either PLAIN, BOLD, ITALIC or BOLD_ITALIC for fonts that are both 
+	 * This is either PLAIN, BOLD, ITALIC or BOLD_ITALIC for fonts that are both
 	 * bold and italic.<br>
 	 */
 	public static enum Style {

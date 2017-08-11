@@ -26,12 +26,15 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 	protected final ObserverList<PSplitPanelObs> obsList
 		= PCompUtil.createDefaultObserverList();
 	protected final PMouseObs mouseObs = new PMouseObs() {
+		@Override
 		public void onMouseMoved(PMouse mouse) {
 			PSplitPanel.this.onMouseMoved(mouse);
 		}
-		public void onButtonReleased(PMouse mouse, MouseButton btn) {
+		@Override
+		public void onButtonReleased(PMouse mouse, MouseButton btn, int clickCount) {
 			PSplitPanel.this.onMouseButtonReleased(mouse, btn);
 		}
+		@Override
 		public void onButtonTriggered(PMouse mouse, MouseButton btn) {
 			PSplitPanel.this.onMouseButtonTriggered(mouse, btn);
 		}
@@ -59,14 +62,7 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 	
 	public PSplitPanel() {
 		super();
-		
-		PModelFactory modelFac = PModelFactory.getGlobalModelFactory();
-		PSplitPanelModel defaultModel = new DefaultPSplitPanelModel();
-		if (modelFac != null) {
-			defaultModel = (PSplitPanelModel) modelFac.getModelFor(this, defaultModel);
-		}
-		
-		setModel(defaultModel);
+		setModel(PModelFactory.createModelFor(this, DefaultPSplitPanelModel::new, PSplitPanelModel.class));
 		
 		setLayout(new PSplitLayout(this));
 		divider = new PSplitPanelDivider();
@@ -74,11 +70,12 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 		addObs(mouseObs);
 	}
 	
+	@Override
 	public void defaultRender(PRenderer renderer) {
 //		PComponent first = getFirstComponent();
 //		if (first == null || !PCompUtil.fillsAllPixels(first)) {
-//			// This is faster then getting the bounds directly from the component 
-//			// because it is just an array lookup with the constraints ordinal as 
+//			// This is faster then getting the bounds directly from the component
+//			// because it is just an array lookup with the constraints ordinal as
 //			// array-index.
 //			PBounds bndsFirst = getLayoutInternal().getChildBounds(Constraint.FIRST);
 //			defaultRenderFillBounds(renderer, bndsFirst);
@@ -102,6 +99,7 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 		renderer.drawQuad(bnds);
 	}
 	
+	@Override
 	public boolean isFocusable() {
 		return false;
 	}
@@ -226,10 +224,12 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 		
 		private static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(6, 6);
 		
+		@Override
 		public PCursor getMouseOverCursor(PMouse mouse) {
 			return mouse.getCursorScroll();
 		}
 		
+		@Override
 		public void defaultRender(PRenderer renderer) {
 			PBounds bounds = getBounds();
 			int x = bounds.getX();
@@ -247,10 +247,12 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 			renderer.drawQuad(x + 1, y + 1, fx - 1, fy - 1);
 		}
 		
+		@Override
 		public PSize getDefaultPreferredSize() {
 			return DEFAULT_PREFERRED_SIZE;
 		}
 		
+		@Override
 		public boolean isFocusable() {
 			return false;
 		}

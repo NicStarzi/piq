@@ -15,9 +15,6 @@ public class PButtonBorder extends AbstractPBorder implements PBorder {
 	
 	public static final ImmutablePInsets INSETS = new ImmutablePInsets(2);
 	
-	public PButtonBorder() {
-	}
-	
 	@Override
 	public PInsets getDefaultInsets(PComponent component) {
 		return INSETS;

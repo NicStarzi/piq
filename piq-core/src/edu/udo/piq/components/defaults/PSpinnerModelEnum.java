@@ -31,7 +31,7 @@ public class PSpinnerModelEnum<E extends Enum<E>> extends AbstractPSpinnerModel 
 		ThrowException.ifNull(enumClass, "enumClass == null");
 		ThrowException.ifFalse(enumClass.isEnum(), "enumClass.isEnum() == false");
 		values = Arrays.asList(enumClass.getEnumConstants());
-		ThrowException.ifNotWithin(0, values.size(), selectedIndex, 
+		ThrowException.ifNotWithin(0, values.size(), selectedIndex,
 				"selectedIndex < 0 || selectedIndex >= values.size()");
 		index = selectedIndex;
 	}
@@ -56,22 +56,27 @@ public class PSpinnerModelEnum<E extends Enum<E>> extends AbstractPSpinnerModel 
 		return index;
 	}
 	
+	@Override
 	public boolean hasNext() {
 		return getValueIndex() < getValueList().size() - 1;
 	}
 	
+	@Override
 	public boolean hasPrevious() {
 		return getValueIndex() > 0;
 	}
 	
+	@Override
 	public E getNext() {
 		return getValueList().get(getValueIndex() + 1);
 	}
 	
+	@Override
 	public E getPrevious() {
 		return getValueList().get(getValueIndex() - 1);
 	}
 	
+	@Override
 	public boolean canSetValue(Object obj) {
 		if (getValueList().contains(obj)) {
 			return true;
@@ -83,8 +88,9 @@ public class PSpinnerModelEnum<E extends Enum<E>> extends AbstractPSpinnerModel 
 		return false;
 	}
 	
+	@Override
 	public void setValue(Object obj) {
-		ThrowException.ifFalse(canSetValue(obj), 
+		ThrowException.ifFalse(canSetValue(obj),
 				"canSetValue(value) == false");
 		if (!getValueList().contains(obj)) {
 			obj = decoder.parse((String) obj);
@@ -96,6 +102,7 @@ public class PSpinnerModelEnum<E extends Enum<E>> extends AbstractPSpinnerModel 
 		}
 	}
 	
+	@Override
 	public E getValue() {
 		return getValueList().get(getValueIndex());
 	}

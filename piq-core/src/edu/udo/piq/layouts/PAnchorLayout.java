@@ -102,7 +102,7 @@ public class PAnchorLayout extends AbstractArrayPLayout {
 		}
 		
 		PInsets insets = getInsets();
-		PBounds bounds = getOwner().getBounds();
+		PBounds bounds = getOwner().getBoundsWithoutBorder();
 		int x = bounds.getX() + insets.getFromLeft();
 		int y = bounds.getY() + insets.getFromTop();
 		int w = bounds.getWidth() - insets.getHorizontal();

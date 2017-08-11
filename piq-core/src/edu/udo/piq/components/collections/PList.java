@@ -34,8 +34,8 @@ import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
 import edu.udo.piq.util.ThrowException;
 
-public class PList extends AbstractPInputLayoutOwner 
-	implements PDropComponent 
+public class PList extends AbstractPInputLayoutOwner
+	implements PDropComponent
 {
 	
 	protected static final PColor BACKGROUND_COLOR = PColor.WHITE;
@@ -54,7 +54,7 @@ public class PList extends AbstractPInputLayoutOwner
 	 * @see #INPUT_ID_MOVE_UP
 	 * @see #REACTION_MOVE_UP
 	 */
-	public static final PKeyInput<PList> INPUT_MOVE_UP = 
+	public static final PKeyInput<PList> INPUT_MOVE_UP =
 			new DefaultPKeyInput<>(Key.UP, PList::isKeyTriggerEnabled);
 	public static final Consumer<PList> REACTION_MOVE_UP = PList::onKeyTriggerUp;
 	public static final String INPUT_ID_MOVE_UP = "moveUp";
@@ -70,17 +70,17 @@ public class PList extends AbstractPInputLayoutOwner
 	 * @see #INPUT_ID_MOVE_DOWN
 	 * @see #REACTION_MOVE_DOWN
 	 */
-	public static final PKeyInput<PList> INPUT_MOVE_DOWN = 
+	public static final PKeyInput<PList> INPUT_MOVE_DOWN =
 			new DefaultPKeyInput<>(Key.DOWN, PList::isKeyTriggerEnabled);
 	public static final Consumer<PList> REACTION_MOVE_DOWN = PList::onKeyTriggerDown;
 	public static final String INPUT_ID_MOVE_DOWN = "moveDown";
 	
-	public static final PKeyInput<PList> INPUT_MOVE_LEFT = 
+	public static final PKeyInput<PList> INPUT_MOVE_LEFT =
 			new DefaultPKeyInput<>(Key.LEFT, PList::isKeyTriggerEnabled);
 	public static final Consumer<PList> REACTION_MOVE_LEFT = PList::onKeyTriggerUp;
 	public static final String INPUT_ID_MOVE_LEFT = "moveLeft";
 	
-	public static final PKeyInput<PList> INPUT_MOVE_RIGHT = 
+	public static final PKeyInput<PList> INPUT_MOVE_RIGHT =
 			new DefaultPKeyInput<>(Key.RIGHT, PList::isKeyTriggerEnabled);
 	public static final Consumer<PList> REACTION_MOVE_RIGHT = PList::onKeyTriggerDown;
 	public static final String INPUT_ID_MOVE_RIGHT = "moveRight";
@@ -94,8 +94,8 @@ public class PList extends AbstractPInputLayoutOwner
 	}
 	
 	protected static boolean isKeyTriggerEnabled(PList self) {
-		return self.isEnabled() && self.getModel() != null 
-				&& self.getSelection() != null 
+		return self.isEnabled() && self.getModel() != null
+				&& self.getSelection() != null
 				&& self.getSelection().getLastSelected() != null;
 	}
 	
@@ -104,14 +104,17 @@ public class PList extends AbstractPInputLayoutOwner
 	protected final ObserverList<PSelectionObs> selectionObsList
 		= PCompUtil.createDefaultObserverList();
 	protected final PSelectionObs selectionObs = new PSelectionObs() {
+		@Override
 		public void onSelectionAdded(PSelection selection, PModelIndex index) {
 			selectionAdded((PListIndex) index);
 		}
+		@Override
 		public void onSelectionRemoved(PSelection selection, PModelIndex index) {
 			selectionRemoved((PListIndex) index);
 		}
+		@Override
 		public void onLastSelectedChanged(PSelection selection,
-				PModelIndex prevLastSelected, PModelIndex newLastSelected) 
+				PModelIndex prevLastSelected, PModelIndex newLastSelected)
 		{
 			if (hasFocus()) {
 				fireReRenderEvent();
@@ -119,14 +122,17 @@ public class PList extends AbstractPInputLayoutOwner
 		}
 	};
 	protected final PModelObs modelObs = new PModelObs() {
+		@Override
 		public void onContentAdded(PReadOnlyModel model, PModelIndex index, Object newContent) {
 			getSelection().clearSelection();
 			contentAdded((PListIndex) index, newContent);
 		}
+		@Override
 		public void onContentRemoved(PReadOnlyModel model, PModelIndex index, Object oldContent) {
 			contentRemoved((PListIndex) index, oldContent);
 			getSelection().removeSelection(index);
 		}
+		@Override
 		public void onContentChanged(PReadOnlyModel model, PModelIndex index, Object oldContent) {
 			contentChanged((PListIndex) index, oldContent);
 		}
@@ -149,26 +155,23 @@ public class PList extends AbstractPInputLayoutOwner
 	
 	public PList() {
 		super();
-		
-		PModelFactory modelFac = PModelFactory.getGlobalModelFactory();
-		PListModel defaultModel = new DefaultPListModel();
-		if (modelFac != null) {
-			defaultModel = (PListModel) modelFac.getModelFor(this, defaultModel);
-		}
+		setModel(PModelFactory.createModelFor(this, DefaultPListModel::new, PListModel.class));
 		
 		setLayout(new PListLayout(this, ListAlignment.TOP_TO_BOTTOM, 1));
 		setDragAndDropSupport(new DefaultPDnDSupport());
 		setSelection(new PListMultiSelection());
 		setCellFactory(new DefaultPCellFactory());
-		setModel(defaultModel);
 		
 		addObs(new PMouseObs() {
+			@Override
 			public void onButtonTriggered(PMouse mouse, MouseButton btn) {
 				PList.this.onMouseButtonTriggred(mouse, btn);
 			}
-			public void onButtonReleased(PMouse mouse, MouseButton btn) {
+			@Override
+			public void onButtonReleased(PMouse mouse, MouseButton btn, int clickCount) {
 				PList.this.onMouseReleased(mouse, btn);
 			}
+			@Override
 			public void onMouseMoved(PMouse mouse) {
 				PList.this.onMouseMoved(mouse);
 			}
@@ -209,8 +212,8 @@ public class PList extends AbstractPInputLayoutOwner
 	
 	protected void onMouseMoved(PMouse mouse) {
 		PDnDSupport dndSup = getDragAndDropSupport();
-		if (dndSup != null && isDragTagged 
-				&& mouse.isPressed(MouseButton.DRAG_AND_DROP)) 
+		if (dndSup != null && isDragTagged
+				&& mouse.isPressed(MouseButton.DRAG_AND_DROP))
 		{
 			int mx = mouse.getX();
 			int my = mouse.getY();
@@ -285,6 +288,7 @@ public class PList extends AbstractPInputLayoutOwner
 		}
 	}
 	
+	@Override
 	public PListSelection getSelection() {
 		return selection;
 	}
@@ -315,7 +319,7 @@ public class PList extends AbstractPInputLayoutOwner
 	
 	public List<PModelIndex> getAllSelectedIndices() {
 		if (getSelection() == null) {
-			return Collections.emptyList(); 
+			return Collections.emptyList();
 		}
 		return getSelection().getAllSelected();
 	}
@@ -373,6 +377,7 @@ public class PList extends AbstractPInputLayoutOwner
 		}
 	}
 	
+	@Override
 	public PListModel getModel() {
 		return model;
 	}
@@ -392,8 +397,8 @@ public class PList extends AbstractPInputLayoutOwner
 				return false;
 			}
 			Object element = model.get(index);
-			if (element != cell.getElement() 
-					&& !element.equals(cell.getElement())) 
+			if (element != cell.getElement()
+					&& !element.equals(cell.getElement()))
 			{
 				return false;
 			}
@@ -408,6 +413,7 @@ public class PList extends AbstractPInputLayoutOwner
 		}
 	}
 	
+	@Override
 	public List<Object> getAllSelectedContent() {
 		PSelection select = getSelection();
 		PModel model = getModel();
@@ -478,10 +484,12 @@ public class PList extends AbstractPInputLayoutOwner
 		dndSup = support;
 	}
 	
+	@Override
 	public PDnDSupport getDragAndDropSupport() {
 		return dndSup;
 	}
 	
+	@Override
 	public PListIndex getIndexAt(int x, int y) {
 		if (getModel() == null) {
 			return null;
@@ -497,6 +505,7 @@ public class PList extends AbstractPInputLayoutOwner
 		return null;
 	}
 	
+	@Override
 	public PListIndex getDropIndex(int x, int y) {
 		PListIndex index = getIndexAt(x, y);
 		if (index == null && getModel() != null) {
@@ -507,6 +516,7 @@ public class PList extends AbstractPInputLayoutOwner
 		return index;
 	}
 	
+	@Override
 	public void setDropHighlight(PModelIndex index) {
 		if (currentDnDHighlightComponent != null) {
 			currentDnDHighlightComponent.setDropHighlighted(false);
@@ -521,7 +531,7 @@ public class PList extends AbstractPInputLayoutOwner
 	}
 	
 	public boolean isDropHighlighted() {
-		return currentDnDHighlightComponent != null 
+		return currentDnDHighlightComponent != null
 				|| currentDnDHighlightIndex != null;
 	}
 	
@@ -575,6 +585,7 @@ public class PList extends AbstractPInputLayoutOwner
 				getChild(index.getIndexValue());
 	}
 	
+	@Override
 	public void defaultRender(PRenderer renderer) {
 		PBounds bounds = getBounds();
 		int x = bounds.getX();
@@ -624,10 +635,12 @@ public class PList extends AbstractPInputLayoutOwner
 		}
 	}
 	
+	@Override
 	public boolean isFocusable() {
 		return true;
 	}
 	
+	@Override
 	public void addObs(PModelObs obs) {
 		modelObsList.add(obs);
 		if (getModel() != null) {
@@ -635,6 +648,7 @@ public class PList extends AbstractPInputLayoutOwner
 		}
 	}
 	
+	@Override
 	public void removeObs(PModelObs obs) {
 		modelObsList.remove(obs);
 		if (getModel() != null) {
@@ -642,6 +656,7 @@ public class PList extends AbstractPInputLayoutOwner
 		}
 	}
 	
+	@Override
 	public void addObs(PSelectionObs obs) {
 		selectionObsList.add(obs);
 		if (getSelection() != null) {
@@ -649,6 +664,7 @@ public class PList extends AbstractPInputLayoutOwner
 		}
 	}
 	
+	@Override
 	public void removeObs(PSelectionObs obs) {
 		selectionObsList.remove(obs);
 		if (getSelection() != null) {

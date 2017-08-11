@@ -70,12 +70,7 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 		getLayoutInternal().addChild(new PSpinnerButton(PSpinnerBtnDir.NEXT), Constraint.BTN_NEXT);
 		getLayoutInternal().addChild(new PSpinnerButton(PSpinnerBtnDir.PREV), Constraint.BTN_PREV);
 		
-		PModelFactory modelFac = PModelFactory.getGlobalModelFactory();
-		PSpinnerModel defaultModel = new PSpinnerModelInt();
-		if (modelFac != null) {
-			defaultModel = (PSpinnerModel) modelFac.getModelFor(this, defaultModel);
-		}
-		setModel(defaultModel);
+		setModel(PModelFactory.createModelFor(this, PSpinnerModelInt::new, PSpinnerModel.class));
 		
 		defineInput(INPUT_IDENTIFIER_PRESS_UP, INPUT_PRESS_UP, REACTION_PRESS_UP);
 		defineInput(INPUT_IDENTIFIER_PRESS_DOWN, INPUT_PRESS_DOWN, REACTION_PRESS_DOWN);
@@ -319,13 +314,20 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 			if (model == null) {
 				return;
 			}
-			Object newVal;
+			Object newVal = null;
+			boolean hasNewVal = false;
 			if (getPSpinnerBtnDir() == PSpinnerBtnDir.NEXT) {
-				newVal = model.getNext();
+				if (model.hasNext()) {
+					newVal = model.getNext();
+					hasNewVal = true;
+				}
 			} else {
-				newVal = model.getPrevious();
+				if (model.hasPrevious()) {
+					newVal = model.getPrevious();
+					hasNewVal = true;
+				}
 			}
-			if (model.canSetValue(newVal)) {
+			if (hasNewVal && model.canSetValue(newVal)) {
 				model.setValue(newVal);
 			}
 		}

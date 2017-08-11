@@ -515,12 +515,12 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 		if (maybeDescendant == null) {
 			return false;
 		}
-		PComponent comp = maybeDescendant.getParent();
-		while (comp != null) {
-			if (comp == this) {
+		PComponent ancestor = maybeDescendant.getParent();
+		while (ancestor != null) {
+			if (ancestor == this) {
 				return true;
 			}
-			comp = comp.getParent();
+			ancestor = ancestor.getParent();
 		}
 		return false;
 	}

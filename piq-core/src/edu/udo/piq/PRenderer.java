@@ -2,24 +2,24 @@ package edu.udo.piq;
 
 /**
  * This interface defines a platform independent rendering API.<br>
- * All {@link PComponent}s in the GUI will be rendered using the 
- * methods provided by this interface. A platform dependent 
- * implementation of the renderer is supposed to implement all 
+ * All {@link PComponent}s in the GUI will be rendered using the
+ * methods provided by this interface. A platform dependent
+ * implementation of the renderer is supposed to implement all
  * methods of this interface on a best effort basis.<br>
- * By its nature the exact outcome of many of these methods is 
- * defined very broadly. Small difference between platform 
- * dependent implementations are to be expected but should be 
- * kept at a minimum at all cost to provide for a similar 
+ * By its nature the exact outcome of many of these methods is
+ * defined very broadly. Small difference between platform
+ * dependent implementations are to be expected but should be
+ * kept at a minimum at all cost to provide for a similar
  * user experience on different platforms.<br>
- * A {@link PRenderer} is not supposed to work with platform 
- * specific implementations of resources (such as image resources, 
- * or font resources) for other platforms. It will usually only 
+ * A {@link PRenderer} is not supposed to work with platform
+ * specific implementations of resources (such as image resources,
+ * or font resources) for other platforms. It will usually only
  * work with its own implementations of these and no others.<br>
  * <br>
- * {@link PComponent}s and {@link PDesign}s should not make any 
- * assumptions about the internal mechanics of a renderer and not 
- * try to do any premature optimization. Its the job of the 
- * renderers implementation to improve the performance of the 
+ * {@link PComponent}s and {@link PDesign}s should not make any
+ * assumptions about the internal mechanics of a renderer and not
+ * try to do any premature optimization. Its the job of the
+ * renderers implementation to improve the performance of the
  * standard components as best as possible.<br>
  * 
  * @author Nic Starzi
@@ -34,17 +34,17 @@ package edu.udo.piq;
 public interface PRenderer extends PDisposable {
 	
 	/**
-	 * Sets the platform specific {@link PRenderMode} for this {@link PRenderer}. 
-	 * All following primitive rendering operations will use this {@link PRenderMode} 
+	 * Sets the platform specific {@link PRenderMode} for this {@link PRenderer}.
+	 * All following primitive rendering operations will use this {@link PRenderMode}
 	 * when being performed.<br>
-	 * Primitive rendering operations are {@link #drawEllipse(int, int, int, int)}, 
-	 * {@link #drawLine(float, float, float, float, float)}, 
-	 * {@link #drawPolygon(float[], float[])}, 
-	 * {@link #drawTriangle(float, float, float, float, float, float)} and all kinds of 
+	 * Primitive rendering operations are {@link #drawEllipse(int, int, int, int)},
+	 * {@link #drawLine(float, float, float, float, float)},
+	 * {@link #drawPolygon(float[], float[])},
+	 * {@link #drawTriangle(float, float, float, float, float, float)} and all kinds of
 	 * {@link #drawQuad(PBounds)}.<br>
-	 * Non-primitive rendering operations are 
-	 * {@link #drawImage(PImageResource, float, float, float, float)}, 
-	 * {@link #drawImage(PImageResource, int, int, int, int, float, float, float, float)}, 
+	 * Non-primitive rendering operations are
+	 * {@link #drawImage(PImageResource, float, float, float, float)},
+	 * {@link #drawImage(PImageResource, int, int, int, int, float, float, float, float)},
 	 * and {@link #drawString(PFontResource, String, float, float)}.<br>
 	 * @param mode						the new render mode that is to be used
 	 * @throws NullPointerException		if mode is null
@@ -61,15 +61,15 @@ public interface PRenderer extends PDisposable {
 	public void setRenderMode(PRenderMode mode);
 	
 	/**
-	 * Returns the currently active {@link PRenderMode} as used by this {@link PRenderer}. 
+	 * Returns the currently active {@link PRenderMode} as used by this {@link PRenderer}.
 	 * The returned value will never be null.<br>
 	 * @return	a non-null instance of {@link PRenderMode}
 	 */
 	public PRenderMode getActiveRenderMode();
 	
 	/**
-	 * Returns the platform specific {@link PRenderMode} that can be used to completely fill 
-	 * the inside of a primitive shape (triangles, quads, ellipses and polygons are primitive 
+	 * Returns the platform specific {@link PRenderMode} that can be used to completely fill
+	 * the inside of a primitive shape (triangles, quads, ellipses and polygons are primitive
 	 * shapes). <br>
 	 * The returned value is never null. This rendering mode must always be supported.<br>
 	 * @return a non-null instance of {@link PRenderMode}
@@ -83,10 +83,10 @@ public interface PRenderer extends PDisposable {
 	public PRenderMode getRenderModeXOR();
 	
 	/**
-	 * Sets the clipping bounds that will be used for any subsequent 
+	 * Sets the clipping bounds that will be used for any subsequent
 	 * rendering operations.<br>
-	 * Any rendering being done outside of the clip bounds will be 
-	 * ignored and only pixels within the clip bounds will be rendered 
+	 * Any rendering being done outside of the clip bounds will be
+	 * ignored and only pixels within the clip bounds will be rendered
 	 * to screen.<br>
 	 * 
 	 * @param bounds the new clip bounds used by subsequent rendering operations
@@ -99,17 +99,17 @@ public interface PRenderer extends PDisposable {
 	 * @see #drawQuad(float, float, float, float, float, float, float, float)
 	 * @see #drawString(PFontResource, String, float, float)
 	 */
-	public default void setClipBounds(PBounds bounds) 
-			throws NullPointerException 
+	public default void setClipBounds(PBounds bounds)
+			throws NullPointerException
 	{
 		setClipBounds(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
 	}
 	
 	/**
-	 * Sets the clipping bounds that will be used for any subsequent 
+	 * Sets the clipping bounds that will be used for any subsequent
 	 * rendering operations.<br>
-	 * Any rendering being done outside of the clip bounds will be 
-	 * ignored and only pixels within the clip bounds will be rendered 
+	 * Any rendering being done outside of the clip bounds will be
+	 * ignored and only pixels within the clip bounds will be rendered
 	 * to screen.<br>
 	 * 
 	 * @param x
@@ -129,9 +129,9 @@ public interface PRenderer extends PDisposable {
 	public void intersectClipBounds(int x, int y, int width, int height);
 	
 	/**
-	 * Sets the {@link PColor} that will be used by any subsequent 
+	 * Sets the {@link PColor} that will be used by any subsequent
 	 * rendering operations.<br>
-	 * The color should be used when rendering geometry or text.<br> 
+	 * The color should be used when rendering geometry or text.<br>
 	 * 
 	 * @param color the new color being used for rendering operations
 	 * @throws NullPointerException if color is null
@@ -149,9 +149,9 @@ public interface PRenderer extends PDisposable {
 	}
 	
 	/**
-	 * Sets the {@link PColor} that will be used by any subsequent 
+	 * Sets the {@link PColor} that will be used by any subsequent
 	 * rendering operations.<br>
-	 * The color should be used when rendering geometry or text.<br> 
+	 * The color should be used when rendering geometry or text.<br>
 	 * 
 	 * @param r the red color component as an integer between 0 and 255 inclusive
 	 * @param g the green color component as an integer between 0 and 255 inclusive
@@ -171,9 +171,9 @@ public interface PRenderer extends PDisposable {
 	}
 	
 	/**
-	 * Sets the {@link PColor} that will be used by any subsequent 
+	 * Sets the {@link PColor} that will be used by any subsequent
 	 * rendering operations.<br>
-	 * The color should be used when rendering geometry or text.<br> 
+	 * The color should be used when rendering geometry or text.<br>
 	 * 
 	 * @param r the red color component as a floating point number between 0.0 and 1.0 inclusive
 	 * @param g the green color component as a floating point number between 0.0 and 1.0 inclusive
@@ -195,14 +195,15 @@ public interface PRenderer extends PDisposable {
 		drawImage(imgRes, 0, 0, size.getWidth(), size.getHeight(), x, y, fx, fy);
 	}
 	
-	public void drawImage(PImageResource imgRes, int u, int v, int fu, int fv, float x, float y, float fx, float fy);
+	public void drawImage(PImageResource imgRes, int u, int v, int fu, int fv,
+			float x, float y, float fx, float fy);
 	
 	public void drawLine(float x1, float y1, float x2, float y2, float lineWidth);
 	
 	public default void drawTriangle(
-			float x1, float y1, 
-			float x2, float y2, 
-			float x3, float y3) 
+			float x1, float y1,
+			float x2, float y2,
+			float x3, float y3)
 	{
 		float[] xCoords = new float[] {x1, x2, x3};
 		float[] yCoords = new float[] {y1, y2, y3};
@@ -214,17 +215,17 @@ public interface PRenderer extends PDisposable {
 	}
 	
 	public default void drawQuad(
-			float x, float y, 
-			float fx, float fy) 
+			float x, float y,
+			float fx, float fy)
 	{
 		drawQuad(x, y, x, fy, fx, fy, fx, y);
 	}
 	
 	public default void drawQuad(
-			float x1, float y1, 
-			float x2, float y2, 
-			float x3, float y3, 
-			float x4, float y4) 
+			float x1, float y1,
+			float x2, float y2,
+			float x3, float y3,
+			float x4, float y4)
 	{
 		float[] xCoords = new float[] {x1, x2, x3, x4};
 		float[] yCoords = new float[] {y1, y2, y3, y4};

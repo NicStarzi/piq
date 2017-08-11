@@ -9,13 +9,9 @@ import edu.udo.piq.PRoot;
 
 public class ReRenderSet implements Iterable<PComponent> {
 	
-	private final PRoot root;
-	/**
-	 * This is a {@link LinkedList} because we need to clear it
-	 * regularly and delete elements at arbitrary indices.<br>
-	 */
-	private final List<PComponent> buffer = new LinkedList<>();
-	private boolean containsRoot = false;
+	protected final PRoot root;
+	protected final List<PComponent> buffer = createBufferImplementation();
+	protected boolean containsRoot = false;
 	
 	public ReRenderSet(PRoot root) {
 		this.root = root;
@@ -33,7 +29,7 @@ public class ReRenderSet implements Iterable<PComponent> {
 			containsRoot = true;
 			return buffer.add(component);
 		} else {
-			int compDepth = component.getDepth();
+//			int compDepth = component.getDepth();
 			
 			Iterator<PComponent> iter = buffer.iterator();
 			while (iter.hasNext()) {
@@ -41,16 +37,16 @@ public class ReRenderSet implements Iterable<PComponent> {
 				if (top == component) {
 					return false;
 				}
-				int topDepth = top.getDepth();
-				if (topDepth < compDepth) {
-					if (component.isDescendantOf(top)) {
+//				int topDepth = top.getDepth();
+//				if (topDepth < compDepth) {
+					if (top.isAncestorOf(component)) {
 						return false;
 					}
-				} else if (topDepth > compDepth) {
-					if (top.isDescendantOf(component)) {
+//				} else if (topDepth > compDepth) {
+					if (component.isAncestorOf(top)) {
 						iter.remove();
 					}
-				}
+//				}
 			}
 			return buffer.add(component);
 		}
@@ -77,6 +73,14 @@ public class ReRenderSet implements Iterable<PComponent> {
 		return containsRoot;
 	}
 	
+	public int getSize() {
+		return buffer.size();
+	}
+	
+	public boolean isEmpty() {
+		return buffer.isEmpty();
+	}
+	
 	public PComponent[] toArray() {
 		return buffer.toArray(new PComponent[buffer.size()]);
 	}
@@ -84,6 +88,15 @@ public class ReRenderSet implements Iterable<PComponent> {
 	@Override
 	public Iterator<PComponent> iterator() {
 		return buffer.iterator();
+	}
+	
+	/**
+	 * This is a {@link LinkedList} because we often need to
+	 * delete elements at arbitrary indices.<br>
+	 * @return a new {@link LinkedList}
+	 */
+	protected List<PComponent> createBufferImplementation() {
+		return new LinkedList<>();
 	}
 	
 }

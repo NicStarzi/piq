@@ -31,6 +31,7 @@ public class PRootLayout extends AbstractEnumPLayout<Constraint> {
 		return getChildForConstraint(Constraint.MENUBAR);
 	}
 	
+	@Override
 	public PComponent getChildAt(int x, int y) {
 		PRootOverlay overlay = getOverlay();
 		if (overlay != null && overlay.getBounds().contains(x, y)) {
@@ -46,6 +47,7 @@ public class PRootLayout extends AbstractEnumPLayout<Constraint> {
 		return null;
 	}
 	
+	@Override
 	protected void layOutInternal() {
 		PBounds ob = getOwner().getBounds();
 		int x = ob.getX();
@@ -65,10 +67,12 @@ public class PRootLayout extends AbstractEnumPLayout<Constraint> {
 		setChildBounds(body, x, y + menuBarH, w, h - menuBarH);
 	}
 	
+	@Override
 	protected PSize getPreferredSizeInternal() {
 		return owner.getBounds();
 	}
 	
+	@Override
 	protected void onChildPrefSizeChanged(PComponent child) {
 		ThrowException.ifFalse(containsChild(child), "containsChild(child) == false");
 		if (child == getMenuBar()) {

@@ -15,29 +15,18 @@ public class PPicture extends AbstractPComponent {
 	
 	protected final ObserverList<PPictureModelObs> modelObsList
 		= PCompUtil.createDefaultObserverList();
-	private final PPictureModelObs modelObs = new PPictureModelObs() {
-		public void onImageIDChanged(PPictureModel model) {
-			PPicture.this.onImagePathChanged();
-		}
-	};
-	private PPictureModel model;
-	private boolean stretchToSize = false;
+	protected final PPictureModelObs modelObs = model -> PPicture.this.onImagePathChanged();
+	protected PPictureModel model;
+	protected boolean stretchToSize = false;
 	
 	public PPicture() {
 		super();
-		
-		PModelFactory modelFac = PModelFactory.getGlobalModelFactory();
-		PPictureModel defaultModel = new DefaultPPictureModel();
-		if (modelFac != null) {
-			defaultModel = (PPictureModel) modelFac.getModelFor(this, defaultModel);
-		}
-		
-		setModel(defaultModel);
+		setModel(PModelFactory.createModelFor(this, DefaultPPictureModel::new, PPictureModel.class));
 	}
 	
 	public PPicture(Object initialPictureID) {
 		this();
-		getModel().setImageID(initialPictureID);
+		getModel().setValue(initialPictureID);
 	}
 	
 	public void setModel(PPictureModel model) {
@@ -72,6 +61,7 @@ public class PPicture extends AbstractPComponent {
 		return stretchToSize;
 	}
 	
+	@Override
 	public void defaultRender(PRenderer renderer) {
 		PImageResource imgRes = getImageResource();
 		if (imgRes == null) {
@@ -92,11 +82,13 @@ public class PPicture extends AbstractPComponent {
 		}
 	}
 	
+	@Override
 	public boolean defaultFillsAllPixels() {
 		PImageResource imgRes = getImageResource();
 		return imgRes != null && imgRes.fillsAllPixels();
 	}
 	
+	@Override
 	public PSize getDefaultPreferredSize() {
 		PImageResource imgRes = getImageResource();
 		if (imgRes == null) {
@@ -110,7 +102,7 @@ public class PPicture extends AbstractPComponent {
 		if (model == null) {
 			return null;
 		}
-		Object imgID = model.getImageID();
+		Object imgID = model.getValue();
 		if (imgID == null) {
 			return null;
 		}

@@ -18,9 +18,9 @@ import edu.udo.piq.components.textbased.PTextSelector;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
 
-public abstract class AbstractPTextComponent 
-	extends AbstractPInputComponent 
-	implements PTextComponent 
+public abstract class AbstractPTextComponent
+	extends AbstractPInputComponent
+	implements PTextComponent
 {
 	
 	protected static final String DEFAULT_FONT_NAME = "Arial";
@@ -44,13 +44,7 @@ public abstract class AbstractPTextComponent
 	protected boolean editable = true;
 	
 	public AbstractPTextComponent() {
-		PModelFactory modelFac = PModelFactory.getGlobalModelFactory();
-		PTextModel defaultModel = new DefaultPTextModel();
-		if (modelFac != null) {
-			defaultModel = (PTextModel) modelFac.getModelFor(this, defaultModel);
-		}
-		
-		setModel(defaultModel);
+		setModel(PModelFactory.createModelFor(this, DefaultPTextModel::new, PTextModel.class));
 		
 		setSelection(new DefaultPTextSelection());
 		setTextInput(new PTextInput(this));
@@ -118,10 +112,12 @@ public abstract class AbstractPTextComponent
 		editable = isEditable;
 	}
 	
+	@Override
 	public boolean isEditable() {
 		return editable && isEnabled();
 	}
 	
+	@Override
 	public boolean isFocusable() {
 		return true;
 	}
@@ -137,6 +133,7 @@ public abstract class AbstractPTextComponent
 		fireReRenderEvent();
 	}
 	
+	@Override
 	public PTextSelection getSelection() {
 		return selection;
 	}
@@ -153,6 +150,7 @@ public abstract class AbstractPTextComponent
 		fireReRenderEvent();
 	}
 	
+	@Override
 	public PTextModel getModel() {
 		return model;
 	}
@@ -216,7 +214,7 @@ public abstract class AbstractPTextComponent
 		if (cachedFont != null && root.isFontSupported(cachedFont)) {
 			return cachedFont;
 		}
-		cachedFont = root.fetchFontResource(DEFAULT_FONT_NAME, 
+		cachedFont = root.fetchFontResource(DEFAULT_FONT_NAME,
 				DEFAULT_FONT_SIZE, DEFAULT_FONT_STYLE);
 		return cachedFont;
 	}

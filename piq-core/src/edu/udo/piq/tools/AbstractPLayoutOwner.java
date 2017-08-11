@@ -104,7 +104,6 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 	
 	protected void onLayoutInvalidated() {
 		fireReLayOutEvent();
-//		fireReRenderEvent();
 	}
 	
 }

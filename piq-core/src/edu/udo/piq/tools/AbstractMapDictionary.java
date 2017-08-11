@@ -36,7 +36,7 @@ public abstract class AbstractMapDictionary<E> implements PDictionary {
 	}
 	
 	protected void fireTranslationChanged(Object term) {
-		obsList.fireEvent((obs) -> obs.onTranslationChanged(term));
+		obsList.fireEvent((obs) -> obs.onTranslationChangedFor(term));
 	}
 	
 	protected void fireDictionaryChanged() {

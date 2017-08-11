@@ -34,6 +34,7 @@ public class DelegatePRoot extends AbstractPRoot implements PRoot {
 	protected boolean enableCreateCursor = true;
 	
 	public DelegatePRoot() {
+		super();
 		mouse = new DelegatePMouse(this);
 	}
 	
@@ -153,11 +154,11 @@ public class DelegatePRoot extends AbstractPRoot implements PRoot {
 	}
 	
 	@Override
-	public PFontResource fetchFontResource(String fontName, double pointSize, Style style) {
+	public PFontResource fetchFontResource(String fontName, int pixelSize, Style style) {
 		if (delegateRoot == null || !enableFetchFont) {
 			return null;
 		}
-		return delegateRoot.fetchFontResource(fontName, pointSize, style);
+		return delegateRoot.fetchFontResource(fontName, pixelSize, style);
 	}
 	
 	@Override

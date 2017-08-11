@@ -80,6 +80,14 @@ public interface PRoot extends PComponent {
 	}
 	
 	/**
+	 * Always returns null by default.<br>
+	 */
+	@Override
+	public default PDnDSupport getDragAndDropSupport() {
+		return null;
+	}
+	
+	/**
 	 * Returns null.<br>
 	 * @return null
 	 */
@@ -110,11 +118,29 @@ public interface PRoot extends PComponent {
 	
 	/**
 	 * Always returns false for {@link PRoot} instances.<br>
-	 * @return true
+	 * @return false
 	 */
 	@Override
 	public default boolean isElusive() {
 		return false;
+	}
+	
+	/**
+	 * Always returns false for {@link PRoot} instances.<br>
+	 * @return false
+	 */
+	@Override
+	public default boolean isFocusable() {
+		return false;
+	}
+	
+	/**
+	 * Throws an {@link UnsupportedOperationException}.<br>
+	 * @throws UnsupportedOperationException
+	 */
+	@Override
+	public default void setMouseOverCursor(PCursor cursor) {
+		throw new UnsupportedOperationException("PRoot");
 	}
 	
 	/**
@@ -189,13 +215,13 @@ public interface PRoot extends PComponent {
 	 * This method should never return null.<br>
 	 * 
 	 * @param fontName the name of the font, for example "Arial"
-	 * @param pointSize the point size of the font
+	 * @param pixelSize the size of the font in pixels
 	 * @param style the style of the font, either PLAIN, BOLD, ITALIC or BOLD_ITALIC
 	 * @return an instance of {@link PFontResource}
 	 * @throws NullPointerException if fontName is null or style is null
 	 * @throws IllegalArgumentException if an arguments value is not supported
 	 */
-	public PFontResource fetchFontResource(String fontName, double pointSize, Style style)
+	public PFontResource fetchFontResource(String fontName, int pixelSize, Style style)
 			throws NullPointerException, IllegalArgumentException;
 	
 	public boolean isFontSupported(PFontResource font);

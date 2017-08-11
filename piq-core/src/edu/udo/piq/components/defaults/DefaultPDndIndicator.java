@@ -26,7 +26,7 @@ public class DefaultPDndIndicator extends PPicture implements PDnDIndicator {
 		if (!Objects.equals(getDropPossibleImageID(), imageID)) {
 			dndPosImageID = imageID;
 			if (isDropPossible()) {
-				getModel().setImageID(getDropPossibleImageID());
+				getModel().setValue(getDropPossibleImageID());
 			}
 		}
 	}
@@ -39,7 +39,7 @@ public class DefaultPDndIndicator extends PPicture implements PDnDIndicator {
 		if (!Objects.equals(getDropImpossibleImageID(), imageID)) {
 			dndImpImageID = imageID;
 			if (!isDropPossible()) {
-				getModel().setImageID(getDropImpossibleImageID());
+				getModel().setValue(getDropImpossibleImageID());
 			}
 		}
 	}
@@ -52,9 +52,9 @@ public class DefaultPDndIndicator extends PPicture implements PDnDIndicator {
 		if (isDropPossible() != value) {
 			dropPossible = value;
 			if (isDropPossible()) {
-				getModel().setImageID(getDropPossibleImageID());
+				getModel().setValue(getDropPossibleImageID());
 			} else {
-				getModel().setImageID(getDropImpossibleImageID());
+				getModel().setValue(getDropImpossibleImageID());
 			}
 		}
 	}

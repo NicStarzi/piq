@@ -42,7 +42,7 @@ public class PDropDown extends AbstractPInputLayoutOwner {
 			PDropDown.this.onMouseButtonTriggered(mouse, btn);
 		}
 		@Override
-		public void onButtonReleased(PMouse mouse, MouseButton btn) {
+		public void onButtonReleased(PMouse mouse, MouseButton btn, int clickCount) {
 			PDropDown.this.onMouseButtonReleased(mouse, btn);
 		}
 	};
@@ -63,11 +63,7 @@ public class PDropDown extends AbstractPInputLayoutOwner {
 		dropDownContainer = new PDropDownContainer(this);
 		dropDownContainer.addObs(containerObs);
 		
-		PModelFactory modelFac = PModelFactory.getGlobalModelFactory();
-		PButtonModel defaultModel = new DefaultPButtonModel();
-		if (modelFac != null) {
-			defaultModel = (PButtonModel) modelFac.getModelFor(this, defaultModel);
-		}
+		setModel(PModelFactory.createModelFor(this, DefaultPButtonModel::new, PButtonModel.class));
 		
 		setLayout(new PTupleLayout(this));
 		getLayoutInternal().setOrientation(Orientation.LEFT_TO_RIGHT);
@@ -75,8 +71,6 @@ public class PDropDown extends AbstractPInputLayoutOwner {
 		getLayoutInternal().setDistribution(Distribution.RESPECT_SECOND);
 		getLayoutInternal().setSecondaryDistribution(Distribution.RESPECT_NONE);
 		setButton(new PDropDownButton());
-		
-		setModel(defaultModel);
 		
 		addObs(mouseObs);
 	}

@@ -74,7 +74,7 @@ public interface PDialog extends PRoot, PDisposable {
 	 * Delegates to the {@link PRoot} that created this {@link PDialog}.<br>
 	 */
 	@Override
-	public PFontResource fetchFontResource(String fontName, double pointSize, Style style) throws NullPointerException;
+	public PFontResource fetchFontResource(String fontName, int pixelSize, Style style) throws NullPointerException;
 	
 	/**
 	 * Delegates to the {@link PRoot} that created this {@link PDialog}.<br>

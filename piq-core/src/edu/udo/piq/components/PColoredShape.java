@@ -79,7 +79,7 @@ public class PColoredShape extends AbstractPComponent {
 	
 	@Override
 	public boolean defaultFillsAllPixels() {
-		return getShape() == Shape.RECTANGLE;
+		return getShape() == Shape.RECTANGLE && getColor().getAlpha1() == 1.0;
 	}
 	
 	public static enum Shape {

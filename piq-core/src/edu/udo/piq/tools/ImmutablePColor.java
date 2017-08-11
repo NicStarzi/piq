@@ -13,6 +13,14 @@ public class ImmutablePColor extends AbstractPColor implements PColor {
 	protected final double b1;
 	protected final double a1;
 	
+	public ImmutablePColor(PColor color) {
+		this(color.getRed255(), color.getGreen255(), color.getBlue255(), 255);
+	}
+	
+	public ImmutablePColor(PColor color, int a) {
+		this(color.getRed255(), color.getGreen255(), color.getBlue255(), a);
+	}
+	
 	public ImmutablePColor(int r, int g, int b) {
 		this(r, g, b, 255);
 	}
@@ -32,6 +40,10 @@ public class ImmutablePColor extends AbstractPColor implements PColor {
 		g1 = g / 255.0;
 		b1 = b / 255.0;
 		a1 = a / 255.0;
+	}
+	
+	public ImmutablePColor(PColor color, double a) {
+		this(color.getRed1(), color.getGreen1(), color.getBlue1(), a);
 	}
 	
 	public ImmutablePColor(double r, double g, double b) {
@@ -55,34 +67,42 @@ public class ImmutablePColor extends AbstractPColor implements PColor {
 		a255 = (int) Math.round(a * 255);
 	}
 	
+	@Override
 	public int getRed255() {
 		return r255;
 	}
 	
+	@Override
 	public double getRed1() {
 		return r1;
 	}
 	
+	@Override
 	public int getGreen255() {
 		return g255;
 	}
 	
+	@Override
 	public double getGreen1() {
 		return g1;
 	}
 	
+	@Override
 	public int getBlue255() {
 		return b255;
 	}
 	
+	@Override
 	public double getBlue1() {
 		return b1;
 	}
 	
+	@Override
 	public int getAlpha255() {
 		return a255;
 	}
 	
+	@Override
 	public double getAlpha1() {
 		return a1;
 	}

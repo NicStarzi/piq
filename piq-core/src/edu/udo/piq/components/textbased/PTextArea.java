@@ -34,19 +34,23 @@ public class PTextArea extends AbstractPTextComponent {
 		super();
 	}
 	
+	@Override
 	public void setModel(PTextModel model) {
 		super.setModel(model);
 		idxTableIsDirty = true;
 	}
 	
+	@Override
 	public void setSelection(PTextSelection selection) {
 		super.setSelection(selection);
 	}
 	
+	@Override
 	public void setEditable(boolean value) {
 		super.setEditable(value);
 	}
 	
+	@Override
 	public PTextIndexTable getIndexTable() {
 		if (idxTableIsDirty) {
 			buildIndexTable();
@@ -67,11 +71,13 @@ public class PTextArea extends AbstractPTextComponent {
 		idxTab.setLastIndexInRow(rowID, text.length());
 	}
 	
+	@Override
 	protected void onTextChanged() {
 		idxTableIsDirty = true;
 		super.onTextChanged();
 	}
 	
+	@Override
 	public PListIndex getTextIndexAt(int x, int y) {
 		PFontResource font = getDefaultFont();
 		// No font => no selection
@@ -131,6 +137,7 @@ public class PTextArea extends AbstractPTextComponent {
 		return new PListIndex(text.length());
 	}
 	
+	@Override
 	public void defaultRender(PRenderer renderer) {
 //		System.out.println("PTextArea.defaultRender()");
 		PFontResource font = getDefaultFont();
@@ -158,7 +165,7 @@ public class PTextArea extends AbstractPTextComponent {
 		
 		PTextSelection selection = getSelection();
 		PColor textColor = getDefaultTextUnselectedColor();
-		if (selection.hasSelection()) {
+		if (selection != null && selection.hasSelection()) {
 			PListIndex fromIndex = selection.getLowestSelectedIndex();
 			PListIndex toIndex = selection.getHighestSelectedIndex();
 			int selectedFrom = fromIndex.getIndexValue();
@@ -185,7 +192,7 @@ public class PTextArea extends AbstractPTextComponent {
 				renderText(renderer, font, x, y, pos, afterSelected, textColor, null);
 			} else {
 				String selected = text.substring(selectedFrom, selectedTo);
-				renderText(renderer, font, x, y, pos, selected, 
+				renderText(renderer, font, x, y, pos, selected,
 						getDefaultTextSelectedColor(), getDefaultSelectionBackgroundColor());
 				
 				renderText(renderer, font, x, y, pos, afterSelected, textColor, null);
@@ -195,9 +202,9 @@ public class PTextArea extends AbstractPTextComponent {
 		}
 	}
 	
-	private void renderText(PRenderer renderer, PFontResource font, 
-			int x, int y, DrawPos pos, String text, 
-			PColor txtColor, PColor bgColor) 
+	private void renderText(PRenderer renderer, PFontResource font,
+			int x, int y, DrawPos pos, String text,
+			PColor txtColor, PColor bgColor)
 	{
 		StringBuilder sb = new StringBuilder();
 		int drawX;
@@ -252,6 +259,7 @@ public class PTextArea extends AbstractPTextComponent {
 		}
 	}
 	
+	@Override
 	public PSize getDefaultPreferredSize() {
 		PFontResource font = getDefaultFont();
 		if (font == null) {
@@ -294,6 +302,7 @@ public class PTextArea extends AbstractPTextComponent {
 		return new ImmutablePSize(prefW, prefH);
 	}
 	
+	@Override
 	public PCursor getMouseOverCursor(PMouse mouse) {
 		return mouse.getCursorText();
 	}
@@ -302,12 +311,13 @@ public class PTextArea extends AbstractPTextComponent {
 		return DEFAULT_BACKGROUND_COLOR;
 	}
 	
+	@Override
 	protected PFontResource getDefaultFont() {
 		PRoot root = getRoot();
 		if (root == null) {
 			return null;
 		}
-		return root.fetchFontResource(DEFAULT_FONT_NAME, 
+		return root.fetchFontResource(DEFAULT_FONT_NAME,
 				DEFAULT_FONT_SIZE, DEFAULT_FONT_STYLE);
 	}
 	
@@ -317,6 +327,7 @@ public class PTextArea extends AbstractPTextComponent {
 			this.x = x;
 			this.y = y;
 		}
+		@Override
 		public String toString() {
 			StringBuilder builder = new StringBuilder();
 			builder.append("(");

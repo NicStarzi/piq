@@ -1,9 +1,11 @@
 package edu.udo.piq.tools;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
@@ -13,9 +15,7 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PClipboard;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PComponentObs;
-import edu.udo.piq.PCursor;
 import edu.udo.piq.PDnDManager;
-import edu.udo.piq.PDnDSupport;
 import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.PGlobalEventObs;
@@ -29,7 +29,6 @@ import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PRootObs;
 import edu.udo.piq.PRootOverlay;
-import edu.udo.piq.PSize;
 import edu.udo.piq.PStyleSheet;
 import edu.udo.piq.PTimer;
 import edu.udo.piq.components.containers.DefaultPRootOverlay;
@@ -46,7 +45,7 @@ import edu.udo.piq.util.ThrowException;
 public abstract class AbstractPRoot implements PRoot {
 	
 	public static final int DEFAULT_MAX_LAYOUT_ITERATION_COUNT = 100;
-	protected static final Comparator<PComponent> COMPONENT_COMPARATOR = (o1, o2) -> {
+	public static final Comparator<PComponent> COMPONENT_DEPTH_COMPARATOR = (o1, o2) -> {
 		if (o1.equals(o2)) {
 			return 0;
 		}
@@ -89,11 +88,10 @@ public abstract class AbstractPRoot implements PRoot {
 	protected final ObserverList<PFocusObs> focusObsList
 		= PCompUtil.createDefaultObserverList();
 	protected final Set<PTimer> timerSet = new HashSet<>();
-	protected final Set<PTimer> timersToAdd = new HashSet<>();
-	protected final Set<PTimer> timersToRemove = new HashSet<>();
-	protected Set<PComponent> reLayOutCompsFront = new TreeSet<>(COMPONENT_COMPARATOR);
-	protected Set<PComponent> reLayOutCompsBack = new TreeSet<>(COMPONENT_COMPARATOR);
-	protected final ReRenderSet reRenderSet = new ReRenderSet(this);
+	protected final List<Runnable> timerSetWriteBuffer = new ArrayList<>();
+	protected Set<PComponent> reLayOutCompsFront = new TreeSet<>(COMPONENT_DEPTH_COMPARATOR);
+	protected Set<PComponent> reLayOutCompsBack = new TreeSet<>(COMPONENT_DEPTH_COMPARATOR);
+	protected ReRenderSet reRenderSet;
 	protected PFocusTraversal focusTrav = new DefaultPFocusTraversal(this);
 	protected PComponent focusOwner;
 	protected String id;
@@ -102,6 +100,7 @@ public abstract class AbstractPRoot implements PRoot {
 	
 	public AbstractPRoot() {
 		layout = new PRootLayout(this);
+		reRenderSet = new ReRenderSet(this);
 		getLayout().addObs(layoutObs);
 		PPanel body = new PPanel();
 		body.setLayout(new PBorderLayout(body));
@@ -113,8 +112,8 @@ public abstract class AbstractPRoot implements PRoot {
 	 * Updates
 	 */
 	
-	protected void update(double deltaTime) {
-		tickAllTimers(deltaTime);
+	protected void update(double deltaMilliSc) {
+		tickAllTimers(deltaMilliSc);
 		reLayOutAll(DEFAULT_MAX_LAYOUT_ITERATION_COUNT);
 	}
 	
@@ -136,16 +135,14 @@ public abstract class AbstractPRoot implements PRoot {
 		}
 	}
 	
-	protected void tickAllTimers(double deltaTime) {
+	protected void tickAllTimers(double deltaMilliSc) {
 		timerIterationInProgress = true;
 		for (PTimer timer : timerSet) {
-			timer.tick(deltaTime);
+			timer.tick(deltaMilliSc);
 		}
 		timerIterationInProgress = false;
-		timerSet.removeAll(timersToRemove);
-		timersToRemove.clear();
-		timerSet.addAll(timersToAdd);
-		timersToAdd.clear();
+		timerSetWriteBuffer.forEach(r -> r.run());
+		timerSetWriteBuffer.clear();
 	}
 	
 	protected void reLayOutAll(int maxIterationCount) {
@@ -181,12 +178,22 @@ public abstract class AbstractPRoot implements PRoot {
 			int rootClipX, int rootClipY, int rootClipFx, int rootClipFy)
 	{
 //		System.out.println("### defaultRootRender ###");
-		Deque<RenderStackInfo> stack = createRenderStack(rootClipX, rootClipY, rootClipFx, rootClipFy);
-		
-		while (!stack.isEmpty()) {
-			RenderStackInfo info = stack.pollLast();
+		Deque<RenderStackInfo> renderStack = AbstractPRoot.createRenderStack(this,
+				reRenderSet, rootClipX, rootClipY, rootClipFx, rootClipFy);
+		AbstractPRoot.defaultRootRender(this, renderer, renderStack);
+		reRenderSet.clear();
+//		System.out.println("#######");
+//		System.out.println();
+	}
+	
+	public static void defaultRootRender(PRoot root, PRenderer renderer,
+			Deque<RenderStackInfo> renderStack)
+	{
+		while (!renderStack.isEmpty()) {
+			RenderStackInfo info = renderStack.pollLast();
 			PComponent comp = info.child;
 			PBounds compBounds = comp.getBounds();
+			// Calculate clipping area based on parent clip
 			int clipX = Math.max(compBounds.getX(), info.clipX);
 			int clipY = Math.max(compBounds.getY(), info.clipY);
 			int clipFx = Math.min(compBounds.getFinalX(), info.clipFx);
@@ -194,11 +201,12 @@ public abstract class AbstractPRoot implements PRoot {
 			int clipW = clipFx - clipX;
 			int clipH = clipFy - clipY;
 //			System.out.println("comp="+comp+", clipX="+clipX+", clipY="+clipY+", clipW="+clipW+", clipH="+clipH);
+			// Cull components with an empty clipping area
 			if (clipW < 0 || clipH < 0) {
 //				System.out.println("doNotRenderComp="+comp);
 				continue;
 			}
-			renderComponent(renderer, comp, clipX, clipY, clipW, clipH);
+			AbstractPRoot.renderComponent(renderer, comp, clipX, clipY, clipW, clipH);
 			
 			PReadOnlyLayout layout = comp.getLayout();
 			if (layout != null) {
@@ -206,32 +214,34 @@ public abstract class AbstractPRoot implements PRoot {
 					/*
 					 * We need to addLast to make sure children are rendered after their parents
 					 * and before any siblings of the parent will be rendered. (we call pollLast)
-					 * Do NOT change to addFirst!
+					 * Do _NOT_ change to addFirst!
 					 */
-					stack.addLast(new RenderStackInfo(child, clipX, clipY, clipFx, clipFy));
+					renderStack.addLast(new RenderStackInfo(child, clipX, clipY, clipFx, clipFy));
 				}
 			}
 		}
-		reRenderSet.clear();
-//		System.out.println("#######");
-//		System.out.println();
 	}
 	
-	private Deque<RenderStackInfo> createRenderStack(int rootClipX, int rootClipY, int rootClipFx, int rootClipFy) {
+	public static Deque<RenderStackInfo> createRenderStack(PRoot root, ReRenderSet reRenderSet,
+			int rootClipX, int rootClipY, int rootClipFx, int rootClipFy)
+	{
 		Deque<RenderStackInfo> stack = new ArrayDeque<>();
 		/*
 		 * If the root is to be rendered we will re-render everything.
 		 */
 		if (reRenderSet.containsRoot()) {
-			stack.addLast(new RenderStackInfo(getBody(), rootClipX, rootClipY, rootClipFx, rootClipFy));
+			stack.addLast(new RenderStackInfo(root.getBody(), rootClipX, rootClipY, rootClipFx, rootClipFy));
 		} else {
-			// these are filled by PCompUtil.fillClippedBounds(...)
-			// This is used to cut down on the number of objects created
+			/* Performance Improvement:
+			 * Only one PBounds object is created for all components to cut down
+			 * the total number of object creations.
+			 * The bounds are filled with PCompUtil.fillClippedBounds(...)
+			 */
 			MutablePBounds tmpBnds = new MutablePBounds();
 			
 			for (PComponent child : reRenderSet) {
 				// We check to see whether the component is still part of this GUI tree (might have been removed by now)
-				if (child.getRoot() == this) {
+				if (child.getRoot() == root) {
 					PBounds clipBnds = PCompUtil.fillClippedBounds(tmpBnds, child);
 					// If the clipped bounds are null the component is completely
 					// concealed and does not need to be rendered
@@ -242,13 +252,13 @@ public abstract class AbstractPRoot implements PRoot {
 					int clipY = clipBnds.getY();
 					int clipFx = clipBnds.getFinalX();
 					int clipFy = clipBnds.getFinalY();
-					// We do addFirst here for consistency with the while-loop
+					// We do addFirst here for consistency with the while-loop in defaultRootRender
 					stack.addFirst(new RenderStackInfo(child, clipX, clipY, clipFx, clipFy));
 				}
 			}
 		}
 		// The overlay must be rendered last whenever the rest of the GUI is rendered
-		PRootOverlay overlay = getOverlay();
+		PRootOverlay overlay = root.getOverlay();
 		if (overlay != null) {
 			for (PComponent overlayComp : overlay.getChildren()) {
 				stack.addFirst(new RenderStackInfo(overlayComp, rootClipX, rootClipY, rootClipFx, rootClipFy));
@@ -257,23 +267,27 @@ public abstract class AbstractPRoot implements PRoot {
 		return stack;
 	}
 	
-	private void renderComponent(PRenderer renderer, PComponent comp,
+	public static void renderComponent(PRenderer renderer, PComponent comp,
 			int clipX, int clipY, int clipW, int clipH)
 	{
+		// Reset renderer state
 		renderer.setClipBounds(clipX, clipY, clipW, clipH);
-//		System.out.println("clip="+clipX+", "+clipY+", "+clipW+", "+clipH);
+		renderer.setRenderMode(renderer.getRenderModeFill());
+		renderer.setColor1(1, 1, 1, 1);
 		
+		// Render the border first
 		PBorder border = comp.getBorder();
 		if (border != null) {
 			border.render(renderer, comp);
 		}
-		
+		// the render method of border might have changed this state
+		renderer.setClipBounds(clipX, clipY, clipW, clipH);
 		renderer.setRenderMode(renderer.getRenderModeFill());
 		renderer.setColor1(1, 1, 1, 1);
 		comp.render(renderer);
 	}
 	
-	protected static class RenderStackInfo {
+	public static class RenderStackInfo {
 		public final PComponent child;
 		public final int clipX;
 		public final int clipY;
@@ -380,7 +394,7 @@ public abstract class AbstractPRoot implements PRoot {
 			throw new NullPointerException("timer="+timer);
 		}
 		if (timerIterationInProgress) {
-			timersToAdd.add(timer);
+			timerSetWriteBuffer.add(() -> timerSet.add(timer));
 		} else {
 			timerSet.add(timer);
 		}
@@ -392,7 +406,7 @@ public abstract class AbstractPRoot implements PRoot {
 			throw new NullPointerException("timer="+timer);
 		}
 		if (timerIterationInProgress) {
-			timersToRemove.add(timer);
+			timerSetWriteBuffer.add(() -> timerSet.remove(timer));
 		} else {
 			timerSet.remove(timer);
 		}
@@ -518,11 +532,6 @@ public abstract class AbstractPRoot implements PRoot {
 	 * Uninteresting methods from component
 	 */
 	
-	@Override
-	public PRoot getRoot() {
-		return this;
-	}
-	
 	public void setFocusTraversal(PFocusTraversal focusTraversal) {
 		focusTrav = focusTraversal;
 	}
@@ -532,73 +541,9 @@ public abstract class AbstractPRoot implements PRoot {
 		return focusTrav;
 	}
 	
-	/**
-	 * Always returns null by default.<br>
-	 */
-	@Override
-	public PDnDSupport getDragAndDropSupport() {
-		return null;
-	}
-	
-	/**
-	 * Always returns zero by default.
-	 */
-	@Override
-	public int getDepth() {
-		return 0;
-	}
-	
-	/**
-	 * Always returns null by default.
-	 */
-	@Override
-	public PComponent getParent() {
-		return null;
-	}
-	
-	/**
-	 * Always returns the {@link PBounds bounds} of this root.
-	 * @see #getBounds()
-	 */
-	@Override
-	public PSize getDefaultPreferredSize() {
-		return getBounds();
-	}
-	
-	/**
-	 * Always returns true by default.
-	 */
-	@Override
-	public boolean defaultFillsAllPixels() {
-		return true;
-	}
-	
-	/**
-	 * Returns false by default.
-	 */
-	@Override
-	public boolean isFocusable() {
-		return false;
-	}
-	
 	/*
-	 * Unsupported inherited methods
+	 * Utility Methods
 	 */
-	
-	@Override
-	public void setParent(PComponent parent) throws UnsupportedOperationException {
-		throw new UnsupportedOperationException("PRoot");
-	}
-	
-	@Override
-	public void defaultRender(PRenderer renderer) throws UnsupportedOperationException {
-		throw new UnsupportedOperationException("PRoot");
-	}
-	
-	@Override
-	public void setMouseOverCursor(PCursor cursor) {
-		throw new UnsupportedOperationException("PRoot");
-	}
 	
 	@Override
 	public void setID(String value) {
@@ -643,18 +588,18 @@ public abstract class AbstractPRoot implements PRoot {
 	 * Utility class
 	 */
 	
-	protected static class FontInfo {
+	public static class FontInfo {
 		
 		protected final String name;
-		protected final double size;
+		protected final int size;
 		protected final Style style;
 		
-		public FontInfo(String fontName, double pointSize, Style fontStyle) {
+		public FontInfo(String fontName, int pixelSize, Style fontStyle) {
 			ThrowException.ifNull(fontName, "fontName == null");
 			ThrowException.ifNull(fontStyle, "fontStyle == null");
-			ThrowException.ifLess(1, pointSize, "pointSize < 1");
+			ThrowException.ifLess(1, pixelSize, "pixelSize < 1");
 			name = fontName;
-			size = pointSize;
+			size = pixelSize;
 			style = fontStyle;
 		}
 		
@@ -662,7 +607,7 @@ public abstract class AbstractPRoot implements PRoot {
 			return name;
 		}
 		
-		public double getSize() {
+		public int getPixelSize() {
 			return size;
 		}
 		

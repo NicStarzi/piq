@@ -3,9 +3,9 @@ package edu.udo.piq;
 import edu.udo.piq.tools.ImmutablePColor;
 
 /**
- * A read-only definition of color that allows reading color 
+ * A read-only definition of color that allows reading color
  * information in both integer format or floating point format.<br>
- * Implementations of {@link PColor} do not need to be immutable 
+ * Implementations of {@link PColor} do not need to be immutable
  * only because the interface is read-only.<br>
  * 
  * @author Nic Starzi
@@ -17,6 +17,10 @@ import edu.udo.piq.tools.ImmutablePColor;
  */
 public interface PColor {
 	
+	/**
+	 * An immutable PColor implementation representing absolute black with full transparency (alpha == 0).
+	 */
+	public static final PColor TRANSPARENT	= new ImmutablePColor(0.00, 0.00, 0.00, 0.00);
 	/**
 	 * An immutable PColor implementation representing absolute white.
 	 */
@@ -45,34 +49,39 @@ public interface PColor {
 	 * An immutable PColor implementation representing absolute red.
 	 */
 	public static final PColor RED		= new ImmutablePColor(1.00, 0.00, 0.00);
+	public static final PColor DARK_RED	= new ImmutablePColor(0.50, 0.00, 0.00);
 	/**
 	 * An immutable PColor implementation representing absolute green.
 	 */
 	public static final PColor GREEN	= new ImmutablePColor(0.00, 1.00, 0.00);
+	public static final PColor DARK_GREEN	= new ImmutablePColor(0.00, 0.50, 0.00);
 	/**
 	 * An immutable PColor implementation representing absolute blue.
 	 */
 	public static final PColor BLUE		= new ImmutablePColor(0.00, 0.00, 1.00);
 	public static final PColor DARK_BLUE	= new ImmutablePColor(0.00, 0.00, 0.50);
 	/**
-	 * An immutable PColor implementation representing absolute magenta 
+	 * An immutable PColor implementation representing absolute magenta
 	 * (red = 100%, blue = 100%).
 	 */
 	public static final PColor MAGENTA	= new ImmutablePColor(1.00, 0.00, 1.00);
+	public static final PColor DARK_MAGENTA	= new ImmutablePColor(0.50, 0.00, 0.50);
 	/**
-	 * An immutable PColor implementation representing absolute yellow 
+	 * An immutable PColor implementation representing absolute yellow
 	 * (red = 100%, green = 100%).
 	 */
 	public static final PColor YELLOW	= new ImmutablePColor(1.00, 1.00, 0.00);
+	public static final PColor DARK_YELLOW	= new ImmutablePColor(0.50, 0.50, 0.00);
 	/**
-	 * An immutable PColor implementation representing absolute teal 
+	 * An immutable PColor implementation representing absolute teal
 	 * (green = 100%, blue = 100%).
 	 */
 	public static final PColor TEAL		= new ImmutablePColor(0.00, 1.00, 1.00);
+	public static final PColor DARK_TEAL	= new ImmutablePColor(0.00, 0.50, 0.50);
 	
 	/**
 	 * Returns the value for the red color component in integer format.<br>
-	 * The returned value is between 0 (no red color) to 255 (full red 
+	 * The returned value is between 0 (no red color) to 255 (full red
 	 * color) inclusive.<br>
 	 * 
 	 * @return red color component between 0 and 255 inclusive.
@@ -82,9 +91,9 @@ public interface PColor {
 	}
 	
 	/**
-	 * Returns the value for the red color component in floating point 
+	 * Returns the value for the red color component in floating point
 	 * format.<br>
-	 * The returned value is between 0.0 (no red color) to 1.0 (full 
+	 * The returned value is between 0.0 (no red color) to 1.0 (full
 	 * red color) inclusive.<br>
 	 * 
 	 * @return red color component between 0.0 and 1.0 inclusive.
@@ -93,7 +102,7 @@ public interface PColor {
 	
 	/**
 	 * Returns the value for the green color component in integer format.<br>
-	 * The returned value is between 0 (no green color) to 255 (full green 
+	 * The returned value is between 0 (no green color) to 255 (full green
 	 * color) inclusive.<br>
 	 * 
 	 * @return green color component between 0 and 255 inclusive.
@@ -103,9 +112,9 @@ public interface PColor {
 	}
 	
 	/**
-	 * Returns the value for the green color component in floating point 
+	 * Returns the value for the green color component in floating point
 	 * format.<br>
-	 * The returned value is between 0.0 (no green color) to 1.0 (full 
+	 * The returned value is between 0.0 (no green color) to 1.0 (full
 	 * green color) inclusive.<br>
 	 * 
 	 * @return green color component between 0.0 and 1.0 inclusive.
@@ -114,7 +123,7 @@ public interface PColor {
 	
 	/**
 	 * Returns the value for the blue color component in integer format.<br>
-	 * The returned value is between 0 (no blue color) to 255 (full blue 
+	 * The returned value is between 0 (no blue color) to 255 (full blue
 	 * color) inclusive.<br>
 	 * 
 	 * @return blue color component between 0 and 255 inclusive.
@@ -124,9 +133,9 @@ public interface PColor {
 	}
 	
 	/**
-	 * Returns the value for the blue color component in floating point 
+	 * Returns the value for the blue color component in floating point
 	 * format.<br>
-	 * The returned value is between 0.0 (no blue color) to 1.0 (full 
+	 * The returned value is between 0.0 (no blue color) to 1.0 (full
 	 * blue color) inclusive.<br>
 	 * 
 	 * @return blue color component between 0.0 and 1.0 inclusive.
@@ -135,7 +144,7 @@ public interface PColor {
 	
 	/**
 	 * Returns the value for the alpha color component in integer format.<br>
-	 * The returned value is between 0 (no alpha color) to 255 (full alpha 
+	 * The returned value is between 0 (no alpha color) to 255 (full alpha
 	 * color) inclusive.<br>
 	 * 
 	 * @return alpha color component between 0 and 255 inclusive.
@@ -145,9 +154,9 @@ public interface PColor {
 	}
 	
 	/**
-	 * Returns the value for the alpha color component in floating point 
+	 * Returns the value for the alpha color component in floating point
 	 * format.<br>
-	 * The returned value is between 0.0 (no alpha color) to 1.0 (full 
+	 * The returned value is between 0.0 (no alpha color) to 1.0 (full
 	 * alpha color) inclusive.<br>
 	 * 
 	 * @return alpha color component between 0.0 and 1.0 inclusive.

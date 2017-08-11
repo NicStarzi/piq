@@ -25,6 +25,7 @@ public class PRadioButton extends AbstractPComponent implements PClickable, PGlo
 	protected final ObserverList<PClickObs> obsList
 		= PCompUtil.createDefaultObserverList();
 	protected final PMouseObs mouseObs = new PMouseObs() {
+		@Override
 		public void onButtonTriggered(PMouse mouse, MouseButton btn) {
 			PRadioButton.this.onMouseButtonTriggered(mouse, btn);
 		}
@@ -35,21 +36,16 @@ public class PRadioButton extends AbstractPComponent implements PClickable, PGlo
 	
 	public PRadioButton() {
 		super();
-		
-		PModelFactory modelFac = PModelFactory.getGlobalModelFactory();
-		PRadioButtonModel defaultModel = new DefaultPRadioButtonModel();
-		if (modelFac != null) {
-			defaultModel = (PRadioButtonModel) modelFac.getModelFor(this, defaultModel);
-		}
-		
-		setModel(defaultModel);
+		setModel(PModelFactory.createModelFor(this, DefaultPRadioButtonModel::new, PRadioButtonModel.class));
 		addObs(mouseObs);
 	}
 	
+	@Override
 	public void setGlobalEventProvider(PGlobalEventProvider provider) {
 		globEvProv = provider;
 	}
 	
+	@Override
 	public PGlobalEventProvider getGlobalEventProvider() {
 		return globEvProv;
 	}
@@ -89,6 +85,7 @@ public class PRadioButton extends AbstractPComponent implements PClickable, PGlo
 		return getModel().isSelected();
 	}
 	
+	@Override
 	public void defaultRender(PRenderer renderer) {
 		PBounds bnds = getBounds();
 		int x = bnds.getX();
@@ -110,6 +107,7 @@ public class PRadioButton extends AbstractPComponent implements PClickable, PGlo
 		}
 	}
 	
+	@Override
 	public PSize getDefaultPreferredSize() {
 		return DEFAULT_PREFERRED_SIZE;
 	}
@@ -120,7 +118,7 @@ public class PRadioButton extends AbstractPComponent implements PClickable, PGlo
 	
 	public void removeObs(PClickObs obs) {
 		obsList.remove(obs);
-	} 
+	}
 	
 	public void addObs(PRadioButtonModelObs obs) {
 		modelObsList.add(obs);

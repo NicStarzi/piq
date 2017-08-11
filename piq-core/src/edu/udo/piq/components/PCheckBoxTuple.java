@@ -51,10 +51,10 @@ public class PCheckBoxTuple extends AbstractPInputLayoutOwner implements PClicka
 			public void onButtonTriggered(PMouse mouse, MouseButton btn) {
 				PCheckBoxTuple.this.onMouseButtonTriggered(mouse, btn);
 			}
-			public void onButtonPressed(PMouse mouse, MouseButton btn) {
+			public void onButtonPressed(PMouse mouse, MouseButton btn, int clickCount) {
 				PCheckBoxTuple.this.onMouseButtonPressed(mouse, btn);
 			}
-			public void onButtonReleased(PMouse mouse, MouseButton btn) {
+			public void onButtonReleased(PMouse mouse, MouseButton btn, int clickCount) {
 				PCheckBoxTuple.this.onMouseButtonReleased(mouse, btn);
 			}
 			public void onMouseMoved(PMouse mouse) {

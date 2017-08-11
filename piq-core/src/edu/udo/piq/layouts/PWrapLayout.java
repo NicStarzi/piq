@@ -4,8 +4,17 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PSize;
+import edu.udo.piq.util.ThrowException;
 
 public class PWrapLayout extends PListLayout {
+	
+	public static final int DEFAULT_SECONDARY_GAP = 2;
+	public static final PrefSizeMode DEFAULT_PREF_SIZE_MODE = PrefSizeMode.PREFER_WRAPPING;
+	public static final String ATTRIBUTE_KEY_SECONDARY_GAP = "secondary_gap";
+	public static final String ATTRIBUTE_KEY_PREF_SIZE_MODE = "pref_size_mode";
+	
+	protected int secondaryGap = DEFAULT_SECONDARY_GAP;
+	protected PrefSizeMode prefSizeMode = DEFAULT_PREF_SIZE_MODE;
 	
 	public PWrapLayout(PComponent owner) {
 		super(owner);
@@ -23,10 +32,36 @@ public class PWrapLayout extends PListLayout {
 		super(owner, alignment, gap);
 	}
 	
+	public void setSecondaryGap(int value) {
+		ThrowException.ifLess(0, value, "value < 0");
+		if (getGap() != value) {
+			secondaryGap = value;
+			invalidate();
+		}
+	}
+	
+	public int getSecondaryGap() {
+		return getStyleAttribute(ATTRIBUTE_KEY_SECONDARY_GAP, secondaryGap);
+	}
+	
+	public void setPrefSizeMode(PrefSizeMode value) {
+		ThrowException.ifNull(value, "value == null");
+		if (getPrefSizeMode() != value) {
+			prefSizeMode = value;
+			invalidate();
+		}
+	}
+	
+	public PrefSizeMode getPrefSizeMode() {
+		return getStyleAttribute(ATTRIBUTE_KEY_PREF_SIZE_MODE, prefSizeMode);
+	}
+	
+	@Override
 	protected void layOutInternal() {
 		PInsets insets = getInsets();
-		PBounds ob = getOwner().getBounds();
+		PBounds ob = getOwner().getBoundsWithoutBorder();
 		int gap = getGap();
+		int sndGap = getSecondaryGap();
 		int minX = ob.getX() + insets.getFromLeft();
 		int minY = ob.getY() + insets.getFromTop();
 		int alignedX = minX;
@@ -86,7 +121,7 @@ public class PWrapLayout extends PListLayout {
 				}
 				if (x + compPrefW > maxX) {
 					x = originX;
-					y += lineSize + gap;
+					y += lineSize + sndGap;
 					setChildBounds(comp, x, y, compPrefW, compPrefH);
 					x += compPrefW + gap;
 					lineSize = compPrefH;
@@ -100,7 +135,7 @@ public class PWrapLayout extends PListLayout {
 				}
 				if (y + compPrefH > maxY) {
 					y = originY;
-					x += lineSize + gap;
+					x += lineSize + sndGap;
 					setChildBounds(comp, x, y, compPrefW, compPrefH);
 					y += compPrefH + gap;
 					lineSize = compPrefW;
@@ -112,9 +147,16 @@ public class PWrapLayout extends PListLayout {
 		}
 	}
 	
+	@Override
 	protected void onInvalidated() {
+		if (getPrefSizeMode() == PrefSizeMode.AVOID_WRAPPING) {
+			super.onInvalidated();
+			return;
+		} else if (getPrefSizeMode() != PrefSizeMode.PREFER_WRAPPING) {
+			ThrowException.always("Unknown "+PrefSizeMode.class.getSimpleName()+": "+getPrefSizeMode());
+		}
 		PInsets insets = getInsets();
-		PBounds bnds = getOwner().getBounds();
+		PBounds bnds = getOwner().getBoundsWithoutBorder();
 		int bndsW;
 		int bndsH;
 		if (bnds == null) {
@@ -124,6 +166,7 @@ public class PWrapLayout extends PListLayout {
 			bndsW = bnds.getWidth() - insets.getHorizontal();
 			bndsH = bnds.getHeight() - insets.getVertical();
 		}
+		int gap = getGap();
 		
 		int prefW = 0;
 		int prefH = 0;
@@ -181,6 +224,12 @@ public class PWrapLayout extends PListLayout {
 		prefH += insets.getVertical();
 		prefSize.setWidth(prefW);
 		prefSize.setHeight(prefH);
+	}
+	
+	public static enum PrefSizeMode {
+		AVOID_WRAPPING,
+		PREFER_WRAPPING,
+		;
 	}
 	
 }

@@ -11,17 +11,21 @@ import edu.udo.piq.util.PCompUtil;
 public class PTextSelector {
 	
 	protected final PMouseObs mouseObs = new PMouseObs() {
+		@Override
 		public void onMouseMoved(PMouse mouse) {
 			PTextSelector.this.onMouseMoved(mouse);
 		}
-		public void onButtonTriggered(PMouse mouse, MouseButton btn) {
-			PTextSelector.this.onMouseButtonTriggred(mouse, btn);
+		@Override
+		public void onButtonPressed(PMouse mouse, MouseButton btn, int clickCount) {
+			PTextSelector.this.onMouseButtonPressed(mouse, btn, clickCount);
 		}
-		public void onButtonReleased(PMouse mouse, MouseButton btn) {
+		@Override
+		public void onButtonReleased(PMouse mouse, MouseButton btn, int clickCount) {
 			PTextSelector.this.onMouseButtonReleased(mouse, btn);
 		}
 	};
 	protected final PFocusObs focusObs = new PFocusObs() {
+		@Override
 		public void onFocusGained(PComponent oldOwner, PComponent newOwner) {
 			PTextSelector.this.onFocusGained();
 		}
@@ -72,7 +76,7 @@ public class PTextSelector {
 		}
 	}
 	
-	protected void onMouseButtonTriggred(PMouse mouse, MouseButton btn) {
+	protected void onMouseButtonPressed(PMouse mouse, MouseButton btn, int clickCount) {
 		if (btn == MouseButton.LEFT && owner.isMouseOver()) {
 			int mx = mouse.getX();
 			int my = mouse.getY();
@@ -81,7 +85,6 @@ public class PTextSelector {
 				return;
 			}
 			
-			int clickCount = mouse.getClickCount();
 			if (clickCount > 1) {
 				int from = index.getIndexValue();
 				int to = from;

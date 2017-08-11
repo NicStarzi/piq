@@ -35,10 +35,12 @@ public abstract class AbstractArrayPLayout extends AbstractPLayout implements PL
 		return info.comp;
 	}
 	
+	@Override
 	public boolean isEmpty() {
 		return childrenList == null || childrenList.isEmpty();
 	}
 	
+	@Override
 	public int getChildCount() {
 		if (childrenList == null) {
 			return 0;
@@ -46,6 +48,7 @@ public abstract class AbstractArrayPLayout extends AbstractPLayout implements PL
 		return childrenList.size();
 	}
 	
+	@Override
 	public Collection<PComponent> getChildren() {
 		if (childrenList == null) {
 			childrenList = new CompList(infoArray);
@@ -53,6 +56,7 @@ public abstract class AbstractArrayPLayout extends AbstractPLayout implements PL
 		return childrenList;
 	}
 	
+	@Override
 	protected PCompInfo getInfoFor(PComponent child) {
 		for (PCompInfo info : infoArray) {
 			if (info.comp == child) {
@@ -62,6 +66,7 @@ public abstract class AbstractArrayPLayout extends AbstractPLayout implements PL
 		return null;
 	}
 	
+	@Override
 	public void removeChild(Object constraint) throws IllegalArgumentException, IllegalStateException {
 		int index = getIndexFor(constraint);
 		ThrowException.ifNotWithin(0, cap, index, getErrorMsgIndexIllegal(index));
@@ -69,14 +74,17 @@ public abstract class AbstractArrayPLayout extends AbstractPLayout implements PL
 		ThrowException.ifNull(info, "containsChild(child) == false");
 		
 		PComponent child = info.comp;
+		child.removeObs(childObs);
 		removeInfoInternal(info);
 		child.setParent(null);
+		
 		onChildRemoved(child, constraint);
 		fireRemoveEvent(child, constraint);
 	}
 	
-	public PBounds getChildBounds(Object constraint) 
-			throws IllegalStateException, IllegalArgumentException 
+	@Override
+	public PBounds getChildBounds(Object constraint)
+			throws IllegalStateException, IllegalArgumentException
 	{
 		int index = getIndexFor(constraint);
 		ThrowException.ifNotWithin(0, cap, index, getErrorMsgIndexIllegal(index));
@@ -84,6 +92,7 @@ public abstract class AbstractArrayPLayout extends AbstractPLayout implements PL
 		return infoArray.get(index).bounds;
 	}
 	
+	@Override
 	public PComponent getChildForConstraint(Object constraint) {
 		int index = getIndexFor(constraint);
 		ThrowException.ifNotWithin(0, cap, index, getErrorMsgIndexIllegal(index));
@@ -93,20 +102,24 @@ public abstract class AbstractArrayPLayout extends AbstractPLayout implements PL
 		return infoArray.get(index).comp;
 	}
 	
+	@Override
 	protected Iterable<PCompInfo> getAllInfos() {
 		return infoArray;
 	}
 	
+	@Override
 	protected void clearAllInfosInternal() {
 		infoArray.clear();
 	}
 	
+	@Override
 	protected void addInfoInternal(PCompInfo info) {
 		int index = getIndexFor(info);
 		ThrowException.ifNotWithin(0, cap, index, getErrorMsgIndexIllegal(index));
 		infoArray.set(index, info);
 	}
 	
+	@Override
 	protected void removeInfoInternal(PCompInfo info) {
 		int index = getIndexFor(info);
 		ThrowException.ifNotWithin(0, cap, index, getErrorMsgIndexIllegal(index));
@@ -127,6 +140,7 @@ public abstract class AbstractArrayPLayout extends AbstractPLayout implements PL
 			arr = compArr;
 		}
 		
+		@Override
 		public PComponent get(int index) {
 			PCompInfo info = arr.get(index);
 			if (info == null) {
@@ -135,16 +149,20 @@ public abstract class AbstractArrayPLayout extends AbstractPLayout implements PL
 			return info.comp;
 		}
 		
+		@Override
 		public int size() {
 			return arr.size();
 		}
 		
+		@Override
 		public Iterator<PComponent> iterator() {
 			Iterator<PCompInfo> iter = arr.iterator();
 			return new Iterator<PComponent>() {
+				@Override
 				public PComponent next() {
 					return iter.next().comp;
 				}
+				@Override
 				public boolean hasNext() {
 					return iter.hasNext();
 				}

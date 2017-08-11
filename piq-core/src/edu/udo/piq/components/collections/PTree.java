@@ -115,18 +115,12 @@ public class PTree extends AbstractPInputLayoutOwner
 	
 	public PTree() {
 		super();
-		
-		PModelFactory modelFac = PModelFactory.getGlobalModelFactory();
-		PTreeModel defaultModel = new DefaultPTreeModel();
-		if (modelFac != null) {
-			defaultModel = (PTreeModel) modelFac.getModelFor(this, defaultModel);
-		}
+		setModel(PModelFactory.createModelFor(this, DefaultPTreeModel::new, PTreeModel.class));
 		
 		setLayout(new PTreeLayout(this));
 		setDragAndDropSupport(new PTreePDnDSupport());
 		setSelection(new PTreeSingleSelection());
 		setCellFactory(new PTreePCellFactory());
-		setModel(defaultModel);
 		
 		addObs(new PMouseObs() {
 			@Override
@@ -134,11 +128,11 @@ public class PTree extends AbstractPInputLayoutOwner
 				PTree.this.onMouseButtonTriggred(mouse, btn);
 			}
 			@Override
-			public void onButtonPressed(PMouse mouse, MouseButton btn) {
+			public void onButtonPressed(PMouse mouse, MouseButton btn, int clickCount) {
 				PTree.this.onMouseButtonPressed(mouse, btn);
 			}
 			@Override
-			public void onButtonReleased(PMouse mouse, MouseButton btn) {
+			public void onButtonReleased(PMouse mouse, MouseButton btn, int clickCount) {
 				PTree.this.onMouseReleased(mouse, btn);
 			}
 			@Override

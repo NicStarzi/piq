@@ -65,7 +65,7 @@ public class PDnDManager {
 				onMouseMove(mouse);
 			}
 			@Override
-			public void onButtonReleased(PMouse mouse, MouseButton btn) {
+			public void onButtonReleased(PMouse mouse, MouseButton btn, int clickCount) {
 				onMouseRelease(mouse, btn);
 			}
 		};

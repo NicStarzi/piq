@@ -28,23 +28,12 @@ public class PProgressBar extends AbstractPComponent {
 	
 	protected final ObserverList<PProgressBarModelObs> modelObsList
 		= PCompUtil.createDefaultObserverList();
-	private final PProgressBarModelObs modelObs = new PProgressBarModelObs() {
-		public void onValueChanged(PProgressBarModel model) {
-			PProgressBar.this.onModelValueChanged();
-		}
-	};
+	private final PProgressBarModelObs modelObs = model -> PProgressBar.this.onModelValueChanged();
 	private PProgressBarModel model;
 	
 	public PProgressBar() {
 		super();
-		
-		PModelFactory modelFac = PModelFactory.getGlobalModelFactory();
-		PProgressBarModel defaultModel = new DefaultPProgressBarModel();
-		if (modelFac != null) {
-			defaultModel = (PProgressBarModel) modelFac.getModelFor(this, defaultModel);
-		}
-		
-		setModel(defaultModel);
+		setModel(PModelFactory.createModelFor(this, DefaultPProgressBarModel::new, PProgressBarModel.class));
 	}
 	
 	public PProgressBar(PProgressBarModel model) {
@@ -74,6 +63,7 @@ public class PProgressBar extends AbstractPComponent {
 		return model;
 	}
 	
+	@Override
 	public void defaultRender(PRenderer renderer) {
 		PBounds bounds = getBounds();
 		int x = bounds.getX();
@@ -129,6 +119,7 @@ public class PProgressBar extends AbstractPComponent {
 		}
 	}
 	
+	@Override
 	public PSize getDefaultPreferredSize() {
 		return DEFAULT_PREFERRED_SIZE;
 	}

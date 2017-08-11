@@ -14,19 +14,24 @@ public class DelegatePMouse implements PMouse {
 	protected final ObserverList<PMouseObs> obsList
 		= PCompUtil.createDefaultObserverList();
 	protected final PMouseObs delegateObs = new PMouseObs() {
+		@Override
 		public void onMouseMoved(PMouse mouse) {
 			compAtMouseCacheValid = false;
 			obsList.fireEvent((obs) -> obs.onMouseMoved(DelegatePMouse.this));
 		}
-		public void onButtonPressed(PMouse mouse, MouseButton btn) {
-			obsList.fireEvent((obs) -> obs.onButtonPressed(DelegatePMouse.this, btn));
+		@Override
+		public void onButtonPressed(PMouse mouse, MouseButton btn, int clickCount) {
+			obsList.fireEvent((obs) -> obs.onButtonPressed(DelegatePMouse.this, btn, clickCount));
 		}
+		@Override
 		public void onButtonTriggered(PMouse mouse, MouseButton btn) {
 			obsList.fireEvent((obs) -> obs.onButtonTriggered(DelegatePMouse.this, btn));
 		}
-		public void onButtonReleased(PMouse mouse, MouseButton btn) {
-			obsList.fireEvent((obs) -> obs.onButtonReleased(DelegatePMouse.this, btn));
+		@Override
+		public void onButtonReleased(PMouse mouse, MouseButton btn, int clickCount) {
+			obsList.fireEvent((obs) -> obs.onButtonReleased(DelegatePMouse.this, btn, clickCount));
 		}
+		@Override
 		public String toString() {
 			return "Hello World!";
 		}
@@ -56,6 +61,7 @@ public class DelegatePMouse implements PMouse {
 		return delegate;
 	}
 	
+	@Override
 	public int getX() {
 		if (delegate == null) {
 			return 0;
@@ -63,6 +69,7 @@ public class DelegatePMouse implements PMouse {
 		return delegate.getX();
 	}
 	
+	@Override
 	public int getY() {
 		if (delegate == null) {
 			return 0;
@@ -70,6 +77,7 @@ public class DelegatePMouse implements PMouse {
 		return delegate.getY();
 	}
 	
+	@Override
 	public int getDeltaX() {
 		if (delegate == null) {
 			return 0;
@@ -77,6 +85,7 @@ public class DelegatePMouse implements PMouse {
 		return delegate.getDeltaX();
 	}
 	
+	@Override
 	public int getDeltaY() {
 		if (delegate == null) {
 			return 0;
@@ -84,13 +93,7 @@ public class DelegatePMouse implements PMouse {
 		return delegate.getDeltaY();
 	}
 	
-	public int getClickCount() {
-		if (delegate == null) {
-			return 0;
-		}
-		return delegate.getClickCount();
-	}
-	
+	@Override
 	public boolean isPressed(MouseButton btn) throws NullPointerException {
 		if (delegate == null) {
 			return false;
@@ -98,6 +101,7 @@ public class DelegatePMouse implements PMouse {
 		return delegate.isPressed(btn);
 	}
 	
+	@Override
 	public boolean isReleased(MouseButton btn) throws NullPointerException {
 		if (delegate == null) {
 			return false;
@@ -105,6 +109,7 @@ public class DelegatePMouse implements PMouse {
 		return delegate.isReleased(btn);
 	}
 	
+	@Override
 	public boolean isTriggered(MouseButton btn) throws NullPointerException {
 		if (delegate == null) {
 			return false;
@@ -112,6 +117,7 @@ public class DelegatePMouse implements PMouse {
 		return delegate.isTriggered(btn);
 	}
 	
+	@Override
 	public PComponent getComponentAtMouse() {
 		if (delegate == null) {
 			return null;
@@ -123,6 +129,7 @@ public class DelegatePMouse implements PMouse {
 		return compAtMouseCache;
 	}
 	
+	@Override
 	public PCursor getCursorDefault() {
 		if (delegate == null) {
 			return null;
@@ -130,6 +137,7 @@ public class DelegatePMouse implements PMouse {
 		return delegate.getCursorDefault();
 	}
 	
+	@Override
 	public PCursor getCursorHand() {
 		if (delegate == null) {
 			return null;
@@ -137,6 +145,7 @@ public class DelegatePMouse implements PMouse {
 		return delegate.getCursorHand();
 	}
 	
+	@Override
 	public PCursor getCursorText() {
 		if (delegate == null) {
 			return null;
@@ -144,6 +153,7 @@ public class DelegatePMouse implements PMouse {
 		return delegate.getCursorText();
 	}
 	
+	@Override
 	public PCursor getCursorScroll() {
 		if (delegate == null) {
 			return null;
@@ -151,6 +161,7 @@ public class DelegatePMouse implements PMouse {
 		return delegate.getCursorScroll();
 	}
 	
+	@Override
 	public PCursor getCursorBusy() {
 		if (delegate == null) {
 			return null;
@@ -158,6 +169,7 @@ public class DelegatePMouse implements PMouse {
 		return delegate.getCursorBusy();
 	}
 	
+	@Override
 	public PCursor getCurrentCursor() {
 		if (delegate == null) {
 			return null;
@@ -165,11 +177,18 @@ public class DelegatePMouse implements PMouse {
 		return delegate.getCurrentCursor();
 	}
 	
+	@Override
+	public boolean isCursorSupported(PCursor cursor) {
+		return delegate.isCursorSupported(cursor);
+	}
+	
+	@Override
 	public void addObs(PMouseObs obs) {
 		System.out.println("DelegatePMouse.addObs()");
 		obsList.add(obs);
 	}
 	
+	@Override
 	public void removeObs(PMouseObs obs) {
 		System.out.println("DelegatePMouse.removeObs()");
 		obsList.remove(obs);

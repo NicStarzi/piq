@@ -63,7 +63,7 @@ public class PScrollBar extends AbstractPLayoutOwner {
 					}
 				}
 			}
-			public void onButtonReleased(PMouse mouse, MouseButton btn) {
+			public void onButtonReleased(PMouse mouse, MouseButton btn, int clickCount) {
 				if (thumb.isPressed() && btn == MouseButton.LEFT) {
 					thumb.getModel().setPressed(false);
 				}

@@ -26,10 +26,10 @@ public class PPopupSubMenu extends PPopupLabel implements PPopupComponent {
 		public void onButtonTriggered(PMouse mouse, MouseButton btn) {
 			PPopupSubMenu.this.onMouseButtonTriggered(mouse, btn);
 		}
-		public void onButtonPressed(PMouse mouse, MouseButton btn) {
+		public void onButtonPressed(PMouse mouse, MouseButton btn, int clickCount) {
 			PPopupSubMenu.this.onMouseButtonPressed(mouse, btn);
 		}
-		public void onButtonReleased(PMouse mouse, MouseButton btn) {
+		public void onButtonReleased(PMouse mouse, MouseButton btn, int clickCount) {
 			PPopupSubMenu.this.onMouseButtonReleased(mouse, btn);
 		}
 	};

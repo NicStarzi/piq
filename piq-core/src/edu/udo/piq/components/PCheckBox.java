@@ -25,6 +25,7 @@ public class PCheckBox extends AbstractPComponent implements PClickable, PGlobal
 	protected final ObserverList<PClickObs> obsList
 		= PCompUtil.createDefaultObserverList();
 	protected final PMouseObs mouseObs = new PMouseObs() {
+		@Override
 		public void onButtonTriggered(PMouse mouse, MouseButton btn) {
 			PCheckBox.this.onMouseButtonTriggered(mouse, btn);
 		}
@@ -35,21 +36,16 @@ public class PCheckBox extends AbstractPComponent implements PClickable, PGlobal
 	
 	public PCheckBox() {
 		super();
-		
-		PModelFactory modelFac = PModelFactory.getGlobalModelFactory();
-		PCheckBoxModel defaultModel = new DefaultPCheckBoxModel();
-		if (modelFac != null) {
-			defaultModel = (PCheckBoxModel) modelFac.getModelFor(this, defaultModel);
-		}
-		
-		setModel(defaultModel);
+		setModel(PModelFactory.createModelFor(this, DefaultPCheckBoxModel::new, PCheckBoxModel.class));
 		addObs(mouseObs);
 	}
 	
+	@Override
 	public void setGlobalEventProvider(PGlobalEventProvider provider) {
 		globEvProv = provider;
 	}
 	
+	@Override
 	public PGlobalEventProvider getGlobalEventProvider() {
 		return globEvProv;
 	}
@@ -89,6 +85,7 @@ public class PCheckBox extends AbstractPComponent implements PClickable, PGlobal
 		}
 	}
 	
+	@Override
 	public void defaultRender(PRenderer renderer) {
 		PBounds bnds = getBounds();
 		int x = bnds.getX();
@@ -110,6 +107,7 @@ public class PCheckBox extends AbstractPComponent implements PClickable, PGlobal
 		}
 	}
 	
+	@Override
 	public PSize getDefaultPreferredSize() {
 		return DEFAULT_PREFERRED_SIZE;
 	}
@@ -120,7 +118,7 @@ public class PCheckBox extends AbstractPComponent implements PClickable, PGlobal
 	
 	public void removeObs(PClickObs obs) {
 		obsList.remove(obs);
-	} 
+	}
 	
 	public void addObs(PCheckBoxModelObs obs) {
 		modelObsList.add(obs);

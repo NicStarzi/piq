@@ -19,7 +19,7 @@ public abstract class AbstractPPictureModel implements PPictureModel {
 	}
 	
 	protected void fireImageIDChanged() {
-		obsList.fireEvent((obs) -> obs.onImageIDChanged(this));
+		obsList.fireEvent((obs) -> obs.onValueChanged(this));
 	}
 	
 }

@@ -14,10 +14,11 @@ public interface PComponentObs {
 	 * This event is fired when a {@link PComponent} has changed its {@link PRoot}.<br>
 	 * If the currentRoot is null the component is no longer a part of a GUI.<br>
 	 * 
-	 * @param component the component that fired the event
-	 * @param currentRoot a PRoot or null
+	 * @param component			the component that fired the event. This is never null.
+	 * @param currentRoot		the current root of this component. Might be null.
+	 * @param oldRoot			the former root of this component. Might be null.
 	 */
-	public default void onRootChanged(PComponent component, PRoot currentRoot) {}
+	public default void onRootChanged(PComponent component, PRoot currentRoot, PRoot oldRoot) {}
 	
 	/**
 	 * This event is fired when a {@link PComponent} has changed its preferred size.<br>

@@ -7,14 +7,14 @@ public class DefaultPPictureModel extends AbstractPPictureModel implements PPict
 	
 	private Object imgId = null;
 	
-	public void setImageID(Object obj) {
+	public void setValue(Object obj) {
 		if (imgId == null ? imgId != obj : !imgId.equals(obj)) {
 			imgId = obj;
 			fireImageIDChanged();
 		}
 	}
 	
-	public Object getImageID() {
+	public Object getValue() {
 		return imgId;
 	}
 	

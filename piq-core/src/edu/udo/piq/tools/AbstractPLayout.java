@@ -287,8 +287,7 @@ public abstract class AbstractPLayout implements PLayout {
 		invalidate();
 	}
 	
-	protected void onChildCleared(PComponent child, Object constraint) {
-	}
+	protected void onChildCleared(PComponent child, Object constraint) {}
 	
 	/*
 	 * Observers & Events
@@ -443,7 +442,7 @@ public abstract class AbstractPLayout implements PLayout {
 //			stateCounter = 1;
 //		}
 //		staticStateCounter[curState.ordinal()]++;
-//		if (false) {//curState == DebugState.LAYOUT || curState == DebugState.ON_INVALIDATED
+//		if (curState == DebugState.LAYOUT || curState == DebugState.ON_INVALIDATED) {
 //			StringBuilder sb = new StringBuilder();
 //			sb.append(getOwner());
 //			sb.append(" ");

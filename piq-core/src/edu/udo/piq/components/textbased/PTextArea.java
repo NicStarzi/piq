@@ -10,7 +10,9 @@ import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.collections.PListIndex;
 import edu.udo.piq.tools.AbstractPTextComponent;
-import edu.udo.piq.tools.ImmutablePSize;
+import edu.udo.piq.tools.ImmutablePBounds;
+import edu.udo.piq.tools.MutablePBounds;
+import edu.udo.piq.util.ThrowException;
 
 public class PTextArea extends AbstractPTextComponent {
 	
@@ -75,6 +77,58 @@ public class PTextArea extends AbstractPTextComponent {
 	protected void onTextChanged() {
 		idxTableIsDirty = true;
 		super.onTextChanged();
+	}
+	
+	@Override
+	public PBounds getRenderPositionForIndex(MutablePBounds result, PListIndex index) {
+		ThrowException.ifNull(index, "index == null");
+		int idx = index.getIndexValue();
+		PFontResource font = getDefaultFont();
+		if (font == null) {
+			return null;
+		}
+		PBounds bounds = getBounds();
+		if (bounds == null) {
+			return null;
+		}
+		int x = bounds.getX();
+		int y = bounds.getY();
+		String text = getText();
+		if (text == null) {
+			return null;
+		}
+		ThrowException.ifNotWithin(0, text.length(), idx, "index < 0 || index >= getText().length()");
+		StringBuilder sb = new StringBuilder();
+		int drawX = x;
+		int drawY = y;
+		int lineH = 0;
+		for (int i = 0; i < idx; i++) {
+			char c = text.charAt(i);
+			if (c == '\n') {
+				String line = sb.toString();
+				PSize lineSize = font.getSize(line);
+				lineH = lineSize.getHeight();
+				
+				drawX = x;
+				drawY += lineH;
+				sb.delete(0, sb.length());
+			} else {
+				sb.append(c);
+			}
+		}
+		int drawW = 0;
+		int drawH = lineH;
+		if (sb.length() > 0) {
+			String line = sb.toString();
+			PSize lineSize = font.getSize(line);
+			drawW = lineSize.getWidth();
+			drawH = lineSize.getHeight();
+		}
+		if (result == null) {
+			return new ImmutablePBounds(drawX, drawY, drawW, drawH);
+		}
+		result.set(drawX, drawY, drawW, drawH);
+		return result;
 	}
 	
 	@Override
@@ -272,13 +326,18 @@ public class PTextArea extends AbstractPTextComponent {
 		int prefW = 0;
 		int prefH = 0;
 		StringBuilder sb = new StringBuilder();
+		int lineH = 0;
 		for (int i = 0; i < text.length(); i++) {
 			char c = text.charAt(i);
 			if (c == '\n') {
+				if (sb.length() == 0) {
+					prefH += lineH;
+					continue;
+				}
 				String line = sb.toString();
 				PSize lineSize = font.getSize(line);
 				int lineW = lineSize.getWidth();
-				int lineH = lineSize.getHeight();
+				lineH = lineSize.getHeight();
 				if (lineW > prefW) {
 					prefW = lineW;
 				}
@@ -293,13 +352,14 @@ public class PTextArea extends AbstractPTextComponent {
 			String line = sb.toString();
 			PSize lineSize = font.getSize(line);
 			int lineW = lineSize.getWidth();
-			int lineH = lineSize.getHeight();
+			lineH = lineSize.getHeight();
 			if (lineW > prefW) {
 				prefW = lineW;
 			}
 			prefH += lineH;
 		}
-		return new ImmutablePSize(prefW, prefH);
+		prefSize.set(prefW + 2, prefH);
+		return prefSize;
 	}
 	
 	@Override

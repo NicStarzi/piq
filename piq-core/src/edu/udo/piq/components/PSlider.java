@@ -50,7 +50,7 @@ public class PSlider extends AbstractPInputComponent implements PGlobalEventGene
 	public static final String INPUT_ID_PRESS_CTRL_RIGHT = "ctrlRight";
 	
 	protected final ObserverList<PSliderModelObs> modelObsList
-		= PCompUtil.createDefaultObserverList();
+	= PCompUtil.createDefaultObserverList();
 	protected final PSliderModelObs modelObs = new PSliderModelObs() {
 		@Override
 		public void onRangeChanged(PSliderModel model) {
@@ -74,7 +74,7 @@ public class PSlider extends AbstractPInputComponent implements PGlobalEventGene
 				PSlider.this.onMouseMoved(mouse);
 			}
 			@Override
-			public void onButtonTriggered(PMouse mouse, MouseButton btn) {
+			public void onButtonTriggered(PMouse mouse, MouseButton btn, int clickCount) {
 				PSlider.this.onMouseButtonTriggered(mouse, btn);
 			}
 			@Override

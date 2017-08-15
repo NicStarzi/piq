@@ -34,9 +34,7 @@ import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
 import edu.udo.piq.util.ThrowException;
 
-public class PList extends AbstractPInputLayoutOwner
-	implements PDropComponent
-{
+public class PList extends AbstractPInputLayoutOwner implements PDropComponent {
 	
 	protected static final PColor BACKGROUND_COLOR = PColor.WHITE;
 	protected static final PColor FOCUS_COLOR = PColor.GREY25;
@@ -45,43 +43,42 @@ public class PList extends AbstractPInputLayoutOwner
 	
 	/**
 	 * If the UP key is pressed while all the following conditions are met:
-	 *  - the list has focus
-	 *  - the list is enabled
-	 *  - the model of the list is not null
-	 *  - the selection of the list is not null
-	 *  - the selection of the list has a previously selected index
+	 * - the list has focus
+	 * - the list is enabled
+	 * - the model of the list is not null
+	 * - the selection of the list is not null
+	 * - the selection of the list has a previously selected index
 	 * then the selection will be moved up by one index.
+	 * 
 	 * @see #INPUT_ID_MOVE_UP
 	 * @see #REACTION_MOVE_UP
 	 */
-	public static final PKeyInput<PList> INPUT_MOVE_UP =
-			new DefaultPKeyInput<>(Key.UP, PList::isKeyTriggerEnabled);
+	public static final PKeyInput<PList> INPUT_MOVE_UP = new DefaultPKeyInput<>(Key.UP, PList::isKeyTriggerEnabled);
 	public static final Consumer<PList> REACTION_MOVE_UP = PList::onKeyTriggerUp;
 	public static final String INPUT_ID_MOVE_UP = "moveUp";
 	
 	/**
 	 * If the DOWN key is pressed while all the following conditions are met:
-	 *  - the list has focus
-	 *  - the list is enabled
-	 *  - the model of the list is not null
-	 *  - the selection of the list is not null
-	 *  - the selection of the list has a previously selected index
+	 * - the list has focus
+	 * - the list is enabled
+	 * - the model of the list is not null
+	 * - the selection of the list is not null
+	 * - the selection of the list has a previously selected index
 	 * then the selection will be moved down by one index.
+	 * 
 	 * @see #INPUT_ID_MOVE_DOWN
 	 * @see #REACTION_MOVE_DOWN
 	 */
-	public static final PKeyInput<PList> INPUT_MOVE_DOWN =
-			new DefaultPKeyInput<>(Key.DOWN, PList::isKeyTriggerEnabled);
+	public static final PKeyInput<PList> INPUT_MOVE_DOWN = new DefaultPKeyInput<>(Key.DOWN, PList::isKeyTriggerEnabled);
 	public static final Consumer<PList> REACTION_MOVE_DOWN = PList::onKeyTriggerDown;
 	public static final String INPUT_ID_MOVE_DOWN = "moveDown";
 	
-	public static final PKeyInput<PList> INPUT_MOVE_LEFT =
-			new DefaultPKeyInput<>(Key.LEFT, PList::isKeyTriggerEnabled);
+	public static final PKeyInput<PList> INPUT_MOVE_LEFT = new DefaultPKeyInput<>(Key.LEFT, PList::isKeyTriggerEnabled);
 	public static final Consumer<PList> REACTION_MOVE_LEFT = PList::onKeyTriggerUp;
 	public static final String INPUT_ID_MOVE_LEFT = "moveLeft";
 	
-	public static final PKeyInput<PList> INPUT_MOVE_RIGHT =
-			new DefaultPKeyInput<>(Key.RIGHT, PList::isKeyTriggerEnabled);
+	public static final PKeyInput<PList> INPUT_MOVE_RIGHT = new DefaultPKeyInput<>(Key.RIGHT,
+			PList::isKeyTriggerEnabled);
 	public static final Consumer<PList> REACTION_MOVE_RIGHT = PList::onKeyTriggerDown;
 	public static final String INPUT_ID_MOVE_RIGHT = "moveRight";
 	
@@ -94,44 +91,46 @@ public class PList extends AbstractPInputLayoutOwner
 	}
 	
 	protected static boolean isKeyTriggerEnabled(PList self) {
-		return self.isEnabled() && self.getModel() != null
-				&& self.getSelection() != null
+		return self.isEnabled() && self.getModel() != null && self.getSelection() != null
 				&& self.getSelection().getLastSelected() != null;
 	}
 	
-	protected final ObserverList<PModelObs> modelObsList
-		= PCompUtil.createDefaultObserverList();
-	protected final ObserverList<PSelectionObs> selectionObsList
-		= PCompUtil.createDefaultObserverList();
+	protected final ObserverList<PModelObs> modelObsList = PCompUtil.createDefaultObserverList();
+	protected final ObserverList<PSelectionObs> selectionObsList = PCompUtil.createDefaultObserverList();
 	protected final PSelectionObs selectionObs = new PSelectionObs() {
+		
 		@Override
 		public void onSelectionAdded(PSelection selection, PModelIndex index) {
 			selectionAdded((PListIndex) index);
 		}
+		
 		@Override
 		public void onSelectionRemoved(PSelection selection, PModelIndex index) {
 			selectionRemoved((PListIndex) index);
 		}
+		
 		@Override
-		public void onLastSelectedChanged(PSelection selection,
-				PModelIndex prevLastSelected, PModelIndex newLastSelected)
-		{
+		public void onLastSelectedChanged(PSelection selection, PModelIndex prevLastSelected,
+				PModelIndex newLastSelected) {
 			if (hasFocus()) {
 				fireReRenderEvent();
 			}
 		}
 	};
 	protected final PModelObs modelObs = new PModelObs() {
+		
 		@Override
 		public void onContentAdded(PReadOnlyModel model, PModelIndex index, Object newContent) {
 			getSelection().clearSelection();
 			contentAdded((PListIndex) index, newContent);
 		}
+		
 		@Override
 		public void onContentRemoved(PReadOnlyModel model, PModelIndex index, Object oldContent) {
 			contentRemoved((PListIndex) index, oldContent);
 			getSelection().removeSelection(index);
 		}
+		
 		@Override
 		public void onContentChanged(PReadOnlyModel model, PModelIndex index, Object oldContent) {
 			contentChanged((PListIndex) index, oldContent);
@@ -155,22 +154,25 @@ public class PList extends AbstractPInputLayoutOwner
 	
 	public PList() {
 		super();
-		setModel(PModelFactory.createModelFor(this, DefaultPListModel::new, PListModel.class));
 		
 		setLayout(new PListLayout(this, ListAlignment.TOP_TO_BOTTOM, 1));
 		setDragAndDropSupport(new DefaultPDnDSupport());
 		setSelection(new PListMultiSelection());
 		setCellFactory(new DefaultPCellFactory());
+		setModel(PModelFactory.createModelFor(this, DefaultPListModel::new, PListModel.class));
 		
 		addObs(new PMouseObs() {
+			
 			@Override
-			public void onButtonTriggered(PMouse mouse, MouseButton btn) {
+			public void onButtonTriggered(PMouse mouse, MouseButton btn, int clickCount) {
 				PList.this.onMouseButtonTriggred(mouse, btn);
 			}
+			
 			@Override
 			public void onButtonReleased(PMouse mouse, MouseButton btn, int clickCount) {
 				PList.this.onMouseReleased(mouse, btn);
 			}
+			
 			@Override
 			public void onMouseMoved(PMouse mouse) {
 				PList.this.onMouseMoved(mouse);
@@ -212,9 +214,7 @@ public class PList extends AbstractPInputLayoutOwner
 	
 	protected void onMouseMoved(PMouse mouse) {
 		PDnDSupport dndSup = getDragAndDropSupport();
-		if (dndSup != null && isDragTagged
-				&& mouse.isPressed(MouseButton.DRAG_AND_DROP))
-		{
+		if (dndSup != null && isDragTagged && mouse.isPressed(MouseButton.DRAG_AND_DROP)) {
 			int mx = mouse.getX();
 			int my = mouse.getY();
 			int disX = Math.abs(lastDragX - mx);
@@ -397,9 +397,7 @@ public class PList extends AbstractPInputLayoutOwner
 				return false;
 			}
 			Object element = model.get(index);
-			if (element != cell.getElement()
-					&& !element.equals(cell.getElement()))
-			{
+			if (element != cell.getElement() && !element.equals(cell.getElement())) {
 				return false;
 			}
 		}
@@ -531,8 +529,7 @@ public class PList extends AbstractPInputLayoutOwner
 	}
 	
 	public boolean isDropHighlighted() {
-		return currentDnDHighlightComponent != null
-				|| currentDnDHighlightIndex != null;
+		return currentDnDHighlightComponent != null || currentDnDHighlightIndex != null;
 	}
 	
 	protected void contentAdded(PListIndex index, Object newContent) {
@@ -581,8 +578,7 @@ public class PList extends AbstractPInputLayoutOwner
 	}
 	
 	public PCellComponent getCellComponent(PListIndex index) {
-		return (PCellComponent) getLayoutInternal().
-				getChild(index.getIndexValue());
+		return (PCellComponent) getLayoutInternal().getChild(index.getIndexValue());
 	}
 	
 	@Override
@@ -596,7 +592,8 @@ public class PList extends AbstractPInputLayoutOwner
 		renderer.setColor(BACKGROUND_COLOR);
 		renderer.drawQuad(x + 0, y + 0, fx - 0, fy - 0);
 		
-		// If highlighted but no cell component is highlighted => highlight the end of the list
+		// If highlighted but no cell component is highlighted => highlight the
+		// end of the list
 		if (isDropHighlighted() && currentDnDHighlightComponent == null) {
 			renderer.setColor(DROP_HIGHLIGHT_COLOR);
 			

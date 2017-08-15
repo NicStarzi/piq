@@ -14,6 +14,7 @@ import edu.udo.piq.tools.AbstractPKeyboard;
 public class GlfwPKeyboard extends AbstractPKeyboard implements PKeyboard {
 	
 	protected final GLFWKeyCallback keyCB = new GLFWKeyCallback() {
+		
 		@Override
 		public void invoke(long window, int key, int scancode, int action, int mods) {
 			if (action != GLFW.GLFW_REPEAT) {
@@ -22,6 +23,7 @@ public class GlfwPKeyboard extends AbstractPKeyboard implements PKeyboard {
 		}
 	};
 	protected final GLFWCharCallback charCB = new GLFWCharCallback() {
+		
 		@Override
 		public void invoke(long window, int codePoint) {
 			onCharCallback(codePoint);
@@ -258,8 +260,9 @@ public class GlfwPKeyboard extends AbstractPKeyboard implements PKeyboard {
 			return Key.PAGE_DOWN;
 		case GLFW.GLFW_KEY_END:
 			return Key.END;
+		default:
+			return Key.ENTER;
 		}
-		return Key.ENTER;
 	}
 	
 }

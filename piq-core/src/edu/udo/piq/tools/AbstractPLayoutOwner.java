@@ -1,6 +1,7 @@
 package edu.udo.piq.tools;
 
 import edu.udo.piq.PComponent;
+import edu.udo.piq.PComponentObs;
 import edu.udo.piq.PLayout;
 import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PReadOnlyLayout;
@@ -25,6 +26,12 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 		@Override
 		public void onLayoutInvalidated(PReadOnlyLayout layout) {
 			AbstractPLayoutOwner.this.onLayoutInvalidated();
+		}
+	};
+	protected final PComponentObs childObs = new PComponentObs() {
+		@Override
+		public void onScrollRequest(PComponent component, int offsetX, int offsetY) {
+			onChildRequestedScroll(component, offsetX, offsetY);
 		}
 	};
 	protected PLayout layout;
@@ -89,11 +96,13 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 	}
 	
 	protected void onChildRemoved(PComponent child, Object constraint) {
+		child.removeObs(childObs);
 		checkForPreferredSizeChange();
 		fireReRenderEvent();
 	}
 	
 	protected void onChildAdded(PComponent child, Object constraint) {
+		child.addObs(childObs);
 		checkForPreferredSizeChange();
 		fireReRenderEvent();
 	}
@@ -104,6 +113,10 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 	
 	protected void onLayoutInvalidated() {
 		fireReLayOutEvent();
+	}
+	
+	protected void onChildRequestedScroll(PComponent child, int offsetX, int offsetY) {
+		fireScrollRequestEvent(child, offsetX, offsetY);
 	}
 	
 }

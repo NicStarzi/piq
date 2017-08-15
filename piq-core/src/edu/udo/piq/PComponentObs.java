@@ -38,6 +38,16 @@ public interface PComponentObs {
 	public default void onBoundsChanged(PComponent component) {}
 	
 	/**
+	 * <p>This event is fired when a component requests itself to become visible at the
+	 * given offset coordinates. This event should be processed by any scroll component
+	 * in the ancestor hierarchy of the event component.</p>
+	 * @param component		the component which requested the scrolling
+	 * @param offsetX		an offset (in pixels) to the coordinates which should be made visible
+	 * @param offsetY		an offset (in pixels) to the coordinates which should be made visible
+	 */
+	public default void onScrollRequest(PComponent component, int offsetX, int offsetY) {}
+	
+	/**
 	 * This event is fired by a {@link PComponent} when the component
 	 * was added to a {@link PReadOnlyLayout layout}.<br>
 	 * 

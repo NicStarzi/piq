@@ -25,13 +25,13 @@ import edu.udo.piq.util.ThrowException;
 
 public class PRadioButtonTuple extends AbstractPInputLayoutOwner implements PClickable, PGlobalEventGenerator {
 	
-	public static final PKeyInput<PRadioButtonTuple> INPUT_TRIGGER_ENTER = 
+	public static final PKeyInput<PRadioButtonTuple> INPUT_TRIGGER_ENTER =
 			new DefaultPKeyInput<>(KeyInputType.TRIGGER, Key.ENTER, PRadioButtonTuple::canTriggerEnter);
 	public static final Consumer<PRadioButtonTuple> REACTION_TRIGGER_ENTER = PRadioButtonTuple::onTriggerEnter;
 	public static final String INPUT_IDENTIFIER_TRIGGER_ENTER = "triggerEnter";
 	
 	protected static boolean canTriggerEnter(PRadioButtonTuple self) {
-		return self.isEnabled() && self.getRadioButton() != null 
+		return self.isEnabled() && self.getRadioButton() != null
 				&& self.getRadioButton().getModel() != null;
 	}
 	
@@ -40,7 +40,7 @@ public class PRadioButtonTuple extends AbstractPInputLayoutOwner implements PCli
 	}
 	
 	protected final ObserverList<PClickObs> obsList
-		= PCompUtil.createDefaultObserverList();
+	= PCompUtil.createDefaultObserverList();
 	protected final PClickObs radBtnObs = (btn) -> onRadioBtnClick();
 	private PGlobalEventProvider globEvProv;
 	
@@ -49,15 +49,19 @@ public class PRadioButtonTuple extends AbstractPInputLayoutOwner implements PCli
 		setLayout(new PTupleLayout(this));
 		getLayoutInternal().addChild(new PRadioButton(), Constraint.FIRST);
 		addObs(new PMouseObs() {
-			public void onButtonTriggered(PMouse mouse, MouseButton btn) {
+			@Override
+			public void onButtonTriggered(PMouse mouse, MouseButton btn, int clickCount) {
 				PRadioButtonTuple.this.onMouseButtonTriggered(mouse, btn);
 			}
+			@Override
 			public void onButtonPressed(PMouse mouse, MouseButton btn, int clickCount) {
 				PRadioButtonTuple.this.onMouseButtonPressed(mouse, btn);
 			}
+			@Override
 			public void onButtonReleased(PMouse mouse, MouseButton btn, int clickCount) {
 				PRadioButtonTuple.this.onMouseButtonReleased(mouse, btn);
 			}
+			@Override
 			public void onMouseMoved(PMouse mouse) {
 				PRadioButtonTuple.this.onMouseMoved(mouse);
 			}
@@ -72,10 +76,12 @@ public class PRadioButtonTuple extends AbstractPInputLayoutOwner implements PCli
 		setSecondComponent(secondComponent);
 	}
 	
+	@Override
 	public void setGlobalEventProvider(PGlobalEventProvider provider) {
 		globEvProv = provider;
 	}
 	
+	@Override
 	public PGlobalEventProvider getGlobalEventProvider() {
 		return globEvProv;
 	}
@@ -108,6 +114,7 @@ public class PRadioButtonTuple extends AbstractPInputLayoutOwner implements PCli
 		return radBtn.isSelected();
 	}
 	
+	@Override
 	public void defaultRender(PRenderer renderer) {
 		if (hasFocus()) {
 			PBounds bnds = getBounds();
@@ -122,6 +129,7 @@ public class PRadioButtonTuple extends AbstractPInputLayoutOwner implements PCli
 		}
 	}
 	
+	@Override
 	public boolean defaultFillsAllPixels() {
 		return false;
 	}
@@ -132,7 +140,7 @@ public class PRadioButtonTuple extends AbstractPInputLayoutOwner implements PCli
 	
 	public void removeObs(PClickObs obs) {
 		obsList.remove(obs);
-	} 
+	}
 	
 	public void addObs(PRadioButtonModelObs obs) {
 		getRadioButton().addObs(obs);
@@ -170,14 +178,16 @@ public class PRadioButtonTuple extends AbstractPInputLayoutOwner implements PCli
 	protected void onMouseButtonReleased(PMouse mouse, MouseButton btn) {
 	}
 	
+	@Override
 	protected void onChildAdded(PComponent child, Object constraint) {
 		if (constraint == Constraint.FIRST) {
-			PRadioButton btn = ThrowException.ifTypeCastFails(child, 
+			PRadioButton btn = ThrowException.ifTypeCastFails(child,
 					PRadioButton.class, "!(child instanceof PRadioButton)");
 			btn.addObs(radBtnObs);
 		}
 	}
 	
+	@Override
 	protected void onChildRemoved(PComponent child, Object constraint) {
 		if (constraint == Constraint.FIRST) {
 			((PRadioButton) child).removeObs(radBtnObs);

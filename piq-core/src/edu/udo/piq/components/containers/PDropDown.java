@@ -34,11 +34,10 @@ import edu.udo.piq.util.PCompUtil;
 
 public class PDropDown extends AbstractPInputLayoutOwner {
 	
-	protected final ObserverList<PDropDownObs> obsList
-		= PCompUtil.createDefaultObserverList();
+	protected final ObserverList<PDropDownObs> obsList = PCompUtil.createDefaultObserverList();
 	protected final PMouseObs mouseObs = new PMouseObs() {
 		@Override
-		public void onButtonTriggered(PMouse mouse, MouseButton btn) {
+		public void onButtonTriggered(PMouse mouse, MouseButton btn, int clickCount) {
 			PDropDown.this.onMouseButtonTriggered(mouse, btn);
 		}
 		@Override
@@ -63,14 +62,14 @@ public class PDropDown extends AbstractPInputLayoutOwner {
 		dropDownContainer = new PDropDownContainer(this);
 		dropDownContainer.addObs(containerObs);
 		
-		setModel(PModelFactory.createModelFor(this, DefaultPButtonModel::new, PButtonModel.class));
-		
 		setLayout(new PTupleLayout(this));
 		getLayoutInternal().setOrientation(Orientation.LEFT_TO_RIGHT);
 		getLayoutInternal().setInsets(new ImmutablePInsets(4));
 		getLayoutInternal().setDistribution(Distribution.RESPECT_SECOND);
 		getLayoutInternal().setSecondaryDistribution(Distribution.RESPECT_NONE);
 		setButton(new PDropDownButton());
+		
+		setModel(PModelFactory.createModelFor(this, DefaultPButtonModel::new, PButtonModel.class));
 		
 		addObs(mouseObs);
 	}
@@ -213,21 +212,18 @@ public class PDropDown extends AbstractPInputLayoutOwner {
 			}
 		}
 		PFreeLayout overlayLayout = overlay.getLayout();
-		FreeConstraint constr = new FreeConstraint(ownX, ownY);//, ownW, ownH
+		FreeConstraint constr = new FreeConstraint(ownX, ownY);// , ownW, ownH
 		overlayLayout.updateConstraint(dropDownContainer, constr);
 	}
 	
 	protected void onMouseButtonTriggered(PMouse mouse, MouseButton btn) {
 		PButtonModel model = getModel();
-		if (btn == MouseButton.LEFT && model != null
-				&& !model.isPressed() && isMouseOverThisOrChild())
-		{
+		if (btn == MouseButton.LEFT && model != null && !model.isPressed() && isMouseOverThisOrChild()) {
 			model.setPressed(true);
 		}
 	}
 	
-	protected void onMouseButtonReleased(PMouse mouse, MouseButton btn) {
-	}
+	protected void onMouseButtonReleased(PMouse mouse, MouseButton btn) {}
 	
 	protected void onPreferredSizeChanged() {
 		if (isBodyVisible()) {
@@ -246,8 +242,7 @@ public class PDropDown extends AbstractPInputLayoutOwner {
 		fireReRenderEvent();
 	}
 	
-	protected void onButtonClick() {
-	}
+	protected void onButtonClick() {}
 	
 	public void addObs(PDropDownObs obs) {
 		obsList.add(obs);
@@ -276,7 +271,7 @@ public class PDropDown extends AbstractPInputLayoutOwner {
 			getLayout().setInsets(new ImmutablePInsets(1));
 			addObs(new PMouseObs() {
 				@Override
-				public void onButtonTriggered(PMouse mouse, MouseButton btn) {
+				public void onButtonTriggered(PMouse mouse, MouseButton btn, int clickCount) {
 					if (!dropDown.isMouseOverThisOrChild() && !isMouseOverThisOrChild()) {
 						dropDown.hideDropDown();
 					}
@@ -375,8 +370,7 @@ public class PDropDown extends AbstractPInputLayoutOwner {
 		public PSize getDefaultPreferredSize() {
 			PBounds bnds = getBounds();
 			if (bnds != null && (bnds.getWidth() > DEFAULT_PREF_SIZE.getWidth()
-					|| bnds.getHeight() > DEFAULT_PREF_SIZE.getHeight()))
-			{
+					|| bnds.getHeight() > DEFAULT_PREF_SIZE.getHeight())) {
 				if (prefSize == null) {
 					prefSize = new MutablePSize(DEFAULT_PREF_SIZE);
 				}

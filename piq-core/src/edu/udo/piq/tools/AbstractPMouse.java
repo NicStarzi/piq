@@ -8,7 +8,7 @@ import edu.udo.piq.util.PCompUtil;
 public abstract class AbstractPMouse implements PMouse {
 	
 	protected final ObserverList<PMouseObs> obsList
-		= PCompUtil.createDefaultObserverList();
+	= PCompUtil.createDefaultObserverList();
 	
 	@Override
 	public void addObs(PMouseObs obs) {
@@ -24,8 +24,8 @@ public abstract class AbstractPMouse implements PMouse {
 		obsList.fireEvent((obs) -> obs.onMouseMoved(this));
 	}
 	
-	protected void fireTriggerEvent(MouseButton btn) {
-		obsList.fireEvent((obs) -> obs.onButtonTriggered(this, btn));
+	protected void fireTriggerEvent(MouseButton btn, int clickCount) {
+		obsList.fireEvent((obs) -> obs.onButtonTriggered(this, btn, clickCount));
 	}
 	
 	protected void fireReleaseEvent(MouseButton btn, int clickCount) {

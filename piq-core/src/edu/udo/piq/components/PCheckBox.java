@@ -21,12 +21,12 @@ public class PCheckBox extends AbstractPComponent implements PClickable, PGlobal
 	private static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(12, 12);
 	
 	protected final ObserverList<PCheckBoxModelObs> modelObsList
-		= PCompUtil.createDefaultObserverList();
+	= PCompUtil.createDefaultObserverList();
 	protected final ObserverList<PClickObs> obsList
-		= PCompUtil.createDefaultObserverList();
+	= PCompUtil.createDefaultObserverList();
 	protected final PMouseObs mouseObs = new PMouseObs() {
 		@Override
-		public void onButtonTriggered(PMouse mouse, MouseButton btn) {
+		public void onButtonTriggered(PMouse mouse, MouseButton btn, int clickCount) {
 			PCheckBox.this.onMouseButtonTriggered(mouse, btn);
 		}
 	};

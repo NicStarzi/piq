@@ -103,7 +103,7 @@ public class GlfwPMouse extends AbstractPMouse implements PMouse {
 			} else {
 				btnClickCount[index] = 1;
 			}
-			fireTriggerEvent(btn);
+			fireTriggerEvent(btn, btnClickCount[index]);
 		}
 		firePressEvent(btn, btnClickCount[index]);
 	}

@@ -125,8 +125,8 @@ public class AbstractPComponent implements PComponent {
 			mouseObsList.fireEvent(obs -> obs.onMouseMoved(mouse));
 		}
 		@Override
-		public void onButtonTriggered(PMouse mouse, MouseButton btn) {
-			mouseObsList.fireEvent(obs -> obs.onButtonTriggered(mouse, btn));
+		public void onButtonTriggered(PMouse mouse, MouseButton btn, int clickCount) {
+			mouseObsList.fireEvent(obs -> obs.onButtonTriggered(mouse, btn, clickCount));
 		}
 		@Override
 		public void onButtonReleased(PMouse mouse, MouseButton btn, int clickCount) {
@@ -307,6 +307,9 @@ public class AbstractPComponent implements PComponent {
 		if (cachedRoot != null) {
 			cachedRoot.addObs(rootFocusObs);
 			cachedRoot.fireComponentAddedToGui(this);
+			if (needReLayout) {
+				cachedRoot.reLayOut(this);
+			}
 		}
 		fireRootChangedEvent(oldCachedRoot);
 		if (keyObsRegistered) {
@@ -401,31 +404,6 @@ public class AbstractPComponent implements PComponent {
 		bndsNoBorder.subtract(border.getInsets(this));
 		return bndsNoBorder;
 	}
-	
-//	@Override
-//	public void setDesign(PDesign design) {
-//		customDesign = design;
-//		fireReRenderEvent();
-//	}
-//
-//	/**
-//	 * If this component has a custom {@link PDesign} that design is returned.<br>
-//	 * If this component has a {@link PRoot} as returned by the {@link #getRoot()}
-//	 * method then the design is retrieved from the {@link PDesignSheet} that
-//	 * belongs to the root.<br>
-//	 * If this component has neither a custom design nor a root null is returned.<br>
-//	 */
-//	@Override
-//	public PDesign getDesign() {
-//		if (customDesign != null) {
-//			return customDesign;
-//		}
-//		PRoot root = getRoot();
-//		if (root == null) {
-//			return null;
-//		}
-//		return root.getDesignSheet().getDesignFor(this);
-//	}
 	
 	/**
 	 * Returns null.<br>
@@ -552,6 +530,10 @@ public class AbstractPComponent implements PComponent {
 		return mouseOverCursor;
 	}
 	
+	public void requestScroll(int offsetX, int offsetY) {
+		fireScrollRequestEvent(this, offsetX, offsetY);
+	}
+	
 	@Override
 	public void addObs(PComponentObs obs) throws NullPointerException {
 		compObsList.add(obs);
@@ -614,6 +596,10 @@ public class AbstractPComponent implements PComponent {
 	
 	protected void fireBoundsChangedEvent() {
 		compObsList.fireEvent(obs -> obs.onBoundsChanged(this));
+	}
+	
+	protected void fireScrollRequestEvent(PComponent component, int offsetX, int offsetY) {
+		compObsList.fireEvent(obs -> obs.onScrollRequest(component, offsetX, offsetY));
 	}
 	
 	protected void fireReRenderEvent() {

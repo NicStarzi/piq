@@ -24,13 +24,13 @@ import edu.udo.piq.util.PCompUtil;
 
 public class PCheckBoxTuple extends AbstractPInputLayoutOwner implements PClickable, PGlobalEventGenerator {
 	
-	public static final PKeyInput<PCheckBoxTuple> INPUT_TRIGGER_ENTER = 
+	public static final PKeyInput<PCheckBoxTuple> INPUT_TRIGGER_ENTER =
 			new DefaultPKeyInput<>(KeyInputType.TRIGGER, Key.ENTER, PCheckBoxTuple::canTriggerEnter);
 	public static final Consumer<PCheckBoxTuple> REACTION_TRIGGER_ENTER = PCheckBoxTuple::onTriggerEnter;
 	public static final String INPUT_IDENTIFIER_TRIGGER_ENTER = "triggerEnter";
 	
 	protected static boolean canTriggerEnter(PCheckBoxTuple self) {
-		return self.isEnabled() && self.getCheckBox() != null 
+		return self.isEnabled() && self.getCheckBox() != null
 				&& self.getCheckBox().getModel() != null;
 	}
 	
@@ -39,7 +39,7 @@ public class PCheckBoxTuple extends AbstractPInputLayoutOwner implements PClicka
 	}
 	
 	protected final ObserverList<PClickObs> obsList
-		= PCompUtil.createDefaultObserverList();
+	= PCompUtil.createDefaultObserverList();
 	private final PClickObs chkBxObs = (chkBx) -> PCheckBoxTuple.this.onCheckBoxClick();
 	private PGlobalEventProvider globEvProv;
 	
@@ -48,15 +48,19 @@ public class PCheckBoxTuple extends AbstractPInputLayoutOwner implements PClicka
 		setLayout(new PTupleLayout(this));
 		getLayoutInternal().addChild(new PCheckBox(), Constraint.FIRST);
 		addObs(new PMouseObs() {
-			public void onButtonTriggered(PMouse mouse, MouseButton btn) {
+			@Override
+			public void onButtonTriggered(PMouse mouse, MouseButton btn, int clickCount) {
 				PCheckBoxTuple.this.onMouseButtonTriggered(mouse, btn);
 			}
+			@Override
 			public void onButtonPressed(PMouse mouse, MouseButton btn, int clickCount) {
 				PCheckBoxTuple.this.onMouseButtonPressed(mouse, btn);
 			}
+			@Override
 			public void onButtonReleased(PMouse mouse, MouseButton btn, int clickCount) {
 				PCheckBoxTuple.this.onMouseButtonReleased(mouse, btn);
 			}
+			@Override
 			public void onMouseMoved(PMouse mouse) {
 				PCheckBoxTuple.this.onMouseMoved(mouse);
 			}
@@ -71,10 +75,12 @@ public class PCheckBoxTuple extends AbstractPInputLayoutOwner implements PClicka
 		setSecondComponent(secondComponent);
 	}
 	
+	@Override
 	public void setGlobalEventProvider(PGlobalEventProvider provider) {
 		globEvProv = provider;
 	}
 	
+	@Override
 	public PGlobalEventProvider getGlobalEventProvider() {
 		return globEvProv;
 	}
@@ -117,6 +123,7 @@ public class PCheckBoxTuple extends AbstractPInputLayoutOwner implements PClicka
 		return chkBx.isChecked();
 	}
 	
+	@Override
 	public void defaultRender(PRenderer renderer) {
 		if (hasFocus()) {
 			PBounds bnds = getBounds();
@@ -131,6 +138,7 @@ public class PCheckBoxTuple extends AbstractPInputLayoutOwner implements PClicka
 		}
 	}
 	
+	@Override
 	public boolean defaultFillsAllPixels() {
 		return false;
 	}
@@ -141,7 +149,7 @@ public class PCheckBoxTuple extends AbstractPInputLayoutOwner implements PClicka
 	
 	public void removeObs(PClickObs obs) {
 		obsList.remove(obs);
-	} 
+	}
 	
 	public void addObs(PCheckBoxModelObs obs) {
 		getCheckBox().addObs(obs);
@@ -173,6 +181,7 @@ public class PCheckBoxTuple extends AbstractPInputLayoutOwner implements PClicka
 	protected void onMouseButtonReleased(PMouse mouse, MouseButton btn) {
 	}
 	
+	@Override
 	protected void onChildAdded(PComponent child, Object constraint) {
 		if (constraint == Constraint.FIRST) {
 			if (!(child instanceof PCheckBox)) {
@@ -182,6 +191,7 @@ public class PCheckBoxTuple extends AbstractPInputLayoutOwner implements PClicka
 		}
 	}
 	
+	@Override
 	protected void onChildRemoved(PComponent child, Object constraint) {
 		if (constraint == Constraint.FIRST) {
 			((PCheckBox) child).removeObs(chkBxObs);

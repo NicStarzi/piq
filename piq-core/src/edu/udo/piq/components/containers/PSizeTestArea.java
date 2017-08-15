@@ -8,9 +8,9 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PMouse;
+import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
-import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.layouts.PFreeLayout;
 import edu.udo.piq.layouts.PFreeLayout.FreeConstraint;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
@@ -39,12 +39,15 @@ public class PSizeTestArea extends AbstractPLayoutOwner {
 		setLayout(new PFreeLayout(this));
 		
 		addObs(new PMouseObs() {
+			@Override
 			public void onMouseMoved(PMouse mouse) {
 				PSizeTestArea.this.onMouseMoved(mouse);
 			}
-			public void onButtonTriggered(PMouse mouse, MouseButton btn) {
+			@Override
+			public void onButtonTriggered(PMouse mouse, MouseButton btn, int clickCount) {
 				PSizeTestArea.this.onMouseTriggerd(mouse, btn);
 			}
+			@Override
 			public void onButtonReleased(PMouse mouse, MouseButton btn, int clickCount) {
 				PSizeTestArea.this.onMouseReleased(mouse, btn);
 			}
@@ -113,7 +116,7 @@ public class PSizeTestArea extends AbstractPLayoutOwner {
 	
 	protected FreeConstraint createContentConstraint() {
 		return new FreeConstraint(
-				getContentX(), getContentY(), 
+				getContentX(), getContentY(),
 				getContentWidth(), getContentHeight());
 	}
 	
@@ -121,8 +124,8 @@ public class PSizeTestArea extends AbstractPLayoutOwner {
 		if (getContent() == null) {
 			return;
 		}
-		getLayoutInternal().updateConstraint(getContent(), 
-				getContentX(), getContentY(), 
+		getLayoutInternal().updateConstraint(getContent(),
+				getContentX(), getContentY(),
 				getContentWidth(), getContentHeight());
 	}
 	
@@ -132,7 +135,7 @@ public class PSizeTestArea extends AbstractPLayoutOwner {
 		}
 		content = component;
 		if (getContent() != null) {
-			getLayoutInternal().addChild(getContent(), 
+			getLayoutInternal().addChild(getContent(),
 					createContentConstraint());
 		}
 	}
@@ -225,6 +228,7 @@ public class PSizeTestArea extends AbstractPLayoutOwner {
 		return backgroundColor;
 	}
 	
+	@Override
 	public void defaultRender(PRenderer renderer) {
 		PBounds bounds = getBounds();
 		int x = bounds.getX();
@@ -249,74 +253,87 @@ public class PSizeTestArea extends AbstractPLayoutOwner {
 		renderer.drawQuad(x, y, x + ANCHOR_WIDTH, y + ANCHOR_HEIGHT);
 	}
 	
+	@Override
 	public boolean defaultFillsAllPixels() {
 		return true;
 	}
 	
 	protected static enum Anchor {
 		TOP_LEFT {
+			@Override
 			public void setPosition(PSizeTestArea area, int x, int y, int w, int h) {
-				x = limit(x, 0, w - ANCHOR_WIDTH * 2);
-				y = limit(y, 0, h - ANCHOR_HEIGHT * 2);
+				x = Anchor.limit(x, 0, w - ANCHOR_WIDTH * 2);
+				y = Anchor.limit(y, 0, h - ANCHOR_HEIGHT * 2);
 				
 				area.setContentX(x + ANCHOR_WIDTH);
 				area.setContentY(y + ANCHOR_HEIGHT);
 			}
+			@Override
 			public int getX(PSizeTestArea area) {
 				return area.getContentX() - ANCHOR_WIDTH;
 			}
+			@Override
 			public int getY(PSizeTestArea area) {
 				return area.getContentY() - ANCHOR_HEIGHT;
 			}
 		},
 		TOP_RIGHT {
+			@Override
 			public void setPosition(PSizeTestArea area, int x, int y, int w, int h) {
-				x = limit(x, ANCHOR_WIDTH, w - ANCHOR_WIDTH);
-				y = limit(y, 0, h - ANCHOR_HEIGHT * 2);
+				x = Anchor.limit(x, ANCHOR_WIDTH, w - ANCHOR_WIDTH);
+				y = Anchor.limit(y, 0, h - ANCHOR_HEIGHT * 2);
 				
 				area.setContentFinalX(x - 1);
 				area.setContentY(y + ANCHOR_HEIGHT);
 			}
+			@Override
 			public int getX(PSizeTestArea area) {
 				return area.getContentFinalX() + 1;
 			}
+			@Override
 			public int getY(PSizeTestArea area) {
 				return area.getContentY() - ANCHOR_HEIGHT;
 			}
 		},
 		BOTTOM_LEFT {
+			@Override
 			public void setPosition(PSizeTestArea area, int x, int y, int w, int h) {
-				x = limit(x, 0, w - ANCHOR_WIDTH * 2);
-				y = limit(y, ANCHOR_HEIGHT, h - ANCHOR_HEIGHT);
+				x = Anchor.limit(x, 0, w - ANCHOR_WIDTH * 2);
+				y = Anchor.limit(y, ANCHOR_HEIGHT, h - ANCHOR_HEIGHT);
 				
 				area.setContentX(x + ANCHOR_WIDTH);
 				area.setContentFinalY(y - 1);
 			}
+			@Override
 			public int getX(PSizeTestArea area) {
 				return area.getContentX() - ANCHOR_WIDTH;
 			}
+			@Override
 			public int getY(PSizeTestArea area) {
 				return area.getContentFinalY() + 1;
 			}
 		},
 		BOTTOM_RIGHT {
+			@Override
 			public void setPosition(PSizeTestArea area, int x, int y, int w, int h) {
-				x = limit(x, ANCHOR_WIDTH, w - ANCHOR_WIDTH);
-				y = limit(y, ANCHOR_HEIGHT, h - ANCHOR_HEIGHT);
+				x = Anchor.limit(x, ANCHOR_WIDTH, w - ANCHOR_WIDTH);
+				y = Anchor.limit(y, ANCHOR_HEIGHT, h - ANCHOR_HEIGHT);
 				
 				area.setContentFinalX(x - 1);
 				area.setContentFinalY(y - 1);
 			}
+			@Override
 			public int getX(PSizeTestArea area) {
 				return area.getContentFinalX() + 1;
 			}
+			@Override
 			public int getY(PSizeTestArea area) {
 				return area.getContentFinalY() + 1;
 			}
 		},
 		;
-		public static final List<Anchor> ALL = 
-				Collections.unmodifiableList(Arrays.asList(values()));
+		public static final List<Anchor> ALL =
+				Collections.unmodifiableList(Arrays.asList(Anchor.values()));
 		
 		public abstract void setPosition(PSizeTestArea area, int x, int y, int w, int h);
 		

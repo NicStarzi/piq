@@ -75,8 +75,8 @@ public class PButton extends AbstractPInputLayoutOwner implements PClickable, PG
 	protected PButtonModel model;
 	protected PGlobalEventProvider globEvProv;
 	protected boolean ignoreClickOnChildren = false;
-	protected int repeatTimerInitialDelay;
-	protected int repeatTimerDelay;
+	protected double repeatTimerInitialDelay;
+	protected double repeatTimerDelay;
 	
 	public PButton(PComponent content) {
 		this();
@@ -100,7 +100,7 @@ public class PButton extends AbstractPInputLayoutOwner implements PClickable, PG
 				PButton.this.onMouseMoved(mouse);
 			}
 			@Override
-			public void onButtonTriggered(PMouse mouse, MouseButton btn) {
+			public void onButtonTriggered(PMouse mouse, MouseButton btn, int clickCount) {
 				PButton.this.onMouseButtonTriggered(mouse, btn);
 			}
 			@Override
@@ -153,7 +153,7 @@ public class PButton extends AbstractPInputLayoutOwner implements PClickable, PG
 		return ignoreClickOnChildren;
 	}
 	
-	public void setRepeatTimer(int initialDelay, int delayBetweenEvents) {
+	public void setRepeatTimer(double initialDelay, double delayBetweenEvents) {
 		repeatTimerInitialDelay = initialDelay;
 		repeatTimerDelay = delayBetweenEvents;
 		if (repeatTimer == null) {

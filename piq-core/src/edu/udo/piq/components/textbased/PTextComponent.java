@@ -1,7 +1,9 @@
 package edu.udo.piq.components.textbased;
 
+import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.components.collections.PListIndex;
+import edu.udo.piq.tools.MutablePBounds;
 
 public interface PTextComponent extends PComponent {
 	
@@ -16,5 +18,7 @@ public interface PTextComponent extends PComponent {
 	public boolean isEditable();
 	
 	public PListIndex getTextIndexAt(int x, int y);
+	
+	public PBounds getRenderPositionForIndex(MutablePBounds result, PListIndex index);
 	
 }

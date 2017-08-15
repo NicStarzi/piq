@@ -48,7 +48,7 @@ public interface PMouseObs {
 	 * @param mouse			the mouse which had its button triggered, this is never null
 	 * @param btn			the button that was triggered, this is never null
 	 */
-	public default void onButtonTriggered(PMouse mouse, MouseButton btn) {}
+	public default void onButtonTriggered(PMouse mouse, MouseButton btn, int clickCount) {}
 	
 	/**
 	 * This method is being called every time a mouse button has been

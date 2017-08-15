@@ -57,10 +57,8 @@ public abstract class AbstractPRoot implements PRoot {
 		return depth1 - depth2;
 	};
 	
-	protected final ObserverList<PGlobalEventObs> globalObsList
-			= PCompUtil.createDefaultObserverList();
-	protected final ObserverList<PRootObs> rootObsList
-		= PCompUtil.createDefaultObserverList();
+	protected final ObserverList<PGlobalEventObs> globalObsList = PCompUtil.createDefaultObserverList();
+	protected final ObserverList<PRootObs> rootObsList = PCompUtil.createDefaultObserverList();
 	protected final PRootLayout layout;
 	protected PStyleSheet styleSheet = new AbstractPStyleSheet();
 	protected PMouse mouse;
@@ -83,10 +81,8 @@ public abstract class AbstractPRoot implements PRoot {
 			reLayOut(child);
 		}
 	};
-	protected final ObserverList<PComponentObs> compObsList
-		= PCompUtil.createDefaultObserverList();
-	protected final ObserverList<PFocusObs> focusObsList
-		= PCompUtil.createDefaultObserverList();
+	protected final ObserverList<PComponentObs> compObsList = PCompUtil.createDefaultObserverList();
+	protected final ObserverList<PFocusObs> focusObsList = PCompUtil.createDefaultObserverList();
 	protected final Set<PTimer> timerSet = new HashSet<>();
 	protected final List<Runnable> timerSetWriteBuffer = new ArrayList<>();
 	protected Set<PComponent> reLayOutCompsFront = new TreeSet<>(COMPONENT_DEPTH_COMPARATOR);
@@ -97,6 +93,8 @@ public abstract class AbstractPRoot implements PRoot {
 	protected String id;
 	protected boolean needReLayout = true;
 	protected boolean timerIterationInProgress;
+	
+	protected static boolean clipChildrenAtParentsBorder = true;
 	
 	public AbstractPRoot() {
 		layout = new PRootLayout(this);
@@ -148,14 +146,14 @@ public abstract class AbstractPRoot implements PRoot {
 	protected void reLayOutAll(int maxIterationCount) {
 		int count = 0;
 		while (!reLayOutCompsFront.isEmpty() && count++ < maxIterationCount) {
-//			System.out.println();
-//			System.out.println("reLayOutAll");
+			//			System.out.println();
+			//			System.out.println("reLayOutAll");
 			
 			Set<PComponent> temp = reLayOutCompsBack;
 			reLayOutCompsBack = reLayOutCompsFront;
 			reLayOutCompsFront = temp;
 			for (PComponent comp : reLayOutCompsBack) {
-//				System.out.println("LayOut="+comp);
+				//				System.out.println("LayOut="+comp);
 				if (comp.getRoot() == this) {
 					comp.reLayOut();
 				}
@@ -174,21 +172,16 @@ public abstract class AbstractPRoot implements PRoot {
 		reRenderSet.add(component);
 	}
 	
-	protected void defaultRootRender(PRenderer renderer,
-			int rootClipX, int rootClipY, int rootClipFx, int rootClipFy)
-	{
-//		System.out.println("### defaultRootRender ###");
-		Deque<RenderStackInfo> renderStack = AbstractPRoot.createRenderStack(this,
-				reRenderSet, rootClipX, rootClipY, rootClipFx, rootClipFy);
+	protected void defaultRootRender(PRenderer renderer, int rootClipX, int rootClipY, int rootClipFx, int rootClipFy) {
+		//		System.out.println("### defaultRootRender ###");
+		Deque<RenderStackInfo> renderStack = AbstractPRoot.createRenderStack(this, reRenderSet, rootClipX, rootClipY, rootClipFx, rootClipFy);
 		AbstractPRoot.defaultRootRender(this, renderer, renderStack);
 		reRenderSet.clear();
-//		System.out.println("#######");
-//		System.out.println();
+		//		System.out.println("#######");
+		//		System.out.println();
 	}
 	
-	public static void defaultRootRender(PRoot root, PRenderer renderer,
-			Deque<RenderStackInfo> renderStack)
-	{
+	public static void defaultRootRender(PRoot root, PRenderer renderer, Deque<RenderStackInfo> renderStack) {
 		while (!renderStack.isEmpty()) {
 			RenderStackInfo info = renderStack.pollLast();
 			PComponent comp = info.child;
@@ -200,20 +193,29 @@ public abstract class AbstractPRoot implements PRoot {
 			int clipFy = Math.min(compBounds.getFinalY(), info.clipFy);
 			int clipW = clipFx - clipX;
 			int clipH = clipFy - clipY;
-//			System.out.println("comp="+comp+", clipX="+clipX+", clipY="+clipY+", clipW="+clipW+", clipH="+clipH);
+			//			System.out.println("comp="+comp+", clipX="+clipX+", clipY="+clipY+", clipW="+clipW+", clipH="+clipH);
 			// Cull components with an empty clipping area
 			if (clipW < 0 || clipH < 0) {
-//				System.out.println("doNotRenderComp="+comp);
+				//				System.out.println("doNotRenderComp="+comp);
 				continue;
 			}
 			AbstractPRoot.renderComponent(renderer, comp, clipX, clipY, clipW, clipH);
 			
 			PReadOnlyLayout layout = comp.getLayout();
 			if (layout != null) {
+				if (clipChildrenAtParentsBorder && comp.getBorder() != null) {
+					PBounds compBoundsWithoutBorder = comp.getBoundsWithoutBorder();
+					clipX = Math.max(compBoundsWithoutBorder.getX(), info.clipX);
+					clipY = Math.max(compBoundsWithoutBorder.getY(), info.clipY);
+					clipFx = Math.min(compBoundsWithoutBorder.getFinalX(), info.clipFx);
+					clipFy = Math.min(compBoundsWithoutBorder.getFinalY(), info.clipFy);
+				}
 				for (PComponent child : layout.getChildren()) {
 					/*
-					 * We need to addLast to make sure children are rendered after their parents
-					 * and before any siblings of the parent will be rendered. (we call pollLast)
+					 * We need to addLast to make sure children are rendered
+					 * after their parents
+					 * and before any siblings of the parent will be rendered.
+					 * (we call pollLast)
 					 * Do _NOT_ change to addFirst!
 					 */
 					renderStack.addLast(new RenderStackInfo(child, clipX, clipY, clipFx, clipFy));
@@ -222,9 +224,7 @@ public abstract class AbstractPRoot implements PRoot {
 		}
 	}
 	
-	public static Deque<RenderStackInfo> createRenderStack(PRoot root, ReRenderSet reRenderSet,
-			int rootClipX, int rootClipY, int rootClipFx, int rootClipFy)
-	{
+	public static Deque<RenderStackInfo> createRenderStack(PRoot root, ReRenderSet reRenderSet, int rootClipX, int rootClipY, int rootClipFx, int rootClipFy) {
 		Deque<RenderStackInfo> stack = new ArrayDeque<>();
 		/*
 		 * If the root is to be rendered we will re-render everything.
@@ -232,7 +232,8 @@ public abstract class AbstractPRoot implements PRoot {
 		if (reRenderSet.containsRoot()) {
 			stack.addLast(new RenderStackInfo(root.getBody(), rootClipX, rootClipY, rootClipFx, rootClipFy));
 		} else {
-			/* Performance Improvement:
+			/*
+			 * Performance Improvement:
 			 * Only one PBounds object is created for all components to cut down
 			 * the total number of object creations.
 			 * The bounds are filled with PCompUtil.fillClippedBounds(...)
@@ -240,10 +241,12 @@ public abstract class AbstractPRoot implements PRoot {
 			MutablePBounds tmpBnds = new MutablePBounds();
 			
 			for (PComponent child : reRenderSet) {
-				// We check to see whether the component is still part of this GUI tree (might have been removed by now)
+				// We check to see whether the component is still part of this
+				// GUI tree (might have been removed by now)
 				if (child.getRoot() == root) {
 					PBounds clipBnds = PCompUtil.fillClippedBounds(tmpBnds, child);
-					// If the clipped bounds are null the component is completely
+					// If the clipped bounds are null the component is
+					// completely
 					// concealed and does not need to be rendered
 					if (clipBnds == null) {
 						continue;
@@ -252,12 +255,14 @@ public abstract class AbstractPRoot implements PRoot {
 					int clipY = clipBnds.getY();
 					int clipFx = clipBnds.getFinalX();
 					int clipFy = clipBnds.getFinalY();
-					// We do addFirst here for consistency with the while-loop in defaultRootRender
+					// We do addFirst here for consistency with the while-loop
+					// in defaultRootRender
 					stack.addFirst(new RenderStackInfo(child, clipX, clipY, clipFx, clipFy));
 				}
 			}
 		}
-		// The overlay must be rendered last whenever the rest of the GUI is rendered
+		// The overlay must be rendered last whenever the rest of the GUI is
+		// rendered
 		PRootOverlay overlay = root.getOverlay();
 		if (overlay != null) {
 			for (PComponent overlayComp : overlay.getChildren()) {
@@ -279,24 +284,23 @@ public abstract class AbstractPRoot implements PRoot {
 		PBorder border = comp.getBorder();
 		if (border != null) {
 			border.render(renderer, comp);
+			// the render method of border might have changed this state
+			renderer.setClipBounds(clipX, clipY, clipW, clipH);
+			renderer.setRenderMode(renderer.getRenderModeFill());
+			renderer.setColor1(1, 1, 1, 1);
 		}
-		// the render method of border might have changed this state
-		renderer.setClipBounds(clipX, clipY, clipW, clipH);
-		renderer.setRenderMode(renderer.getRenderModeFill());
-		renderer.setColor1(1, 1, 1, 1);
 		comp.render(renderer);
 	}
 	
 	public static class RenderStackInfo {
+		
 		public final PComponent child;
 		public final int clipX;
 		public final int clipY;
 		public final int clipFx;
 		public final int clipFy;
 		
-		public RenderStackInfo(PComponent child, int clipX,
-				int clipY, int clipFx, int clipFy)
-		{
+		public RenderStackInfo(PComponent child, int clipX, int clipY, int clipFx, int clipFy) {
 			this.child = child;
 			this.clipX = clipX;
 			this.clipY = clipY;
@@ -306,7 +310,21 @@ public abstract class AbstractPRoot implements PRoot {
 		
 		@Override
 		public String toString() {
-			return child.toString();
+			StringBuilder sb = new StringBuilder();
+			sb.append(getClass().getSimpleName());
+			sb.append("{child=");
+			sb.append(child);
+			sb.append(", parentClipX=");
+			sb.append(clipX);
+			sb.append(", parentClipY=");
+			sb.append(clipY);
+			sb.append(", parentClipFx=");
+			sb.append(clipFx);
+			sb.append(", parentClipFy=");
+			sb.append(clipFy);
+			sb.append("}");
+			return sb.toString();
+//			return child.toString();
 		}
 	}
 	
@@ -391,7 +409,7 @@ public abstract class AbstractPRoot implements PRoot {
 	@Override
 	public void registerTimer(PTimer timer) throws NullPointerException {
 		if (timer == null) {
-			throw new NullPointerException("timer="+timer);
+			throw new NullPointerException("timer=" + timer);
 		}
 		if (timerIterationInProgress) {
 			timerSetWriteBuffer.add(() -> timerSet.add(timer));
@@ -403,7 +421,7 @@ public abstract class AbstractPRoot implements PRoot {
 	@Override
 	public void unregisterTimer(PTimer timer) throws NullPointerException {
 		if (timer == null) {
-			throw new NullPointerException("timer="+timer);
+			throw new NullPointerException("timer=" + timer);
 		}
 		if (timerIterationInProgress) {
 			timerSetWriteBuffer.add(() -> timerSet.remove(timer));
@@ -472,19 +490,15 @@ public abstract class AbstractPRoot implements PRoot {
 	
 	protected void fireFocusGainedEvent(PComponent oldFocusOwner) {
 		PComponent newOwner = getFocusOwner();
-		focusObsList.fireEvent((obs) -> obs.onFocusGained(
-				oldFocusOwner, newOwner));
+		focusObsList.fireEvent((obs) -> obs.onFocusGained(oldFocusOwner, newOwner));
 	}
 	
 	protected void fireFocusLostEvent(PComponent oldFocusOwner) {
-		focusObsList.fireEvent((obs) -> obs.onFocusLost(
-				oldFocusOwner));
+		focusObsList.fireEvent((obs) -> obs.onFocusLost(oldFocusOwner));
 	}
 	
 	@Override
-	public void fireGlobalEvent(PComponent source, Object eventData)
-			throws NullPointerException
-	{
+	public void fireGlobalEvent(PComponent source, Object eventData) throws NullPointerException {
 		globalObsList.fireEvent((obs) -> obs.onGlobalEvent(source, eventData));
 	}
 	
@@ -510,22 +524,17 @@ public abstract class AbstractPRoot implements PRoot {
 	
 	@Override
 	public void fireComponentAddedToGui(PComponent addedComponent) {
-		rootObsList.fireEvent(obs ->
-			obs.onComponentAddedToGui(addedComponent));
+		rootObsList.fireEvent(obs -> obs.onComponentAddedToGui(addedComponent));
 	}
 	
 	@Override
-	public void fireComponentRemovedFromGui(PComponent parent,
-			PComponent removedComponent)
-	{
-		rootObsList.fireEvent(obs ->
-			obs.onComponentRemovedFromGui(parent, removedComponent));
+	public void fireComponentRemovedFromGui(PComponent parent, PComponent removedComponent) {
+		rootObsList.fireEvent(obs -> obs.onComponentRemovedFromGui(parent, removedComponent));
 	}
 	
 	@Override
 	public void fireStyleSheetChanged(PStyleSheet oldStyleSheet) {
-		rootObsList.fireEvent(obs ->
-			obs.onStyleSheetChanged(AbstractPRoot.this, oldStyleSheet));
+		rootObsList.fireEvent(obs -> obs.onStyleSheetChanged(AbstractPRoot.this, oldStyleSheet));
 	}
 	
 	/*
@@ -634,9 +643,7 @@ public abstract class AbstractPRoot implements PRoot {
 				return false;
 			}
 			FontInfo other = (FontInfo) obj;
-			return name.equals(other.name)
-					&& size == other.size
-					&& style == other.style;
+			return name.equals(other.name) && size == other.size && style == other.style;
 		}
 		
 		@Override

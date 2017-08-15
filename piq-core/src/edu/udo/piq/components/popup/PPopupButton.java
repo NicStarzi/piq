@@ -23,9 +23,9 @@ public class PPopupButton extends AbstractPLayoutOwner implements PPopupComponen
 	public static final PColor DEFAULT_HIGHLIGHT_COLOR = PColor.BLUE;
 	
 	protected final ObserverList<PClickObs> obsListClick
-			= PCompUtil.createDefaultObserverList();
+	= PCompUtil.createDefaultObserverList();
 	protected final ObserverList<PPopupComponentObs> obsListPopup
-			= PCompUtil.createDefaultObserverList();
+	= PCompUtil.createDefaultObserverList();
 	protected PGlobalEventProvider globEvProv;
 	protected boolean enabled = true;
 	protected boolean pressed;
@@ -56,7 +56,7 @@ public class PPopupButton extends AbstractPLayoutOwner implements PPopupComponen
 				PPopupButton.this.onMouseMoved(mouse);
 			}
 			@Override
-			public void onButtonTriggered(PMouse mouse, MouseButton btn) {
+			public void onButtonTriggered(PMouse mouse, MouseButton btn, int clickCount) {
 				PPopupButton.this.onMouseButtonTriggered(mouse, btn);
 			}
 			@Override

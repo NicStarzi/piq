@@ -85,6 +85,14 @@ public interface PMouse {
 	 */
 	public PComponent getComponentAtMouse();
 	
+	public default int getOffsetToComponentX(PComponent component) {
+		return getX() - component.getBounds().getX();
+	}
+	
+	public default int getOffsetToComponentY(PComponent component) {
+		return getY() - component.getBounds().getY();
+	}
+	
 //	/**
 //	 * Sets the cursor graphic that is displayed for the mouse.<br>
 //	 * If the cursor graphic can not be displayed because the implementation
@@ -179,7 +187,7 @@ public interface PMouse {
 		POPUP_TRIGGER,
 		;
 		public static final List<PMouse.MouseButton> ALL =
-				Collections.unmodifiableList(Arrays.asList(values()));
+				Collections.unmodifiableList(Arrays.asList(MouseButton.values()));
 		public static final int COUNT = ALL.size();
 		
 		public final int ID = ordinal();

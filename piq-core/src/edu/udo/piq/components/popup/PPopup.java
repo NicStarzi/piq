@@ -23,16 +23,17 @@ import edu.udo.piq.util.ThrowException;
 
 public class PPopup {
 	
-	public static final PPopupBorderProvider DEFAULT_BORDER_PROVIDER =
-			(comp) -> new PBevelBorder();
-	public static final PPopupBodyProvider DEFAULT_BODY_PROVIDER =
-			(comp) -> new PListPanel();
+	public static final PPopupBorderProvider DEFAULT_BORDER_PROVIDER
+		= (comp) -> new PBevelBorder();
+	
+	public static final PPopupBodyProvider DEFAULT_BODY_PROVIDER
+		= (comp) -> new PListPanel();
 	
 	protected final ObserverList<PPopupObs> obsList
 		= PCompUtil.createDefaultObserverList();
 	protected final PMouseObs mouseObs = new PMouseObs() {
 		@Override
-		public void onButtonTriggered(PMouse mouse, MouseButton btn) {
+		public void onButtonTriggered(PMouse mouse, MouseButton btn, int clickCount) {
 			PPopup.this.onMouseTrigger(mouse, btn);
 		}
 	};

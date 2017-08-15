@@ -47,9 +47,10 @@ public class PTimer {
 	/**
 	 * When {@link #timeCount} reaches this value the timer is expired
 	 */
-	protected int delayInMillis = 1;
+	protected double delayInMillis = 1;
 	/**
-	 * Starts at 0 and counts to {@link #delayInMillis} and then resets back to 0.
+	 * Starts at 0 and counts to {@link #delayInMillis} and then resets back to
+	 * 0.
 	 */
 	protected double timeCount;
 	/**
@@ -63,29 +64,36 @@ public class PTimer {
 	 */
 	protected boolean started;
 	/**
-	 * True if time should not be counted even if we are started and not disabled.
+	 * True if time should not be counted even if we are started and not
+	 * disabled.
 	 * A paused timer is not unregistered from the root, instead it will ignore
 	 * any calls to the {@link #tick(double)} method.
 	 */
 	protected boolean paused;
 	
 	/**
-	 * Creates a new, non-repeating timer with a delay of 1 millisecond that will
+	 * Creates a new, non-repeating timer with a delay of 1 millisecond that
+	 * will
 	 * trigger the code of <code>callback</code> when expired.<br>
 	 * Please note that a timer needs an owner in order to run. Without setting
 	 * its owner the timer will be disabled.<br>
-	 * @param callback		the user code that is to be executed when the timer expires, must not be null
+	 * 
+	 * @param callback the user code that is to be executed when the timer
+	 *            expires, must not be null
 	 */
 	public PTimer(PTimerCallback callback) {
 		this(null, callback);
 	}
 	
 	/**
-	 * Creates a new, non-repeating timer with a delay of 1 millisecond that will
+	 * Creates a new, non-repeating timer with a delay of 1 millisecond that
+	 * will
 	 * trigger the code of <code>callback</code> when expired.<br>
 	 * The timer will be owned by <code>owner</code>.
-	 * @param owner			the component that owns this timer or null
-	 * @param callback		the user code that is to be executed when the timer expires, must not be null
+	 * 
+	 * @param owner the component that owns this timer or null
+	 * @param callback the user code that is to be executed when the timer
+	 *            expires, must not be null
 	 */
 	public PTimer(PComponent owner, PTimerCallback callback) {
 		ThrowException.ifNull(callback, "callback");
@@ -94,12 +102,14 @@ public class PTimer {
 	}
 	
 	/**
-	 * Changes the owner of this timer. The owner can be set to null in which case
+	 * Changes the owner of this timer. The owner can be set to null in which
+	 * case
 	 * the timer will be disabled.<br>
 	 * If the timer is already started it will still be started without its time
 	 * being reset. If the new owner is null or not part of a GUI the timer will
 	 * be disabled.
-	 * @param component		the new owner of this timer or null
+	 * 
+	 * @param component the new owner of this timer or null
 	 */
 	public void setOwner(PComponent component) {
 		if (owner != component) {
@@ -117,7 +127,8 @@ public class PTimer {
 	/**
 	 * Returns the current owner of this timer. Might be null.<br>
 	 * If the owner of a timer is null the timer is disabled.<br>
-	 * @return			the owner of this timer or null
+	 * 
+	 * @return the owner of this timer or null
 	 */
 	public PComponent getOwner() {
 		return owner;
@@ -128,7 +139,8 @@ public class PTimer {
 	 * even if it is started.<br>
 	 * A timer is disabled if it has no owner or if the owner is not
 	 * part of a GUI.<br>
-	 * @return			true if this timer is disabled
+	 * 
+	 * @return true if this timer is disabled
 	 */
 	public boolean isDisabled() {
 		return getOwner() == null || getOwner().getRoot() == null;
@@ -138,7 +150,8 @@ public class PTimer {
 	 * Sets whether or not this timer should start again after expiring.<br>
 	 * Changing this value has no effect on whether or not the timer is
 	 * currently started or the delay until it expires.<br>
-	 * @param value		true if the timer should repeat
+	 * 
+	 * @param value true if the timer should repeat
 	 */
 	public void setRepeating(boolean value) {
 		repeating = value;
@@ -146,7 +159,8 @@ public class PTimer {
 	
 	/**
 	 * If the timer is repeating it will start again after it was expired.<br>
-	 * @return			true if the timer is repeating
+	 * 
+	 * @return true if the timer is repeating
 	 */
 	public boolean isRepeating() {
 		return repeating;
@@ -159,7 +173,8 @@ public class PTimer {
 	 * that a paused timer will resume counting from the delay it had before
 	 * being paused. A timer that is restarted after having been stopped
 	 * will be reset.<br>
-	 * @param value		true if the timer should be paused
+	 * 
+	 * @param value true if the timer should be paused
 	 */
 	public void setPaused(boolean value) {
 		paused = value & started;
@@ -168,7 +183,8 @@ public class PTimer {
 	/**
 	 * If the timer is paused it will not continue counting time but will
 	 * remember the time it has already counted before being paused.<br>
-	 * @return			true if the timer is paused
+	 * 
+	 * @return true if the timer is paused
 	 */
 	public boolean isPaused() {
 		return paused;
@@ -179,9 +195,10 @@ public class PTimer {
 	 * The delay of a timer is the time it takes the timer to expire after
 	 * being started.<br>
 	 * The delay must be a positive integer.<br>
-	 * @param value		a positive integer
+	 * 
+	 * @param value a positive integer
 	 */
-	public void setDelay(int value) {
+	public void setDelay(double value) {
 		ThrowException.ifLessOrEqual(0, value, "delay must be a positive number");
 		delayInMillis = value;
 	}
@@ -191,9 +208,10 @@ public class PTimer {
 	 * The delay of a timer is the time it takes the timer to expire after
 	 * being started.<br>
 	 * The delay is always a positive integer.<br>
-	 * @return			a positive integer
+	 * 
+	 * @return a positive integer
 	 */
-	public int getDelay() {
+	public double getDelay() {
 		return delayInMillis;
 	}
 	
@@ -215,6 +233,7 @@ public class PTimer {
 	 * {@link PTimerCallback}.<br>
 	 * <br>
 	 * If this timer is already started this method call will be ignored.<br>
+	 * 
 	 * @see #stop()
 	 * @see #restart()
 	 * @see #isPaused()
@@ -234,6 +253,7 @@ public class PTimer {
 	 * Stops the timer if it was started before.<br>
 	 * <br>
 	 * If this timer was not started this method call will be ignored.<br>
+	 * 
 	 * @see #start()
 	 * @see #restart()
 	 * @see #isPaused()
@@ -253,6 +273,7 @@ public class PTimer {
 	 * Restarts the timer if it was started before.<br>
 	 * <br>
 	 * If this timer was not started this method call will be ignored.<br>
+	 * 
 	 * @see #start()
 	 * @see #stop()
 	 * @see #isPaused()
@@ -269,7 +290,8 @@ public class PTimer {
 	 * A started timer is not the same as a ticking timer.<br>
 	 * If you need to know whether this timer is currently
 	 * ticking call the {@link #isTicking()} method.<br>
-	 * @return			true if this timer was started and not stopped since
+	 * 
+	 * @return true if this timer was started and not stopped since
 	 * @see #isPaused()
 	 * @see #isTicking()
 	 */
@@ -283,7 +305,8 @@ public class PTimer {
 	 * (And if it is repeating it will start again)<br>
 	 * A timer is ticking only if it is started, is not paused and
 	 * is not disabled.<br>
-	 * @return			true if this timer is started, is not paused and is not disabled
+	 * 
+	 * @return true if this timer is started, is not paused and is not disabled
 	 * @see #isStarted()
 	 * @see #isPaused()
 	 * @see #isDisabled()
@@ -304,6 +327,7 @@ public class PTimer {
 	 * will expire and run the {@link PTimerCallback#onTimerEvent(double)}
 	 * method of its {@link PTimerCallback}. If the timer is repeating
 	 * it will then start counting time again.<br>
+	 * 
 	 * @param deltaMilliSc
 	 */
 	public void tick(double deltaMilliSc) {
@@ -311,6 +335,7 @@ public class PTimer {
 		if (isStarted() && !isPaused()) {
 			timeCount += deltaMilliSc;
 			
+//			System.out.println(timeCount + " > " + delayInMillis);
 			if (timeCount >= delayInMillis) {
 				if (isRepeating()) {
 					timeCount = timeCount % delayInMillis;
@@ -350,10 +375,10 @@ public class PTimer {
 			}
 		} else {
 			/*
-			 * We are not started	=> we were not registered
-			 * 						=> we don't need to be unregistered
-			 * 						=> we don't need to be registered
-			 * 						=> we don't need to remember the newRoot
+			 * We are not started => we were not registered
+			 * => we don't need to be unregistered
+			 * => we don't need to be registered
+			 * => we don't need to remember the newRoot
 			 */
 			currentRoot = null;
 		}

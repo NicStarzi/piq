@@ -96,7 +96,7 @@ public class PTable extends AbstractPInputLayoutOwner
 		
 		addObs(new PMouseObs() {
 			@Override
-			public void onButtonTriggered(PMouse mouse, MouseButton btn) {
+			public void onButtonTriggered(PMouse mouse, MouseButton btn, int clickCount) {
 				PTable.this.onMouseButtonTriggred(mouse, btn);
 			}
 			@Override
@@ -542,5 +542,5 @@ public class PTable extends AbstractPInputLayoutOwner
 			getSelection().removeObs(obs);
 		}
 	}
-
+	
 }

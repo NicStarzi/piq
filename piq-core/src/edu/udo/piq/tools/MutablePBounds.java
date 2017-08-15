@@ -31,6 +31,13 @@ public class MutablePBounds extends AbstractPBounds implements PBounds {
 		h = height;
 	}
 	
+	public void set(int x, int y, int width, int height) {
+		setX(x);
+		setY(y);
+		setWidth(width);
+		setHeight(height);
+	}
+	
 	public void set(PBounds other) {
 		setX(other.getX());
 		setY(other.getY());

@@ -5,8 +5,8 @@ import java.util.List;
 
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PMouse;
-import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PMouse.MouseButton;
+import edu.udo.piq.PMouseObs;
 import edu.udo.piq.components.defaults.DefaultPTabBackground;
 import edu.udo.piq.components.defaults.DefaultPTabFactory;
 import edu.udo.piq.layouts.PTabPanelLayout;
@@ -24,7 +24,8 @@ public class PTabPanel extends AbstractPLayoutOwner {
 		getLayoutInternal().setTabBackground(new DefaultPTabBackground());
 		
 		addObs(new PMouseObs() {
-			public void onButtonTriggered(PMouse mouse, MouseButton btn) {
+			@Override
+			public void onButtonTriggered(PMouse mouse, MouseButton btn, int clickCount) {
 				if (btn == MouseButton.LEFT && isMouseOverThisOrChild()) {
 					int mx = mouse.getX();
 					int my = mouse.getY();

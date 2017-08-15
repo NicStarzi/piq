@@ -1,10 +1,14 @@
 package edu.udo.piq.tools;
 
+import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PFontResource;
 import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PRoot;
+import edu.udo.piq.components.collections.PListIndex;
+import edu.udo.piq.components.collections.PModelIndex;
+import edu.udo.piq.components.collections.PSelection;
 import edu.udo.piq.components.collections.PSelectionObs;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.components.defaults.DefaultPTextSelection;
@@ -20,8 +24,7 @@ import edu.udo.piq.util.PCompUtil;
 
 public abstract class AbstractPTextComponent
 	extends AbstractPInputComponent
-	implements PTextComponent
-{
+	implements PTextComponent {
 	
 	protected static final String DEFAULT_FONT_NAME = "Arial";
 	protected static final int DEFAULT_FONT_SIZE = 14;
@@ -35,6 +38,13 @@ public abstract class AbstractPTextComponent
 	protected final ObserverList<PSelectionObs> selectionObsList
 		= PCompUtil.createDefaultObserverList();
 	protected final PTextModelObs modelObs = (mdl) -> AbstractPTextComponent.this.onTextChanged();
+	protected final PSelectionObs selectionObs = new PSelectionObs() {
+		@Override
+		public void onLastSelectedChanged(PSelection selection, PModelIndex prevLastSelected, PModelIndex newLastSelected) {
+			AbstractPTextComponent.this.onLastSelectedChanged(newLastSelected);
+		}
+	};
+	protected MutablePBounds scrollRequestBounds;
 	protected PFontResource cachedFont;
 	protected PTextInput txtInput;
 	protected PTextSelector txtSel;
@@ -58,6 +68,21 @@ public abstract class AbstractPTextComponent
 		}
 		firePreferredSizeChangedEvent();
 		fireReRenderEvent();
+	}
+	
+	protected void onLastSelectedChanged(PModelIndex lastSelected) {
+		if (lastSelected == null) {
+			return;
+		}
+		PListIndex index = (PListIndex) lastSelected;
+		if (scrollRequestBounds == null) {
+			scrollRequestBounds = new MutablePBounds();
+		}
+		PBounds renderBounds = getRenderPositionForIndex(scrollRequestBounds, index);
+		PBounds ownBounds = getBoundsWithoutBorder();
+		int scrollOffsetX = renderBounds.getFinalX() - ownBounds.getX();
+		int scrollOffsetY = renderBounds.getFinalY() - ownBounds.getY();
+		requestScroll(scrollOffsetX, scrollOffsetY);
 	}
 	
 	protected void setTextInput(PTextInput textInput) {
@@ -123,12 +148,18 @@ public abstract class AbstractPTextComponent
 	}
 	
 	protected void setSelection(PTextSelection selection) {
-		if (getSelection() != null && getCaretRenderTimer() != null) {
-			getSelection().removeObs(getCaretRenderTimer().getSelectionObs());
+		if (getSelection() != null) {
+			if (getCaretRenderTimer() != null) {
+				getSelection().removeObs(getCaretRenderTimer().getSelectionObs());
+			}
+			getSelection().removeObs(selectionObs);
 		}
 		this.selection = selection;
-		if (getSelection() != null && getCaretRenderTimer() != null) {
-			getSelection().addObs(getCaretRenderTimer().getSelectionObs());
+		if (getSelection() != null) {
+			if (getCaretRenderTimer() != null) {
+				getSelection().addObs(getCaretRenderTimer().getSelectionObs());
+			}
+			getSelection().addObs(selectionObs);
 		}
 		fireReRenderEvent();
 	}
@@ -214,8 +245,7 @@ public abstract class AbstractPTextComponent
 		if (cachedFont != null && root.isFontSupported(cachedFont)) {
 			return cachedFont;
 		}
-		cachedFont = root.fetchFontResource(DEFAULT_FONT_NAME,
-				DEFAULT_FONT_SIZE, DEFAULT_FONT_STYLE);
+		cachedFont = root.fetchFontResource(DEFAULT_FONT_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_STYLE);
 		return cachedFont;
 	}
 	

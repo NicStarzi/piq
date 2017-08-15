@@ -13,11 +13,14 @@ import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.collections.PListIndex;
 import edu.udo.piq.tools.AbstractPTextComponent;
+import edu.udo.piq.tools.ImmutablePBounds;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.tools.ImmutablePSize;
+import edu.udo.piq.tools.MutablePBounds;
 import edu.udo.piq.tools.MutablePSize;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.ThrowException;
 
 public class PTextField extends AbstractPTextComponent {
 	
@@ -26,13 +29,14 @@ public class PTextField extends AbstractPTextComponent {
 	protected static final PColor DISABLED_BACKGROUND_COLOR = PColor.GREY75;
 	protected static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(200, 24);
 	
-	protected final ObserverList<PTextFieldObs> obsList = 
+	protected final ObserverList<PTextFieldObs> obsList =
 			PCompUtil.createDefaultObserverList();
 	protected final MutablePSize prefSize = new MutablePSize(200, 22);
 	protected PTextIndexTableSingleLine idxTab = new PTextIndexTableSingleLine();
 	protected PInsets insets;
 	protected boolean contentsWereChanged = false;
 	protected int columns = -1;
+	protected int caretWidth = 2;
 	
 	public PTextField(PTextModel model) {
 		this();
@@ -49,20 +53,24 @@ public class PTextField extends AbstractPTextComponent {
 		setInsets(DEFAULT_INSETS);
 		
 		setTextInput(new PTextInput(this) {
+			@Override
 			protected void keyNewLine(PKeyboard kb) {
 				fireConfirmEvent();
 			}
 		});
 		addObs(new PFocusObs() {
+			@Override
 			public void onFocusGained(PComponent oldOwner, PComponent newOwner) {
 				PTextField.this.onFocusGained();
 			}
+			@Override
 			public void onFocusLost(PComponent oldOwner) {
 				PTextField.this.onFocusLost();
 			}
 		});
 	}
 	
+	@Override
 	public void setModel(PTextModel model) {
 		super.setModel(model);
 		if (idxTab != null) {
@@ -70,10 +78,12 @@ public class PTextField extends AbstractPTextComponent {
 		}
 	}
 	
+	@Override
 	public void setSelection(PTextSelection textSelection) {
 		super.setSelection(textSelection);
 	}
 	
+	@Override
 	public void setEditable(boolean value) {
 		super.setEditable(value);
 	}
@@ -89,6 +99,7 @@ public class PTextField extends AbstractPTextComponent {
 		return columns;
 	}
 	
+	@Override
 	public PTextIndexTable getIndexTable() {
 		return idxTab;
 	}
@@ -101,6 +112,7 @@ public class PTextField extends AbstractPTextComponent {
 		fireConfirmEvent();
 	}
 	
+	@Override
 	protected void onTextChanged() {
 		contentsWereChanged = true;
 		idxTab.setLastIndexInRow(getText().length());
@@ -117,6 +129,48 @@ public class PTextField extends AbstractPTextComponent {
 		return insets;
 	}
 	
+	@Override
+	public PBounds getRenderPositionForIndex(MutablePBounds result, PListIndex index) {
+		ThrowException.ifNull(index, "index == null");
+		int idx = index.getIndexValue();
+		PFontResource font = getDefaultFont();
+		if (font == null) {
+			return null;
+		}
+		PBounds bounds = getBounds();
+		if (bounds == null) {
+			return null;
+		}
+		int x = bounds.getX();
+		int y = bounds.getY();
+		String text = getText();
+		if (text == null) {
+			return null;
+		}
+		ThrowException.ifNotWithin(0, text.length(), idx, "index < 0 || index >= getText().length()");
+		String textBefore = text.substring(0, idx);
+		PSize textBeforeSize = font.getSize(textBefore);
+		int drawX, drawY, drawW, drawH;
+		int lineH = textBeforeSize.getHeight();
+		if (idx == text.length()) {
+			drawW = 1;
+		} else {
+			String textAt = text.substring(idx, idx+1);
+			PSize textAtSize = font.getSize(textAt);
+			lineH = Math.max(textAtSize.getHeight(), lineH);
+			drawW = textAtSize.getWidth();
+		}
+		drawX = x + textBeforeSize.getWidth();
+		drawY = y + bounds.getHeight() / 2 - lineH / 2;
+		drawH = lineH;
+		if (result == null) {
+			return new ImmutablePBounds(drawX, drawY, drawW, drawH);
+		}
+		result.set(drawX, drawY, drawW, drawH);
+		return result;
+	}
+	
+	@Override
 	public PListIndex getTextIndexAt(int x, int y) {
 		PFontResource font = getDefaultFont();
 		// No font => no selection
@@ -136,8 +190,8 @@ public class PTextField extends AbstractPTextComponent {
 		if (x < 0 || y < 0) {
 			return new PListIndex(0);
 		}
-		if (x > bounds.getFinalX() - insets.getFromRight() 
-				|| y > bounds.getFinalY() - insets.getFromBottom()) 
+		if (x > bounds.getFinalX() - insets.getFromRight()
+				|| y > bounds.getFinalY() - insets.getFromBottom())
 		{
 			return new PListIndex(text.length());
 		}
@@ -154,6 +208,7 @@ public class PTextField extends AbstractPTextComponent {
 		return new PListIndex(text.length());
 	}
 	
+	@Override
 	public void defaultRender(PRenderer renderer) {
 		PBounds bnds = getBounds();
 		int x = bnds.getX();
@@ -199,7 +254,7 @@ public class PTextField extends AbstractPTextComponent {
 				int minH = font.getSize(" ").getHeight();
 				int drawY = (txtY + txtH / 2) - minH / 2;
 				renderer.setColor(getDefaultSelectionBackgroundColor());
-				renderer.drawQuad(txtX, drawY, txtX + 2, drawY + minH);
+				renderer.drawQuad(txtX, drawY, txtX + caretWidth, drawY + minH);
 			}
 			return;
 		}
@@ -228,12 +283,12 @@ public class PTextField extends AbstractPTextComponent {
 					PSize charSize = font.getSize(Character.toString(c));
 					int minH = charSize.getHeight();
 					int drawY = (txtY + txtH / 2) - minH / 2;
-					renderer.drawQuad(txtX - 1, drawY, txtX + 1, drawY + minH);
+					renderer.drawQuad(txtX - caretWidth / 2, drawY, txtX + caretWidth / 2, drawY + minH);
 				}
 				renderText(renderer, font, txtX, txtY, txtH, afterSelected, textColor, null);
 			} else {
 				String selected = text.substring(selectedFrom, selectedTo);
-				txtX = renderText(renderer, font, txtX, txtY, txtH, selected, 
+				txtX = renderText(renderer, font, txtX, txtY, txtH, selected,
 						getDefaultTextSelectedColor(), getDefaultSelectionBackgroundColor());
 				
 				renderText(renderer, font, txtX, txtY, txtH, afterSelected, textColor, null);
@@ -243,9 +298,9 @@ public class PTextField extends AbstractPTextComponent {
 		}
 	}
 	
-	private int renderText(PRenderer renderer, PFontResource font, 
-			int drawX, int drawY, int h, String text, 
-			PColor txtColor, PColor bgColor) 
+	private int renderText(PRenderer renderer, PFontResource font,
+			int drawX, int drawY, int h, String text,
+			PColor txtColor, PColor bgColor)
 	{
 		renderer.setColor(txtColor);
 		PSize lineSize = font.getSize(text);
@@ -261,6 +316,7 @@ public class PTextField extends AbstractPTextComponent {
 		return drawX + txtW;
 	}
 	
+	@Override
 	public PSize getDefaultPreferredSize() {
 		PFontResource font = getDefaultFont();
 		if (font == null) {
@@ -279,15 +335,17 @@ public class PTextField extends AbstractPTextComponent {
 			return DEFAULT_PREFERRED_SIZE;
 		}
 		PSize textSize = font.getSize(text);
-		prefSize.setWidth(textSize.getWidth() + insets.getHorizontal());
+		prefSize.setWidth(textSize.getWidth() + insets.getHorizontal() + caretWidth);
 		prefSize.setHeight(textSize.getHeight() + insets.getVertical());
 		return prefSize;
 	}
 	
+	@Override
 	public boolean defaultFillsAllPixels() {
 		return true;
 	}
 	
+	@Override
 	public PCursor getMouseOverCursor(PMouse mouse) {
 		return mouse.getCursorText();
 	}

@@ -24,8 +24,8 @@ public class DelegatePMouse implements PMouse {
 			obsList.fireEvent((obs) -> obs.onButtonPressed(DelegatePMouse.this, btn, clickCount));
 		}
 		@Override
-		public void onButtonTriggered(PMouse mouse, MouseButton btn) {
-			obsList.fireEvent((obs) -> obs.onButtonTriggered(DelegatePMouse.this, btn));
+		public void onButtonTriggered(PMouse mouse, MouseButton btn, int clickCount) {
+			obsList.fireEvent((obs) -> obs.onButtonTriggered(DelegatePMouse.this, btn, clickCount));
 		}
 		@Override
 		public void onButtonReleased(PMouse mouse, MouseButton btn, int clickCount) {

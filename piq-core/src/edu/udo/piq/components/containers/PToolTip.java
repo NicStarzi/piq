@@ -59,7 +59,7 @@ public class PToolTip extends AbstractPFloatingPanel {
 		showTimer.setDelay(value);
 	}
 	
-	public int getShowDelay() {
+	public double getShowDelay() {
 		return showTimer.getDelay();
 	}
 	

@@ -20,15 +20,19 @@ public class PPopupSubMenu extends PPopupLabel implements PPopupComponent {
 	public static final PColor DISABLED_TEXT_COLOR = PColor.GREY50;
 	
 	protected final PMouseObs mouseObs = new PMouseObs() {
+		@Override
 		public void onMouseMoved(PMouse mouse) {
 			PPopupSubMenu.this.onMouseMoved(mouse);
 		}
-		public void onButtonTriggered(PMouse mouse, MouseButton btn) {
+		@Override
+		public void onButtonTriggered(PMouse mouse, MouseButton btn, int clickCount) {
 			PPopupSubMenu.this.onMouseButtonTriggered(mouse, btn);
 		}
+		@Override
 		public void onButtonPressed(PMouse mouse, MouseButton btn, int clickCount) {
 			PPopupSubMenu.this.onMouseButtonPressed(mouse, btn);
 		}
+		@Override
 		public void onButtonReleased(PMouse mouse, MouseButton btn, int clickCount) {
 			PPopupSubMenu.this.onMouseButtonReleased(mouse, btn);
 		}
@@ -55,6 +59,7 @@ public class PPopupSubMenu extends PPopupLabel implements PPopupComponent {
 		getHoverTimer().setRepeating(false);
 	}
 	
+	@Override
 	public void setEnabled(boolean value) {
 		enabled = value;
 		if (!isEnabled()) {
@@ -63,6 +68,7 @@ public class PPopupSubMenu extends PPopupLabel implements PPopupComponent {
 		fireReRenderEvent();
 	}
 	
+	@Override
 	public boolean isEnabled() {
 		return enabled;
 	}
@@ -71,14 +77,16 @@ public class PPopupSubMenu extends PPopupLabel implements PPopupComponent {
 		return subMenuShown;
 	}
 	
+	@Override
 	public PSize getDefaultPreferredSize() {
 		PSize superSize = super.getDefaultPreferredSize();
-		prefSize.setWidth(superSize.getWidth() + 
+		prefSize.setWidth(superSize.getWidth() +
 				DEFAULT_TEXT_TRIANGLE_GAP + DEFAULT_TRIANGLE_WIDTH);
 		prefSize.setHeight(Math.max(superSize.getHeight(), DEFAULT_TRIANGLE_HEIGHT));
 		return prefSize;
 	}
 	
+	@Override
 	public void setHighlighted(boolean value) {
 		boolean prevIsHighlighted = isHighlighted();
 		super.setHighlighted(value);
@@ -99,10 +107,12 @@ public class PPopupSubMenu extends PPopupLabel implements PPopupComponent {
 		}
 	}
 	
+	@Override
 	public boolean isHighlighted() {
 		return isEnabled() && (isSubMenuShown() || super.isHighlighted());
 	}
 	
+	@Override
 	public void defaultRender(PRenderer renderer) {
 		super.defaultRender(renderer);
 		
@@ -114,11 +124,12 @@ public class PPopupSubMenu extends PPopupLabel implements PPopupComponent {
 		
 		renderer.setRenderMode(renderer.getRenderModeFill());
 		renderer.setColor(getDefaultTextColor());
-		renderer.drawTriangle(triangleX, triangleY, 
-				triangleX, triangleFy, 
+		renderer.drawTriangle(triangleX, triangleY,
+				triangleX, triangleFy,
 				triangleFx, triangleY + DEFAULT_TRIANGLE_HEIGHT / 2);
 	}
 	
+	@Override
 	protected PColor getDefaultTextColor() {
 		if (isEnabled()) {
 			return super.getDefaultTextColor();

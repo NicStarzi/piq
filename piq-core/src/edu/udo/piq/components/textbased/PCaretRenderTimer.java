@@ -11,33 +11,34 @@ import edu.udo.piq.util.PCompUtil;
 
 public class PCaretRenderTimer {
 	
-	public static final int DEFAULT_FOCUS_RENDER_TOGGLE_TIMER_DELAY = 6;
+	public static final double DEFAULT_FOCUS_RENDER_TOGGLE_TIMER_DELAY = 666;
 	
 	protected final PSelectionObs selectionObs = new PSelectionObs() {
+		@Override
 		public void onSelectionAdded(PSelection selection, PModelIndex index) {
 			PCaretRenderTimer.this.onSelectionAdded(selection, index);
 		}
+		@Override
 		public void onSelectionRemoved(PSelection selection, PModelIndex index) {
 			PCaretRenderTimer.this.onSelectionRemoved(selection, index);
 		}
-		public void onLastSelectedChanged(PSelection selection, 
-				PModelIndex prevLastSelected, PModelIndex newLastSelected) 
-		{
-			PCaretRenderTimer.this.onLastSelectedChanged(selection, 
-					prevLastSelected, newLastSelected);
+		@Override
+		public void onLastSelectedChanged(PSelection selection, PModelIndex prevLastSelected, PModelIndex newLastSelected) {
+			PCaretRenderTimer.this.onLastSelectedChanged(selection, prevLastSelected, newLastSelected);
 		}
 	};
 	protected final PFocusObs focusObs = new PFocusObs() {
+		@Override
 		public void onFocusLost(PComponent oldOwner) {
 			PCaretRenderTimer.this.onFocusLost();
 		}
+		@Override
 		public void onFocusGained(PComponent oldOwner, PComponent newOwner) {
 			PCaretRenderTimer.this.onFocusGained();
 		}
 	};
 	protected final PTextComponent owner;
 	protected final PTimer focusToggleTimer;
-	protected int focusRenderToggleTimer;
 	protected boolean focusRenderToggle;
 	
 	public PCaretRenderTimer(PTextComponent component) {
@@ -69,9 +70,7 @@ public class PCaretRenderTimer {
 		resetFocusRenderTimer();
 	}
 	
-	protected void onLastSelectedChanged(PSelection selection, 
-			PModelIndex prevLastSelected, PModelIndex newLastSelected) 
-	{
+	protected void onLastSelectedChanged(PSelection selection, PModelIndex prevLastSelected, PModelIndex newLastSelected) {
 		resetFocusRenderTimer();
 	}
 	
@@ -90,21 +89,16 @@ public class PCaretRenderTimer {
 		PTextSelection selection = owner.getSelection();
 		PListIndex selectionFrom = selection.getLowestSelectedIndex();
 		PListIndex selectionTo = selection.getHighestSelectedIndex();
-		if (owner.hasFocus() && selectionFrom != null 
-				&& selectionFrom.equals(selectionTo)) 
+		if (owner.hasFocus() && selectionFrom != null
+				&& selectionFrom.equals(selectionTo))
 		{
-			focusRenderToggleTimer += 1;
-			if (focusRenderToggleTimer >= DEFAULT_FOCUS_RENDER_TOGGLE_TIMER_DELAY) {
-				focusRenderToggleTimer = 0;
-				focusRenderToggle = !focusRenderToggle;
-				PCompUtil.fireReRenderEventFor(owner);
-			}
+			focusRenderToggle = !focusRenderToggle;
+			PCompUtil.fireReRenderEventFor(owner);
 		}
 	}
 	
 	protected void resetFocusRenderTimer() {
 		focusRenderToggle = true;
-		focusRenderToggleTimer = 0;
 		PCompUtil.fireReRenderEventFor(owner);
 	}
 	

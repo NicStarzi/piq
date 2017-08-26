@@ -44,14 +44,14 @@ public class PModelFactory {
 	
 	@SuppressWarnings("unchecked")
 	public static <E> E createModelFor(Object component, E defaultModel) {
-		return createModelFor(component, () -> defaultModel, (Class<E>) defaultModel.getClass());
+		return PModelFactory.createModelFor(component, () -> defaultModel, (Class<E>) defaultModel.getClass());
 	}
 	
 	public static <E> E createModelFor(Object component,
 			Supplier<? extends E> defaultModel,
 			Class<? extends E> expectedModelClass)
 	{
-		PModelFactory factory = getGlobalModelFactory();
+		PModelFactory factory = PModelFactory.getGlobalModelFactory();
 		if (factory == null) {
 			return defaultModel.get();
 		}
@@ -75,6 +75,8 @@ public class PModelFactory {
 		classToModelFactoryMap.put(PTree.class, DefaultPTreeModel::new);
 		classToModelFactoryMap.put(PTitleBorder.class, DefaultPTextModel::new);
 	}
+	protected boolean checkSuperClasses = true;
+	protected boolean checkInterfaces = true;
 	
 	@SuppressWarnings("unchecked")
 	public <E> E getModelFor(Object component,
@@ -90,10 +92,36 @@ public class PModelFactory {
 	
 	protected Object createModelBasedOnClass(Class<?> objClass) {
 		Supplier<?> fact = classToModelFactoryMap.get(objClass);
-		if (fact == null) {
-			return null;
+		if (fact != null) {
+			return fact.get();
 		}
-		return fact.get();
+		if (isCheckInterfacesEnabled()) {
+			for (Class<?> ifaceClass : objClass.getInterfaces()) {
+				fact = classToModelFactoryMap.get(ifaceClass);
+				if (fact != null) {
+					return fact.get();
+				}
+			}
+		}
+		if (isCheckSuperClassesEnabled()) {
+			Class<?> current = objClass.getSuperclass();
+			while (current != null) {
+				fact = classToModelFactoryMap.get(current);
+				if (fact != null) {
+					return fact.get();
+				}
+				if (isCheckInterfacesEnabled()) {
+					for (Class<?> ifaceClass : current.getInterfaces()) {
+						fact = classToModelFactoryMap.get(ifaceClass);
+						if (fact != null) {
+							return fact.get();
+						}
+					}
+				}
+				current = current.getSuperclass();
+			}
+		}
+		return null;
 	}
 	
 	public void setDefaultModelFactoryFor(Class<?> componentClass, Supplier<?> modelFactory) {
@@ -102,6 +130,22 @@ public class PModelFactory {
 	
 	public Supplier<?> getDefaultModelFactoryFor(Class<?> componentClass) {
 		return classToModelFactoryMap.get(componentClass);
+	}
+	
+	public void setCheckSuperClassesEnabled(boolean value) {
+		checkSuperClasses = value;
+	}
+	
+	public boolean isCheckSuperClassesEnabled() {
+		return checkSuperClasses;
+	}
+	
+	public void setCheckInterfacesEnabled(boolean value) {
+		checkInterfaces = value;
+	}
+	
+	public boolean isCheckInterfacesEnabled() {
+		return checkInterfaces;
 	}
 	
 }

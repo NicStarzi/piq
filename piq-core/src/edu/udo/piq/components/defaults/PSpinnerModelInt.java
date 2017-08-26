@@ -1,6 +1,7 @@
 package edu.udo.piq.components.defaults;
 
-import edu.udo.piq.components.util.StrToObj;
+import java.util.function.Function;
+
 import edu.udo.piq.tools.AbstractPSpinnerModel;
 import edu.udo.piq.util.ThrowException;
 
@@ -14,7 +15,7 @@ public class PSpinnerModelInt extends AbstractPSpinnerModel {
 	protected Integer max = Integer.valueOf(DEFAULT_MAXIMUM);
 	protected Integer min = Integer.valueOf(DEFAULT_MINIMUM);
 	protected Integer val = Integer.valueOf(DEFAULT_VALUE);
-	private StrToObj decoder;
+	protected Function<String, Object> decoder;
 	protected int step = DEFAULT_STEP;
 	
 	public PSpinnerModelInt() {
@@ -35,15 +36,15 @@ public class PSpinnerModelInt extends AbstractPSpinnerModel {
 		ThrowException.ifNotWithin(min, max, value, "value < min || value > max");
 		this.max = Integer.valueOf(max);
 		this.min = Integer.valueOf(min);
-		this.val = Integer.valueOf(value);
+		val = Integer.valueOf(value);
 		this.step = step;
 	}
 	
-	public void setInputDecoder(StrToObj stringDecoder) {
+	public void setInputDecoder(Function<String, Object> stringDecoder) {
 		decoder = stringDecoder;
 	}
 	
-	public StrToObj getInputDecoder() {
+	public Function<String, Object> getInputDecoder() {
 		return decoder;
 	}
 	
@@ -80,6 +81,7 @@ public class PSpinnerModelInt extends AbstractPSpinnerModel {
 		return step;
 	}
 	
+	@Override
 	public boolean hasNext() {
 		if (getMaximum() == null) {
 			return getValue().intValue() < Integer.MAX_VALUE;
@@ -87,6 +89,7 @@ public class PSpinnerModelInt extends AbstractPSpinnerModel {
 		return getValue().intValue() < getMaximum().intValue();
 	}
 	
+	@Override
 	public boolean hasPrevious() {
 		if (getMinimum() == null) {
 			return getValue().intValue() > Integer.MIN_VALUE;
@@ -94,6 +97,7 @@ public class PSpinnerModelInt extends AbstractPSpinnerModel {
 		return getValue().intValue() > getMinimum().intValue();
 	}
 	
+	@Override
 	public Integer getNext() {
 		int maxVal = getMaximum() == null ? Integer.MAX_VALUE : getMaximum().intValue();
 		int curVal = getValue().intValue();
@@ -101,6 +105,7 @@ public class PSpinnerModelInt extends AbstractPSpinnerModel {
 		return Integer.valueOf(curVal + stepVal);
 	}
 	
+	@Override
 	public Integer getPrevious() {
 		int minVal = getMinimum() == null ? Integer.MIN_VALUE : getMinimum().intValue();
 		int curVal = getValue().intValue();
@@ -108,6 +113,7 @@ public class PSpinnerModelInt extends AbstractPSpinnerModel {
 		return Integer.valueOf(curVal - stepVal);
 	}
 	
+	@Override
 	public boolean canSetValue(Object obj) {
 		if (obj == null) {
 			return false;
@@ -115,7 +121,7 @@ public class PSpinnerModelInt extends AbstractPSpinnerModel {
 		if (obj instanceof String) {
 			String strVal = (String) obj;
 			if (getInputDecoder() != null) {
-				obj = getInputDecoder().parse(strVal);
+				obj = getInputDecoder().apply(strVal);
 			} else {
 				try {
 					int parsedInt = Integer.parseInt(strVal);
@@ -129,25 +135,26 @@ public class PSpinnerModelInt extends AbstractPSpinnerModel {
 			return false;
 		}
 		Integer value = (Integer) obj;
-		if (getMaximum() != null 
-				&& value.intValue() > getMaximum().intValue()) 
+		if (getMaximum() != null
+				&& value.intValue() > getMaximum().intValue())
 		{
 			return false;
 		}
-		if (getMinimum() != null 
-				&& value.intValue() < getMinimum().intValue()) 
+		if (getMinimum() != null
+				&& value.intValue() < getMinimum().intValue())
 		{
 			return false;
 		}
 		return true;
 	}
 	
+	@Override
 	public void setValue(Object obj) {
 		ThrowException.ifFalse(canSetValue(obj), "canSetValue(value) == false");
 		if (obj instanceof String) {
 			String strVal = (String) obj;
 			if (getInputDecoder() != null) {
-				obj = getInputDecoder().parse(strVal);
+				obj = getInputDecoder().apply(strVal);
 			} else {
 				obj = Integer.valueOf(Integer.parseInt(strVal));
 			}
@@ -160,6 +167,7 @@ public class PSpinnerModelInt extends AbstractPSpinnerModel {
 		}
 	}
 	
+	@Override
 	public Integer getValue() {
 		return val;
 	}

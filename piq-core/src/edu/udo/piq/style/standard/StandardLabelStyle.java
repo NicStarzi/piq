@@ -89,7 +89,7 @@ public class StandardLabelStyle implements PStyleComponent {
 		if (font == null) {
 			return PSize.ZERO_SIZE;
 		}
-		return font.getSize(text);
+		return font.getSize(text, null);
 	}
 	
 	@Override

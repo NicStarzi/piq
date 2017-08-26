@@ -12,6 +12,7 @@ import edu.udo.piq.components.collections.PListIndex;
 import edu.udo.piq.tools.AbstractPTextComponent;
 import edu.udo.piq.tools.ImmutablePBounds;
 import edu.udo.piq.tools.MutablePBounds;
+import edu.udo.piq.tools.MutablePSize;
 import edu.udo.piq.util.ThrowException;
 
 public class PTextArea extends AbstractPTextComponent {
@@ -21,6 +22,7 @@ public class PTextArea extends AbstractPTextComponent {
 	
 	protected PTextIndexTableMultiLine  idxTab = new PTextIndexTableMultiLine();
 	protected boolean idxTableIsDirty = true;
+	protected MutablePSize cachedResultSize = new MutablePSize();
 	
 	public PTextArea(Object initialModelValue) {
 		this();
@@ -106,7 +108,7 @@ public class PTextArea extends AbstractPTextComponent {
 			char c = text.charAt(i);
 			if (c == '\n') {
 				String line = sb.toString();
-				PSize lineSize = font.getSize(line);
+				PSize lineSize = font.getSize(line, cachedResultSize);
 				lineH = lineSize.getHeight();
 				
 				drawX = x;
@@ -120,7 +122,7 @@ public class PTextArea extends AbstractPTextComponent {
 		int drawH = lineH;
 		if (sb.length() > 0) {
 			String line = sb.toString();
-			PSize lineSize = font.getSize(line);
+			PSize lineSize = font.getSize(line, cachedResultSize);
 			drawW = lineSize.getWidth();
 			drawH = lineSize.getHeight();
 		}
@@ -161,7 +163,7 @@ public class PTextArea extends AbstractPTextComponent {
 		// Go through text, letter by letter, and calculate the letter bounds
 		for (int i = 0; i < text.length(); i++) {
 			char c = text.charAt(i);
-			PSize size = font.getSize(Character.toString(c));
+			PSize size = font.getSize(Character.toString(c), cachedResultSize);
 			int letterW = size.getWidth();
 			int letterH = size.getHeight();
 			if (lineH < letterH) {
@@ -212,7 +214,7 @@ public class PTextArea extends AbstractPTextComponent {
 		if (text.isEmpty()) {
 			if (hasFocus() && getCaretRenderTimer().isFocusRender()) {
 				renderer.setColor(getDefaultSelectionBackgroundColor());
-				renderer.drawQuad(x, y, x + 2, y + font.getSize(" ").getHeight());
+				renderer.drawQuad(x, y, x + 2, y + font.getSize(" ", cachedResultSize).getHeight());
 			}
 			return;
 		}
@@ -239,7 +241,7 @@ public class PTextArea extends AbstractPTextComponent {
 					} else {
 						c = text.charAt(selectedFrom);
 					}
-					PSize charSize = font.getSize(Character.toString(c));
+					PSize charSize = font.getSize(Character.toString(c), cachedResultSize);
 					int h = charSize.getHeight();
 					renderer.drawQuad(pos.x, pos.y, pos.x + 2, pos.y + h);
 				}
@@ -256,7 +258,7 @@ public class PTextArea extends AbstractPTextComponent {
 		}
 	}
 	
-	private void renderText(PRenderer renderer, PFontResource font,
+	protected void renderText(PRenderer renderer, PFontResource font,
 			int x, int y, DrawPos pos, String text,
 			PColor txtColor, PColor bgColor)
 	{
@@ -276,7 +278,7 @@ public class PTextArea extends AbstractPTextComponent {
 			char c = text.charAt(i);
 			if (c == '\n') {
 				String line = sb.toString();
-				PSize lineSize = font.getSize(line);
+				PSize lineSize = font.getSize(line, cachedResultSize);
 				
 				lineH = lineSize.getHeight();
 				if (bgColor != null) {
@@ -296,7 +298,7 @@ public class PTextArea extends AbstractPTextComponent {
 		}
 		if (sb.length() > 0) {
 			String line = sb.toString();
-			PSize lineSize = font.getSize(line);
+			PSize lineSize = font.getSize(line, cachedResultSize);
 			int txtW = lineSize.getWidth();
 			lineH = lineSize.getHeight();
 			if (bgColor != null) {
@@ -335,7 +337,7 @@ public class PTextArea extends AbstractPTextComponent {
 					continue;
 				}
 				String line = sb.toString();
-				PSize lineSize = font.getSize(line);
+				PSize lineSize = font.getSize(line, cachedResultSize);
 				int lineW = lineSize.getWidth();
 				lineH = lineSize.getHeight();
 				if (lineW > prefW) {
@@ -350,7 +352,7 @@ public class PTextArea extends AbstractPTextComponent {
 		}
 		if (sb.length() > 0) {
 			String line = sb.toString();
-			PSize lineSize = font.getSize(line);
+			PSize lineSize = font.getSize(line, cachedResultSize);
 			int lineW = lineSize.getWidth();
 			lineH = lineSize.getHeight();
 			if (lineW > prefW) {
@@ -381,7 +383,7 @@ public class PTextArea extends AbstractPTextComponent {
 				DEFAULT_FONT_SIZE, DEFAULT_FONT_STYLE);
 	}
 	
-	private static class DrawPos {
+	protected static class DrawPos {
 		int x, y;
 		public DrawPos(int x, int y) {
 			this.x = x;

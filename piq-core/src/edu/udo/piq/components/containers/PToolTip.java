@@ -46,13 +46,16 @@ public class PToolTip extends AbstractPFloatingPanel {
 	}
 	
 	public PToolTip(PTextModel textModel) {
-		this();
-		setContent(new PLabel(textModel));
+		this(new PLabel(textModel));
 	}
 	
-	public PToolTip(Object initialContent) {
+	public PToolTip(Object initialLabelText) {
+		this(new PLabel(initialLabelText));
+	}
+	
+	public PToolTip(PComponent initialContent) {
 		this();
-		setContent(new PLabel(initialContent));
+		setContent(initialContent);
 	}
 	
 	public void setShowDelay(int value) {

@@ -39,6 +39,8 @@ public class PScrollPanelLayout extends AbstractEnumPLayout<PScrollPanelLayout.C
 	
 	@Override
 	protected void onOwnerBoundsChanged() {
+//		System.out.println("PScrollPanelLayout.onOwnerBoundsChanged()");
+		super.onOwnerBoundsChanged();
 		needsToCheckScrollbars = true;
 	}
 	
@@ -63,12 +65,16 @@ public class PScrollPanelLayout extends AbstractEnumPLayout<PScrollPanelLayout.C
 		if (!needsToCheckScrollbars) {
 			return;
 		}
+		PComponent body = getBody();
+		if (body == null) {
+			return;
+		}
 		PBounds scrollPnlBnds = getOwner().getBoundsWithoutBorder();
 		if (scrollPnlBnds == null) {
 			return;
 		}
 		needsToCheckScrollbars = false;
-		PSize bodyPrefSize = getBody().getPreferredSize();
+		PSize bodyPrefSize = body.getPreferredSize();
 		
 		boolean neededBarX = scrollPnlBnds.getWidth() < bodyPrefSize.getWidth();
 		boolean hasBarX = hasScrollBarX();

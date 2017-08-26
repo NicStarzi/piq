@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
@@ -17,6 +18,7 @@ import edu.udo.piq.PKeyboard.Modifier;
 import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
+import edu.udo.piq.PMouse.VirtualMouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.components.defaults.DefaultPCellComponent;
@@ -25,7 +27,6 @@ import edu.udo.piq.components.defaults.DefaultPDnDSupport;
 import edu.udo.piq.components.defaults.DefaultPListModel;
 import edu.udo.piq.components.defaults.ReRenderPFocusObs;
 import edu.udo.piq.components.util.DefaultPKeyInput;
-import edu.udo.piq.components.util.ObjToStr;
 import edu.udo.piq.components.util.PKeyInput;
 import edu.udo.piq.layouts.PListLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
@@ -138,7 +139,7 @@ public class PList extends AbstractPInputLayoutOwner implements PDropComponent {
 	};
 	protected PListSelection selection;
 	protected PListModel model;
-	protected ObjToStr encoder;
+	protected Function<Object, String> encoder;
 	protected PCellFactory cellFactory;
 	protected PDnDSupport dndSup;
 	protected PModelIndex currentDnDHighlightIndex;
@@ -190,7 +191,7 @@ public class PList extends AbstractPInputLayoutOwner implements PDropComponent {
 		if (btn == MouseButton.LEFT && isMouseOverThisOrChild()) {
 			PListIndex index = getIndexAt(mouse.getX(), mouse.getY());
 			if (index != null) {
-				if (mouse.isPressed(MouseButton.DRAG_AND_DROP)) {
+				if (mouse.isPressed(VirtualMouseButton.DRAG_AND_DROP)) {
 					lastDragX = mouse.getX();
 					lastDragY = mouse.getY();
 					isDragTagged = true;
@@ -207,14 +208,14 @@ public class PList extends AbstractPInputLayoutOwner implements PDropComponent {
 	}
 	
 	protected void onMouseReleased(PMouse mouse, MouseButton btn) {
-		if (isDragTagged && mouse.isReleased(MouseButton.DRAG_AND_DROP)) {
+		if (isDragTagged && mouse.isReleased(VirtualMouseButton.DRAG_AND_DROP)) {
 			isDragTagged = false;
 		}
 	}
 	
 	protected void onMouseMoved(PMouse mouse) {
 		PDnDSupport dndSup = getDragAndDropSupport();
-		if (dndSup != null && isDragTagged && mouse.isPressed(MouseButton.DRAG_AND_DROP)) {
+		if (dndSup != null && isDragTagged && mouse.isPressed(VirtualMouseButton.DRAG_AND_DROP)) {
 			int mx = mouse.getX();
 			int my = mouse.getY();
 			int disX = Math.abs(lastDragX - mx);
@@ -431,9 +432,9 @@ public class PList extends AbstractPInputLayoutOwner implements PDropComponent {
 		return result;
 	}
 	
-	public void setOutputEncoder(ObjToStr outputEncoder) {
+	public void setOutputEncoder(Function<Object, String> outputEncoder) {
 		encoder = outputEncoder;
-		ObjToStr outEnc = getOutputEncoder();
+		Function<Object, String> outEnc = getOutputEncoder();
 		
 		PCellFactory cellFactory = getCellFactory();
 		if (cellFactory instanceof DefaultPCellFactory) {
@@ -452,14 +453,14 @@ public class PList extends AbstractPInputLayoutOwner implements PDropComponent {
 		}
 	}
 	
-	public ObjToStr getOutputEncoder() {
+	public Function<Object, String> getOutputEncoder() {
 		return encoder;
 	}
 	
 	public void setCellFactory(PCellFactory listCellFactory) {
 		cellFactory = listCellFactory;
 		
-		ObjToStr outEnc = getOutputEncoder();
+		Function<Object, String> outEnc = getOutputEncoder();
 		PCellFactory cellFactory = getCellFactory();
 		if (cellFactory instanceof DefaultPCellFactory) {
 			((DefaultPCellFactory) cellFactory).setOutputEncoder(outEnc);

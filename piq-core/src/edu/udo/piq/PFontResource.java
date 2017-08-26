@@ -1,5 +1,6 @@
 package edu.udo.piq;
 
+import edu.udo.piq.tools.MutablePSize;
 import edu.udo.piq.util.PCompUtil;
 
 /**
@@ -46,6 +47,7 @@ public interface PFontResource extends PDisposable {
 	 * is encouraged.<br>
 	 * 
 	 * @param text the string for which the size is to be determined
+	 * @param result if non-null the result will be written to this MutablePSize. If null a new PSize instance is created and returned instead.
 	 * @return the minimum size for the given string when rendered with this font
 	 * @throws NullPointerException if string is null
 	 * @see PSize
@@ -55,7 +57,7 @@ public interface PFontResource extends PDisposable {
 	 * @see PReadOnlyLayout#getPreferredSize()
 	 * @see PCompUtil#getPreferredSizeOf(PComponent)
 	 */
-	public PSize getSize(String text);
+	public PSize getSize(String text, MutablePSize result);
 	
 	/**
 	 * Returns the {@link Style} of the font.<br>

@@ -1,10 +1,5 @@
 package edu.udo.piq.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Deque;
-import java.util.LinkedList;
-
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PReadOnlyLayout;
@@ -107,84 +102,6 @@ public class PCompUtil {
 			return;
 		}
 		root.reRender(component);
-	}
-	
-	/**
-	 * Returns the first descendant of root with the given ID if there is any.<br>
-	 * If no such {@link PComponent} exists in the GUI null will be returned.<br>
-	 * If the root itself has the given ID the root will be returned.<br>
-	 * 
-	 * @param root the PComponent from where we start to search
-	 * @param id the ID for which we are searching for
-	 * @return a PComponent with the given ID or null if no such component exists
-	 * @throws IllegalArgumentException if either root or id are null
-	 * @see PComponent#setID(String)
-	 * @see PComponent#getID()
-	 */
-	public static PComponent getDescendantByID(PComponent root, String id) throws IllegalArgumentException {
-		if (root == null) {
-			throw new IllegalArgumentException("root == null");
-		} if (id == null) {
-			throw new IllegalArgumentException("id == null");
-		}
-		Deque<PComponent> stack = new LinkedList<>();
-		stack.push(root);
-		while (!stack.isEmpty()) {
-			PComponent current = stack.pop();
-			if (id.equals(current.getID())) {
-				return current;
-			}
-			stack.addAll(current.getChildren());
-		}
-		return null;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public static <T> T getDescendantOfType(Class<T> descendantType, PComponent ancestor) {
-		ThrowException.ifNull(descendantType, "descendantType == null");
-		ThrowException.ifNull(ancestor, "ancestor == null");
-		DepthFirstDescendantIterator iter = new DepthFirstDescendantIterator(ancestor);
-		while (iter.hasNext()) {
-			PComponent current = iter.next();
-			if (descendantType.isInstance(current)) {
-				return (T) current;
-			}
-		}
-		return null;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public static <T> Collection<T> getAllDescendantsOfType(
-			Class<T> descendantType, PComponent ancestor)
-	{
-		ThrowException.ifNull(descendantType, "descendantType == null");
-		ThrowException.ifNull(ancestor, "ancestor == null");
-		Collection<T> result = null;
-		DepthFirstDescendantIterator iter = new DepthFirstDescendantIterator(ancestor);
-		while (iter.hasNext()) {
-			PComponent current = iter.next();
-			if (descendantType.isInstance(current)) {
-				if (result == null) {
-					result = new ArrayList<>();
-				}
-				result.add((T) current);
-			}
-		}
-		return result;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public static <T> T getAncestorOfType(Class<T> ancestorType, PComponent descendant) {
-		ThrowException.ifNull(ancestorType, "ancestorType == null");
-		ThrowException.ifNull(descendant, "descendant == null");
-		PComponent current = descendant;
-		while (current != null) {
-			if (ancestorType.isInstance(current)) {
-				return (T) current;
-			}
-			current = current.getParent();
-		}
-		return null;
 	}
 	
 	/**

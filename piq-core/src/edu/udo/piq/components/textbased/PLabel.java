@@ -105,7 +105,7 @@ public class PLabel extends AbstractPComponent {
 		if (font == null) {
 			return PSize.ZERO_SIZE;
 		}
-		return font.getSize(text);
+		return font.getSize(text, prefSize);
 	}
 	
 	protected PColor getDefaultTextColor() {

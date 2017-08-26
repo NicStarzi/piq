@@ -29,10 +29,10 @@ import edu.udo.piq.components.util.DefaultPKeyInput;
 import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PGridLayout;
 import edu.udo.piq.scroll.PScrollPanel;
-import edu.udo.piq.util.PCompUtil;
 
 public class SwingPTest_PTree extends AbstractSwingPTest {
 	
+	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 		new SwingPTest_PTree();
 	}
@@ -41,6 +41,7 @@ public class SwingPTest_PTree extends AbstractSwingPTest {
 		super(640, 480);
 	}
 	
+	@Override
 	public void buildGUI() {
 		PPanel body = new PPanel();
 		body.setLayout(new PBorderLayout(body));
@@ -103,6 +104,7 @@ public class SwingPTest_PTree extends AbstractSwingPTest {
 		public ComplicatedTreeCell(PModel model, PModelIndex index) {
 			inputText = new PTextField();
 			labelCell = new DefaultPCellComponent() {
+				@Override
 				public String getText() {
 					return ComplicatedTreeCell.this.getText();
 				}
@@ -121,12 +123,13 @@ public class SwingPTest_PTree extends AbstractSwingPTest {
 				setEditorVisible(false);
 			});
 			inputText.addObs(new PFocusObs() {
+				@Override
 				public void onFocusLost(PComponent oldOwner) {
 					setEditorVisible(false);
 				}
 			});
 			inputText.defineInput("escape", new DefaultPKeyInput<>(Key.ESC), (c) -> {
-				PTree tree = PCompUtil.getAncestorOfType(PTree.class, inputText);
+				PTree tree = inputText.getFirstAncestorOfType(PTree.class);
 				setEditorVisible(false);
 				tree.takeFocus();
 			});
@@ -154,6 +157,7 @@ public class SwingPTest_PTree extends AbstractSwingPTest {
 			}
 		}
 		
+		@Override
 		public void setSelected(boolean value) {
 			setEditorVisible(value);
 			super.setSelected(value);

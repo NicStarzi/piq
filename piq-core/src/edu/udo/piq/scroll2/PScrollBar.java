@@ -108,7 +108,7 @@ public class PScrollBar extends AbstractPLayoutOwner {
 	protected void onMousePress(PMouse mouse, MouseButton btn) {
 		if (!isDrag && btn == MouseButton.LEFT && knob.isMouseOver()) {
 			isDrag = true;
-			dragOffset = getAxis() == Axis.X ? mouse.getOffsetToComponentX(knob) : mouse.getOffsetToComponentY(knob);
+			dragOffset = mouse.getOffsetToComponent(knob, getAxis());
 		}
 	}
 	
@@ -129,16 +129,10 @@ public class PScrollBar extends AbstractPLayoutOwner {
 	
 	protected void onMouseMove(PMouse mouse) {
 		if (isDrag) {
-			int pos;
-			int size;
+			Axis axis = getAxis();
 			PBounds scrollBounds = background.getBounds();
-			if (getAxis() == Axis.X) {
-				pos = (mouse.getX() - scrollBounds.getX()) - dragOffset;
-				size = scrollBounds.getWidth() - knob.getBounds().getWidth();
-			} else {
-				pos = (mouse.getY() - scrollBounds.getY()) - dragOffset;
-				size = scrollBounds.getHeight() - knob.getBounds().getHeight();
-			}
+			int pos = (axis.getCoordinate(mouse) - axis.getFirstCoordinate(scrollBounds)) - dragOffset;
+			int size = axis.getSize(scrollBounds) - axis.getSize(knob);
 			double scrollPercent = pos / (double) size;
 			setScrollPercent(scrollPercent);
 		}
@@ -160,14 +154,9 @@ public class PScrollBar extends AbstractPLayoutOwner {
 		ThrowException.ifFalse(background.isMouseOver(), "background.isMouseOver() == false");
 		PBounds scrollBounds = background.getBounds();
 		PBounds knobBounds = knob.getBounds();
-		int offset, size;
-		if (getAxis() == Axis.X) {
-			offset = (mouse.getX() - knobBounds.getWidth() / 2) - scrollBounds.getX();
-			size = scrollBounds.getWidth() - knobBounds.getWidth();
-		} else {
-			offset = (mouse.getY() - knobBounds.getHeight() / 2) - scrollBounds.getY();
-			size = scrollBounds.getHeight() - knobBounds.getHeight();
-		}
+		Axis axis = getAxis();
+		int offset = (axis.getCoordinate(mouse) - (axis.getSize(knobBounds) / 2)) - axis.getFirstCoordinate(scrollBounds);
+		int size = axis.getSize(scrollBounds) - axis.getSize(knobBounds);
 		return offset / (double) size;
 	}
 	

@@ -1,14 +1,15 @@
 package edu.udo.piq.components.textbased;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 
-
-
+import edu.udo.piq.PClipboard;
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PKeyboard.Modifier;
-import edu.udo.piq.PClipboard;
+import edu.udo.piq.PKeyboard.VirtualKey;
 import edu.udo.piq.PKeyboardObs;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.components.collections.PListIndex;
@@ -18,13 +19,20 @@ public class PTextInput {
 	protected static final int PAGE_UP_OR_DOWN_ROW_COUNT = 20;
 	
 	protected static final Map<Key, KeyResponse> KEY_RESPONSE_MAP = new EnumMap<>(Key.class);
+	protected static final List<VirtualKeyResponse> VIRTUAL_KEY_RESPONSE_LIST = new ArrayList<>();
 	
 	protected final PKeyboardObs keyObs = new PKeyboardObs() {
+		@Override
 		public void onStringTyped(PKeyboard keyboard, String typedString) {
 			PTextInput.this.onStringTyped(keyboard, typedString);
 		}
+		@Override
 		public void onKeyPressed(PKeyboard keyboard, Key key) {
 			PTextInput.this.onKeyPressed(keyboard, key);
+		}
+		@Override
+		public void onKeyTriggered(PKeyboard keyboard, Key key) {
+			PTextInput.this.onKeyTriggered(keyboard, key);
 		}
 	};
 	protected final PTextComponent owner;
@@ -88,6 +96,17 @@ public class PTextInput {
 		KeyResponse response = KEY_RESPONSE_MAP.get(key);
 		if (response != null) {
 			response.reactTo(keyboard, this);
+		}
+	}
+	
+	protected void onKeyTriggered(PKeyboard keyboard, Key key) {
+		if (skipInput(keyboard, key)) {
+			return;
+		}
+		for (VirtualKeyResponse hotkey : VIRTUAL_KEY_RESPONSE_LIST) {
+			if (hotkey.reactTo(keyboard, this)) {
+				break;
+			}
 		}
 	}
 	
@@ -266,12 +285,12 @@ public class PTextInput {
 	}
 	
 	protected void keyPageUp(PKeyboard kb) {
-		moveSelectionBy(owner, -PAGE_UP_OR_DOWN_ROW_COUNT, 
+		moveSelectionBy(owner, -PAGE_UP_OR_DOWN_ROW_COUNT,
 				kb.isModifierToggled(Modifier.SHIFT));
 	}
 	
 	protected void keyPageDown(PKeyboard kb) {
-		moveSelectionBy(owner, PAGE_UP_OR_DOWN_ROW_COUNT, 
+		moveSelectionBy(owner, PAGE_UP_OR_DOWN_ROW_COUNT,
 				kb.isModifierToggled(Modifier.SHIFT));
 	}
 	
@@ -324,19 +343,22 @@ public class PTextInput {
 	}
 	
 	protected void keyPaste(PKeyboard kb) {
+		if (!owner.isEditable()) {
+			return;
+		}
 		PRoot root = owner.getRoot();
 		if (root != null) {
 			PClipboard clipBoard = root.getClipboard();
 			if (clipBoard != null) {
 				Object obj = clipBoard.get();
-				if (obj instanceof String) {
-					String pasteText = (String) obj;
+				if (obj instanceof CharSequence) {
+					CharSequence pasteText = (CharSequence) obj;
 					PTextSelection sel = owner.getSelection();
 					int from = sel.getLowestSelectedIndex().getIndexValue();
-					int to = sel.getHighestSelectedIndex().getIndexValue();						
+					int to = sel.getHighestSelectedIndex().getIndexValue();
 					PTextModel mdl = owner.getModel();
 					String text = mdl.getText();
-					String newText = text.substring(0, from) + pasteText 
+					String newText = text.substring(0, from) + pasteText
 							+ text.substring(to);
 					mdl.setValue(newText);
 					setSelection(sel, from, from + pasteText.length());
@@ -397,6 +419,10 @@ public class PTextInput {
 		public void reactTo(PKeyboard keyboard, PTextInput self);
 	}
 	
+	public static interface VirtualKeyResponse {
+		public boolean reactTo(PKeyboard keyboard, PTextInput self);
+	}
+	
 	static {
 		KEY_RESPONSE_MAP.put(Key.BACKSPACE, (kb, self) -> self.keyBackspace(kb));
 		KEY_RESPONSE_MAP.put(Key.DEL, (kb, self) -> self.keyDelete(kb));
@@ -409,9 +435,28 @@ public class PTextInput {
 		KEY_RESPONSE_MAP.put(Key.PAGE_UP, (kb, self) -> self.keyPageUp(kb));
 		KEY_RESPONSE_MAP.put(Key.PAGE_DOWN, (kb, self) -> self.keyPageDown(kb));
 		KEY_RESPONSE_MAP.put(Key.A, (kb, self) -> self.keySelectAll(kb));
-		KEY_RESPONSE_MAP.put(Key.COPY, (kb, self) -> self.keyCopy(kb));
-		KEY_RESPONSE_MAP.put(Key.CUT, (kb, self) -> self.keyCut(kb));
-		KEY_RESPONSE_MAP.put(Key.PASTE, (kb, self) -> self.keyPaste(kb));
+		
+		VIRTUAL_KEY_RESPONSE_LIST.add((kb, self) -> {
+			if (kb.isTriggered(VirtualKey.COPY)) {
+				self.keyCopy(kb);
+				return true;
+			}
+			return false;
+		});
+		VIRTUAL_KEY_RESPONSE_LIST.add((kb, self) -> {
+			if (kb.isTriggered(VirtualKey.CUT)) {
+				self.keyCut(kb);
+				return true;
+			}
+			return false;
+		});
+		VIRTUAL_KEY_RESPONSE_LIST.add((kb, self) -> {
+			if (kb.isTriggered(VirtualKey.PASTE)) {
+				self.keyPaste(kb);
+				return true;
+			}
+			return false;
+		});
 	}
 	
 }

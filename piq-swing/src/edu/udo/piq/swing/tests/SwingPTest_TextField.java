@@ -31,12 +31,13 @@ public class SwingPTest_TextField extends AbstractSwingPTest {
 		;
 	}
 	
+	@Override
 	public void buildGUI() {
 		PPanel bodyPnl = new PPanel();
 		bodyPnl.setLayout(new PFreeLayout(bodyPnl));
 		root.setBody(bodyPnl);
 		
-		String[] towns = new String[] {"Berlin", "Dortmund", 
+		String[] towns = new String[] {"Berlin", "Dortmund",
 				"Köln", "Bremen", "Hannover", "München", "Dresden"};
 		
 		PTextField txtField = new PTextField("Dies ist: EIN TEST!");
@@ -74,6 +75,7 @@ public class SwingPTest_TextField extends AbstractSwingPTest {
 		PSpinner spinnerColor = new PSpinner(new PSpinnerModelInt(3, -16, 162, 4));
 		spinnerColor.setModel(new AbstractPSpinnerModel() {
 			Farbe f = Farbe.ROT;
+			@Override
 			public void setValue(Object obj) {
 				if (obj instanceof String) {
 					String name = ((String) obj).toUpperCase();
@@ -94,10 +96,12 @@ public class SwingPTest_TextField extends AbstractSwingPTest {
 				fireValueChangedEvent(o);
 			}
 			
+			@Override
 			public Object getValue() {
 				return f.name().toLowerCase();
 			}
 			
+			@Override
 			public Object getPrevious() {
 				int o = f.ordinal() - 1;
 				if (o < 0) {
@@ -106,6 +110,7 @@ public class SwingPTest_TextField extends AbstractSwingPTest {
 				return Farbe.values()[o];
 			}
 			
+			@Override
 			public Object getNext() {
 				int o = f.ordinal() + 1;
 				if (o >= Farbe.values().length) {
@@ -114,6 +119,7 @@ public class SwingPTest_TextField extends AbstractSwingPTest {
 				return Farbe.values()[o];
 			}
 			
+			@Override
 			public boolean canSetValue(Object obj) {
 				return obj != null && (obj instanceof Farbe || obj instanceof String);
 			}

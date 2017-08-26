@@ -52,8 +52,9 @@ public class PSplitLayout extends AbstractEnumPLayout<PSplitLayout.Constraint> {
 		return splitPos;
 	}
 	
+	@Override
 	protected void layOutInternal() {
-		PBounds ob = getOwner().getBounds();
+		PBounds ob = getOwner().getBoundsWithoutBorder();
 		int x = ob.getX();
 		int y = ob.getY();
 		int w = ob.getWidth();
@@ -83,6 +84,7 @@ public class PSplitLayout extends AbstractEnumPLayout<PSplitLayout.Constraint> {
 		}
 	}
 	
+	@Override
 	protected void onInvalidated() {
 		PComponent first = getChildForConstraint(Constraint.FIRST);
 		PComponent divider = getChildForConstraint(Constraint.DIVIDER);
@@ -103,6 +105,7 @@ public class PSplitLayout extends AbstractEnumPLayout<PSplitLayout.Constraint> {
 		prefSize.setHeight(prefH);
 	}
 	
+	@Override
 	protected void onChildPrefSizeChanged(PComponent child) {
 		ThrowException.ifFalse(containsChild(child), "containsChild(child) == false");
 		if (child == getDivider()) {

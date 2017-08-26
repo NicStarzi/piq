@@ -28,8 +28,8 @@ public class PProgressBar extends AbstractPComponent {
 	
 	protected final ObserverList<PProgressBarModelObs> modelObsList
 		= PCompUtil.createDefaultObserverList();
-	private final PProgressBarModelObs modelObs = model -> PProgressBar.this.onModelValueChanged();
-	private PProgressBarModel model;
+	protected final PProgressBarModelObs modelObs = model -> PProgressBar.this.onModelValueChanged();
+	protected PProgressBarModel model;
 	
 	public PProgressBar() {
 		super();
@@ -95,7 +95,7 @@ public class PProgressBar extends AbstractPComponent {
 			return;
 		}
 		String text = (int) (valuePercent * 100) + "%";
-		PSize textSize = font.getSize(text);
+		PSize textSize = font.getSize(text, null);
 		int textW = textSize.getWidth();
 		int textH = textSize.getHeight();
 		int textX = x + w / 2 - textW / 2;

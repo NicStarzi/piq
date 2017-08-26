@@ -34,6 +34,7 @@ public class PTextField extends AbstractPTextComponent {
 	protected final MutablePSize prefSize = new MutablePSize(200, 22);
 	protected PTextIndexTableSingleLine idxTab = new PTextIndexTableSingleLine();
 	protected PInsets insets;
+	protected MutablePSize cachedResultSize = new MutablePSize();
 	protected boolean contentsWereChanged = false;
 	protected int columns = -1;
 	protected int caretWidth = 2;
@@ -149,14 +150,14 @@ public class PTextField extends AbstractPTextComponent {
 		}
 		ThrowException.ifNotWithin(0, text.length(), idx, "index < 0 || index >= getText().length()");
 		String textBefore = text.substring(0, idx);
-		PSize textBeforeSize = font.getSize(textBefore);
+		PSize textBeforeSize = font.getSize(textBefore, cachedResultSize);
 		int drawX, drawY, drawW, drawH;
 		int lineH = textBeforeSize.getHeight();
 		if (idx == text.length()) {
 			drawW = 1;
 		} else {
 			String textAt = text.substring(idx, idx+1);
-			PSize textAtSize = font.getSize(textAt);
+			PSize textAtSize = font.getSize(textAt, cachedResultSize);
 			lineH = Math.max(textAtSize.getHeight(), lineH);
 			drawW = textAtSize.getWidth();
 		}
@@ -198,7 +199,7 @@ public class PTextField extends AbstractPTextComponent {
 		int letterX = 0;
 		for (int i = 0; i < text.length(); i++) {
 			char c = text.charAt(i);
-			PSize size = font.getSize(Character.toString(c));
+			PSize size = font.getSize(Character.toString(c), cachedResultSize);
 			int letterW = size.getWidth();
 			if (x < letterX + letterW) {
 				return new PListIndex(i);
@@ -251,7 +252,7 @@ public class PTextField extends AbstractPTextComponent {
 		
 		if (text.isEmpty()) {
 			if (hasFocus() && getCaretRenderTimer().isFocusRender()) {
-				int minH = font.getSize(" ").getHeight();
+				int minH = font.getSize(" ", cachedResultSize).getHeight();
 				int drawY = (txtY + txtH / 2) - minH / 2;
 				renderer.setColor(getDefaultSelectionBackgroundColor());
 				renderer.drawQuad(txtX, drawY, txtX + caretWidth, drawY + minH);
@@ -280,7 +281,7 @@ public class PTextField extends AbstractPTextComponent {
 					} else {
 						c = text.charAt(selectedFrom);
 					}
-					PSize charSize = font.getSize(Character.toString(c));
+					PSize charSize = font.getSize(Character.toString(c), cachedResultSize);
 					int minH = charSize.getHeight();
 					int drawY = (txtY + txtH / 2) - minH / 2;
 					renderer.drawQuad(txtX - caretWidth / 2, drawY, txtX + caretWidth / 2, drawY + minH);
@@ -298,12 +299,12 @@ public class PTextField extends AbstractPTextComponent {
 		}
 	}
 	
-	private int renderText(PRenderer renderer, PFontResource font,
+	protected int renderText(PRenderer renderer, PFontResource font,
 			int drawX, int drawY, int h, String text,
 			PColor txtColor, PColor bgColor)
 	{
 		renderer.setColor(txtColor);
-		PSize lineSize = font.getSize(text);
+		PSize lineSize = font.getSize(text, cachedResultSize);
 		int txtW = lineSize.getWidth();
 		int txtH = lineSize.getHeight();
 		drawY = (drawY + h / 2) - txtH / 2;
@@ -325,7 +326,7 @@ public class PTextField extends AbstractPTextComponent {
 		PInsets insets = getInsets();
 		int colCount = getColumnCount();
 		if (colCount > 0) {
-			PSize letterSize = font.getSize("W");
+			PSize letterSize = font.getSize("W", cachedResultSize);
 			prefSize.setWidth(letterSize.getWidth() * colCount + insets.getHorizontal());
 			prefSize.setHeight(letterSize.getHeight() + insets.getVertical());
 			return prefSize;
@@ -334,7 +335,7 @@ public class PTextField extends AbstractPTextComponent {
 		if (text == null || text.isEmpty()) {
 			return DEFAULT_PREFERRED_SIZE;
 		}
-		PSize textSize = font.getSize(text);
+		PSize textSize = font.getSize(text, cachedResultSize);
 		prefSize.setWidth(textSize.getWidth() + insets.getHorizontal() + caretWidth);
 		prefSize.setHeight(textSize.getHeight() + insets.getVertical());
 		return prefSize;

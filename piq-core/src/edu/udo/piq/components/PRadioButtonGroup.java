@@ -21,6 +21,12 @@ public class PRadioButtonGroup {
 		}
 	}
 	
+	public PRadioButtonGroup(PRadioButtonTuple ... buttons) {
+		for (PRadioButtonTuple btn : buttons) {
+			add(btn.getRadioButton());
+		}
+	}
+	
 	public void add(PRadioButton radioBtn) {
 		ThrowException.ifIncluded(btnList, radioBtn, "btnList.contains(radioBtn) == true");
 		radioBtn.addObs(modelObs);

@@ -388,6 +388,17 @@ public interface PRoot extends PComponent {
 	public PDnDManager getDragAndDropManager();
 	
 	/**
+	 * Returns the currently active PFocusTraversal which is controlling how keyboard presses
+	 * affect focus traversal.
+	 * @return an instance of {@link PFocusTraversal} or null if keyboard controlled focus traversal is disabled at the moment.
+	 * @see PFocusTraversal
+	 * @see #getFocusTraversal()
+	 * @see #setFocusOwner(PComponent)
+	 * @see #getFocusOwner()
+	 */
+	public PFocusTraversal getActiveFocusTraversal();
+	
+	/**
 	 * Returns the {@link PComponent} that currently has the focus within
 	 * the GUI.<br>
 	 * This can be null if no component has focus right now.<br>

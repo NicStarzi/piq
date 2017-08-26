@@ -7,6 +7,7 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PCheckBoxTuple;
 import edu.udo.piq.components.PClickObs;
+import edu.udo.piq.components.PClickable;
 import edu.udo.piq.components.PPicture;
 import edu.udo.piq.components.PProgressBar;
 import edu.udo.piq.components.PSlider;
@@ -213,9 +214,9 @@ public class SwingPTest_Big extends AbstractSwingPTest {
 		}
 		btnPnl.addChild(ddl, null);
 		
-//		btnChange.addObs(new PClickObs() {
-//			boolean increment = true;
-//
+		btnChange.addObs(new PClickObs() {
+			boolean increment = true;
+
 //			PColor[] fontColors = new PColor[] {
 //					PColor.BLACK, PColor.RED, PColor.GREY25,
 //					PColor.BLUE, PColor.MAGENTA, PColor.YELLOW,
@@ -223,16 +224,15 @@ public class SwingPTest_Big extends AbstractSwingPTest {
 //					PColor.GREY75, };
 //			int currentStyle = 0;
 //			int currentColor = 0;
-//
-//			@Override
-//			public void onClick(PClickable button) {
-//				int val = prgBar.getModel().getValue();
-//				val = increment ? val + 1 : val - 1;
-//				prgBar.getModel().setValue(val);
-//				if (prgBar.getModel().getValue() == prgBar.getModel().getMaxValue() || prgBar.getModel().getValue() == 0) {
-//					increment = !increment;
-//				}
-//
+
+			@Override
+			public void onClick(PClickable button) {
+				int val = prgBar.getModel().getValue();
+				val = increment ? val + 1 : val - 1;
+				prgBar.getModel().setValue(val);
+				if (prgBar.getModel().getValue() == prgBar.getModel().getMaxValue() || prgBar.getModel().getValue() == 0) {
+					increment = !increment;
+				}
 //				Style style = Style.values()[(++currentStyle) % Style.values().length];
 //				int size = sDs.getLabelDesign().getFontSize() + 1;
 //				int colorID = (++currentColor) % fontColors.length;
@@ -243,8 +243,8 @@ public class SwingPTest_Big extends AbstractSwingPTest {
 //				sDs.getLabelDesign().setFontSize(size);
 //				sDs.getLabelDesign().setFontStyle(style);
 //				root.reRender(root);
-//			}
-//		});
+			}
+		});
 		chkBxTpl.addObs((PClickObs) checkBox -> {
 			lblChkBx.getModel().setValue(null);
 			lblSld.getModel().setValue(null);

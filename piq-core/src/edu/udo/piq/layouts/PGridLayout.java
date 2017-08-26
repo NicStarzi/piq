@@ -233,6 +233,8 @@ public class PGridLayout extends AbstractMapPLayout {
 		PBounds bounds = getOwner().getBoundsWithoutBorder();
 		int x = bounds.getX() + insets.getFromLeft();
 		int y = bounds.getY() + insets.getFromTop();
+		int fx = bounds.getFinalX() - insets.getFromRight();
+		int fy = bounds.getFinalY() - insets.getFromBottom();
 		
 		refreshLayout();
 		
@@ -270,6 +272,10 @@ public class PGridLayout extends AbstractMapPLayout {
 						int childY = constr.alignV.getTopY(cellY, cellH, cellPrefH);
 						int childW = constr.alignH.getWidth(cellX, cellW, cellPrefW);
 						int childH = constr.alignV.getHeight(cellY, cellH, cellPrefH);
+						int childFx = Math.min(childX + childW, fx);
+						int childFy = Math.min(childY + childH, fy);
+						childW = Math.max(childFx - childX, 0);
+						childH = Math.max(childFy - childY, 0);
 						
 //						System.out.println("child="+cellCmp);
 //						System.out.println("prefSize="+cellPrefSize);
@@ -554,7 +560,7 @@ public class PGridLayout extends AbstractMapPLayout {
 		MAXIMIZE,
 		;
 		public static final List<Growth> ALL =
-				Collections.unmodifiableList(Arrays.asList(values()));
+				Collections.unmodifiableList(Arrays.asList(Growth.values()));
 		public static final int COUNT = ALL.size();
 	}
 	
@@ -570,7 +576,7 @@ public class PGridLayout extends AbstractMapPLayout {
 						String codePiece = sb.toString();
 						sb.delete(0, sb.length());
 						
-						apply(c, codePiece, codeID++);
+						GridConstraintParser.apply(c, codePiece, codeID++);
 					}
 				} else {
 					sb.append(ch);
@@ -578,7 +584,7 @@ public class PGridLayout extends AbstractMapPLayout {
 			}
 			if (sb.length() > 0) {
 				String codePiece = sb.toString();
-				apply(c, codePiece, codeID++);
+				GridConstraintParser.apply(c, codePiece, codeID++);
 			}
 		}
 		
@@ -608,6 +614,7 @@ public class PGridLayout extends AbstractMapPLayout {
 						case 1: c.y(value); return;
 						case 2: c.w(value); return;
 						case 3: c.h(value); return;
+						default: throw new IllegalArgumentException("codeID="+codeID);
 					}
 				} catch (NumberFormatException e) {}
 			}

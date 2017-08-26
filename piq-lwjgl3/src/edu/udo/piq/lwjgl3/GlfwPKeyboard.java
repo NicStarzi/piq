@@ -1,8 +1,6 @@
 package edu.udo.piq.lwjgl3;
 
 import java.lang.Character.UnicodeBlock;
-import java.util.EnumMap;
-import java.util.Map;
 
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWCharCallback;
@@ -30,7 +28,6 @@ public class GlfwPKeyboard extends AbstractPKeyboard implements PKeyboard {
 		}
 	};
 	protected final GlfwPRoot root;
-	protected final Map<Key, Key> ctrlMetaMap = new EnumMap<>(Key.class);
 	protected final boolean[] nowPressed = new boolean[Key.COUNT];
 	protected final boolean[] prevPressed = new boolean[Key.COUNT];
 	protected final boolean[] modState = new boolean[Modifier.COUNT];
@@ -39,11 +36,6 @@ public class GlfwPKeyboard extends AbstractPKeyboard implements PKeyboard {
 	
 	public GlfwPKeyboard(GlfwPRoot root) {
 		this.root = root;
-		ctrlMetaMap.put(Key.C, Key.COPY);
-		ctrlMetaMap.put(Key.X, Key.CUT);
-		ctrlMetaMap.put(Key.V, Key.PASTE);
-		ctrlMetaMap.put(Key.Z, Key.UNDO);
-		ctrlMetaMap.put(Key.Y, Key.REDO);
 	}
 	
 	protected void install() {
@@ -93,12 +85,6 @@ public class GlfwPKeyboard extends AbstractPKeyboard implements PKeyboard {
 	}
 	
 	protected void setKeyPressedState(Key key, boolean newPressedValue) {
-		if (isModifierToggled(Modifier.CTRL)) {
-			Key ctrlKey = ctrlMetaMap.get(key);
-			if (ctrlKey != null) {
-				key = ctrlKey;
-			}
-		}
 		int index = key.ordinal();
 		prevPressed[index] = nowPressed[index];
 		nowPressed[index] = newPressedValue;

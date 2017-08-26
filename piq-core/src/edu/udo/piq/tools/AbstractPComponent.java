@@ -10,6 +10,7 @@ import edu.udo.piq.PComponentObs;
 import edu.udo.piq.PCursor;
 import edu.udo.piq.PDnDSupport;
 import edu.udo.piq.PFocusObs;
+import edu.udo.piq.PFocusTraversal;
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PKeyboard.Modifier;
@@ -179,7 +180,8 @@ public class AbstractPComponent implements PComponent {
 	private boolean cachedBoundsInvalid = true;
 	protected final MutablePSize prefSize = new MutablePSize();
 	private MutablePBounds bndsNoBorder;
-	private PCursor mouseOverCursor = null;
+	protected PCursor mouseOverCursor = null;
+	protected PFocusTraversal focusTrav = null;
 	/**
 	 * These fields are used to store the previous preferred size of this component.<br>
 	 * After the layout has been laid out these values are checked against the
@@ -491,6 +493,15 @@ public class AbstractPComponent implements PComponent {
 		return false;
 	}
 	
+	protected void setFocusTraversal(PFocusTraversal focusTraversal) {
+		focusTrav = focusTraversal;
+	}
+	
+	@Override
+	public PFocusTraversal getFocusTraversal() {
+		return focusTrav;
+	}
+	
 	/**
 	 * Sets the value that will be returned by the {@link #isElusive()} method
 	 * hereafter.<br>
@@ -706,26 +717,5 @@ public class AbstractPComponent implements PComponent {
 			return getClass().getSimpleName();
 		}
 		return id;
-	}
-	
-	@Override
-	public String getDebugInfo() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("[class=");
-		sb.append(getClass().getSimpleName());
-		sb.append(", id=");
-		sb.append(getID());
-		sb.append(", styleID=");
-		sb.append(getStyleID());
-		sb.append(", bounds=");
-		sb.append(getBounds());
-		sb.append(", prefSize=");
-		sb.append(getPreferredSize());
-		sb.append(", layout=");
-		sb.append(getLayout());
-		sb.append(", border=");
-		sb.append(getBorder());
-		sb.append("]");
-		return sb.toString();
 	}
 }

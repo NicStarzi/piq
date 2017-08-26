@@ -23,21 +23,34 @@ public class PTitleBorder extends AbstractPBorder {
 	protected PTextModel model;
 	protected Orientation orientation = Orientation.TOP_LEFT;
 	protected int lineSize = 1;
+	protected int padding = 0;
 	
 	public PTitleBorder() {
-		this(1, null);
+		this(1, (Object) null);
 	}
 	
 	public PTitleBorder(Object defaultValue) {
 		this(Orientation.TOP_LEFT, 1, defaultValue);
 	}
 	
+	public PTitleBorder(PTextModel initialModel) {
+		this(Orientation.TOP_LEFT, 1, initialModel);
+	}
+	
 	public PTitleBorder(int lineThickness, Object defaultValue) {
 		this(Orientation.TOP_LEFT, lineThickness, defaultValue);
 	}
 	
+	public PTitleBorder(int lineThickness, PTextModel initialModel) {
+		this(Orientation.TOP_LEFT, lineThickness, initialModel);
+	}
+	
 	public PTitleBorder(Orientation orientation, Object defaultValue) {
 		this(orientation, 1, defaultValue);
+	}
+	
+	public PTitleBorder(Orientation orientation, PTextModel initialModel) {
+		this(orientation, 1, initialModel);
 	}
 	
 	public PTitleBorder(Orientation orientation, int lineThickness, Object defaultValue) {
@@ -46,6 +59,13 @@ public class PTitleBorder extends AbstractPBorder {
 		setModel(PModelFactory.createModelFor(this, DefaultPTextModel::new, PTextModel.class));
 		getModel().setValue(defaultValue);
 		
+		setLineThickness(lineThickness);
+		setOrientation(orientation);
+	}
+	
+	public PTitleBorder(Orientation orientation, int lineThickness, PTextModel initialModel) {
+		super();
+		setModel(initialModel);
 		setLineThickness(lineThickness);
 		setOrientation(orientation);
 	}
@@ -114,16 +134,32 @@ public class PTitleBorder extends AbstractPBorder {
 		return lineSize;
 	}
 	
+	public void setPadding(int value) {
+		if (getPadding() != value) {
+			padding = value;
+			fireInsetsChangedEvent();
+		}
+	}
+	
+	public int getPadding() {
+		return padding;
+	}
+	
 	@Override
 	public PInsets getDefaultInsets(PComponent component) {
 		int lineSize = getLineThickness();
+		int padding = getPadding();
 		PRoot root = component.getRoot();
 		if (root == null) {
-			insets.set(lineSize, lineSize, lineSize, lineSize);
+			insets.set(lineSize + padding);
 			return insets;
 		}
 		PFontResource font = root.fetchFontResource("Arial", 14, Style.PLAIN);
-		PSize titleSize = font.getSize(getTitleText());
+		if (font == null) {
+			insets.set(lineSize + padding);
+			return insets;
+		}
+		PSize titleSize = font.getSize(getTitleText(), null);
 		int insetsTop;
 		int insetsBtm;
 		if (getOrientation().isTop) {
@@ -133,7 +169,7 @@ public class PTitleBorder extends AbstractPBorder {
 			insetsTop = lineSize;
 			insetsBtm = Math.max(titleSize.getHeight(), lineSize);
 		}
-		insets.set(insetsTop, insetsBtm, lineSize, lineSize);
+		insets.set(insetsTop + padding, insetsBtm + padding, lineSize + padding, lineSize + padding);
 		return insets;
 	}
 	
@@ -178,7 +214,7 @@ public class PTitleBorder extends AbstractPBorder {
 		}
 		PFontResource font = root.fetchFontResource("Arial", 14, Style.PLAIN);
 		String titleText = getTitleText();
-		PSize titleSize = font.getSize(titleText);
+		PSize titleSize = font.getSize(titleText, null);
 		int aliMultH = ori.getHorizontalAlignmentMultiplier();
 		int txtX = ori.getDrawX(bnds, insets, titleSize) + (aliMultH * 2 * lineSize);
 		int txtY = ori.getDrawY(bnds, insets, titleSize) + 2 * lineSize;

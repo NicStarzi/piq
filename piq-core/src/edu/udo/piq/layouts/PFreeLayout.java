@@ -14,9 +14,9 @@ import edu.udo.piq.util.ThrowException;
 public class PFreeLayout extends AbstractMapPLayout {
 	
 	/**
-	 * To save memory the preferred size of the layout 
-	 * is an instance of MutablePSize which is updated 
-	 * and returned by the {@link #getPreferredSize()} 
+	 * To save memory the preferred size of the layout
+	 * is an instance of MutablePSize which is updated
+	 * and returned by the {@link #getPreferredSize()}
 	 * method.<br>
 	 */
 	protected final List<PComponent> sortedChildren = new ArrayList<>();
@@ -25,18 +25,22 @@ public class PFreeLayout extends AbstractMapPLayout {
 		super(owner);
 	}
 	
+	@Override
 	protected void onChildAdded(PComponent child, Object constraint) {
 		addChildSorted(child, (FreeConstraint) constraint);
 	}
 	
+	@Override
 	protected void onChildRemoved(PComponent child, Object constraint) {
 		sortedChildren.remove(child);
 	}
 	
+	@Override
 	protected boolean canAdd(PComponent cmp, Object constraint) {
 		return constraint != null && constraint instanceof FreeConstraint;
 	}
 	
+	@Override
 	protected void layOutInternal() {
 		PBounds ob = getOwner().getBounds();
 		int parentX = ob.getX();
@@ -62,6 +66,7 @@ public class PFreeLayout extends AbstractMapPLayout {
 		}
 	}
 	
+	@Override
 	protected void onInvalidated() {
 		int maxFx = 0;
 		int maxFy = 0;
@@ -91,6 +96,7 @@ public class PFreeLayout extends AbstractMapPLayout {
 		prefSize.setHeight(maxFy);
 	}
 	
+	@Override
 	public void clearChildren() {
 		sortedChildren.clear();
 		super.clearChildren();
@@ -110,6 +116,7 @@ public class PFreeLayout extends AbstractMapPLayout {
 		sortedChildren.add(index, component);
 	}
 	
+	@Override
 	public PComponent getChildAt(int x, int y) {
 		for (int i = sortedChildren.size() - 1; i >= 0; i--) {
 			PComponent child = sortedChildren.get(i);
@@ -127,10 +134,12 @@ public class PFreeLayout extends AbstractMapPLayout {
 		return null;
 	}
 	
+	@Override
 	public Collection<PComponent> getChildren() {
 		return Collections.unmodifiableList(sortedChildren);
 	}
 	
+	@Override
 	public FreeConstraint getChildConstraint(PComponent child) {
 		return (FreeConstraint) super.getChildConstraint(child);
 	}
@@ -177,16 +186,18 @@ public class PFreeLayout extends AbstractMapPLayout {
 	
 	public void updateConstraint(PComponent child, FreeConstraint newConstraint) {
 		FreeConstraint con = getChildConstraint(child);
-		updateConstraint(child, con, 
-				newConstraint.getX(), newConstraint.getY(), 
-				newConstraint.getWidth(), newConstraint.getHeight(), 
+		updateConstraint(child, con,
+				newConstraint.getX(), newConstraint.getY(),
+				newConstraint.getWidth(), newConstraint.getHeight(),
 				newConstraint.getZ());
 	}
 	
+	@Override
 	protected void onOwnerBoundsChanged() {
 		// We do not have to invalidate when the owners bounds change
 	}
 	
+	@Override
 	protected void onChildPrefSizeChanged(PComponent child) {
 		FreeConstraint cnstr = getChildConstraint(child);
 		if (cnstr.w == -1 || cnstr.h == -1) {
@@ -199,15 +210,19 @@ public class PFreeLayout extends AbstractMapPLayout {
 		protected int x, y, w, h, z;
 		
 		public FreeConstraint() {
-			this(0, 0, 0, 0, 0);
-			w = -1;
-			h = -1;
+			this(0, 0, -1, -1, 0);
 		}
 		
 		public FreeConstraint(int x, int y) {
-			this(x, y, 0, 0, 0);
-			w = -1;
-			h = -1;
+			this(x, y, -1, -1, 0);
+		}
+		
+		public FreeConstraint(int z) {
+			this(0, 0, -1, -1, z);
+		}
+		
+		public FreeConstraint(int x, int y, int z) {
+			this(x, y, -1, -1, z);
 		}
 		
 		public FreeConstraint(int x, int y, int w, int h) {
@@ -215,8 +230,8 @@ public class PFreeLayout extends AbstractMapPLayout {
 		}
 		
 		public FreeConstraint(int x, int y, int w, int h, int z) {
-			ThrowException.ifLess(0, w, "width < 0");
-			ThrowException.ifLess(0, h, "height < 0");
+			ThrowException.ifLess(-1, w, "width < 1");
+			ThrowException.ifLess(-1, h, "height < 1");
 			this.x = x;
 			this.y = y;
 			this.w = w;

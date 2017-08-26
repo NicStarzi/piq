@@ -3,15 +3,15 @@ package edu.udo.piq.components.defaults;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
-import edu.udo.piq.components.util.StrToObj;
 import edu.udo.piq.tools.AbstractPSpinnerModel;
 import edu.udo.piq.util.ThrowException;
 
 public class PSpinnerModelList extends AbstractPSpinnerModel {
 	
 	protected List<Object> valList;
-	protected StrToObj decoder;
+	protected Function<String, Object> decoder;
 	protected int index;
 	
 	public PSpinnerModelList(Object[] values) {
@@ -36,17 +36,17 @@ public class PSpinnerModelList extends AbstractPSpinnerModel {
 	
 	public PSpinnerModelList(List<?> values, int selectedIndex) {
 		ThrowException.ifNull(values, "values == null");
-		ThrowException.ifNotWithin(0, values.size() - 1, selectedIndex, 
+		ThrowException.ifNotWithin(0, values.size() - 1, selectedIndex,
 				"selectedIndex < 0 || selectedIndex >= values.size()");
 		valList = Collections.unmodifiableList(values);
 		index = selectedIndex;
 	}
 	
-	public void setInputDecoder(StrToObj stringDecoder) {
+	public void setInputDecoder(Function<String, Object> stringDecoder) {
 		decoder = stringDecoder;
 	}
 	
-	public StrToObj getInputDecoder() {
+	public Function<String, Object> getInputDecoder() {
 		return decoder;
 	}
 	
@@ -58,14 +58,17 @@ public class PSpinnerModelList extends AbstractPSpinnerModel {
 		return index;
 	}
 	
+	@Override
 	public boolean hasNext() {
 		return getValueIndex() < getValueList().size() - 1;
 	}
 	
+	@Override
 	public boolean hasPrevious() {
 		return getValueIndex() > 0;
 	}
 	
+	@Override
 	public Object getNext() {
 		if (getValueIndex() == getValueList().size() - 1) {
 			return getValueList().get(getValueIndex());
@@ -73,6 +76,7 @@ public class PSpinnerModelList extends AbstractPSpinnerModel {
 		return getValueList().get(getValueIndex() + 1);
 	}
 	
+	@Override
 	public Object getPrevious() {
 		if (getValueIndex() == 0) {
 			return getValueList().get(getValueIndex());
@@ -80,22 +84,24 @@ public class PSpinnerModelList extends AbstractPSpinnerModel {
 		return getValueList().get(getValueIndex() - 1);
 	}
 	
+	@Override
 	public boolean canSetValue(Object obj) {
 		if (getValueList().contains(obj)) {
 			return true;
 		}
 		if (getInputDecoder() != null && obj instanceof String) {
 			return getValueList().contains(
-					getInputDecoder().parse((String) obj));
+					getInputDecoder().apply((String) obj));
 		}
 		return false;
 	}
 	
+	@Override
 	public void setValue(Object obj) {
-		ThrowException.ifFalse(canSetValue(obj), 
+		ThrowException.ifFalse(canSetValue(obj),
 				"canSetValue(value) == false");
 		if (!getValueList().contains(obj)) {
-			obj = getInputDecoder().parse((String) obj);
+			obj = getInputDecoder().apply((String) obj);
 		}
 		if (!obj.equals(getValue())) {
 			Object oldValue = getValue();
@@ -104,6 +110,7 @@ public class PSpinnerModelList extends AbstractPSpinnerModel {
 		}
 	}
 	
+	@Override
 	public Object getValue() {
 		return getValueList().get(getValueIndex());
 	}

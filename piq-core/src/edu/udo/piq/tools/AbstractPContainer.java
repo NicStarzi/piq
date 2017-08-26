@@ -5,6 +5,7 @@ import java.util.Collection;
 import edu.udo.piq.PBorder;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
+import edu.udo.piq.PFocusTraversal;
 import edu.udo.piq.PLayout;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
@@ -21,6 +22,11 @@ public abstract class AbstractPContainer<CONSTRAINT_CLASS> extends AbstractPLayo
 	@Override
 	public void setBorder(PBorder border) {
 		super.setBorder(border);
+	}
+	
+	@Override
+	public void setFocusTraversal(PFocusTraversal focusTraversal) {
+		super.setFocusTraversal(focusTraversal);
 	}
 	
 	/**

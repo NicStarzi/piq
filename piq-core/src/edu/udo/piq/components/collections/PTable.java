@@ -1,5 +1,7 @@
 package edu.udo.piq.components.collections;
 
+import java.util.function.Function;
+
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PDnDSupport;
@@ -8,6 +10,7 @@ import edu.udo.piq.PKeyboard.Modifier;
 import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
+import edu.udo.piq.PMouse.VirtualMouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
@@ -16,7 +19,6 @@ import edu.udo.piq.components.defaults.DefaultPCellFactory;
 import edu.udo.piq.components.defaults.FixedSizePTableModel;
 import edu.udo.piq.components.defaults.PTablePDnDSupport;
 import edu.udo.piq.components.defaults.ReRenderPFocusObs;
-import edu.udo.piq.components.util.ObjToStr;
 import edu.udo.piq.layouts.PTableLayout3;
 import edu.udo.piq.tools.AbstractPInputLayoutOwner;
 import edu.udo.piq.util.ObserverList;
@@ -71,7 +73,7 @@ public class PTable extends AbstractPInputLayoutOwner
 	};
 	protected PTableSelection selection;
 	protected PTableModel model;
-	protected ObjToStr encoder;
+	protected Function<Object, String> encoder;
 	protected PCellFactory cellFactory;
 	protected PDnDSupport dndSup;
 	protected PModelIndex currentDnDHighlightIndex;
@@ -115,7 +117,7 @@ public class PTable extends AbstractPInputLayoutOwner
 		if (btn == MouseButton.LEFT && isMouseOverThisOrChild()) {
 			PTableCellIndex index = getIndexAt(mouse.getX(), mouse.getY());
 			if (index != null) {
-				if (mouse.isPressed(MouseButton.DRAG_AND_DROP)) {
+				if (mouse.isPressed(VirtualMouseButton.DRAG_AND_DROP)) {
 					lastDragX = mouse.getX();
 					lastDragY = mouse.getY();
 					isDragTagged = true;
@@ -132,7 +134,7 @@ public class PTable extends AbstractPInputLayoutOwner
 	}
 	
 	protected void onMouseReleased(PMouse mouse, MouseButton btn) {
-		if (isDragTagged && mouse.isReleased(MouseButton.DRAG_AND_DROP)) {
+		if (isDragTagged && mouse.isReleased(VirtualMouseButton.DRAG_AND_DROP)) {
 			isDragTagged = false;
 		}
 	}
@@ -140,7 +142,7 @@ public class PTable extends AbstractPInputLayoutOwner
 	protected void onMouseMoved(PMouse mouse) {
 		PDnDSupport dndSup = getDragAndDropSupport();
 		if (dndSup != null && isDragTagged
-				&& mouse.isPressed(MouseButton.DRAG_AND_DROP))
+				&& mouse.isPressed(VirtualMouseButton.DRAG_AND_DROP))
 		{
 			int mx = mouse.getX();
 			int my = mouse.getY();
@@ -289,9 +291,9 @@ public class PTable extends AbstractPInputLayoutOwner
 //		return result;
 //	}
 	
-	public void setOutputEncoder(ObjToStr outputEncoder) {
+	public void setOutputEncoder(Function<Object, String> outputEncoder) {
 		encoder = outputEncoder;
-		ObjToStr outEnc = getOutputEncoder();
+		Function<Object, String> outEnc = getOutputEncoder();
 		
 		PCellFactory cellFactory = getCellFactory();
 		if (cellFactory instanceof DefaultPCellFactory) {
@@ -310,7 +312,7 @@ public class PTable extends AbstractPInputLayoutOwner
 		}
 	}
 	
-	public ObjToStr getOutputEncoder() {
+	public Function<Object, String> getOutputEncoder() {
 		return encoder;
 	}
 	

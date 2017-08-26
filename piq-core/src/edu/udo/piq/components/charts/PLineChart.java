@@ -6,21 +6,21 @@ import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.defaults.DefaultPLineChartModel;
 import edu.udo.piq.tools.AbstractPComponent;
-import edu.udo.piq.tools.ImmutablePSize;
 
 public class PLineChart extends AbstractPComponent {
 	
 	protected static final PColor BACKGROUND_COLOR = PColor.GREY50;
 	protected static final PColor[] LINE_COLORS = new PColor[] {
-		PColor.YELLOW, 
-		PColor.RED, 
-		PColor.GREEN, 
-		PColor.MAGENTA, 
-		PColor.TEAL, 
-		PColor.BLUE, 
+		PColor.YELLOW,
+		PColor.RED,
+		PColor.GREEN,
+		PColor.MAGENTA,
+		PColor.TEAL,
+		PColor.BLUE,
 	};
 	
 	private final PLineChartModelObs modelObs = new PLineChartModelObs() {
+		@Override
 		public void onDataPointAdded(PLineChartModel model, int index) {
 			if (maxDataIndex < 0 || model.getDataPoint(maxDataIndex) < model.getDataPoint(index)) {
 				maxDataIndex = index;
@@ -28,6 +28,7 @@ public class PLineChart extends AbstractPComponent {
 			firePreferredSizeChangedEvent();
 			fireReRenderEvent();
 		}
+		@Override
 		public void onDataPointRemoved(PLineChartModel model, int index) {
 			if (maxDataIndex == index) {
 				maxDataIndex = getHighestDataIndex();
@@ -35,6 +36,7 @@ public class PLineChart extends AbstractPComponent {
 			firePreferredSizeChangedEvent();
 			fireReRenderEvent();
 		}
+		@Override
 		public void onDataPointChanged(PLineChartModel model, int index) {
 			if (maxDataIndex == index) {
 				maxDataIndex = getHighestDataIndex();
@@ -76,6 +78,7 @@ public class PLineChart extends AbstractPComponent {
 		return model;
 	}
 	
+	@Override
 	public void defaultRender(PRenderer renderer) {
 		PBounds bnds = getBounds();
 		int x = bnds.getX();
@@ -107,10 +110,12 @@ public class PLineChart extends AbstractPComponent {
 		}
 	}
 	
+	@Override
 	public boolean defaultFillsAllPixels() {
 		return true;
 	}
 	
+	@Override
 	public PSize getDefaultPreferredSize() {
 		if (getModel() == null || getModel().getDataCount() == 0) {
 			return PSize.ZERO_SIZE;
@@ -119,7 +124,8 @@ public class PLineChart extends AbstractPComponent {
 		int scaleY = getDefaultScaleY();
 		int prefW = getModel().getDataCount() * scaleX;
 		int prefH = getModel().getDataPoint(maxDataIndex) * scaleY;
-		return new ImmutablePSize(prefW, prefH);
+		prefSize.set(prefW, prefH);
+		return prefSize;
 	}
 	
 	protected PColor getDefaultBackgroundColor() {

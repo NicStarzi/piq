@@ -4,41 +4,35 @@ import java.awt.Component;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.lang.Character.UnicodeBlock;
-import java.util.EnumMap;
-import java.util.Map;
 
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.tools.AbstractPKeyboard;
 
 public class SwingPKeyboard extends AbstractPKeyboard implements PKeyboard {
 	
-	protected final Map<Key, Key> ctrlMetaMap = new EnumMap<>(Key.class);
 	protected final boolean[] nowPressed = new boolean[Key.COUNT];
 	protected final boolean[] prevPressed = new boolean[nowPressed.length];
 	protected final boolean[] modState = new boolean[Modifier.COUNT];
 	protected boolean capsLockDown;
 	
 	public SwingPKeyboard(Component base) {
-		ctrlMetaMap.put(Key.C, Key.COPY);
-		ctrlMetaMap.put(Key.X, Key.CUT);
-		ctrlMetaMap.put(Key.V, Key.PASTE);
-		ctrlMetaMap.put(Key.Z, Key.UNDO);
-		ctrlMetaMap.put(Key.Y, Key.REDO);
-		
 		base.setFocusTraversalKeysEnabled(false);
 		base.addKeyListener(new KeyListener() {
+			
 			@Override
 			public void keyTyped(KeyEvent e) {
 				char c = e.getKeyChar();
 				if (isTypeable(c)) {
-					String typedString = String.valueOf(new char[] {c});
+					String typedString = String.valueOf(new char[] { c });
 					fireStringTypedEvent(typedString);
 				}
 			}
+			
 			@Override
 			public void keyReleased(KeyEvent e) {
 				updateKey(e, false);
 			}
+			
 			@Override
 			public void keyPressed(KeyEvent e) {
 				updateKey(e, true);
@@ -64,17 +58,11 @@ public class SwingPKeyboard extends AbstractPKeyboard implements PKeyboard {
 		setModifierState(Modifier.META, e.isMetaDown());
 		
 		int keyCode = e.getKeyCode();
-		Key key = keyCodeToKey(keyCode);
+		Key key = SwingPKeyboard.keyCodeToKey(keyCode);
 		if (key == Key.CAPSLOCK && newPressedValue) {
 			capsLockDown = !capsLockDown;
 		}
 		setModifierState(Modifier.CAPS, e.isShiftDown() || capsLockDown);
-		if (key != null && isModifierToggled(Modifier.CTRL)) {
-			Key ctrlKey = ctrlMetaMap.get(key);
-			if (ctrlKey != null) {
-				key = ctrlKey;
-			}
-		}
 		if (key != null) {
 			int index = key.ID;
 			prevPressed[index] = nowPressed[index];
@@ -230,8 +218,9 @@ public class SwingPKeyboard extends AbstractPKeyboard implements PKeyboard {
 			return Key.PAGE_DOWN;
 		case KeyEvent.VK_END:
 			return Key.END;
+		default:
+			return null;
 		}
-		return null;
 	}
 	
 }

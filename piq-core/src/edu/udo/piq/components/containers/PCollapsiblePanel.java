@@ -1,9 +1,11 @@
 package edu.udo.piq.components.containers;
 
+import edu.udo.piq.PBorder;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PRenderer;
+import edu.udo.piq.borders.PLineBorder;
 import edu.udo.piq.components.PCheckBox;
 import edu.udo.piq.components.PCheckBoxModelObs;
 import edu.udo.piq.components.PExpandButton;
@@ -25,6 +27,7 @@ public class PCollapsiblePanel extends AbstractPLayoutOwner {
 	
 	public PCollapsiblePanel(PComponent headerComponent, PComponent bodyComponent) {
 		super();
+		setBorder(new PLineBorder(1));
 		setLayout(new PCollapsibleLayout(this));
 		setExpandButton(new PExpandButton());
 		setHeader(headerComponent);
@@ -33,6 +36,7 @@ public class PCollapsiblePanel extends AbstractPLayoutOwner {
 	
 	public PCollapsiblePanel(boolean initiallyExpanded) {
 		super();
+		setBorder(new PLineBorder(1));
 		setLayout(new PCollapsibleLayout(this));
 		setExpandButton(new PExpandButton());
 		getExpandButton().getModel().setValue(initiallyExpanded);
@@ -51,6 +55,12 @@ public class PCollapsiblePanel extends AbstractPLayoutOwner {
 		return getLayout().isExpanded();
 	}
 	
+	@Override
+	public void setBorder(PBorder border) {
+		super.setBorder(border);
+	}
+	
+	@Override
 	public PCollapsibleLayout getLayout() {
 		return (PCollapsibleLayout) super.getLayout();
 	}
@@ -89,12 +99,13 @@ public class PCollapsiblePanel extends AbstractPLayoutOwner {
 		return getLayout().getChildForConstraint(Constraint.BODY);
 	}
 	
+	@Override
 	public void defaultRender(PRenderer renderer) {
-		PBounds bounds = getBounds();
+		PBounds bounds = getBoundsWithoutBorder();
 		renderer.setColor(PColor.GREY75);
 		renderer.drawQuad(bounds);
-		renderer.setColor(PColor.BLACK);
-		renderer.strokeQuad(bounds);
+//		renderer.setColor(PColor.BLACK);
+//		renderer.strokeQuad(bounds);
 	}
 	
 }

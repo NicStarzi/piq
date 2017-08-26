@@ -1,13 +1,16 @@
 package edu.udo.piq.components;
 
+import java.util.function.Function;
+
 import edu.udo.piq.PComponent;
-import edu.udo.piq.components.util.ObjToStr;
 
 public interface PSpinnerPart extends PComponent {
 	
 	public void setSpinnerModel(PSpinnerModel model);
 	
-	public void setOutputEncoder(ObjToStr outputEncoder);
+	public void setOutputEncoder(Function<Object, String> outputEncoder);
+	
+	public void setInputDecoder(Function<String, Object> inputDecoder);
 	
 	public default PSpinner getSpinner() {
 		if (getParent() instanceof PSpinner) {

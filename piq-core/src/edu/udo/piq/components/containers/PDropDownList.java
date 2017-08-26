@@ -1,5 +1,6 @@
 package edu.udo.piq.components.containers;
 
+import edu.udo.piq.PComponent;
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PKeyboardObs;
@@ -12,69 +13,73 @@ import edu.udo.piq.components.collections.PReadOnlyModel;
 import edu.udo.piq.components.collections.PSelection;
 import edu.udo.piq.components.collections.PSelectionObs;
 import edu.udo.piq.components.textbased.PLabel;
+import edu.udo.piq.components.textbased.PTextModel;
+import edu.udo.piq.util.ThrowException;
 
 public class PDropDownList extends PDropDown {
 	
 	protected final PSelectionObs listSelectObs = new PSelectionObs() {
+		@Override
 		public void onSelectionAdded(PSelection selection, PModelIndex index) {
-			setDisplayedIndex(index);
+			setDisplayedIndex((PListIndex) index);
 		}
+		@Override
 		public void onSelectionRemoved(PSelection selection, PModelIndex index) {
-			if (index.equals(displayedIndex)) {
+			if (index.equals(getDisplayedIndex())) {
 				setDisplayedIndex(null);
 			}
 		}
 	};
 	protected final PModelObs modelObs = new PModelObs() {
+		@Override
 		public void onContentAdded(PReadOnlyModel model, PModelIndex index,
-				Object newContent) 
+				Object newContent)
 		{
-			if (displayedIndex == null) {
-				list.getSelection().addSelection(index);
+			if (getDisplayedIndex() == null) {
+				getList().getSelection().addSelection(index);
 			}
 		}
+		@Override
 		public void onContentRemoved(PReadOnlyModel model, PModelIndex index,
-				Object oldContent) 
+				Object oldContent)
 		{
 			if (index.equals(displayedIndex)) {
 				setDisplayedIndex(null);
-				if (list.getModel().getSize() > 0) {
-					list.getSelection().addSelection(new PListIndex(0));
+				if (getList().getModel().getSize() > 0) {
+					getList().getSelection().addSelection(new PListIndex(0));
 				}
 			}
 		}
+		@Override
 		public void onContentChanged(PReadOnlyModel model, PModelIndex index,
-				Object oldContent) 
+				Object oldContent)
 		{
 			if (index.equals(displayedIndex)) {
-				setDisplayedIndex(index);
+				setDisplayedIndex((PListIndex) index);
 			}
 		}
 	};
 	protected final PKeyboardObs keyObs = new PKeyboardObs() {
+		@Override
 		public void onKeyTriggered(PKeyboard keyboard, Key key) {
 			if (isBodyVisible() && (key == Key.ENTER || key == Key.ESC)) {
 				hideDropDown();
 			}
 		}
 	};
-	protected final PLabel label;
-	protected final PList list;
-	protected PModelIndex displayedIndex = null;
+	protected PList list;
+	protected PListIndex displayedIndex = null;
 	
 	public PDropDownList() {
 		super();
-		list = new PList();
+		PList list = new PList();
 		list.setDragAndDropSupport(null);
 		list.setSelection(new PListSingleSelection());
-		list.addObs(modelObs);
-		list.addObs(listSelectObs);
-		setBody(list);
-		
-		label = new PLabel();
-		setPreview(label);
+		setList(list);
+		setPreview(new PPreviewPLabel());
 		
 		addObs(new PDropDownObs() {
+			@Override
 			public void onBodyShown(PDropDown dropDown) {
 				getBody().takeFocus();
 			}
@@ -82,21 +87,85 @@ public class PDropDownList extends PDropDown {
 		addObs(keyObs);
 	}
 	
+	public void setList(PList listComponent) {
+		if (getList() != null) {
+			getList().removeObs(modelObs);
+			getList().removeObs(listSelectObs);
+		}
+		list = listComponent;
+		if (getList() != null) {
+			listComponent.addObs(modelObs);
+			listComponent.addObs(listSelectObs);
+		}
+		setBody(getList());
+	}
+	
 	public PList getList() {
 		return list;
+	}
+	
+	public void setPreview(PPreviewComponent component) {
+		setPreview((PComponent) component);
+	}
+	
+	@Override
+	public void setPreview(PComponent component) {
+		ThrowException.ifTypeCastFails(component, PPreviewComponent.class,
+				"!(component instanceof PPreviewComponent)");
+		super.setPreview(component);
+	}
+	
+	@Override
+	public PPreviewComponent getPreview() {
+		return (PPreviewComponent) super.getPreview();
 	}
 	
 	public void setDisplayedIndex(int indexVal) {
 		setDisplayedIndex(new PListIndex(indexVal));
 	}
 	
-	public void setDisplayedIndex(PModelIndex index) {
+	public void setDisplayedIndex(PListIndex index) {
 		displayedIndex = index;
-		if (displayedIndex == null) {
-			label.getModel().setValue(null);
-		} else {
-			label.getModel().setValue(list.getModel().get(displayedIndex));
+		if (getPreview() == null) {
+			return;
 		}
+		Object content = getDisplayedContent();
+		getPreview().getModel().setValue(content);
+	}
+	
+	public PListIndex getDisplayedIndex() {
+		return displayedIndex;
+	}
+	
+	public void setDisplayedContent(Object content) {
+		PModelIndex index = getList().getModel().getIndexOf(content);
+		ThrowException.ifNull(index, "index == null");
+		setDisplayedIndex(ThrowException.ifTypeCastFails(index, PListIndex.class,
+				"!(index instanceof PListIndex)"));
+	}
+	
+	public Object getDisplayedContent() {
+		PListIndex idx = getDisplayedIndex();
+		if (idx == null) {
+			return null;
+		}
+		return getList().getModel().get(idx);
+	}
+	
+	public static class PPreviewPLabel extends PLabel implements PPreviewComponent {
+		public PPreviewPLabel() {
+			super();
+		}
+		public PPreviewPLabel(PTextModel model) {
+			super(model);
+		}
+		public PPreviewPLabel(Object defaultModelValue) {
+			super(defaultModelValue);
+		}
+	}
+	
+	public static interface PPreviewComponent extends PComponent {
+		public PTextModel getModel();
 	}
 	
 }

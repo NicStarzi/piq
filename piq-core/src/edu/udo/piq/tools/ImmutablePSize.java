@@ -11,10 +11,12 @@ public class ImmutablePSize extends AbstractPSize implements PSize {
 		h = height;
 	}
 	
+	@Override
 	public int getWidth() {
 		return w;
 	}
 	
+	@Override
 	public int getHeight() {
 		return h;
 	}

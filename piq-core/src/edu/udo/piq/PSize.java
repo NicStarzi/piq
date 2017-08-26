@@ -69,6 +69,10 @@ public interface PSize {
 		return getWidth() * getHeight() < 1;
 	}
 	
+	public default PSize createCopy() {
+		return createCopyAndAdd(0, 0);
+	}
+	
 	public default PSize createCopyAndAdd(int width, int height) {
 		return new ImmutablePSize(getWidth() + width, getHeight() + height);
 	}

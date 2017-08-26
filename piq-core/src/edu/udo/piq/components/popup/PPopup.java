@@ -7,6 +7,7 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
+import edu.udo.piq.PMouse.VirtualMouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PRootOverlay;
@@ -105,7 +106,7 @@ public class PPopup {
 		if (isShown() && popupComp.isMouseOverThisOrChild()) {
 			return;
 		}
-		if (mouse.isPressed(MouseButton.POPUP_TRIGGER)
+		if (mouse.isPressed(VirtualMouseButton.POPUP_TRIGGER)
 				&& getOwner().isMouseOverThisOrChild())
 		{
 			hidePopup();

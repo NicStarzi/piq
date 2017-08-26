@@ -1,15 +1,16 @@
 package edu.udo.piq;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
 
 import edu.udo.piq.components.containers.PGlassPanel;
-import edu.udo.piq.components.util.PFocusTraversal;
 import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.MutablePBounds;
 import edu.udo.piq.util.AncestorIterator;
 import edu.udo.piq.util.BreadthFirstDescendantIterator;
+import edu.udo.piq.util.DepthFirstDescendantIterator;
 import edu.udo.piq.util.PCompUtil;
 import edu.udo.piq.util.PGuiUtil;
 import edu.udo.piq.util.ThrowException;
@@ -233,9 +234,6 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 	 * @return an instance of {@link PFocusTraversal} or null
 	 */
 	public default PFocusTraversal getFocusTraversal() {
-		if (getParent() != null) {
-			return getParent().getFocusTraversal();
-		}
 		return null;
 	}
 	
@@ -366,7 +364,25 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 	 * 
 	 * @return a String representing all important information for this component
 	 */
-	public String getDebugInfo();
+	public default String getDebugInfo() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("[class=");
+		sb.append(getClass().getSimpleName());
+		sb.append(", id=");
+		sb.append(getID());
+		sb.append(", styleID=");
+		sb.append(getStyleID());
+		sb.append(", bounds=");
+		sb.append(getBounds());
+		sb.append(", prefSize=");
+		sb.append(getPreferredSize());
+		sb.append(", layout=");
+		sb.append(getLayout());
+		sb.append(", border=");
+		sb.append(getBorder());
+		sb.append("]");
+		return sb.toString();
+	}
 	
 	@Override
 	public default Object getStyleID() {
@@ -498,6 +514,75 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 	
 	public default Iterable<PComponent> getDescendants() {
 		return new BreadthFirstDescendantIterator(this);
+	}
+	
+	/**
+	 * Returns the first descendant of root with the given ID if there is any.<br>
+	 * If no such {@link PComponent} exists in the GUI null will be returned.<br>
+	 * If the root itself has the given ID the root will be returned.<br>
+	 * 
+	 * @param root the PComponent from where we start to search
+	 * @param id the ID for which we are searching for
+	 * @return a PComponent with the given ID or null if no such component exists
+	 * @throws IllegalArgumentException if either root or id are null
+	 * @see PComponent#setID(String)
+	 * @see PComponent#getID()
+	 */
+	public default PComponent getFirstDescendantWithID(String id) throws IllegalArgumentException {
+		ThrowException.ifNull(id, "id == null");
+		for (PComponent current : new DepthFirstDescendantIterator(this)) {
+			if (id.equals(current.getID())) {
+				return current;
+			}
+		}
+		return null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public default <T> T getFirstDescendantOfType(Class<T> descendantType) {
+		ThrowException.ifNull(descendantType, "descendantType == null");
+		for (PComponent current : new DepthFirstDescendantIterator(this)) {
+			if (descendantType.isInstance(current)) {
+				return (T) current;
+			}
+		}
+		return null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public default <T> Collection<T> getAllDescendantsOfType(Class<T> descendantType) {
+		ThrowException.ifNull(descendantType, "descendantType == null");
+		Collection<T> result = null;
+		for (PComponent current : new DepthFirstDescendantIterator(this)) {
+			if (descendantType.isInstance(current)) {
+				if (result == null) {
+					result = new ArrayList<>();
+				}
+				result.add((T) current);
+			}
+		}
+		return result;
+	}
+	
+	public default PComponent getFirstAncestorWithID(String id) {
+		ThrowException.ifNull(id, "id == null");
+		for (PComponent current : new AncestorIterator(this, false)) {
+			if (id.equals(current.getID())) {
+				return current;
+			}
+		}
+		return null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public default <T> T getFirstAncestorOfType(Class<T> ancestorType) {
+		ThrowException.ifNull(ancestorType, "ancestorType == null");
+		for (PComponent current : new AncestorIterator(this, false)) {
+			if (ancestorType.isInstance(current)) {
+				return (T) current;
+			}
+		}
+		return null;
 	}
 	
 	/**

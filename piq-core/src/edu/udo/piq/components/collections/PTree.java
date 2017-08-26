@@ -19,6 +19,7 @@ import edu.udo.piq.PLayout;
 import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
+import edu.udo.piq.PMouse.VirtualMouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.components.defaults.DefaultPTreeModel;
@@ -700,7 +701,7 @@ public class PTree extends AbstractPInputLayoutOwner
 		if (btn == MouseButton.LEFT && isMouseOverThisOrChild()) {
 			PTreeIndex index = getIndexAt(mouse.getX(), mouse.getY());
 			if (index != null) {
-				if (mouse.isPressed(MouseButton.DRAG_AND_DROP)) {
+				if (mouse.isPressed(VirtualMouseButton.DRAG_AND_DROP)) {
 					lastDragX = mouse.getX();
 					lastDragY = mouse.getY();
 					isDragTagged = true;
@@ -721,7 +722,7 @@ public class PTree extends AbstractPInputLayoutOwner
 	}
 	
 	protected void onMouseReleased(PMouse mouse, MouseButton btn) {
-		if (isDragTagged && mouse.isReleased(MouseButton.DRAG_AND_DROP)) {
+		if (isDragTagged && mouse.isReleased(VirtualMouseButton.DRAG_AND_DROP)) {
 			isDragTagged = false;
 		}
 	}
@@ -731,7 +732,7 @@ public class PTree extends AbstractPInputLayoutOwner
 			return;
 		}
 		PDnDSupport dndSup = getDragAndDropSupport();
-		if (dndSup != null && mouse.isPressed(MouseButton.DRAG_AND_DROP)) {
+		if (dndSup != null && mouse.isPressed(VirtualMouseButton.DRAG_AND_DROP)) {
 			int mx = mouse.getX();
 			int my = mouse.getY();
 			int disX = Math.abs(lastDragX - mx);

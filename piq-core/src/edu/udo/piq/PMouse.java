@@ -6,6 +6,7 @@ import java.util.List;
 
 import edu.udo.piq.components.collections.PSelectionComponent;
 import edu.udo.piq.components.popup.PPopup;
+import edu.udo.piq.tools.ImmutablePPoint;
 import edu.udo.piq.util.PCompUtil;
 
 public interface PMouse {
@@ -25,6 +26,10 @@ public interface PMouse {
 	 * @return y-coordinate on screen
 	 */
 	public int getY();
+	
+	public default PPoint getPosition() {
+		return new ImmutablePPoint(getX(), getY());
+	}
 	
 	/**
 	 * Returns the distance the mouse pointer has traveled on the
@@ -73,6 +78,63 @@ public interface PMouse {
 	public boolean isTriggered(MouseButton btn) throws NullPointerException;
 	
 	/**
+	 * Returns true if the given {@link MouseButton} is being pressed
+	 * down at this update cycle.<br>
+	 * 
+	 * @param btn the mouse button
+	 * @return whether the button is being pressed right now
+	 * @throws NullPointerException if btn is null
+	 */
+	public default boolean isPressed(VirtualMouseButton btn) {
+		switch (btn) {
+		case DRAG_AND_DROP:
+			return isPressed(MouseButton.LEFT);
+		case POPUP_TRIGGER:
+			return isPressed(MouseButton.RIGHT);
+		default:
+			return false;
+		}
+	}
+	
+	/**
+	 * Returns true if the given {@link MouseButton} has just been
+	 * released in the last update cycle.<br>
+	 * 
+	 * @param btn the mouse button
+	 * @return whether the button has been released just now
+	 * @throws NullPointerException if btn is null
+	 */
+	public default boolean isReleased(VirtualMouseButton btn) {
+		switch (btn) {
+		case DRAG_AND_DROP:
+			return isPressed(MouseButton.LEFT);
+		case POPUP_TRIGGER:
+			return isPressed(MouseButton.RIGHT);
+		default:
+			return false;
+		}
+	}
+	
+	/**
+	 * Returns true if the given {@link MouseButton} has just been
+	 * triggered in the last update cycle.<br>
+	 * 
+	 * @param btn the mouse button
+	 * @return whether the button has been triggered just now
+	 * @throws NullPointerException if btn is null
+	 */
+	public default boolean isTriggered(VirtualMouseButton btn) {
+		switch (btn) {
+		case DRAG_AND_DROP:
+			return isPressed(MouseButton.LEFT);
+		case POPUP_TRIGGER:
+			return isPressed(MouseButton.RIGHT);
+		default:
+			return false;
+		}
+	}
+	
+	/**
 	 * Returns the topmost component that is directly underneath the mouse.<br>
 	 * This component may be cached by the mouse to improve performance.<br>
 	 * The returned component may be null if the mouse is outside of the
@@ -85,6 +147,14 @@ public interface PMouse {
 	 */
 	public PComponent getComponentAtMouse();
 	
+	public default PPoint getOffsetToComponent(PComponent component) {
+		return new ImmutablePPoint(getOffsetToComponentX(component), getOffsetToComponentY(component));
+	}
+	
+	public default int getOffsetToComponent(PComponent component, Axis axis) {
+		return axis.getCoordinate(this) - axis.getFirstCoordinate(component);
+	}
+	
 	public default int getOffsetToComponentX(PComponent component) {
 		return getX() - component.getBounds().getX();
 	}
@@ -92,18 +162,6 @@ public interface PMouse {
 	public default int getOffsetToComponentY(PComponent component) {
 		return getY() - component.getBounds().getY();
 	}
-	
-//	/**
-//	 * Sets the cursor graphic that is displayed for the mouse.<br>
-//	 * If the cursor graphic can not be displayed because the implementation
-//	 * does not allow it nothing will happen.<br>
-//	 *
-//	 * @param cursor a non-null instance of {@link PCursor}
-//	 * @throws IllegalArgumentException if cursor is null
-////	 * @see #setCursor(PCursorType)
-//	 * @see #fetchCustomCursor(PImageResource, int, int)
-//	 */
-//	public void setCursor(PCursor cursor) throws IllegalArgumentException;
 	
 	public PCursor getCursorDefault();
 	
@@ -115,19 +173,6 @@ public interface PMouse {
 	
 	public PCursor getCursorBusy();
 	
-//	/**
-//	 * Sets the cursor graphic that is displayed for the mouse. This method will
-//	 * use a default implementation for the given {@link PCursorType} if available.
-//	 * If a default implementation for the type does not exist or if the
-//	 * implementation does not allow changing cursors nothing will happen.<br>
-//	 *
-//	 * @param cursorType the type of the displayed cursor
-//	 * @throws IllegalArgumentException if cursorType is null or {@link PCursorType#CUSTOM}
-//	 * @see #setCursor(PCursor)
-//	 * @see #getCustomCursor(PImageResource, int, int)
-//	 */
-//	public void setCursor(PCursorType cursorType) throws IllegalArgumentException;
-	
 	/**
 	 * Returns the currently used {@link PCursor}.<br>
 	 * This method never returns null, even if cursors are not supported by the
@@ -135,8 +180,6 @@ public interface PMouse {
 	 * 
 	 * @return the {@link PCursor} that is currently being used
 	 * @see PComponent#getMouseOverCursor(PMouse)
-//	 * @see #setCursor(PCursor)
-//	 * @see #setCursor(PCursorType)
 	 */
 	public PCursor getCurrentCursor();
 	
@@ -170,6 +213,14 @@ public interface PMouse {
 		 * Standard components do not use this button.<br>
 		 */
 		MIDDLE,
+		;
+		public static final List<PMouse.MouseButton> ALL =
+				Collections.unmodifiableList(Arrays.asList(MouseButton.values()));
+		public static final int COUNT = ALL.size();
+		
+		public final int ID = ordinal();
+	}
+	public static enum VirtualMouseButton {
 		/**
 		 * This mouse button is used for dragging data from one
 		 * {@link PSelectionComponent} to another via a
@@ -186,8 +237,8 @@ public interface PMouse {
 		 */
 		POPUP_TRIGGER,
 		;
-		public static final List<PMouse.MouseButton> ALL =
-				Collections.unmodifiableList(Arrays.asList(MouseButton.values()));
+		public static final List<PMouse.VirtualMouseButton> ALL
+			= Collections.unmodifiableList(Arrays.asList(PMouse.VirtualMouseButton.values()));
 		public static final int COUNT = ALL.size();
 		
 		public final int ID = ordinal();

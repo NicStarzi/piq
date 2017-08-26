@@ -25,17 +25,14 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 	protected final PSplitPanelDivider divider;
 	protected final ObserverList<PSplitPanelObs> obsList = PCompUtil.createDefaultObserverList();
 	protected final PMouseObs mouseObs = new PMouseObs() {
-		
 		@Override
 		public void onMouseMoved(PMouse mouse) {
 			PSplitPanel.this.onMouseMoved(mouse);
 		}
-		
 		@Override
 		public void onButtonReleased(PMouse mouse, MouseButton btn, int clickCount) {
 			PSplitPanel.this.onMouseButtonReleased(mouse, btn);
 		}
-		
 		@Override
 		public void onButtonTriggered(PMouse mouse, MouseButton btn, int clickCount) {
 			PSplitPanel.this.onMouseButtonTriggered(mouse, btn);
@@ -93,7 +90,7 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 //			PBounds bndsDivider = getLayoutInternal().getChildBounds(Constraint.DIVIDER);
 //			defaultRenderFillBounds(renderer, bndsDivider);
 //		}
-		defaultRenderFillBounds(renderer, getBounds());
+		defaultRenderFillBounds(renderer, getBoundsWithoutBorder());
 	}
 
 	private void defaultRenderFillBounds(PRenderer renderer, PBounds bnds) {

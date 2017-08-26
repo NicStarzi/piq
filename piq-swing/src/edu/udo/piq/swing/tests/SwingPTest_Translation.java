@@ -20,6 +20,7 @@ import edu.udo.piq.tools.AbstractPTextModel;
 
 public class SwingPTest_Translation extends AbstractSwingPTest {
 	
+	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 		new SwingPTest_Translation();
 	}
@@ -39,7 +40,8 @@ public class SwingPTest_Translation extends AbstractSwingPTest {
 	public void buildGUI() {
 //		EnumPDictionary<Term> dict = new EnumPDictionary<>(Term.class);
 //		dict.setTranslation(Term.CONFIRM, "Best�tigen");
-		PModelFactory.setGlobalModelFactory(new MyModelFactory());
+		PModelFactory.setGlobalModelFactory(new PModelFactory());
+		PModelFactory.getGlobalModelFactory().setDefaultModelFactoryFor(PLabel.class, TranslationTextModel::new);
 		
 		germanLanguageDictionary = new EnumMap<>(Term.class);
 		germanLanguageDictionary.put(Term.CONFIRM, "Best�tigen");
@@ -48,7 +50,7 @@ public class SwingPTest_Translation extends AbstractSwingPTest {
 		germanLanguageDictionary.put(Term.GERMAN, "Deutsch");
 		germanLanguageDictionary.put(Term.GIBBERISH, "Unsinn");
 		germanLanguageDictionary.put(Term.GREETINGS, "Willkommen!");
-		germanLanguageDictionary.put(Term.SELECT_LANGUAGE, "W�hle deine Sprache: ");
+		germanLanguageDictionary.put(Term.SELECT_LANGUAGE, "Wähle deine Sprache: ");
 		germanLanguageDictionary.put(Term.NO_TERM, "<Kein Text>");
 		
 		englishLanguageDictionary = new EnumMap<>(Term.class);
@@ -119,13 +121,6 @@ public class SwingPTest_Translation extends AbstractSwingPTest {
 		TranslationTextModel.setDictionary(lastUsedTranslation);
 	}
 	
-	public static class MyModelFactory extends PModelFactory {
-		@Override
-		protected Object getLabelModel() {
-			return new TranslationTextModel();
-		}
-	}
-	
 	public static class TranslationTextModel extends AbstractPTextModel {
 		
 		private static Map<Term, String> dictionary = null;
@@ -149,7 +144,7 @@ public class SwingPTest_Translation extends AbstractSwingPTest {
 		@Override
 		public void setValue(Object value) {
 			if (value != null && !(value instanceof Term)) {
-				throw new IllegalArgumentException("value="+value);
+				throw new IllegalArgumentException("value=" + value);
 			}
 			if (value != term) {
 				term = (Term) value;
@@ -182,16 +177,8 @@ public class SwingPTest_Translation extends AbstractSwingPTest {
 	
 	private static enum Term {
 		
-		NO_TERM,
-		GREETINGS,
-		SELECT_LANGUAGE,
-		GERMAN,
-		ENGLISH,
-		GIBBERISH,
-		CONFIRM,
-		CANCEL,
-		;
-		
+		NO_TERM, GREETINGS, SELECT_LANGUAGE, GERMAN, ENGLISH, GIBBERISH, CONFIRM, CANCEL,;
+	
 	}
 	
 }

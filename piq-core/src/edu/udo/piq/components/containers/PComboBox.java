@@ -1,6 +1,7 @@
 package edu.udo.piq.components.containers;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
@@ -22,18 +23,16 @@ import edu.udo.piq.components.collections.PSelectionObs;
 import edu.udo.piq.components.textbased.PTextField;
 import edu.udo.piq.components.textbased.PTextFieldObs;
 import edu.udo.piq.components.util.DefaultPKeyInput;
-import edu.udo.piq.components.util.ObjToStr;
 import edu.udo.piq.components.util.PKeyInput;
 import edu.udo.piq.components.util.PKeyInput.FocusPolicy;
 import edu.udo.piq.components.util.PKeyInput.KeyInputType;
-import edu.udo.piq.components.util.StrToObj;
 import edu.udo.piq.util.AncestorIterator;
 import edu.udo.piq.util.ThrowException;
 
 public class PComboBox extends PDropDown {
 	
 	/**
-	 * This method is used by the {@link #INPUT_PRESS_DOWN} to get the 
+	 * This method is used by the {@link #INPUT_PRESS_DOWN} to get the
 	 * {@link PComboBox} that belongs to the source of the key event.<br>
 	 * @param comp	a non-null PComponent that is either a PComboBox or a descendant of a PComboBox
 	 * @return		a non-null PComboBox
@@ -64,7 +63,7 @@ public class PComboBox extends PDropDown {
 	 * @see #showDropDown()
 	 */
 	public static final PKeyInput<PComboBox> INPUT_PRESS_DOWN = new DefaultPKeyInput<>(
-			FocusPolicy.THIS_OR_CHILD_HAS_FOCUS, KeyInputType.TRIGGER, Key.DOWN, 
+			FocusPolicy.THIS_OR_CHILD_HAS_FOCUS, KeyInputType.TRIGGER, Key.DOWN,
 		(self) -> self.isEnabled() && !self.isBodyVisible());
 	/**
 	 * Shows the drop down body of the combo box.
@@ -75,20 +74,25 @@ public class PComboBox extends PDropDown {
 	public static final Consumer<PComboBox> REACTION_PRESS_DOWN = self -> self.showDropDown();
 	
 	protected final PSelectionObs listSelectObs = new PSelectionObs() {
+		@Override
 		public void onSelectionAdded(PSelection selection, PModelIndex index) {
 			PComboBox.this.onSelectionAdded(selection, index);
 		}
+		@Override
 		public void onSelectionRemoved(PSelection selection, PModelIndex index) {
 			PComboBox.this.onSelectionRemoved(selection, index);
 		}
 	};
 	protected final PModelObs modelObs = new PModelObs() {
+		@Override
 		public void onContentAdded(PReadOnlyModel model, PModelIndex index, Object newContent) {
 			PComboBox.this.onContentAdded(model, index, newContent);
 		}
+		@Override
 		public void onContentRemoved(PReadOnlyModel model, PModelIndex index, Object oldContent) {
 			PComboBox.this.onContentRemoved(model, index, oldContent);
 		}
+		@Override
 		public void onContentChanged(PReadOnlyModel model, PModelIndex index, Object oldContent) {
 			PComboBox.this.onContentChanged(model, index, oldContent);
 		}
@@ -96,8 +100,8 @@ public class PComboBox extends PDropDown {
 	protected final PTextFieldObs txtFieldObs = (PTextFieldObs) (cmp) -> onTextFieldInput();
 	protected PTextField txtField;
 	protected PList list;
-	protected ObjToStr encoder;
-	protected StrToObj decoder;
+	protected Function<Object, String> encoder;
+	protected Function<String, Object> decoder;
 	protected PModelIndex displayedIndex = null;
 	protected PModelIndex prevDisplayedIndex = null;
 	
@@ -116,19 +120,22 @@ public class PComboBox extends PDropDown {
 		setTextField(new PTextField());
 		
 		addObs(new PDropDownObs() {
+			@Override
 			public void onBodyShown(PDropDown dropDown) {
 				getBody().takeFocus();
 			}
 		});
 		addObs(new PKeyboardObs() {
+			@Override
 			public void onKeyTriggered(PKeyboard keyboard, Key key) {
 				PComboBox.this.onKeyTriggered(keyboard, key);
 			}
 		});
 	}
 	
+	@Override
 	public void setPreview(PComponent component) {
-		ThrowException.ifTypeCastFails(component, PTextField.class, 
+		ThrowException.ifTypeCastFails(component, PTextField.class,
 				"!(component instanceof PTextField)");
 		setTextField((PTextField) component);
 	}
@@ -142,7 +149,7 @@ public class PComboBox extends PDropDown {
 		txtField = textField;
 		if (getTextField() != null) {
 			getTextField().addObs(txtFieldObs);
-			getTextField().defineInput(INPUT_IDENTIFIER_PRESS_DOWN, 
+			getTextField().defineInput(INPUT_IDENTIFIER_PRESS_DOWN,
 					INPUT_PRESS_DOWN, REACTION_PRESS_DOWN);
 		}
 	}
@@ -155,7 +162,7 @@ public class PComboBox extends PDropDown {
 		return list;
 	}
 	
-	public void setOutputEncoder(ObjToStr outputEncoder) {
+	public void setOutputEncoder(Function<Object, String> outputEncoder) {
 		encoder = outputEncoder;
 		// We have to remember the current index because it is lost after clearing the selection
 		PModelIndex currentIndex = getDisplayedIndex();
@@ -164,15 +171,15 @@ public class PComboBox extends PDropDown {
 		list.getSelection().addSelection(currentIndex);
 	}
 	
-	public ObjToStr getOutputEncoder() {
+	public Function<Object, String> getOutputEncoder() {
 		return encoder;
 	}
 	
-	public void setInputDecoder(StrToObj stringDecoder) {
+	public void setInputDecoder(Function<String, Object> stringDecoder) {
 		decoder = stringDecoder;
 	}
 	
-	public StrToObj getInputDecoder() {
+	public Function<String, Object> getInputDecoder() {
 		return decoder;
 	}
 	
@@ -194,7 +201,7 @@ public class PComboBox extends PDropDown {
 			}
 			if (getOutputEncoder() != null) {
 				try {
-					value = getOutputEncoder().parse(value);
+					value = getOutputEncoder().apply(value);
 				} catch (Exception e) {
 					e.printStackTrace();
 					value = null;
@@ -212,6 +219,7 @@ public class PComboBox extends PDropDown {
 		return prevDisplayedIndex;
 	}
 	
+	@Override
 	public void defaultRender(PRenderer renderer) {
 	}
 	
@@ -256,7 +264,7 @@ public class PComboBox extends PDropDown {
 			input = txt;
 		} else {
 			try {
-				input = getInputDecoder().parse(txt);
+				input = getInputDecoder().apply(txt);
 			} catch (Exception e) {
 				e.printStackTrace();
 				input = null;
@@ -280,9 +288,11 @@ public class PComboBox extends PDropDown {
 		list.getSelection().addSelection(currentIndex);
 	}
 	
+	@Override
 	protected void onMouseButtonTriggered(PMouse mouse, MouseButton btn) {
 	}
 	
+	@Override
 	protected void onMouseButtonReleased(PMouse mouse, MouseButton btn) {
 	}
 	
@@ -296,9 +306,11 @@ public class PComboBox extends PDropDown {
 		}
 	}
 	
+	@Override
 	protected void onModelChange() {
 	}
 	
+	@Override
 	protected void onButtonClick() {
 		if (isBodyVisible()) {
 			hideDropDown();
@@ -307,11 +319,13 @@ public class PComboBox extends PDropDown {
 		}
 	}
 	
+	@Override
 	protected void showDropDown() {
 		prevDisplayedIndex = getDisplayedIndex();
 		super.showDropDown();
 	}
 	
+	@Override
 	protected void hideDropDown() {
 		super.hideDropDown();
 	}

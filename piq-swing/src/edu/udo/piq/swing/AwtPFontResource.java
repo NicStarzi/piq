@@ -12,6 +12,7 @@ import java.awt.image.BufferedImage;
 import edu.udo.piq.PFontResource;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.ImmutablePSize;
+import edu.udo.piq.tools.MutablePSize;
 
 public class AwtPFontResource implements PFontResource {
 	
@@ -46,16 +47,21 @@ public class AwtPFontResource implements PFontResource {
 	}
 	
 	@Override
-	public PSize getSize(String str) {
+	public PSize getSize(String str, MutablePSize result) {
 		Rectangle2D rect = metrics.getStringBounds(str, graphics);
 		int w = (int) (rect.getWidth() + 0.5);
 		int h = (int) (rect.getHeight() + 0.5);
-		return new ImmutablePSize(w, h);
+		if (result == null) {
+			return new ImmutablePSize(w, h);
+		} else {
+			result.set(w, h);
+			return result;
+		}
 	}
 	
 	@Override
 	public Style getStyle() {
-		return getStyleFromAwt(font.getStyle());
+		return AwtPFontResource.getStyleFromAwt(font.getStyle());
 	}
 	
 	@Override

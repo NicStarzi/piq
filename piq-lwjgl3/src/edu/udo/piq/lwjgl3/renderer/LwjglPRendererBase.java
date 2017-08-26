@@ -1,14 +1,13 @@
 package edu.udo.piq.lwjgl3.renderer;
 
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.stb.STBTruetype.stbtt_GetBakedQuad;
-import static org.lwjgl.system.MemoryStack.stackPush;
 
 import java.nio.FloatBuffer;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.stb.STBTTAlignedQuad;
 import org.lwjgl.stb.STBTTBakedChar;
+import org.lwjgl.stb.STBTruetype;
 import org.lwjgl.system.MemoryStack;
 
 import edu.udo.piq.PFontResource;
@@ -124,7 +123,7 @@ public abstract class LwjglPRendererBase implements PRenderer {
 		fu /= stbImgRes.getWidth();
 		fv /= stbImgRes.getHeight();
 		
-		renderTriangleQuad(1, 1, 1, 1,
+		LwjglPRendererBase.renderTriangleQuad(1, 1, 1, 1,
 				u, v, fu, fv,
 				x, y, fx, fy);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -135,7 +134,7 @@ public abstract class LwjglPRendererBase implements PRenderer {
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		((StbImageResource) imgRes).bind();
 		
-		renderTriangleQuad(1, 1, 1, 1,
+		LwjglPRendererBase.renderTriangleQuad(1, 1, 1, 1,
 				0, 0, 1, 1,
 				x, y, fx, fy);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -151,7 +150,7 @@ public abstract class LwjglPRendererBase implements PRenderer {
 		StbTtFontResource fontRes = (StbTtFontResource) font;
 		int fontSize = fontRes.getPixelSize();
 		y += fontRes.getAscent();
-		try (MemoryStack stack = stackPush()) {
+		try (MemoryStack stack = MemoryStack.stackPush()) {
 			FloatBuffer bufX = stack.floats(x);
 			FloatBuffer bufY = stack.floats(y);
 			
@@ -164,21 +163,22 @@ public abstract class LwjglPRendererBase implements PRenderer {
 			GL11.glBegin(GL11.GL_TRIANGLES);
 			GL11.glColor4f(curColorR, curColorG, curColorB, curColorA);
 			
-			char smallestChar = StbTtFontResource.BAKE_FONT_FIRST_CHAR;
-			char biggestChar = StbTtFontResource.BAKE_FONT_FIRST_CHAR + StbTtFontResource.CHAR_DATA_MALLOC_SIZE;
+			int firstCP = StbTtFontResource.BAKE_FONT_FIRST_CHAR;
+			int lastCP = StbTtFontResource.BAKE_FONT_FIRST_CHAR + StbTtFontResource.GLYPH_COUNT - 1;
 			for (int i = 0; i < text.length(); i++) {
-				char c = text.charAt(i);
-				if (c == '\n') {
+				int codePoint = text.codePointAt(i);
+				if (codePoint == '\n') {
 					bufX.put(0, x);
 					bufY.put(0, y + bufY.get(0) + fontSize);
 					continue;
-				} else if (c < smallestChar || biggestChar <= c) {
+				} else if (codePoint < firstCP || codePoint > lastCP) {
 					continue;
 				}
-				stbtt_GetBakedQuad(charData,
+				STBTruetype.stbtt_GetBakedQuad(charData,
 						StbTtFontResource.FONT_TEX_W, StbTtFontResource.FONT_TEX_H,
-						c - smallestChar,
+						codePoint - firstCP,
 						bufX, bufY, q, true);
+//				System.out.println("RENDER \t c="+((char) codePoint)+"; w="+(x1 - x0)+"; w2="+(x0 - oldX1));
 				
 				GL11.glTexCoord2f(q.s0(), q.t0());
 				GL11.glVertex2f(q.x0(), q.y0());

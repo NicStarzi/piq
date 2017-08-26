@@ -17,6 +17,7 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PComponentObs;
 import edu.udo.piq.PDnDManager;
 import edu.udo.piq.PFocusObs;
+import edu.udo.piq.PFocusTraversal;
 import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.PGlobalEventObs;
 import edu.udo.piq.PKeyboard;
@@ -33,8 +34,6 @@ import edu.udo.piq.PStyleSheet;
 import edu.udo.piq.PTimer;
 import edu.udo.piq.components.containers.DefaultPRootOverlay;
 import edu.udo.piq.components.containers.PPanel;
-import edu.udo.piq.components.util.DefaultPFocusTraversal;
-import edu.udo.piq.components.util.PFocusTraversal;
 import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PRootLayout;
 import edu.udo.piq.layouts.PRootLayout.Constraint;
@@ -88,7 +87,8 @@ public abstract class AbstractPRoot implements PRoot {
 	protected Set<PComponent> reLayOutCompsFront = new TreeSet<>(COMPONENT_DEPTH_COMPARATOR);
 	protected Set<PComponent> reLayOutCompsBack = new TreeSet<>(COMPONENT_DEPTH_COMPARATOR);
 	protected ReRenderSet reRenderSet;
-	protected PFocusTraversal focusTrav = new DefaultPFocusTraversal(this);
+	protected PFocusTraversal focusTrav = null;
+	protected PFocusTraversal activeFocusTrav = null;
 	protected PComponent focusOwner;
 	protected String id;
 	protected boolean needReLayout = true;
@@ -346,6 +346,9 @@ public abstract class AbstractPRoot implements PRoot {
 		while (component != null && !component.isFocusable()) {
 			component = component.getParent();
 		}
+		if (component == oldOwner) {
+			return;
+		}
 		focusOwner = component;
 		if (oldOwner != null) {
 			fireFocusLostEvent(oldOwner);
@@ -353,6 +356,59 @@ public abstract class AbstractPRoot implements PRoot {
 		if (getFocusOwner() != null) {
 			fireFocusGainedEvent(oldOwner);
 		}
+		onFocusOwnerChanged();
+	}
+	
+	protected void onFocusOwnerChanged() {
+		PComponent current = getFocusOwner();
+		PFocusTraversal newActiveFocusTraversal = null;
+		while (current != null) {
+			PFocusTraversal focusTrav = current.getFocusTraversal();
+			if (focusTrav != null) {
+				newActiveFocusTraversal = focusTrav;
+				break;
+			}
+			current = current.getParent();
+		}
+		PFocusTraversal oldActiveFocusTraversal = getActiveFocusTraversal();
+		if (newActiveFocusTraversal != oldActiveFocusTraversal) {
+			if (oldActiveFocusTraversal != null) {
+				oldActiveFocusTraversal.uninstall(this);
+			}
+			activeFocusTrav = newActiveFocusTraversal;
+			/*
+			 * A subclass may decide to overwrite getActiveFocusTraversal() to have more control over
+			 * focus traversal policy. We invoke the getter here to guarantee model integrity.
+			 */
+			newActiveFocusTraversal = getActiveFocusTraversal();
+			if (newActiveFocusTraversal != null) {
+				newActiveFocusTraversal.install(this);
+			}
+		}
+	}
+	
+	public void setFocusTraversal(PFocusTraversal focusTraversal) {
+		PFocusTraversal oldFocusTrav = getFocusTraversal();
+		focusTrav = focusTraversal;
+		if (oldFocusTrav == getActiveFocusTraversal()) {
+			if (getActiveFocusTraversal() != null) {
+				getActiveFocusTraversal().uninstall(this);
+			}
+			activeFocusTrav = focusTrav;
+			if (getActiveFocusTraversal() != null) {
+				getActiveFocusTraversal().install(this);
+			}
+		}
+	}
+	
+	@Override
+	public PFocusTraversal getFocusTraversal() {
+		return focusTrav;
+	}
+	
+	@Override
+	public PFocusTraversal getActiveFocusTraversal() {
+		return activeFocusTrav;
 	}
 	
 	@Override
@@ -535,19 +591,6 @@ public abstract class AbstractPRoot implements PRoot {
 	@Override
 	public void fireStyleSheetChanged(PStyleSheet oldStyleSheet) {
 		rootObsList.fireEvent(obs -> obs.onStyleSheetChanged(AbstractPRoot.this, oldStyleSheet));
-	}
-	
-	/*
-	 * Uninteresting methods from component
-	 */
-	
-	public void setFocusTraversal(PFocusTraversal focusTraversal) {
-		focusTrav = focusTraversal;
-	}
-	
-	@Override
-	public PFocusTraversal getFocusTraversal() {
-		return focusTrav;
 	}
 	
 	/*

@@ -5,7 +5,6 @@ import edu.udo.piq.PColor;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractPComponent;
-import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.util.ThrowException;
 
 public class PStraightLine extends AbstractPComponent {
@@ -15,7 +14,6 @@ public class PStraightLine extends AbstractPComponent {
 	
 	private LineOrientation orientation = DEFAULT_ORIENTATION;
 	private int lineThickness = DEFAULT_LINE_THICKNESS;
-	private PSize cachedPrefSize;
 	
 	public PStraightLine() {
 		this(DEFAULT_ORIENTATION, DEFAULT_LINE_THICKNESS);
@@ -57,6 +55,7 @@ public class PStraightLine extends AbstractPComponent {
 		return orientation;
 	}
 	
+	@Override
 	public void defaultRender(PRenderer renderer) {
 		PBounds bnds = getBounds();
 		
@@ -72,58 +71,70 @@ public class PStraightLine extends AbstractPComponent {
 		renderer.drawLine(startX, startY, finalX, finalY, lineThickness / 2);
 	}
 	
+	@Override
 	public boolean defaultFillsAllPixels() {
 		return false;
 	}
 	
+	@Override
 	public PSize getDefaultPreferredSize() {
-		if (cachedPrefSize == null) {
-			int lineThickness = getLineThickness();
-			LineOrientation orientation = getOrientation();
-			int prefW = orientation.getPreferredWidth(lineThickness);
-			int prefH = orientation.getPreferredHeight(lineThickness);
-			cachedPrefSize = new ImmutablePSize(prefW, prefH);
-		}
-		return cachedPrefSize;
+		int lineThickness = getLineThickness();
+		LineOrientation orientation = getOrientation();
+		int prefW = orientation.getPreferredWidth(lineThickness);
+		int prefH = orientation.getPreferredHeight(lineThickness);
+		prefSize.set(prefW, prefH);
+		return prefSize;
 	}
 	
 	public static enum LineOrientation {
 		HORIZONTAL {
+			@Override
 			public int getStartX(PBounds bnds, int lineThickness) {
 				return bnds.getX();
 			}
+			@Override
 			public int getStartY(PBounds bnds, int lineThickness) {
 				return bnds.getY() + bnds.getHeight() / 2 - lineThickness / 2;
 			}
+			@Override
 			public int getFinalX(PBounds bnds, int lineThickness) {
 				return bnds.getFinalX();
 			}
+			@Override
 			public int getFinalY(PBounds bnds, int lineThickness) {
 				return getStartY(bnds, lineThickness);
 			}
+			@Override
 			public int getPreferredWidth(int lineThickness) {
 				return 0;
 			}
+			@Override
 			public int getPreferredHeight(int lineThickness) {
 				return lineThickness + PADDING;
 			}
 		},
 		VERTICAL {
+			@Override
 			public int getStartX(PBounds bnds, int lineThickness) {
 				return bnds.getX() + bnds.getWidth() / 2 - lineThickness / 2;
 			}
+			@Override
 			public int getStartY(PBounds bnds, int lineThickness) {
 				return bnds.getY();
 			}
+			@Override
 			public int getFinalX(PBounds bnds, int lineThickness) {
 				return getStartX(bnds, lineThickness);
 			}
+			@Override
 			public int getFinalY(PBounds bnds, int lineThickness) {
 				return bnds.getFinalY();
 			}
+			@Override
 			public int getPreferredWidth(int lineThickness) {
 				return lineThickness + PADDING;
 			}
+			@Override
 			public int getPreferredHeight(int lineThickness) {
 				return 0;
 			}

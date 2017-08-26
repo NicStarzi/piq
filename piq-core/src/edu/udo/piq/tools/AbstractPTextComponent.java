@@ -24,7 +24,8 @@ import edu.udo.piq.util.PCompUtil;
 
 public abstract class AbstractPTextComponent
 	extends AbstractPInputComponent
-	implements PTextComponent {
+	implements PTextComponent
+{
 	
 	protected static final String DEFAULT_FONT_NAME = "Arial";
 	protected static final int DEFAULT_FONT_SIZE = 14;
@@ -74,12 +75,18 @@ public abstract class AbstractPTextComponent
 		if (lastSelected == null) {
 			return;
 		}
+		PBounds ownBounds = getBoundsWithoutBorder();
+		if (ownBounds == null) {
+			return;
+		}
 		PListIndex index = (PListIndex) lastSelected;
 		if (scrollRequestBounds == null) {
 			scrollRequestBounds = new MutablePBounds();
 		}
 		PBounds renderBounds = getRenderPositionForIndex(scrollRequestBounds, index);
-		PBounds ownBounds = getBoundsWithoutBorder();
+		if (renderBounds == null) {
+			return;
+		}
 		int scrollOffsetX = renderBounds.getFinalX() - ownBounds.getX();
 		int scrollOffsetY = renderBounds.getFinalY() - ownBounds.getY();
 		requestScroll(scrollOffsetX, scrollOffsetY);

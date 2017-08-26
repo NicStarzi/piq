@@ -136,12 +136,11 @@ public class SwingPMouse extends AbstractPMouse implements PMouse {
 		if (btn == null) {
 			return;
 		}
-		int index = getMouseButtonID(btn);
-		if (!btnPressed[index]) {
-			btnPressed[index] = true;
-			btnTriggered[index] = true;
-			btnReleased[index] = false;
-			fireTriggerEvent(btn);
+		if (!btnPressed[btn.ID]) {
+			btnPressed[btn.ID] = true;
+			btnTriggered[btn.ID] = true;
+			btnReleased[btn.ID] = false;
+			fireTriggerEvent(btn, clickCount);
 		}
 		firePressEvent(btn, clickCount);
 	}
@@ -150,10 +149,9 @@ public class SwingPMouse extends AbstractPMouse implements PMouse {
 		if (btn == null) {
 			return;
 		}
-		int index = getMouseButtonID(btn);
-		if (!btnReleased[index]) {
-			btnReleased[index] = true;
-			btnPressed[index] = false;
+		if (!btnReleased[btn.ID]) {
+			btnReleased[btn.ID] = true;
+			btnPressed[btn.ID] = false;
 			fireReleaseEvent(btn, clickCount);
 		}
 	}
@@ -169,21 +167,6 @@ public class SwingPMouse extends AbstractPMouse implements PMouse {
 			return MouseButton.MIDDLE;
 		}
 		return null;
-	}
-	
-	protected int getMouseButtonID(MouseButton btn) {
-		switch (btn) {
-		case LEFT:
-		case DRAG_AND_DROP:
-			return 0;
-		case RIGHT:
-		case POPUP_TRIGGER:
-			return 1;
-		case MIDDLE:
-			return 2;
-		default:
-			throw new IllegalArgumentException("Mouse button not supported: "+btn);
-		}
 	}
 	
 	protected void setPosition(int mx, int my) {
@@ -225,17 +208,17 @@ public class SwingPMouse extends AbstractPMouse implements PMouse {
 	
 	@Override
 	public boolean isPressed(MouseButton btn) {
-		return btnPressed[getMouseButtonID(btn)];
+		return btnPressed[btn.ID];
 	}
 	
 	@Override
 	public boolean isReleased(MouseButton btn) {
-		return btnReleased[getMouseButtonID(btn)];
+		return btnReleased[btn.ID];
 	}
 	
 	@Override
 	public boolean isTriggered(MouseButton btn) {
-		return btnTriggered[getMouseButtonID(btn)];
+		return btnTriggered[btn.ID];
 	}
 	
 	@Override

@@ -3,7 +3,6 @@ package edu.udo.piq.lwjgl3;
 import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
 import static org.lwjgl.glfw.GLFW.GLFW_VISIBLE;
 import static org.lwjgl.system.MemoryUtil.NULL;
-import static org.lwjgl.system.MemoryUtil.memAddress;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,42 +26,21 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GLCapabilities;
 import org.lwjgl.opengl.GLUtil;
 import org.lwjgl.system.Callback;
+import org.lwjgl.system.MemoryUtil;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PCursor;
 import edu.udo.piq.PDialog;
 import edu.udo.piq.PDnDManager;
 import edu.udo.piq.PFontResource;
 import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.PImageMeta;
 import edu.udo.piq.PImageResource;
-import edu.udo.piq.PKeyboard.Key;
-import edu.udo.piq.PKeyboard.Modifier;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRootOverlay;
-import edu.udo.piq.borders.PLineBorder;
-import edu.udo.piq.components.PButton;
-import edu.udo.piq.components.PClickObs;
-import edu.udo.piq.components.collections.PList;
-import edu.udo.piq.components.collections.PListModel;
-import edu.udo.piq.components.collections.PListSelection;
-import edu.udo.piq.components.collections.PListSingleSelection;
-import edu.udo.piq.components.collections.PModelIndex;
-import edu.udo.piq.components.containers.PPanel;
-import edu.udo.piq.components.defaults.DefaultPDnDSupport;
-import edu.udo.piq.components.defaults.DefaultPListModel;
-import edu.udo.piq.components.textbased.PLabel;
-import edu.udo.piq.components.util.DefaultPKeyInput;
-import edu.udo.piq.components.util.PKeyInput.FocusPolicy;
-import edu.udo.piq.layouts.PGridLayout;
-import edu.udo.piq.layouts.PGridLayout.Growth;
-import edu.udo.piq.layouts.PListLayout;
-import edu.udo.piq.layouts.PListLayout.ListAlignment;
 import edu.udo.piq.lwjgl3.StbImageResource.TexelFormat;
 import edu.udo.piq.lwjgl3.renderer.LwjglPRendererBase;
 import edu.udo.piq.lwjgl3.renderer.LwjglPRendererFbo;
-import edu.udo.piq.scroll.PScrollPanel;
 import edu.udo.piq.tools.AbstractPBounds;
 import edu.udo.piq.tools.AbstractPRoot;
 import edu.udo.piq.util.SoftReferenceCache;
@@ -80,72 +58,72 @@ public class GlfwPRoot extends AbstractPRoot {
 		return buffer;
 	}
 	
-	public static void main(String[] args) {
-		GlfwPRoot root = new GlfwPRoot("Test Window", 640, 480);
-		
-		PPanel body = new PPanel();
-		PGridLayout layout = new PGridLayout(body, 1, 2);
-		layout.setColumnGrowth(Growth.MAXIMIZE);
-		layout.setRowGrowth(0, Growth.MAXIMIZE);
-		body.setLayout(layout);
-		
-		PListModel listMdl = new DefaultPListModel("Alice", "Bob", "Clarice", "Daniel", "Erika", "Franz");
-		PList list = new PList(listMdl);
-		list.setDragAndDropSupport(new DefaultPDnDSupport());
-		list.setSelection(new PListSingleSelection());
-		PListSelection listSel = list.getSelection();
-		
-		PScrollPanel scroll = new PScrollPanel(list);
-		
-		PButton btnAdd = new PButton(new PLabel("Add"));
-		btnAdd.defineInput("hotkey",
-				new DefaultPKeyInput<PButton>(FocusPolicy.ALWAYS, Key.A, Modifier.CTRL),
-				btn -> btn.simulateClick());
-		PCursor cursor = root.createCustomCursor(root.fetchImageResource("Cursor.png"), 8, 8);
-		btnAdd.setMouseOverCursor(cursor);
-		btnAdd.getContent().setMouseOverCursor(cursor);
-		
-		PButton btnRemove = new PButton(new PLabel("Remove"));
-		btnRemove.defineInput("hotkey",
-				new DefaultPKeyInput<PButton>(FocusPolicy.ALWAYS, Key.R, Modifier.CTRL),
-				btn -> btn.simulateClick());
-		PPanel btnPnl = new PPanel();
-		btnPnl.setBorder(new PLineBorder(2));
-		btnPnl.setLayout(new PListLayout(btnPnl, ListAlignment.CENTERED_LEFT_TO_RIGHT));
-		btnPnl.addChild(btnAdd, null);
-		btnPnl.addChild(btnRemove, null);
-		
-		body.addChild(scroll, "0 0 alignX=F alignY=F");
-		body.addChild(btnPnl, "0 1 alignX=F alignY=F");
-		
-		int[] idx = {0};
-		btnAdd.addObs((PClickObs) clickable -> {
-			String newElem = "New Element #"+idx[0]++;
-			if (listSel.hasSelection()) {
-				PModelIndex selectedIdx = listSel.getOneSelected();
-				if (listMdl.canAdd(selectedIdx, newElem)) {
-					listMdl.add(selectedIdx, newElem);
-					listSel.clearSelection();
-					listSel.addSelection(selectedIdx);
-				}
-			} else {
-				listMdl.add(newElem);
-			}
-		});
-		btnRemove.addObs((PClickObs) clickable -> {
-			if (listSel.hasSelection()) {
-				PModelIndex selectedIdx = listSel.getOneSelected();
-				if (listMdl.canRemove(selectedIdx)) {
-					listMdl.remove(selectedIdx);
-					listSel.clearSelection();
-					listSel.addSelection(selectedIdx);
-				}
-			}
-		});
-		root.setBody(body);
-		
-		root.startGlfwLoop();
-	}
+//	public static void main(String[] args) {
+//		GlfwPRoot root = new GlfwPRoot("Test Window", 640, 480);
+//
+//		PPanel body = new PPanel();
+//		PGridLayout layout = new PGridLayout(body, 1, 2);
+//		layout.setColumnGrowth(Growth.MAXIMIZE);
+//		layout.setRowGrowth(0, Growth.MAXIMIZE);
+//		body.setLayout(layout);
+//
+//		PListModel listMdl = new DefaultPListModel("Alice", "Bob", "Clarice", "Daniel", "Erika", "Franz");
+//		PList list = new PList(listMdl);
+//		list.setDragAndDropSupport(new DefaultPDnDSupport());
+//		list.setSelection(new PListSingleSelection());
+//		PListSelection listSel = list.getSelection();
+//
+//		PScrollPanel scroll = new PScrollPanel(list);
+//
+//		PButton btnAdd = new PButton(new PLabel("Add"));
+//		btnAdd.defineInput("hotkey",
+//				new DefaultPKeyInput<PButton>(FocusPolicy.ALWAYS, Key.A, Modifier.CTRL),
+//				btn -> btn.simulateClick());
+//		PCursor cursor = root.createCustomCursor(root.fetchImageResource("Cursor.png"), 8, 8);
+//		btnAdd.setMouseOverCursor(cursor);
+//		btnAdd.getContent().setMouseOverCursor(cursor);
+//
+//		PButton btnRemove = new PButton(new PLabel("Remove"));
+//		btnRemove.defineInput("hotkey",
+//				new DefaultPKeyInput<PButton>(FocusPolicy.ALWAYS, Key.R, Modifier.CTRL),
+//				btn -> btn.simulateClick());
+//		PPanel btnPnl = new PPanel();
+//		btnPnl.setBorder(new PLineBorder(2));
+//		btnPnl.setLayout(new PListLayout(btnPnl, ListAlignment.CENTERED_LEFT_TO_RIGHT));
+//		btnPnl.addChild(btnAdd, null);
+//		btnPnl.addChild(btnRemove, null);
+//
+//		body.addChild(scroll, "0 0 alignX=F alignY=F");
+//		body.addChild(btnPnl, "0 1 alignX=F alignY=F");
+//
+//		int[] idx = {0};
+//		btnAdd.addObs((PClickObs) clickable -> {
+//			String newElem = "New Element #"+idx[0]++;
+//			if (listSel.hasSelection()) {
+//				PModelIndex selectedIdx = listSel.getOneSelected();
+//				if (listMdl.canAdd(selectedIdx, newElem)) {
+//					listMdl.add(selectedIdx, newElem);
+//					listSel.clearSelection();
+//					listSel.addSelection(selectedIdx);
+//				}
+//			} else {
+//				listMdl.add(newElem);
+//			}
+//		});
+//		btnRemove.addObs((PClickObs) clickable -> {
+//			if (listSel.hasSelection()) {
+//				PModelIndex selectedIdx = listSel.getOneSelected();
+//				if (listMdl.canRemove(selectedIdx)) {
+//					listMdl.remove(selectedIdx);
+//					listSel.clearSelection();
+//					listSel.addSelection(selectedIdx);
+//				}
+//			}
+//		});
+//		root.setBody(body);
+//
+//		root.startGlfwLoop();
+//	}
 	
 	protected final PBounds wndBounds = new AbstractPBounds() {
 		@Override
@@ -184,15 +162,7 @@ public class GlfwPRoot extends AbstractPRoot {
 		}
 	};
 	protected final GLFWErrorCallback errorCB = GLFWErrorCallback.createPrint(System.out);
-//	protected final GLFWErrorCallback errorCB = new GLFWErrorCallback() {
-//		@Override
-//		public void invoke(int error, long description) {
-//			System.err.println("error="+error+"; description="+description);
-//		}
-//	};
 	protected final LwjglPRendererBase renderer = new LwjglPRendererFbo();
-	protected final GlfwPKeyboard keyboard = new GlfwPKeyboard(this);
-	protected final GlfwPMouse mouse = new GlfwPMouse(this);
 	protected final SoftReferenceCache<FontInfo, StbTtFontResource> fontMap = new SoftReferenceCache<>();
 	protected final SoftReferenceCache<String, StbImageResource> imgMap = new SoftReferenceCache<>();
 	protected StbTtFontResource defaultFontRes;
@@ -229,7 +199,7 @@ public class GlfwPRoot extends AbstractPRoot {
 		GLFW.glfwSetFramebufferSizeCallback(wndHandle, frameBufSizeCB);
 		
 		IntBuffer bufFrameBufSize = BufferUtils.createIntBuffer(2);
-		GLFW.nglfwGetFramebufferSize(wndHandle, memAddress(bufFrameBufSize), memAddress(bufFrameBufSize) + 4);
+		GLFW.nglfwGetFramebufferSize(wndHandle, MemoryUtil.memAddress(bufFrameBufSize), MemoryUtil.memAddress(bufFrameBufSize) + 4);
 		onFrameBufferSizeChanged(bufFrameBufSize.get(0), bufFrameBufSize.get(1));
 		
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -239,10 +209,11 @@ public class GlfwPRoot extends AbstractPRoot {
 		GL11.glEnable(GL11.GL_ALPHA_TEST);
 		GL11.glEnable(GL11.GL_SCISSOR_TEST);
 		
-		super.keyboard = keyboard;
-		keyboard.install();
-		super.mouse = mouse;
-		mouse.install();
+		super.keyboard = new GlfwPKeyboard(this);
+		getKeyboard().install();
+		super.mouse = new GlfwPMouse(this);
+		getMouse().install();
+		super.clipboard = new GlfwPClipboard(wndHandle);
 		dndManager = new PDnDManager(this);
 	}
 	
@@ -255,8 +226,8 @@ public class GlfwPRoot extends AbstractPRoot {
 			if (debugProc != null) {
 				debugProc.free();
 			}
-			keyboard.uninstall();
-			mouse.uninstall();
+			getKeyboard().uninstall();
+			getMouse().uninstall();
 //			Callbacks.glfwFreeCallbacks(wndHandle);
 			GLFW.glfwDestroyWindow(wndHandle);
 		} finally {
@@ -268,7 +239,7 @@ public class GlfwPRoot extends AbstractPRoot {
 		long timeStamp = System.nanoTime();
 		long lastTimeStamp = timeStamp;
 		while (!GLFW.glfwWindowShouldClose(wndHandle)) {
-			checkGlError("glfwLoop");
+			GlfwPRoot.checkGlError("glfwLoop");
 			
 			timeStamp = System.nanoTime();
 			long timeSince = timeStamp - lastTimeStamp;
@@ -353,7 +324,7 @@ public class GlfwPRoot extends AbstractPRoot {
 	
 	@Override
 	public void onMouseOverCursorChanged(PComponent component) {
-		mouse.mouseOverCursorChanged(component);
+		getMouse().mouseOverCursorChanged(component);
 	}
 	
 	@Override

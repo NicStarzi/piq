@@ -36,7 +36,7 @@ public class GlfwPMouse extends AbstractPMouse implements PMouse {
 		}
 	};
 	protected final GlfwPRoot root;
-	protected final int[] btnClickCount = new int[3];
+	protected final int[] btnClickCount = new int[MouseButton.COUNT];
 	protected final double[] btnEvtTime = new double[btnClickCount.length];
 	protected final boolean[] btnPressed = new boolean[btnClickCount.length];
 	protected final boolean[] btnReleased = new boolean[btnClickCount.length];
@@ -91,32 +91,30 @@ public class GlfwPMouse extends AbstractPMouse implements PMouse {
 		if (btn == null) {
 			return;
 		}
-		int index = getMouseButtonIdx(btn);
-		if (!btnPressed[index]) {
-			btnPressed[index] = true;
-			btnTriggered[index] = true;
-			btnReleased[index] = false;
-			double oldTime = btnEvtTime[index];
-			btnEvtTime[index] = GLFW.glfwGetTime();
-			if (btnEvtTime[index] - oldTime < multiClickTimeThreshold) {
-				btnClickCount[index]++;
+		if (!btnPressed[btn.ID]) {
+			btnPressed[btn.ID] = true;
+			btnTriggered[btn.ID] = true;
+			btnReleased[btn.ID] = false;
+			double oldTime = btnEvtTime[btn.ID];
+			btnEvtTime[btn.ID] = GLFW.glfwGetTime();
+			if (btnEvtTime[btn.ID] - oldTime < multiClickTimeThreshold) {
+				btnClickCount[btn.ID]++;
 			} else {
-				btnClickCount[index] = 1;
+				btnClickCount[btn.ID] = 1;
 			}
-			fireTriggerEvent(btn, btnClickCount[index]);
+			fireTriggerEvent(btn, btnClickCount[btn.ID]);
 		}
-		firePressEvent(btn, btnClickCount[index]);
+		firePressEvent(btn, btnClickCount[btn.ID]);
 	}
 	
 	protected void onRelease(MouseButton btn) {
 		if (btn == null) {
 			return;
 		}
-		int index = getMouseButtonIdx(btn);
-		if (!btnReleased[index]) {
-			btnReleased[index] = true;
-			btnPressed[index] = false;
-			fireReleaseEvent(btn, btnClickCount[index]);
+		if (!btnReleased[btn.ID]) {
+			btnReleased[btn.ID] = true;
+			btnPressed[btn.ID] = false;
+			fireReleaseEvent(btn, btnClickCount[btn.ID]);
 		}
 	}
 	
@@ -129,21 +127,6 @@ public class GlfwPMouse extends AbstractPMouse implements PMouse {
 			return MouseButton.MIDDLE;
 		}
 		return null;
-	}
-	
-	protected int getMouseButtonIdx(MouseButton btn) {
-		switch (btn) {
-		case LEFT:
-		case DRAG_AND_DROP:
-			return 0;
-		case POPUP_TRIGGER:
-		case RIGHT:
-			return 1;
-		case MIDDLE:
-			return 2;
-		default:
-			throw new IllegalArgumentException("Mouse button not supported: "+btn);
-		}
 	}
 	
 	protected void setPosition(double xPos, double yPos) {
@@ -182,17 +165,17 @@ public class GlfwPMouse extends AbstractPMouse implements PMouse {
 	
 	@Override
 	public boolean isPressed(MouseButton btn) {
-		return btnPressed[getMouseButtonIdx(btn)];
+		return btnPressed[btn.ID];
 	}
 	
 	@Override
 	public boolean isReleased(MouseButton btn) {
-		return btnReleased[getMouseButtonIdx(btn)];
+		return btnReleased[btn.ID];
 	}
 	
 	@Override
 	public boolean isTriggered(MouseButton btn) {
-		return btnTriggered[getMouseButtonIdx(btn)];
+		return btnTriggered[btn.ID];
 	}
 	
 	@Override

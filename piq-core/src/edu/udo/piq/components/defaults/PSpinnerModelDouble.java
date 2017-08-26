@@ -1,6 +1,7 @@
 package edu.udo.piq.components.defaults;
 
-import edu.udo.piq.components.util.StrToObj;
+import java.util.function.Function;
+
 import edu.udo.piq.tools.AbstractPSpinnerModel;
 import edu.udo.piq.util.ThrowException;
 
@@ -14,7 +15,7 @@ public class PSpinnerModelDouble extends AbstractPSpinnerModel {
 	protected Double max = Double.valueOf(DEFAULT_MAXIMUM);
 	protected Double min = Double.valueOf(DEFAULT_MINIMUM);
 	protected Double val = Double.valueOf(DEFAULT_VALUE);
-	private StrToObj decoder;
+	protected Function<String, Object> decoder;
 	protected double step = DEFAULT_STEP;
 	
 	public PSpinnerModelDouble() {
@@ -35,15 +36,15 @@ public class PSpinnerModelDouble extends AbstractPSpinnerModel {
 		ThrowException.ifNotWithin(min, max, value, "value < min || value > max");
 		this.max = Double.valueOf(max);
 		this.min = Double.valueOf(min);
-		this.val = Double.valueOf(value);
+		val = Double.valueOf(value);
 		this.step = step;
 	}
 	
-	public void setInputDecoder(StrToObj stringDecoder) {
+	public void setInputDecoder(Function<String, Object> stringDecoder) {
 		decoder = stringDecoder;
 	}
 	
-	public StrToObj getInputDecoder() {
+	public Function<String, Object> getInputDecoder() {
 		return decoder;
 	}
 	
@@ -80,6 +81,7 @@ public class PSpinnerModelDouble extends AbstractPSpinnerModel {
 		return step;
 	}
 	
+	@Override
 	public boolean hasNext() {
 		if (getMaximum() == null) {
 			return getValue().doubleValue() < Double.MAX_VALUE;
@@ -87,6 +89,7 @@ public class PSpinnerModelDouble extends AbstractPSpinnerModel {
 		return getValue().doubleValue() < getMaximum().doubleValue();
 	}
 	
+	@Override
 	public boolean hasPrevious() {
 		if (getMinimum() == null) {
 			return getValue().doubleValue() > Double.MIN_VALUE;
@@ -94,6 +97,7 @@ public class PSpinnerModelDouble extends AbstractPSpinnerModel {
 		return getValue().doubleValue() > getMinimum().doubleValue();
 	}
 	
+	@Override
 	public Double getNext() {
 		double maxVal = getMaximum() == null ? Double.MAX_VALUE : getMaximum().doubleValue();
 		double curVal = getValue().doubleValue();
@@ -101,6 +105,7 @@ public class PSpinnerModelDouble extends AbstractPSpinnerModel {
 		return Double.valueOf(curVal + stepVal);
 	}
 	
+	@Override
 	public Double getPrevious() {
 		double minVal = getMinimum() == null ? Double.MIN_VALUE : getMinimum().doubleValue();
 		double curVal = getValue().doubleValue();
@@ -108,6 +113,7 @@ public class PSpinnerModelDouble extends AbstractPSpinnerModel {
 		return Double.valueOf(curVal - stepVal);
 	}
 	
+	@Override
 	public boolean canSetValue(Object obj) {
 		if (obj == null) {
 			return false;
@@ -116,7 +122,7 @@ public class PSpinnerModelDouble extends AbstractPSpinnerModel {
 			String strVal = (String) obj;
 			try {
 				if (getInputDecoder() != null) {
-					obj = getInputDecoder().parse(strVal);
+					obj = getInputDecoder().apply(strVal);
 				} else {
 					double parsedInt = Double.parseDouble(strVal);
 					obj = Double.valueOf(parsedInt);
@@ -129,26 +135,27 @@ public class PSpinnerModelDouble extends AbstractPSpinnerModel {
 			return false;
 		}
 		Double value = (Double) obj;
-		if (getMaximum() != null 
-				&& value.doubleValue() > getMaximum().doubleValue()) 
+		if (getMaximum() != null
+				&& value.doubleValue() > getMaximum().doubleValue())
 		{
 			return false;
 		}
-		if (getMinimum() != null 
-				&& value.doubleValue() < getMinimum().doubleValue()) 
+		if (getMinimum() != null
+				&& value.doubleValue() < getMinimum().doubleValue())
 		{
 			return false;
 		}
 		return true;
 	}
 	
+	@Override
 	public void setValue(Object obj) {
 		ThrowException.ifFalse(canSetValue(obj), "canSetValue(value) == false");
 		if (obj instanceof String) {
 			String strVal = (String) obj;
 			try {
 				if (getInputDecoder() != null) {
-					obj = getInputDecoder().parse(strVal);
+					obj = getInputDecoder().apply(strVal);
 				} else {
 					obj = Double.valueOf(Double.parseDouble(strVal));
 				}
@@ -165,6 +172,7 @@ public class PSpinnerModelDouble extends AbstractPSpinnerModel {
 		}
 	}
 	
+	@Override
 	public Double getValue() {
 		return val;
 	}

@@ -9,11 +9,11 @@ public class PSpacer extends AbstractPComponent {
 	protected PSize size;
 	
 	public PSpacer(int width, int height) {
-		this(new ImmutablePSize(width, height));
+		size = new ImmutablePSize(width, height);
 	}
 
 	public PSpacer(PSize size) {
-		this.size = size;
+		this(size.getWidth(), size.getHeight());
 	}
 	
 	@Override

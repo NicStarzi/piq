@@ -1,6 +1,7 @@
 package edu.udo.piq.components;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
@@ -11,11 +12,12 @@ import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.PSpinner.PSpinnerButton.PSpinnerBtnDir;
+import edu.udo.piq.components.collections.PListIndex;
 import edu.udo.piq.components.defaults.PSpinnerModelInt;
 import edu.udo.piq.components.textbased.PTextField;
 import edu.udo.piq.components.textbased.PTextFieldObs;
+import edu.udo.piq.components.textbased.PTextSelection;
 import edu.udo.piq.components.util.DefaultPKeyInput;
-import edu.udo.piq.components.util.ObjToStr;
 import edu.udo.piq.components.util.PKeyInput;
 import edu.udo.piq.components.util.PKeyInput.FocusPolicy;
 import edu.udo.piq.components.util.PKeyInput.KeyInputType;
@@ -36,8 +38,8 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 	 */
 	public static final String INPUT_IDENTIFIER_PRESS_UP = "pressUp";
 	public static final PKeyInput<PSpinner> INPUT_PRESS_UP = new DefaultPKeyInput<>(
-			FocusPolicy.THIS_OR_CHILD_HAS_FOCUS, KeyInputType.PRESS, Key.UP, PSpinner::canTriggerUpOrDown);
-	public static final Consumer<PSpinner> REACTION_PRESS_UP = self -> self.selectNext();
+			FocusPolicy.THIS_OR_CHILD_HAS_FOCUS, KeyInputType.PRESS, Key.UP, PSpinner::canSelectNextOrPrevious);
+	public static final Consumer<PSpinner> REACTION_PRESS_UP = PSpinner::selectNext;
 	
 	/*
 	 * Input: Press Down
@@ -46,18 +48,15 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 	 */
 	public static final String INPUT_IDENTIFIER_PRESS_DOWN = "pressDown";
 	public static final PKeyInput<PSpinner> INPUT_PRESS_DOWN = new DefaultPKeyInput<>(
-			FocusPolicy.THIS_OR_CHILD_HAS_FOCUS, KeyInputType.PRESS, Key.DOWN, PSpinner::canTriggerUpOrDown);
-	public static final Consumer<PSpinner> REACTION_PRESS_DOWN = self -> self.selectPrevious();
-	
-	protected static boolean canTriggerUpOrDown(PSpinner self) {
-		return self.isEnabled() && self.getModel() != null;
-	}
+			FocusPolicy.THIS_OR_CHILD_HAS_FOCUS, KeyInputType.PRESS, Key.DOWN, PSpinner::canSelectNextOrPrevious);
+	public static final Consumer<PSpinner> REACTION_PRESS_DOWN = PSpinner::selectPrevious;
 	
 	protected final ObserverList<PSpinnerModelObs> modelObsList =
 			PCompUtil.createDefaultObserverList();
 	protected final PSpinnerModelObs modelObs = this::onModelValueChanged;
 	protected PSpinnerModel model;
-	protected ObjToStr encoder;
+	protected Function<Object, String> encoder;
+	protected Function<String, Object> decoder;
 	
 	public PSpinner(PSpinnerModel model) {
 		this();
@@ -87,7 +86,7 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 		return (PSpinnerLayout) super.getLayout();
 	}
 	
-	public void setOutputEncoder(ObjToStr outputEncoder) {
+	public void setOutputEncoder(Function<Object, String> outputEncoder) {
 		encoder = outputEncoder;
 		if (getEditor() != null) {
 			getEditor().setOutputEncoder(getOutputEncoder());
@@ -100,8 +99,25 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 		}
 	}
 	
-	public ObjToStr getOutputEncoder() {
+	public Function<Object, String> getOutputEncoder() {
 		return encoder;
+	}
+	
+	public void setInputDecoder(Function<String, Object> inputDecoder) {
+		decoder = inputDecoder;
+		if (getEditor() != null) {
+			getEditor().setInputDecoder(getInputDecoder());
+		}
+		if (getNextButton() != null) {
+			getNextButton().setInputDecoder(getInputDecoder());
+		}
+		if (getPrevButton() != null) {
+			getPrevButton().setInputDecoder(getInputDecoder());
+		}
+	}
+	
+	public Function<String, Object> getInputDecoder() {
+		return decoder;
 	}
 	
 	public PSpinnerEditor getEditor() {
@@ -141,6 +157,10 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 	
 	public PSpinnerModel getModel() {
 		return model;
+	}
+	
+	protected boolean canSelectNextOrPrevious() {
+		return isEnabled() && getModel() != null;
 	}
 	
 	public void selectNext() {
@@ -197,12 +217,31 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 		modelObsList.fireEvent((obs) -> obs.onValueChanged(getModel(), oldVal));
 	}
 	
+	@Override
+	public void takeFocus() {
+		if (getEditor() != null) {
+			getEditor().takeFocus();
+		} else {
+			super.takeFocus();
+		}
+	}
+	
+	@Override
+	public void tryToTakeFocus() {
+		if (getEditor() != null) {
+			getEditor().tryToTakeFocus();
+		} else {
+			super.tryToTakeFocus();
+		}
+	}
+	
 	public static class PSpinnerEditor extends PTextField implements PSpinnerPart {
 		
 		protected final PSpinnerModelObs spnrModelObs =
 				(model, oldVal) -> synchronizeModelValue();
 		protected PSpinnerModel spnrModel;
-		protected ObjToStr encoder;
+		protected Function<Object, String> encoder;
+		protected Function<String, Object> decoder;
 		
 		public PSpinnerEditor() {
 			super("");
@@ -211,13 +250,23 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 		}
 		
 		@Override
-		public void setOutputEncoder(ObjToStr outputEncoder) {
+		public void setOutputEncoder(Function<Object, String> outputEncoder) {
 			encoder = outputEncoder;
 			synchronizeModelValue();
 		}
 		
-		public ObjToStr getOutputEncoder() {
+		public Function<Object, String> getOutputEncoder() {
 			return encoder;
+		}
+		
+		@Override
+		public void setInputDecoder(Function<String, Object> inputDecoder) {
+			decoder = inputDecoder;
+			onUserInput();
+		}
+		
+		public Function<String, Object> getInputDecoder() {
+			return decoder;
 		}
 		
 		@Override
@@ -257,7 +306,11 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 		}
 		
 		protected void onUserInput() {
-			String value = getText();
+			String text = getText();
+			Object value = text;
+			if (getInputDecoder() != null) {
+				value = getInputDecoder().apply(text);
+			}
 			PSpinnerModel model = getSpinnerModel();
 			if (model != null && model.canSetValue(value)) {
 				model.setValue(value);
@@ -272,13 +325,17 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 					output = getSpinnerModel().getValue();
 				} else {
 					try {
-						output = getOutputEncoder().parse(getSpinnerModel().getValue());
+						output = getOutputEncoder().apply(getSpinnerModel().getValue());
 					} catch (Exception e) {
 						e.printStackTrace();
 						output = null;
 					}
 				}
 				getModel().setValue(output);
+			}
+			PTextSelection sel = getSelection();
+			if (sel != null && !sel.hasSelection()) {
+				sel.addSelection(new PListIndex(0));
 			}
 		}
 	}
@@ -291,7 +348,6 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 				(model, oldVal) -> onSpinnerModelValueChanged();
 		protected PSpinnerBtnDir dir;
 		protected PSpinnerModel spnrModel;
-		protected ObjToStr encoder; // <- not used
 		
 		public PSpinnerButton(PSpinnerBtnDir direction) {
 			super();
@@ -344,12 +400,19 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 		}
 		
 		@Override
-		public void setOutputEncoder(ObjToStr outputEncoder) {
-			encoder = outputEncoder;
+		public void setOutputEncoder(Function<Object, String> outputEncoder) {
 		}
 		
-		public ObjToStr getOutputEncoder() {
-			return encoder;
+		public Function<Object, String> getOutputEncoder() {
+			return null;
+		}
+		
+		@Override
+		public void setInputDecoder(Function<String, Object> inputDecoder) {
+		}
+		
+		public Function<String, Object> getInputDecoder() {
+			return null;
 		}
 		
 		@Override

@@ -24,6 +24,9 @@ public class IndexedTabbingPFocusTraversal extends AbstractPFocusTraversal imple
 	@Override
 	protected void onKeyTriggered(PKeyboard keyboard, Key key) {
 		PComponent focusOwner = curRoot.getFocusOwner();
+		if (focusOwner == null) {
+			return;
+		}
 		if (focusOwner instanceof PTextComponent) {
 			if (keyboard.isTriggered(VirtualKey.FOCUS_UP)) {
 				moveFocus(focusOwner, +1);

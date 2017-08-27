@@ -14,6 +14,7 @@ import edu.udo.piq.layouts.PFreeLayout;
 import edu.udo.piq.layouts.PFreeLayout.FreeConstraint;
 import edu.udo.piq.layouts.PGridLayout;
 import edu.udo.piq.tools.SpatialArrowKeyPFocusTraversal;
+import edu.udo.piq.tools.SpatialTabbingPFocusTraversal;
 
 public class SwingPTest_FocusTraversal extends AbstractSwingPTest {
 	
@@ -31,7 +32,8 @@ public class SwingPTest_FocusTraversal extends AbstractSwingPTest {
 		PPanel bodyPnl = new PPanel();
 		bodyPnl.setLayout(new PFreeLayout(bodyPnl));
 		root.setBody(bodyPnl);
-		root.setFocusTraversal(new SpatialArrowKeyPFocusTraversal());
+//		root.setFocusTraversal(new SpatialArrowKeyPFocusTraversal());
+		root.setFocusTraversal(new SpatialTabbingPFocusTraversal());
 		
 		PSpinner spinner = new PSpinner(new PSpinnerModelInt(5, 0, 12));
 		spinner.setID("spinner");
@@ -56,6 +58,7 @@ public class SwingPTest_FocusTraversal extends AbstractSwingPTest {
 		PPanel btnPnl = new PPanel();
 		btnPnl.setLayout(new PGridLayout(btnPnl, 2, 2));
 		btnPnl.setFocusTraversal(new SpatialArrowKeyPFocusTraversal());
+//		btnPnl.setFocusTraversal(new SpatialTabbingPFocusTraversal(btnPnl));
 		bodyPnl.addChild(btnPnl, new FreeConstraint(192, 128, 320, 256));
 		
 		PRadioButtonTuple rad1 = new PRadioButtonTuple(new PLabel("Radio 1"));
@@ -72,5 +75,4 @@ public class SwingPTest_FocusTraversal extends AbstractSwingPTest {
 		btnPnl.addChild(rad3, "0 1");
 		btnPnl.addChild(rad4, "1 1");
 	}
-	
 }

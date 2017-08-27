@@ -8,17 +8,19 @@ import edu.udo.piq.components.collections.PModel;
 import edu.udo.piq.components.collections.PModelIndex;
 import edu.udo.piq.components.collections.PSelection;
 import edu.udo.piq.components.collections.PTableCellIndex;
-import edu.udo.piq.components.collections.PTableModel;;
+import edu.udo.piq.components.collections.PTableModel;
 
 public class PTablePDnDSupport extends DefaultPDnDSupport implements PDnDSupport {
 	
 	// This special element can be detected by the PTablePDnDSupport when dropping
 	public static final Object EXPORT_MODEL_EMPTY_CELL = new Object() {
+		@Override
 		public String toString() {
 			return "PTableDnDSupportExportEmptyCell";
-		};
+		}
 	};
 	
+	@Override
 	protected boolean naiveCanImport(PModel dstModel, PModelIndex dstIndex, PModel importData) {
 		PTableCellIndex dstCellIdx = (PTableCellIndex) dstIndex;
 		int dstCol = dstCellIdx.getColumn();
@@ -31,8 +33,8 @@ public class PTablePDnDSupport extends DefaultPDnDSupport implements PDnDSupport
 		for (int col = 0; col < countCols; col++) {
 			for (int row = 0; row < countRows; row++) {
 				Object element = tableSrcModel.get(col, row);
-				if (element != EXPORT_MODEL_EMPTY_CELL 
-						&& !tableDstModel.canSet(dstCol + col, dstRow + row, element)) 
+				if (element != EXPORT_MODEL_EMPTY_CELL
+						&& !tableDstModel.canSet(dstCol + col, dstRow + row, element))
 				{
 					return false;
 				}
@@ -45,8 +47,8 @@ public class PTablePDnDSupport extends DefaultPDnDSupport implements PDnDSupport
 					dstCol + cellIdx.getColumn(), dstRow + cellIdx.getRow());
 			
 			Object element = importData.get(index);
-			if (element != EXPORT_MODEL_EMPTY_CELL 
-					&& !dstModel.canSet(testSetIdx, element)) 
+			if (element != EXPORT_MODEL_EMPTY_CELL
+					&& !dstModel.canSet(testSetIdx, element))
 			{
 				return false;
 			}
@@ -54,11 +56,12 @@ public class PTablePDnDSupport extends DefaultPDnDSupport implements PDnDSupport
 		return true;
 	}
 	
-	protected void doNaiveImport(PDropComponent dstComp, 
-			PModel dstModel, PModelIndex dstIndex, PModel importData) 
+	@Override
+	protected void doNaiveImport(PDropComponent dstComp,
+			PModel dstModel, PModelIndex dstIndex, PModel importData)
 	{
 		if (!(importData instanceof PTableModel)
-				|| !(dstIndex instanceof PTableCellIndex)) 
+				|| !(dstIndex instanceof PTableCellIndex))
 		{
 			super.doNaiveImport(dstComp, dstModel, dstIndex, importData);
 		}
@@ -86,6 +89,7 @@ public class PTablePDnDSupport extends DefaultPDnDSupport implements PDnDSupport
 		}
 	}
 	
+	@Override
 	protected boolean naiveCanExport(PModel srcModel, List<PModelIndex> srcIndices) {
 		if (!isRemoveOnDrag()) {
 			return true;
@@ -98,6 +102,7 @@ public class PTablePDnDSupport extends DefaultPDnDSupport implements PDnDSupport
 		return true;
 	}
 	
+	@Override
 	protected PModel buildNaiveExportModel(PModel srcModel, List<PModelIndex> srcIndices) {
 		if (srcIndices.size() == 0) {
 			return super.buildNaiveExportModel(srcModel, srcIndices);
@@ -146,9 +151,10 @@ public class PTablePDnDSupport extends DefaultPDnDSupport implements PDnDSupport
 		return exportModel;
 	}
 	
+	@Override
 	public void doNaiveRemoveAll(PModel srcModel, List<PModelIndex> srcIndices) {
 		/*
-		 * Instead of removing indices we set them to null in a PTable since 
+		 * Instead of removing indices we set them to null in a PTable since
 		 * only entire rows or columns can be removed.
 		 */
 		for (PModelIndex srcIndex : srcIndices) {

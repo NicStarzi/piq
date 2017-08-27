@@ -29,6 +29,9 @@ public class SpatialArrowKeyPFocusTraversal extends AbstractPFocusTraversal impl
 	@Override
 	protected void onKeyTriggered(PKeyboard keyboard, Key key) {
 		PComponent focusOwner = curRoot.getFocusOwner();
+		if (focusOwner == null) {
+			return;
+		}
 		// If the focused component is a text component the arrow keys have are used to move the caret.
 		// In this case we require the ALT modifier key to be pressed also.
 		if (focusOwner instanceof PTextComponent && !keyboard.isModifierToggled(Modifier.ALT)) {
@@ -95,7 +98,7 @@ public class SpatialArrowKeyPFocusTraversal extends AbstractPFocusTraversal impl
 				// remove all components in the wrong direction
 				.filter(c -> filter.test(c.getBounds(), focusOwnerBounds))
 				// remove all components which are not overlapping with the focus owner on the given axis
-				.filter(c -> isOverlapping(c, focusOwner, axis))
+				.filter(c -> axis.isOverlapping(c, focusOwner))
 				// sort by distance to focus owner
 				.sorted((c1, c2) -> {
 					int dist1 = Math.abs(focusOwnerCoord - compCoordGetter.apply(c1.getBounds()));
@@ -108,15 +111,6 @@ public class SpatialArrowKeyPFocusTraversal extends AbstractPFocusTraversal impl
 			return null;
 		}
 		return comps.get(0);
-	}
-	
-	// Code taken from PBounds.isOverlapping(PBounds) and simplified to use only given axis
-	protected boolean isOverlapping(PComponent c1, PComponent c2, Axis axis) {
-		int x1 = axis.getFirstCoordinate(c1);
-		int fx1 = axis.getFinalCoordinate(c1);
-		int x2 = axis.getFirstCoordinate(c2);
-		int fx2 = axis.getFinalCoordinate(c2);
-		return !(x1 > fx2 || fx1 < x2);
 	}
 	
 }

@@ -800,6 +800,16 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 		return focusOwner == this || isAncestorOf(focusOwner);
 	}
 	
+	public default PComponent getHighestFocusableAncestor() {
+		PComponent last = isFocusable() ? this : null;
+		for (PComponent anc : getAncestors()) {
+			if (anc.isFocusable()) {
+				last = anc;
+			}
+		}
+		return last;
+	}
+	
 	/**
 	 * Makes this component the focus owner of its GUI.<br>
 	 * 

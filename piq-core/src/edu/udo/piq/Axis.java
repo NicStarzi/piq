@@ -82,4 +82,16 @@ public enum Axis {
 		return getCenterCoordinate(component.getBounds());
 	}
 	
+	public final boolean isOverlapping(PBounds bounds1, PBounds bounds2) {
+		int x1 = getFirstCoordinate(bounds1);
+		int fx1 = getFinalCoordinate(bounds1);
+		int x2 = getFirstCoordinate(bounds2);
+		int fx2 = getFinalCoordinate(bounds2);
+		return !(x1 > fx2 || fx1 < x2);
+	}
+	
+	public final boolean isOverlapping(PComponent component1, PComponent component2) {
+		return isOverlapping(component1.getBounds(), component2.getBounds());
+	}
+	
 }

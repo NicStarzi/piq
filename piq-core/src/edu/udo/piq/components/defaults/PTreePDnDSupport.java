@@ -1,5 +1,7 @@
 package edu.udo.piq.components.defaults;
 
+import static edu.udo.piq.components.collections.PTreeIndex.ROOT;
+
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
@@ -12,19 +14,19 @@ import edu.udo.piq.components.collections.PModelIndex;
 import edu.udo.piq.components.collections.PTreeIndex;
 import edu.udo.piq.components.collections.PTreeModel;
 
-import static edu.udo.piq.components.collections.PTreeIndex.ROOT;;
-
 public class PTreePDnDSupport extends DefaultPDnDSupport implements PDnDSupport {
 	
 	// This special root node can be detected by the PTreePDnDSupport when dropping
 	public static final Object EXPORT_MODEL_ROOT_CONTENT = new Object() {
+		@Override
 		public String toString() {
 			return "PTreeDnDSupportExportRoot";
-		};
+		}
 	};
 	
-	protected void doNaiveImport(PDropComponent dstComp, 
-			PModel dstModel, PModelIndex dstIndex, PModel importData) 
+	@Override
+	protected void doNaiveImport(PDropComponent dstComp,
+			PModel dstModel, PModelIndex dstIndex, PModel importData)
 	{
 		if (!(importData instanceof PTreeModel)) {
 			super.doNaiveImport(dstComp, dstModel, dstIndex, importData);
@@ -51,6 +53,7 @@ public class PTreePDnDSupport extends DefaultPDnDSupport implements PDnDSupport 
 		}
 	}
 	
+	@Override
 	protected PModel buildNaiveExportModel(PModel srcModel, List<PModelIndex> srcIndices) {
 		if (srcIndices.size() == 0) {
 			return super.buildNaiveExportModel(srcModel, srcIndices);
@@ -114,6 +117,7 @@ public class PTreePDnDSupport extends DefaultPDnDSupport implements PDnDSupport 
 			expIndex = exportIndex;
 		}
 		
+		@Override
 		public String toString() {
 			StringBuilder sb = new StringBuilder();
 			sb.append(srcIndex);

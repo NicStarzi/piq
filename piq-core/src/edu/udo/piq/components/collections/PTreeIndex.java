@@ -8,7 +8,7 @@ import edu.udo.piq.util.ThrowException;
 
 public class PTreeIndex implements PModelIndex {
 	
-	public static final Comparator<PModelIndex> TREE_INDEX_DEPTH_COMPARATOR = 
+	public static final Comparator<PModelIndex> TREE_INDEX_DEPTH_COMPARATOR =
 			(PModelIndex o1, PModelIndex o2) -> {
 				PTreeIndex ti1 = (PTreeIndex) o1;
 				PTreeIndex ti2 = (PTreeIndex) o2;
@@ -22,8 +22,8 @@ public class PTreeIndex implements PModelIndex {
 	private static final int[] ROOT_ARR = new int[0];
 	public static final PTreeIndex ROOT = new PTreeIndex();
 	
-	private final int[] indices;
-	private final int depth;
+	protected final int[] indices;
+	protected final int depth;
 	
 	public PTreeIndex(Collection<Integer> childIndices) {
 		// Do not copy empty collections
@@ -85,7 +85,7 @@ public class PTreeIndex implements PModelIndex {
 	}
 	
 	public PTreeIndex getCommonAncestorIndex(PTreeIndex other) {
-		if (this == other || this.equals(other)) {
+		if (this == other || equals(other)) {
 			return this;
 		}
 		int[] indicesThis = indices;
@@ -203,12 +203,14 @@ public class PTreeIndex implements PModelIndex {
 		return new PTreeIndex(newIndices);
 	}
 	
+	@Override
 	public PTreeIndex withOffset(PModelIndex offset) {
-		PTreeIndex offsetTree = ThrowException.ifTypeCastFails(offset, 
+		PTreeIndex offsetTree = ThrowException.ifTypeCastFails(offset,
 				PTreeIndex.class, "(offset instanceof PTreeIndex) == false");
 		return offsetTree.append(this);
 	}
 	
+	@Override
 	public String toString() {
 		if (getDepth() == 0) {
 			return getClass().getSimpleName() + "[ROOT]";
@@ -227,19 +229,24 @@ public class PTreeIndex implements PModelIndex {
 		return sb.toString();
 	}
 	
+	@Override
 	public int hashCode() {
+		int prime = 31;
 		int hash = 1;
 		for (int i = 0; i < getDepth(); i++) {
-			hash = hash * 31 + getChildIndex(i);
+			hash = hash * prime + getChildIndex(i);
 		}
 		return hash;
 	}
 	
+	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null || !(obj instanceof PTreeIndex))
+		}
+		if (obj == null || !(obj instanceof PTreeIndex)) {
 			return false;
+		}
 		PTreeIndex other = (PTreeIndex) obj;
 		if (getDepth() != other.getDepth()) {
 			return false;

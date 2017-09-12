@@ -86,6 +86,10 @@ public interface PBounds extends PSize {
 		return getY() + getHeight() / 2;
 	}
 	
+	public default boolean contains(PPoint point) {
+		return contains((int) point.getX(), (int) point.getY());
+	}
+	
 	/**
 	 * Returns true if the point defined by x and y is
 	 * within these bounds. Otherwise false is returned.<br>
@@ -96,6 +100,10 @@ public interface PBounds extends PSize {
 	 */
 	public default boolean contains(int x, int y) {
 		return x >= getX() && x <= getFinalX() && y >= getY() && y <= getFinalY();
+	}
+	
+	public default boolean fullyContains(PBounds other) {
+		return contains(other.getX(), other.getY()) && contains(other.getFinalX(), other.getFinalY());
 	}
 	
 	public default boolean isOverlapping(PBounds other) {

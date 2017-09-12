@@ -2,14 +2,11 @@ package edu.udo.piq.components;
 
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.AbstractPComponent;
-import edu.udo.piq.tools.ImmutablePSize;
 
 public class PSpacer extends AbstractPComponent {
 	
-	protected PSize size;
-	
 	public PSpacer(int width, int height) {
-		size = new ImmutablePSize(width, height);
+		prefSize.set(width, height);
 	}
 
 	public PSpacer(PSize size) {
@@ -18,17 +15,17 @@ public class PSpacer extends AbstractPComponent {
 	
 	@Override
 	public PSize getPreferredSize() {
-		return size;
+		return prefSize;
 	}
 	
 	@Override
 	public PSize getDefaultPreferredSize() {
-		return size;
+		return prefSize;
 	}
 	
 	@Override
 	protected PSize getConstantDefaultPreferredSize() {
-		return size;
+		return prefSize;
 	}
 	
 }

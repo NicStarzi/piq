@@ -19,6 +19,7 @@ public interface PTableModel extends PModel {
 	
 	public int getRowCount();
 	
+	@Override
 	public default boolean canSet(PModelIndex index, Object content) {
 		return index instanceof PTableCellIndex && contains(index);
 	}
@@ -29,6 +30,7 @@ public interface PTableModel extends PModel {
 	
 	public void set(int column, int row, Object content);
 	
+	@Override
 	public default void set(PModelIndex index, Object content) {
 		PTableCellIndex ti = asTableCellIndex(index);
 		int column = ti.getColumn();
@@ -36,6 +38,7 @@ public interface PTableModel extends PModel {
 		set(column, row, content);
 	}
 	
+	@Override
 	public default PTableCellIndex getIndexOf(Object content) {
 		int colCount = getColumnCount();
 		int rowCount = getRowCount();
@@ -53,7 +56,7 @@ public interface PTableModel extends PModel {
 		return get(columnIndex.getColumn(), rowIndex.getRow());
 	}
 	
-	public default Object get(PColumnIndex index) {
+	public default List<Object> get(PColumnIndex index) {
 		int col = index.getColumn();
 		List<Object> result = new ArrayList<>(getRowCount());
 		for (int row = 0; row < getRowCount(); row++) {
@@ -62,7 +65,7 @@ public interface PTableModel extends PModel {
 		return result;
 	}
 	
-	public default Object get(PRowIndex index) {
+	public default List<Object> get(PRowIndex index) {
 		int row = index.getRow();
 		List<Object> result = new ArrayList<>(getColumnCount());
 		for (int col = 0; col < getColumnCount(); col++) {
@@ -71,6 +74,7 @@ public interface PTableModel extends PModel {
 		return result;
 	}
 	
+	@Override
 	public default Object get(PModelIndex index) {
 		if (index instanceof PRowIndex) {
 			return get(asRowIndex(index));
@@ -85,10 +89,11 @@ public interface PTableModel extends PModel {
 	public Object get(int column, int row);
 	
 	public default boolean contains(int column, int row) {
-		return column >= 0 && column < getColumnCount() 
+		return column >= 0 && column < getColumnCount()
 				&& row >= 0 && row < getRowCount();
 	}
 	
+	@Override
 	public default boolean contains(PModelIndex index) {
 		PTableIndex tableIndex = asTableIndex(index);
 		int col = tableIndex.isColumnIndex() ? tableIndex.getColumn() : 0;
@@ -96,6 +101,7 @@ public interface PTableModel extends PModel {
 		return contains(col, row);
 	}
 	
+	@Override
 	public default boolean canAdd(PModelIndex index, Object content) {
 		ThrowException.ifNull(index, "index == null");
 		if (index instanceof PRowIndex) {
@@ -110,6 +116,7 @@ public interface PTableModel extends PModel {
 				+" or "+PColumnIndex.class.getSimpleName());
 	}
 	
+	@Override
 	public default boolean canRemove(PModelIndex index) {
 		return contains(index);
 	}

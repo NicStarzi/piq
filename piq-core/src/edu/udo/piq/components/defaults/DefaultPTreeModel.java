@@ -19,8 +19,9 @@ import edu.udo.piq.util.ThrowException;
 
 public class DefaultPTreeModel extends AbstractPModel implements PTreeModel {
 	
-	private DefaultPTreeNode rootNode;
+	protected DefaultPTreeNode rootNode;
 	
+	@Override
 	public Object getRoot() {
 		if (rootNode == null) {
 			return null;
@@ -28,15 +29,18 @@ public class DefaultPTreeModel extends AbstractPModel implements PTreeModel {
 		return rootNode.getContent();
 	}
 	
+	@Override
 	public int getChildCount(PTreeIndex index) {
 		DefaultPTreeNode parentNode = getNode(index);
 		return parentNode == null ? 0 : parentNode.getChildCount();
 	}
 	
+	@Override
 	public boolean canSet(PModelIndex index, Object content) {
 		return index instanceof PTreeIndex && contains(index);
 	}
 	
+	@Override
 	public void set(PModelIndex index, Object content) {
 		DefaultPTreeNode node = getNode(index);
 		if (node == null) {
@@ -46,6 +50,7 @@ public class DefaultPTreeModel extends AbstractPModel implements PTreeModel {
 		fireChangeEvent(index, content);
 	}
 	
+	@Override
 	public Object get(PModelIndex index) {
 		DefaultPTreeNode node = getNode(index);
 		if (node == null) {
@@ -54,10 +59,12 @@ public class DefaultPTreeModel extends AbstractPModel implements PTreeModel {
 		return node.getContent();
 	}
 	
+	@Override
 	public boolean contains(PModelIndex index) {
 		return getNode(index) != null;
 	}
 	
+	@Override
 	public PTreeIndex getIndexOf(Object content) {
 		if (rootNode == null) {
 			return null;
@@ -74,6 +81,7 @@ public class DefaultPTreeModel extends AbstractPModel implements PTreeModel {
 		return null;
 	}
 	
+	@Override
 	public boolean canAdd(PModelIndex index, Object content) {
 		if (content == null) {
 			return false;
@@ -87,6 +95,7 @@ public class DefaultPTreeModel extends AbstractPModel implements PTreeModel {
 		return parentNode != null && parentNode.getChildCount() >= lastChildIndex;
 	}
 	
+	@Override
 	public void add(PModelIndex index, Object content) {
 		if (!canAdd(index, content)) {
 			throw new AddImpossible(this, index, content);
@@ -105,10 +114,12 @@ public class DefaultPTreeModel extends AbstractPModel implements PTreeModel {
 		fireAddEvent(index, content);
 	}
 	
+	@Override
 	public boolean canRemove(PModelIndex index) {
 		return contains(index);
 	}
 	
+	@Override
 	public void remove(PModelIndex index) {
 		DefaultPTreeNode childNode = getNode(index);
 		remove(childNode, index);
@@ -131,7 +142,7 @@ public class DefaultPTreeModel extends AbstractPModel implements PTreeModel {
 		fireRemoveEvent(index, childNode.getContent());
 	}
 	
-	private final void removeChildrenOf(DefaultPTreeNode parentNode, PTreeIndex parentIndex) {
+	protected final void removeChildrenOf(DefaultPTreeNode parentNode, PTreeIndex parentIndex) {
 		for (DefaultPTreeNode childNode : parentNode.children) {
 			childNode.parent = null;
 			fireRemoveEvent(parentIndex.append(0), childNode.getContent());
@@ -139,6 +150,7 @@ public class DefaultPTreeModel extends AbstractPModel implements PTreeModel {
 		parentNode.children.clear();
 	}
 	
+	@Override
 	public void removeAll(Iterable<PModelIndex> indices) {
 		Iterator<PModelIndex> iter = indices.iterator();
 		if (!iter.hasNext()) {
@@ -156,6 +168,7 @@ public class DefaultPTreeModel extends AbstractPModel implements PTreeModel {
 		}
 	}
 	
+	@Override
 	public void removeAll(PModelIndex ... indices) {
 		removeAll(Arrays.asList(indices));
 	}
@@ -202,6 +215,7 @@ public class DefaultPTreeModel extends AbstractPModel implements PTreeModel {
 		throw new WrongIndexType(index, PTreeIndex.class);
 	}
 	
+	@Override
 	public String toString() {
 		if (getRoot() == null) {
 			return "EMPTY-TREE";

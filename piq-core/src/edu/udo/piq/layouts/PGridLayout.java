@@ -1,5 +1,6 @@
 package edu.udo.piq.layouts;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -20,6 +21,8 @@ public class PGridLayout extends AbstractMapPLayout {
 	public static final int DEFAULT_GAP_BETWEEN_COLUMNS = 4;
 	public static final int DEFAULT_GAP_BETWEEN_ROWS = 4;
 	
+	protected final List<PCompInfo> singleCellComps = new ArrayList<>();
+	protected final List<PCompInfo> multiCellComps = new ArrayList<>();
 	protected final PCompInfo[] componentGrid;
 	protected final Growth[] growCols;
 	protected final Growth[] growRows;
@@ -55,10 +58,16 @@ public class PGridLayout extends AbstractMapPLayout {
 			constraint = new GridConstraint((String) constraint);
 			setChildConstraint(child, constraint);
 		}
+		PCompInfo info = getInfoFor(child);
 		GridConstraint constr = (GridConstraint) constraint;
+		if (constr.w == 1 && constr.h == 1) {
+			singleCellComps.add(info);
+		} else {
+			multiCellComps.add(info);
+		}
 		for (int cx = constr.x; cx < constr.x + constr.w; cx++) {
 			for (int cy = constr.y; cy < constr.y + constr.h; cy++) {
-				componentGrid[cellID(cx, cy)] = getInfoFor(child);
+				componentGrid[cellID(cx, cy)] = info;
 			}
 		}
 	}
@@ -66,6 +75,11 @@ public class PGridLayout extends AbstractMapPLayout {
 	@Override
 	protected void onChildRemoved(PComponent child, Object constraint) {
 		GridConstraint constr = (GridConstraint) constraint;
+		if (constr.w == 1 && constr.h == 1) {
+			singleCellComps.remove(getInfoFor(child));
+		} else {
+			multiCellComps.remove(getInfoFor(child));
+		}
 		for (int cx = constr.x; cx < constr.x + constr.w; cx++) {
 			for (int cy = constr.y; cy < constr.y + constr.h; cy++) {
 				componentGrid[cellID(cx, cy)] = null;
@@ -229,6 +243,8 @@ public class PGridLayout extends AbstractMapPLayout {
 	
 	@Override
 	protected void layOutInternal() {
+//		System.out.println();
+//		System.out.println("============================ "+getOwner()+".layOutInternal()");
 		PInsets insets = getInsets();
 		PBounds bounds = getOwner().getBoundsWithoutBorder();
 		int x = bounds.getX() + insets.getFromLeft();
@@ -236,11 +252,10 @@ public class PGridLayout extends AbstractMapPLayout {
 		int fx = bounds.getFinalX() - insets.getFromRight();
 		int fy = bounds.getFinalY() - insets.getFromBottom();
 		
-		refreshLayout();
+		growColumnAndRowSizes();
 		
 		int cellX = x;
 		int cellY;
-		
 		for (int cx = 0; cx < getColumnCount(); cx++) {
 			cellY = y;
 			int colW = sizeCol[cx];
@@ -291,9 +306,17 @@ public class PGridLayout extends AbstractMapPLayout {
 			
 			cellX += colW + getGapAfterColumn(cx);
 		}
+//		System.out.println("============================ "+getOwner()+".OVER");
+//		System.out.println();
 	}
 	
-	protected void refreshLayout() {
+	@Override
+	protected void onInvalidated() {
+		calculateCellSizes();
+		calculatePreferredSize();
+	}
+	
+	protected void growColumnAndRowSizes() {
 		PComponent owner = getOwner();
 		if (owner == null) {
 			return;
@@ -308,9 +331,10 @@ public class PGridLayout extends AbstractMapPLayout {
 		int prefW = prefSize.getWidth() - insets.getWidth();
 		int prefH = prefSize.getHeight() - insets.getHeight();
 		
+//		System.out.println("PGridLayout.growColumnAndRowSizes()");
 		if (totalW > prefW && countGrowCol > 0) {
 			int growW = (totalW - prefW) / countGrowCol;
-//			System.out.println("growW="+growW+"; totalW="+totalW+"; w="+w+"; countGrow="+countGrowCol);
+//			System.out.println("growW="+growW+"; totalW="+totalW+"; prefW="+prefW+"; countGrow="+countGrowCol);
 			for (int cx = 0; cx < getColumnCount(); cx++) {
 				if (growCols[cx] == Growth.MAXIMIZE) {
 					sizeCol[cx] += growW;
@@ -328,66 +352,86 @@ public class PGridLayout extends AbstractMapPLayout {
 		}
 	}
 	
-	@Override
-	protected void onInvalidated() {
+	protected void calculateCellSizes() {
+//		System.out.println();
+//		System.out.println("============================ "+getOwner()+".calculateCellSizes()");
 		// Reset row and column sizes first
 		Arrays.fill(sizeCol, 0);
 		Arrays.fill(sizeRow, 0);
-		boolean[] isColSet = new boolean[getColumnCount()];
-//		boolean[] isRowSet = new boolean[getRowCount()];
-//		for (int cx = 0; cx < getColumnCount(); cx++) {
-		for (int cy = 0; cy < getRowCount(); cy++) {
-//			sizeCol[cx] = 0;
-			// Refresh row and column sizes (column by column)
-			boolean isRowSet = false;
-			for (int cx = 0; cx < getColumnCount(); cx++) {
-//			for (int cy = 0; cy < getRowCount(); cy++) {
-				PCompInfo info = getCellInternal(cx, cy);
-				if (info == null) {
-					continue;
-				}
-				GridConstraint constr = (GridConstraint) info.getConstraint();
-				/*
-				 * A component can be placed in more than one cell if the width
-				 * and/or height of its constraint are larger than 1.
-				 * In this case we want to only count the component once so we
-				 * filter them here.
-				 */
-				if (cx != constr.x || cy != constr.y) {
-					continue;
-				}
-				PSize cellPrefSize = getPreferredSizeOf(info.getComponent());
-//				System.out.println("cx="+cx+"; comp="+info.getComponent()+"; prefSize="+cellPrefSize+"; constr="+constr);
-				if (!isColSet[cx] || constr.w == 1) {
-					int cellPrefW = cellPrefSize.getWidth();
-					if (!isColSet[cx] || cellPrefW > sizeCol[cx]) {
-						sizeCol[cx] = cellPrefW;
-//						System.out.println("sizeCol["+cx+"]="+sizeCol[cx]);
-					}
-					if (constr.w == 1) {
-						isColSet[cx] = true;
-					}
-				}
-//				System.out.println("cx="+cx+"; cy="+cy+"; cmp="+info.getComponent()+"; isRowSet="+isRowSet+"; constrH="+constr.h);
-				if (!isRowSet || constr.h == 1) {
-					int cellPrefH = cellPrefSize.getHeight();
-					if (!isRowSet || cellPrefH > sizeRow[cy]) {
-						sizeRow[cy] = cellPrefH;
-//						System.out.println("sizeRow["+cy+"]="+cellPrefH);
-					}
-					if (constr.h == 1) {
-						isRowSet = true;
-					}
-				}
-//				System.out.println();
+		for (PCompInfo info : singleCellComps) {
+//			System.out.println("singleCellComp="+info.getComponent());
+			GridConstraint constr = (GridConstraint) info.getConstraint();
+			PSize cellPrefSize = getPreferredSizeOf(info.getComponent());
+			int cellPrefW = cellPrefSize.getWidth();
+			if (cellPrefW > sizeCol[constr.x]) {
+				sizeCol[constr.x] = cellPrefW;
+//				System.out.println("set:sizeCol["+constr.x+"]="+sizeCol[constr.x]);
+			}
+			int cellPrefH = cellPrefSize.getHeight();
+			if (cellPrefH > sizeRow[constr.y]) {
+				sizeRow[constr.y] = cellPrefH;
+//				System.out.println("set:sizeRow["+constr.y+"]="+cellPrefH);
 			}
 		}
+		for (PCompInfo info : multiCellComps) {
+//			System.out.println("multiCellComp="+info.getComponent());
+			GridConstraint constr = (GridConstraint) info.getConstraint();
+			PSize compPrefSize = getPreferredSizeOf(info.getComponent());
+			int compW = compPrefSize.getWidth();
+			int compH = compPrefSize.getHeight();
+			int fCx = constr.x + constr.w;
+			int fCy = constr.y + constr.h;
+			int countGrowCols = 0;
+			int countGrowRows = 0;
+			for (int cx = constr.x; cx < fCx; cx++) {
+				if (getColumnGrowth(cx) == Growth.MAXIMIZE) {
+					countGrowCols++;
+				}
+				compW -= sizeCol[cx];
+			}
+			for (int cy = constr.y; cy < fCy; cy++) {
+				if (getRowGrowth(cy) == Growth.MAXIMIZE) {
+					countGrowRows++;
+				}
+				compH -= sizeRow[cy];
+			}
+//			System.out.println("compW="+compW+"; was="+compPrefSize.getWidth()+"; countGrowCols="+countGrowCols);
+//			System.out.println("compH="+compH+"; was="+compPrefSize.getHeight()+"; countGrowRows="+countGrowRows);
+			if (compW > 0 && countGrowCols == 0) {
+				int growthCol = compW / constr.w;
+				int overhang = compW % constr.w;
+				for (int cx = constr.x; cx < fCx; cx++) {
+					sizeCol[cx] += growthCol;
+					if (cx < overhang) {
+						sizeCol[cx] += 1;
+					}
+//					System.out.println("growBy="+growthCol+"; sizeCol["+cx+"]="+sizeCol[cx]);
+				}
+			}
+			if (compH > 0 && countGrowRows == 0) {
+				int growthRow = compH / constr.h;
+				int overhang = compH % constr.h;
+				for (int cy = constr.y; cy < fCy; cy++) {
+					sizeRow[cy] += growthRow;
+					if (cy < overhang) {
+						sizeRow[cy] += 1;
+					}
+//					System.out.println("growBy="+growthRow+"; sizeRow["+cy+"]="+sizeRow[cy]);
+				}
+			}
+		}
+//		System.out.println("============================ "+getOwner()+".OVER");
+//		System.out.println();
+	}
+	
+	protected void calculatePreferredSize() {
 		countGrowCol = 0;
 		countGrowRow = 0;
 		int minW = 0;
 		int minH = 0;
+		int colCount = getColumnCount();
 		// Sum up column sizes for preferred width
-		for (int cx = 0; cx < getColumnCount(); cx++) {
+		for (int cx = 0; cx < colCount; cx++) {
 //			System.out.println("cx="+cx+"; col="+sizeCol[cx]+"; gap="+getGapAfterColumn(cx));
 			minW += sizeCol[cx];
 			minW += getGapAfterColumn(cx);
@@ -397,11 +441,12 @@ public class PGridLayout extends AbstractMapPLayout {
 			}
 		}
 		// We take the last gap away since there is no following column
-		if (getColumnCount() > 0) {
-			minW -= getGapAfterColumn(getColumnCount() - 1);
+		if (colCount > 0) {
+			minW -= getGapAfterColumn(colCount - 1);
 		}
+		int rowCount = getRowCount();
 		// Sum up row sizes for preferred height
-		for (int cy = 0; cy < getRowCount(); cy++) {
+		for (int cy = 0; cy < rowCount; cy++) {
 			minH += sizeRow[cy];
 			minH += getGapAfterRow(cy);
 			// We count this here for later even though it is not needed for determining preferred size
@@ -410,15 +455,13 @@ public class PGridLayout extends AbstractMapPLayout {
 			}
 		}
 		// We take the last gap away since there is no following row
-		if (getRowCount() > 0) {
-			minH -= getGapAfterRow(getRowCount() - 1);
+		if (rowCount > 0) {
+			minH -= getGapAfterRow(rowCount - 1);
 		}
 		PInsets insets = getInsets();
 //		System.out.println("minW="+minW+"; insets="+insets.getWidth());
 		prefSize.setWidth(minW + insets.getWidth());
 		prefSize.setHeight(minH + insets.getHeight());
-//		System.out.println("##########################");
-//		System.out.println();
 	}
 	
 	public static class GridConstraint {

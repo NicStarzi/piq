@@ -16,8 +16,9 @@ public abstract class PTableIndex implements PModelIndex {
 		return getRow() >= 0;
 	}
 	
+	@Override
 	public PTableIndex withOffset(PModelIndex offset) {
-		PTableIndex offsetIndex = ThrowException.ifTypeCastFails(offset, 
+		PTableIndex offsetIndex = ThrowException.ifTypeCastFails(offset,
 				PTableIndex.class, "(offset instanceof PTableIndex) == false");
 		
 		int col = -1;
@@ -34,10 +35,11 @@ public abstract class PTableIndex implements PModelIndex {
 		if (col >= 0) {
 			return new PColumnIndex(col);
 		} else {
-			return new PRowIndex(col);
+			return new PRowIndex(row);
 		}
 	}
 	
+	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(getClass().getSimpleName());
@@ -49,6 +51,7 @@ public abstract class PTableIndex implements PModelIndex {
 		return sb.toString();
 	}
 	
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
@@ -57,9 +60,11 @@ public abstract class PTableIndex implements PModelIndex {
 		return result;
 	}
 	
+	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
+		}
 		if (obj != null && obj instanceof PTableCellIndex) {
 			return getColumn() == ((PTableCellIndex) obj).getColumn()
 					&& getRow() == ((PTableCellIndex) obj).getRow();

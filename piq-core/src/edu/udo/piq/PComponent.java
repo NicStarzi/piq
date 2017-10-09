@@ -45,10 +45,14 @@ import edu.udo.piq.util.ThrowException;
  * @see PRoot
  * @see PRenderer
  * @see PReadOnlyLayout
- * @see PDesign
+ * @see PStyleComponent
  * @see PComponentObs
  */
 public interface PComponent extends PStyleable<PStyleComponent> {
+	
+	public void setCustomStyle(PStyleComponent style);
+	
+	public PStyleComponent getCustomStyle();
 	
 	@Override
 	public void setStyle(PStyleComponent style);
@@ -359,7 +363,7 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 	/**
 	 * Returns a detailed representation of this {@link PComponent PComponents} inner
 	 * state. The returned String should at least contain the components class, id,
-	 * if these exists the bounds and the layout.<br>
+	 * the bounds and the layout.<br>
 	 * A component implementation is free to provide any other useful information.<br>
 	 * 
 	 * @return a String representing all important information for this component

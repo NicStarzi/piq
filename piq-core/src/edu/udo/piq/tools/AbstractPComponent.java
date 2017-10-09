@@ -25,6 +25,7 @@ import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
 import edu.udo.piq.PStyleBorder;
 import edu.udo.piq.PStyleComponent;
+import edu.udo.piq.PStyleLayout;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
 
@@ -42,7 +43,8 @@ public class AbstractPComponent implements PComponent {
 	 */
 	private PComponent parent;
 	private PBorder border;
-	private PStyleComponent style;
+	private PStyleComponent customStyle;
+	private PStyleComponent sheetStyle;
 	/**
 	 * Holds all {@link PComponentObs PComponentObservers} of this component.
 	 */
@@ -231,32 +233,59 @@ public class AbstractPComponent implements PComponent {
 		return null;
 	}
 	
-	@Override
-	public void setStyle(PStyleComponent style) {
-		if (!Objects.equals(getStyle(), style)) {
-			this.style = style;
+	public void setCustomStyle(PStyleComponent style) {
+		if (!Objects.equals(customStyle, style)) {
+			customStyle = style;
 			firePreferredSizeChangedEvent();
 			fireReRenderEvent();
-			refreshBorderStyle();
+			refreshBorderAndLayoutStyle();
+		}
+	}
+	
+	public PStyleComponent getCustomStyle() {
+		return customStyle;
+	}
+	
+	@Override
+	public void setStyle(PStyleComponent style) {
+		if (!Objects.equals(sheetStyle, style)) {
+			sheetStyle = style;
+			if (getStyle() == sheetStyle) {
+				firePreferredSizeChangedEvent();
+				fireReRenderEvent();
+				refreshBorderAndLayoutStyle();
+			}
 		}
 	}
 	
 	@Override
 	public PStyleComponent getStyle() {
-		return style;
+		if (customStyle != null) {
+			return customStyle;
+		}
+		return sheetStyle;
 	}
 	
-	protected void refreshBorderStyle() {
-		PBorder border = getBorder();
-		if (border == null) {
-			return;
-		}
+	protected void refreshBorderAndLayoutStyle() {
 		PStyleComponent style = getStyle();
-		if (style == null) {
-			border.setStyle(null);
-		} else {
-			PStyleBorder borderStyle = style.getBorderStyle(this, border);
-			border.setStyle(borderStyle);
+		
+		PBorder border = getBorder();
+		if (border != null) {
+			if (style == null) {
+				border.setStyle(null);
+			} else {
+				PStyleBorder borderStyle = style.getBorderStyle(this, border);
+				border.setStyle(borderStyle);
+			}
+		}
+		PReadOnlyLayout layout = getLayout();
+		if (layout != null) {
+			if (style == null) {
+				layout.setStyle(null);
+			} else {
+				PStyleLayout layoutStyle = style.getLayoutStyle(this, layout);
+				layout.setStyle(layoutStyle);
+			}
 		}
 	}
 	
@@ -369,7 +398,7 @@ public class AbstractPComponent implements PComponent {
 		fireReRenderEvent();
 		if (getBorder() != null) {
 			getBorder().addObs(borderObs);
-			refreshBorderStyle();
+			refreshBorderAndLayoutStyle();
 		}
 	}
 	

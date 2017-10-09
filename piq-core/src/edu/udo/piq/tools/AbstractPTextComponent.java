@@ -190,6 +190,13 @@ public abstract class AbstractPTextComponent
 		return model;
 	}
 	
+	public void setModelValue(Object value) {
+		if (getModel() == null) {
+			return;
+		}
+		getModel().setValue(value);
+	}
+	
 	public String getText() {
 		if (getModel() == null) {
 			return "";

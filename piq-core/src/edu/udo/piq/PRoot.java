@@ -63,6 +63,26 @@ public interface PRoot extends PComponent {
 	 * @throws UnsupportedOperationException
 	 */
 	@Override
+	public default void setCustomStyle(PStyleComponent style)
+			throws UnsupportedOperationException
+	{
+		throw new UnsupportedOperationException("this instanceof PRoot");
+	}
+	
+	/**
+	 * Returns null.<br>
+	 * @return null
+	 */
+	@Override
+	public default PStyleComponent getCustomStyle() {
+		return null;
+	}
+	
+	/**
+	 * Throws an {@link UnsupportedOperationException}.<br>
+	 * @throws UnsupportedOperationException
+	 */
+	@Override
 	public default void setStyle(PStyleComponent style)
 			throws UnsupportedOperationException
 	{

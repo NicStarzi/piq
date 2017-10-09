@@ -21,6 +21,10 @@ public interface PReadOnlyModel {
 	public boolean contains(PModelIndex index) 
 			throws WrongIndexType, NullPointerException;
 	
+	public default boolean contains(Object content) {
+		return getIndexOf(content) != null;
+	}
+	
 	/**
 	 * Returns an instance of {@link PModelIndex} at which the given 
 	 * content is stored within this model. The returned index is 

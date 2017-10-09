@@ -61,14 +61,12 @@ public class SingletonPModel extends AbstractPModel implements PModel {
 		
 		Object oldContent = singleElem;
 		singleElem = content;
-		if (singleElem != content) {
-			if (singleElem == null) {
-				if (content != null) {
-					fireAddEvent(index, content);
-				}
+		if (oldContent != content) {
+			if (oldContent == null) {
+				fireAddEvent(index, content);
 			} else if (content == null) {
 				fireRemoveEvent(index, oldContent);
-			} else if (!singleElem.equals(content)) {
+			} else if (!oldContent.equals(content)) {
 				fireChangeEvent(index, oldContent);
 			}
 		}

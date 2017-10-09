@@ -70,6 +70,10 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 		return layout;
 	}
 	
+	protected PLayout getLayoutInternal() {
+		return layout;
+	}
+	
 	@Override
 	public void setStyle(PStyleComponent style) {
 		super.setStyle(style);

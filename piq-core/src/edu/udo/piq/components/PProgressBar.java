@@ -3,7 +3,6 @@ package edu.udo.piq.components;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PFontResource;
-import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
@@ -16,15 +15,13 @@ import edu.udo.piq.util.PCompUtil;
 
 public class PProgressBar extends AbstractPComponent {
 	
-	protected static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(100, 20);
-	protected static final String DEFAULT_FONT_NAME = "Arial";
-	protected static final int DEFAULT_FONT_SIZE = 14;
-	protected static final Style DEFAULT_FONT_STYLE = Style.PLAIN;
-	protected static final PColor DEFAULT_TEXT_COLOR = PColor.BLACK;
-	protected static final PColor DEFAULT_TEXT_HIGHLIGHT_COLOR = PColor.WHITE;
-	protected static final PColor DEFAULT_BACKGROUND_COLOR = PColor.WHITE;
-	protected static final PColor DEFAULT_BORDER_COLOR = PColor.BLACK;
-	protected static final PColor DEFAULT_PROGRESS_COLOR = PColor.BLUE;
+	public static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(100, 20);
+	public static final Object FONT_ID = PProgressBar.class.toString()+"_DEFAULT_FONT_ID";
+	public static final PColor DEFAULT_TEXT_COLOR = PColor.BLACK;
+	public static final PColor DEFAULT_TEXT_HIGHLIGHT_COLOR = PColor.WHITE;
+	public static final PColor DEFAULT_BACKGROUND_COLOR = PColor.WHITE;
+	public static final PColor DEFAULT_BORDER_COLOR = PColor.BLACK;
+	public static final PColor DEFAULT_PROGRESS_COLOR = PColor.BLUE;
 	
 	protected final ObserverList<PProgressBarModelObs> modelObsList
 		= PCompUtil.createDefaultObserverList();
@@ -149,7 +146,7 @@ public class PProgressBar extends AbstractPComponent {
 		if (root == null) {
 			return null;
 		}
-		return root.fetchFontResource(DEFAULT_FONT_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_STYLE);
+		return root.fetchFontResource(FONT_ID);
 	}
 	
 	public void addObs(PProgressBarModelObs obs) {

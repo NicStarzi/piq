@@ -33,11 +33,11 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PDialog;
 import edu.udo.piq.PDnDManager;
 import edu.udo.piq.PFontResource;
-import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.PImageMeta;
 import edu.udo.piq.PImageResource;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRootOverlay;
+import edu.udo.piq.components.textbased.PTextArea;
 import edu.udo.piq.lwjgl3.StbImageResource.TexelFormat;
 import edu.udo.piq.lwjgl3.renderer.LwjglPRendererBase;
 import edu.udo.piq.lwjgl3.renderer.LwjglPRendererFbo;
@@ -57,73 +57,6 @@ public class GlfwPRoot extends AbstractPRoot {
 		}
 		return buffer;
 	}
-	
-//	public static void main(String[] args) {
-//		GlfwPRoot root = new GlfwPRoot("Test Window", 640, 480);
-//
-//		PPanel body = new PPanel();
-//		PGridLayout layout = new PGridLayout(body, 1, 2);
-//		layout.setColumnGrowth(Growth.MAXIMIZE);
-//		layout.setRowGrowth(0, Growth.MAXIMIZE);
-//		body.setLayout(layout);
-//
-//		PListModel listMdl = new DefaultPListModel("Alice", "Bob", "Clarice", "Daniel", "Erika", "Franz");
-//		PList list = new PList(listMdl);
-//		list.setDragAndDropSupport(new DefaultPDnDSupport());
-//		list.setSelection(new PListSingleSelection());
-//		PListSelection listSel = list.getSelection();
-//
-//		PScrollPanel scroll = new PScrollPanel(list);
-//
-//		PButton btnAdd = new PButton(new PLabel("Add"));
-//		btnAdd.defineInput("hotkey",
-//				new DefaultPKeyInput<PButton>(FocusPolicy.ALWAYS, Key.A, Modifier.CTRL),
-//				btn -> btn.simulateClick());
-//		PCursor cursor = root.createCustomCursor(root.fetchImageResource("Cursor.png"), 8, 8);
-//		btnAdd.setMouseOverCursor(cursor);
-//		btnAdd.getContent().setMouseOverCursor(cursor);
-//
-//		PButton btnRemove = new PButton(new PLabel("Remove"));
-//		btnRemove.defineInput("hotkey",
-//				new DefaultPKeyInput<PButton>(FocusPolicy.ALWAYS, Key.R, Modifier.CTRL),
-//				btn -> btn.simulateClick());
-//		PPanel btnPnl = new PPanel();
-//		btnPnl.setBorder(new PLineBorder(2));
-//		btnPnl.setLayout(new PListLayout(btnPnl, ListAlignment.CENTERED_LEFT_TO_RIGHT));
-//		btnPnl.addChild(btnAdd, null);
-//		btnPnl.addChild(btnRemove, null);
-//
-//		body.addChild(scroll, "0 0 alignX=F alignY=F");
-//		body.addChild(btnPnl, "0 1 alignX=F alignY=F");
-//
-//		int[] idx = {0};
-//		btnAdd.addObs((PClickObs) clickable -> {
-//			String newElem = "New Element #"+idx[0]++;
-//			if (listSel.hasSelection()) {
-//				PModelIndex selectedIdx = listSel.getOneSelected();
-//				if (listMdl.canAdd(selectedIdx, newElem)) {
-//					listMdl.add(selectedIdx, newElem);
-//					listSel.clearSelection();
-//					listSel.addSelection(selectedIdx);
-//				}
-//			} else {
-//				listMdl.add(newElem);
-//			}
-//		});
-//		btnRemove.addObs((PClickObs) clickable -> {
-//			if (listSel.hasSelection()) {
-//				PModelIndex selectedIdx = listSel.getOneSelected();
-//				if (listMdl.canRemove(selectedIdx)) {
-//					listMdl.remove(selectedIdx);
-//					listSel.clearSelection();
-//					listSel.addSelection(selectedIdx);
-//				}
-//			}
-//		});
-//		root.setBody(body);
-//
-//		root.startGlfwLoop();
-//	}
 	
 	protected final PBounds wndBounds = new AbstractPBounds() {
 		@Override
@@ -163,7 +96,7 @@ public class GlfwPRoot extends AbstractPRoot {
 	};
 	protected final GLFWErrorCallback errorCB = GLFWErrorCallback.createPrint(System.out);
 	protected final LwjglPRendererBase renderer = new LwjglPRendererFbo();
-	protected final SoftReferenceCache<FontInfo, StbTtFontResource> fontMap = new SoftReferenceCache<>();
+	protected final SoftReferenceCache<Object, StbTtFontResource> fontMap = new SoftReferenceCache<>();
 	protected final SoftReferenceCache<String, StbImageResource> imgMap = new SoftReferenceCache<>();
 	protected StbTtFontResource defaultFontRes;
 	
@@ -288,10 +221,10 @@ public class GlfwPRoot extends AbstractPRoot {
 	}
 	
 	@Override
-	protected void defaultRootRender(PRenderer renderer,
+	protected void defaultRootRender(PRenderer unusedRenderer,
 			int rootClipX, int rootClipY, int rootClipFx, int rootClipFy)
 	{
-		this.renderer.beginReRender();
+		renderer.beginReRender();
 //		System.out.println("GlfwPRoot.defaultRootRender()");
 		
 		Deque<RenderStackInfo> renderStack = new ArrayDeque<>();
@@ -302,9 +235,9 @@ public class GlfwPRoot extends AbstractPRoot {
 				renderStack.addFirst(new RenderStackInfo(overlayComp, rootClipX, rootClipY, rootClipFx, rootClipFy));
 			}
 		}
-		AbstractPRoot.defaultRootRender(this, this.renderer, renderStack);
+		AbstractPRoot.defaultRootRender(this, renderer, renderStack);
 		needReRender = false;
-		this.renderer.endReRender();
+		renderer.endReRender();
 	}
 	
 	@Override
@@ -333,34 +266,46 @@ public class GlfwPRoot extends AbstractPRoot {
 	}
 	
 	@Override
-	public StbTtFontResource fetchFontResource(String fontName, int pixelSize, Style style) {
-		if (style != Style.PLAIN) {
-			System.err.println("GlfwPRoot.fetchFontResource() style="+style);
-			style = Style.PLAIN;
-		}
-		FontInfo info = new FontInfo(fontName, pixelSize, style);
-		StbTtFontResource fontRes = fontMap.get(info);
+	public PFontResource fetchFontResource(Object fontID)
+			throws NullPointerException, IllegalArgumentException
+	{
+		StbTtFontResource fontRes = fontMap.get(fontID);
 		if (fontRes == null) {
-			String fileName;
-			if (fontName.toLowerCase().endsWith(".ttf")) {
-				fileName = fontName;
-			} else {
-				fileName = fontName.concat(".ttf");
-			}
-//			System.out.println("ttfFile="+fileName);
-			File ttfFile = new File(fileName);
-//			System.out.println("exists?="+ttfFile.exists()+"; isFile?="+ttfFile.isFile());
-			if (ttfFile.exists() && ttfFile.isFile()) {
-				fontRes = new StbTtFontResource(ttfFile, pixelSize);
-				fontMap.put(info, fontRes);
-			} else {
-				if (defaultFontRes == null) {
-					defaultFontRes = new StbTtFontResource(new File("defaultFont.ttf"), 16);
-				}
-				return defaultFontRes;
-			}
+			fontRes = loadFontResource(fontID);
+			fontMap.put(fontID, fontRes);
 		}
 		return fontRes;
+	}
+	
+	private StbTtFontResource loadFontResource(Object fontID) {
+		String fontName = null;
+		int pixelSize = 0;
+		if (fontID instanceof FontInfo) {
+			FontInfo fi = (FontInfo) fontID;
+			fontName = fi.getName();
+			pixelSize = fi.getPixelSize();
+		} else if (fontID == PTextArea.FONT_ID) {
+			fontName = "Monospaced";
+			pixelSize = 14;
+		} else {
+			fontName = "Arial";
+			pixelSize = 14;
+		}
+		String fileName;
+		if (fontName.toLowerCase().endsWith(".ttf")) {
+			fileName = fontName;
+		} else {
+			fileName = fontName.concat(".ttf");
+		}
+		File ttfFile = new File(fileName);
+		if (ttfFile.exists() && ttfFile.isFile()) {
+			return new StbTtFontResource(ttfFile, pixelSize);
+		} else {
+			if (defaultFontRes == null) {
+				defaultFontRes = new StbTtFontResource(new File("defaultFont.ttf"), 16);
+			}
+			return defaultFontRes;
+		}
 	}
 	
 	@Override

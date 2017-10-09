@@ -27,6 +27,14 @@ public abstract class AbstractArrayPLayout extends AbstractPLayout implements PL
 		return "illegal index";
 	}
 	
+	protected int getCapacity() {
+		return cap;
+	}
+	
+	protected PCompInfo getInfoAt(int index) {
+		return infoArray.get(index);
+	}
+	
 	protected PComponent getCompAt(int index) {
 		PCompInfo info = infoArray.get(index);
 		if (info == null) {
@@ -78,7 +86,7 @@ public abstract class AbstractArrayPLayout extends AbstractPLayout implements PL
 		removeInfoInternal(info);
 		child.setParent(null);
 		
-		onChildRemoved(child, constraint);
+		onChildRemoved(info);
 		fireRemoveEvent(child, constraint);
 	}
 	

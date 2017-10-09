@@ -8,17 +8,17 @@ public enum AlignmentX {
 	
 	LEFT,
 	RIGHT {
-		public int getLeftX(int leftX, int maxWidth, int prefWidth) {
-			return leftX + maxWidth - prefWidth;
+		public int getLeftX(int minX, int maxWidth, int prefWidth) {
+			return minX + maxWidth - prefWidth;
 		}
 	},
 	CENTER {
-		public int getLeftX(int leftX, int maxWidth, int prefWidth) {
-			return leftX + maxWidth / 2 - prefWidth / 2;
+		public int getLeftX(int minX, int maxWidth, int prefWidth) {
+			return minX + maxWidth / 2 - prefWidth / 2;
 		}
 	},
 	FILL {
-		public int getWidth(int leftX, int maxWidth, int prefWidth) {
+		public int getWidth(int minX, int maxWidth, int prefWidth) {
 			return maxWidth;
 		}
 	},
@@ -53,16 +53,16 @@ public enum AlignmentX {
 		return null;
 	}
 	
-	public int getLeftX(int leftX, int maxWidth, int prefWidth) {
-		return leftX;
+	public int getLeftX(int minX, int maxWidth, int prefWidth) {
+		return minX;
 	}
 	
-	public int getWidth(int leftX, int maxWidth, int prefWidth) {
+	public int getWidth(int minX, int maxWidth, int prefWidth) {
 		return prefWidth;
 	}
 	
-	public int getRightX(int leftX, int maxWidth, int prefWidth) {
-		return leftX + getWidth(leftX, maxWidth, prefWidth);
+	public int getRightX(int minX, int maxWidth, int prefWidth) {
+		return minX + getWidth(minX, maxWidth, prefWidth);
 	}
 	
 }

@@ -1,7 +1,5 @@
 package edu.udo.piq;
 
-import edu.udo.piq.PFontResource.Style;
-
 public interface PDialog extends PRoot, PDisposable {
 	
 	/**
@@ -74,7 +72,7 @@ public interface PDialog extends PRoot, PDisposable {
 	 * Delegates to the {@link PRoot} that created this {@link PDialog}.<br>
 	 */
 	@Override
-	public PFontResource fetchFontResource(String fontName, int pixelSize, Style style) throws NullPointerException;
+	public PFontResource fetchFontResource(Object fontID) throws NullPointerException;
 	
 	/**
 	 * Delegates to the {@link PRoot} that created this {@link PDialog}.<br>

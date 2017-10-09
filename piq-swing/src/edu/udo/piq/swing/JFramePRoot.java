@@ -1,11 +1,13 @@
 package edu.udo.piq.swing;
 
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
 import javax.swing.Timer;
+import javax.swing.WindowConstants;
 
 public class JFramePRoot {
 	
@@ -27,7 +29,7 @@ public class JFramePRoot {
 		
 		frame.setSize(640, 480);
 		frame.setLocationRelativeTo(null);
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		frame.setContentPane(root.getJPanel());
 		
 		updateTimer = new Timer(timerDelay, JFramePRoot.this::onTimerTick);
@@ -44,6 +46,15 @@ public class JFramePRoot {
 				
 			}
 		});
+	}
+	
+	public void setSizeUndecorated(int width, int height) {
+		frame.setSize(width, height);
+		frame.pack();
+		Insets borders = frame.getInsets();
+		int offsetW = borders.left + borders.right;
+		int offsetH = borders.top + borders.bottom;
+		frame.setSize(width + offsetW, height + offsetH);
 	}
 	
 	public JFrame getJFrame() {

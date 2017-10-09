@@ -71,6 +71,13 @@ public class MutablePInsets extends AbstractPInsets implements PInsets {
 		return fromRgt;
 	}
 	
+	public void set(PInsets other) {
+		setFromTop(other.getFromTop());
+		setFromBottom(other.getFromBottom());
+		setFromLeft(other.getFromLeft());
+		setFromRight(other.getFromRight());
+	}
+	
 	public void set(int allEqual) {
 		setFromTop(allEqual);
 		setFromBottom(allEqual);

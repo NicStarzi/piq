@@ -20,6 +20,10 @@ public class AwtPImageResource implements PImageResource {
 		}
 	}
 	
+	public AwtPImageResource getSubImageResource(int x, int y, int width, int height) {
+		return new AwtPImageResource(bImg.getSubimage(x, y, width, height));
+	}
+	
 	public BufferedImage getBufferedImage() {
 		return bImg;
 	}

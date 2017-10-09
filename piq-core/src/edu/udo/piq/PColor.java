@@ -163,4 +163,109 @@ public interface PColor {
 	 */
 	public double getAlpha1();
 	
+	public default PColor add(PColor other) {
+		return add1(other.getRed1(), other.getGreen1(), other.getBlue1(), other.getAlpha1());
+	}
+	
+	public default PColor mult(PColor other) {
+		return mult1(other.getRed1(), other.getGreen1(), other.getBlue1(), other.getAlpha1());
+	}
+	
+	public default PColor add1(double r, double g, double b) {
+		r = PColor.addColorComponent1(getRed1(), r);
+		g = PColor.addColorComponent1(getGreen1(), g);
+		b = PColor.addColorComponent1(getBlue1(), b);
+		return new ImmutablePColor(r, g, b, getAlpha1());
+	}
+	
+	public default PColor add1(double r, double g, double b, double a) {
+		r = PColor.addColorComponent1(getRed1(), r);
+		g = PColor.addColorComponent1(getGreen1(), g);
+		b = PColor.addColorComponent1(getBlue1(), b);
+		a = PColor.addColorComponent1(getAlpha1(), a);
+		return new ImmutablePColor(r, g, b, a);
+	}
+	
+	public default PColor mult1(double r, double g, double b) {
+		r = PColor.multColorComponent1(getRed1(), r);
+		g = PColor.multColorComponent1(getGreen1(), g);
+		b = PColor.multColorComponent1(getBlue1(), b);
+		return new ImmutablePColor(r, g, b, getAlpha1());
+	}
+	
+	public default PColor mult1(double r, double g, double b, double a) {
+		r = PColor.multColorComponent1(getRed1(), r);
+		g = PColor.multColorComponent1(getGreen1(), g);
+		b = PColor.multColorComponent1(getBlue1(), b);
+		a = PColor.multColorComponent1(getAlpha1(), a);
+		return new ImmutablePColor(r, g, b, a);
+	}
+	
+	public default PColor add255(int r, int g, int b) {
+		r = PColor.addColorComponent255(getRed255(), r);
+		g = PColor.addColorComponent255(getGreen255(), g);
+		b = PColor.addColorComponent255(getBlue255(), b);
+		return new ImmutablePColor(r, g, b, getAlpha255());
+	}
+	
+	public default PColor add255(int r, int g, int b, int a) {
+		r = PColor.addColorComponent255(getRed255(), r);
+		g = PColor.addColorComponent255(getGreen255(), g);
+		b = PColor.addColorComponent255(getBlue255(), b);
+		a = PColor.addColorComponent255(getAlpha255(), a);
+		return new ImmutablePColor(r, g, b, a);
+	}
+	
+	public default PColor mult255(int r, int g, int b) {
+		r = PColor.multColorComponent255(getRed255(), r);
+		g = PColor.multColorComponent255(getGreen255(), g);
+		b = PColor.multColorComponent255(getBlue255(), b);
+		return new ImmutablePColor(r, g, b, getAlpha255());
+	}
+	
+	public default PColor mult255(int r, int g, int b, int a) {
+		r = PColor.multColorComponent255(getRed255(), r);
+		g = PColor.multColorComponent255(getGreen255(), g);
+		b = PColor.multColorComponent255(getBlue255(), b);
+		a = PColor.multColorComponent255(getAlpha255(), a);
+		return new ImmutablePColor(r, g, b, a);
+	}
+	
+	public static double addColorComponent1(double c1, double c2) {
+		double result = c1 + c2;
+		if (result < 0) {
+			return 0;
+		}
+		if (result > 1) {
+			return 1;
+		}
+		return result;
+	}
+	
+	public static double multColorComponent1(double c1, double c2) {
+		double result = c1 * c2;
+		if (result < 0) {
+			return 0;
+		}
+		if (result > 1) {
+			return 1;
+		}
+		return result;
+	}
+	
+	public static int addColorComponent255(int c1, int c2) {
+		int result = c1 + c2;
+		if (result < 0) {
+			return 0;
+		}
+		if (result > 255) {
+			return 255;
+		}
+		return result;
+	}
+	
+	public static int multColorComponent255(int c1, int c2) {
+		return (int) (0.5 + 255.0 * PColor.multColorComponent1(c1 / 255.0, c2 / 255.0));
+	}
+	
 }

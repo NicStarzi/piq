@@ -3,7 +3,6 @@ package edu.udo.piq.tools;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PFontResource;
-import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.components.collections.PListIndex;
@@ -27,9 +26,7 @@ public abstract class AbstractPTextComponent
 	implements PTextComponent
 {
 	
-	protected static final String DEFAULT_FONT_NAME = "Arial";
-	protected static final int DEFAULT_FONT_SIZE = 14;
-	protected static final Style DEFAULT_FONT_STYLE = Style.PLAIN;
+	public static final Object FONT_ID = AbstractPTextComponent.class.toString()+"_DEFAULT_FONT_ID";
 	protected static final PColor DEFAULT_TEXT_UNSELECTED_COLOR = PColor.BLACK;
 	protected static final PColor DEFAULT_TEXT_SELECTED_COLOR = PColor.WHITE;
 	protected static final PColor DEFAULT_SELECTION_BACKGROUND_COLOR = PColor.BLUE;
@@ -252,7 +249,7 @@ public abstract class AbstractPTextComponent
 		if (cachedFont != null && root.isFontSupported(cachedFont)) {
 			return cachedFont;
 		}
-		cachedFont = root.fetchFontResource(DEFAULT_FONT_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_STYLE);
+		cachedFont = root.fetchFontResource(FONT_ID);
 		return cachedFont;
 	}
 	

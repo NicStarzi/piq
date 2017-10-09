@@ -12,53 +12,28 @@ import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
 import edu.udo.piq.PStyleComponent;
 import edu.udo.piq.components.textbased.PLabel;
+import edu.udo.piq.tools.AbstractPRoot.FontInfo;
 import edu.udo.piq.util.ThrowException;
 
 public class StandardLabelStyle implements PStyleComponent {
 	
-	public static final String DEFAULT_FONT_NAME = "Monospaced";
-	public static final int DEFAULT_FONT_SIZE = 18;
-	public static final Style DEFAULT_FONT_STYLE = Style.PLAIN;
+	public static final Object FONT_ID = new FontInfo("Monospaced", 18, Style.PLAIN);
 	public static final PColor DEFAULT_TEXT_COLOR = PColor.BLACK;
 	
 	protected PColor txtColor = DEFAULT_TEXT_COLOR;
 	protected PColor bgColor = null;
-	protected String fontName = DEFAULT_FONT_NAME;
-	protected int fontSize = DEFAULT_FONT_SIZE;
-	protected Style fontStyle = DEFAULT_FONT_STYLE;
+	protected Object fontId = FONT_ID;
 	protected PFontResource cachedFont;
 	
-	public void setFontName(String value) {
-		if (!Objects.equals(getFontName(), value)) {
-			fontName = value;
+	public void setFontId(Object value) {
+		if (!Objects.equals(getFontId(), value)) {
+			fontId = value;
 			cachedFont = null;
 		}
 	}
 	
-	public String getFontName() {
-		return fontName;
-	}
-	
-	public void setFontSize(int value) {
-		if (getFontSize() != value) {
-			fontSize = value;
-			cachedFont = null;
-		}
-	}
-	
-	public int getFontSize() {
-		return fontSize;
-	}
-	
-	public void setFontStyle(Style value) {
-		if (getFontStyle() != value) {
-			fontStyle = value;
-			cachedFont = null;
-		}
-	}
-	
-	public Style getFontStyle() {
-		return fontStyle;
+	public Object getFontId() {
+		return fontId;
 	}
 	
 	public void setTextColor(PColor value) {
@@ -123,8 +98,7 @@ public class StandardLabelStyle implements PStyleComponent {
 		if (cachedFont != null && root.isFontSupported(cachedFont)) {
 			return cachedFont;
 		}
-		cachedFont = root.fetchFontResource(fontName,
-				fontSize, fontStyle);
+		cachedFont = root.fetchFontResource(FONT_ID);
 		return cachedFont;
 	}
 	

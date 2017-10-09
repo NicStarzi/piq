@@ -86,7 +86,7 @@ public abstract class AbstractPLayout implements PLayout {
 		removeInfoInternal(info);
 		child.setParent(null);
 		
-		onChildRemoved(child, constraint);
+		onChildRemoved(info);
 		fireRemoveEvent(child, constraint);
 	}
 	
@@ -190,12 +190,9 @@ public abstract class AbstractPLayout implements PLayout {
 	}
 	
 	protected void setChildBounds(PCompInfo info, int x, int y, int width, int height) {
-		MutablePBounds bnds = info.bounds;
+		LayoutPBounds bnds = info.bounds;
 		if (bnds.x != x || bnds.y != y || bnds.w != width || bnds.h != height) {
-			bnds.setX(x);
-			bnds.setY(y);
-			bnds.setWidth(width);
-			bnds.setHeight(height);
+			bnds.set(x, y, width, height);
 			fireLaidOutEvent(info.comp, info.constr);
 		}
 	}
@@ -283,7 +280,7 @@ public abstract class AbstractPLayout implements PLayout {
 	
 	protected void onChildAdded(PComponent child, Object constraint) {}
 	
-	protected void onChildRemoved(PComponent child, Object constraint) {
+	protected void onChildRemoved(PCompInfo removedCompInfo) {
 		invalidate();
 	}
 	
@@ -338,13 +335,13 @@ public abstract class AbstractPLayout implements PLayout {
 	protected static class PCompInfo {
 		
 		protected final PComponent comp;
-		protected final MutablePBounds bounds;
 		protected Object constr;
+		final LayoutPBounds bounds;
 		
 		public PCompInfo(PComponent component, Object constraint) {
 			comp = component;
 			constr = constraint;
-			bounds = new MutablePBounds();
+			bounds = new LayoutPBounds();
 		}
 		
 		public PComponent getComponent() {
@@ -361,31 +358,18 @@ public abstract class AbstractPLayout implements PLayout {
 		
 	}
 	
-	protected static class MutablePBounds extends AbstractPBounds implements PBounds {
+	private static class LayoutPBounds extends AbstractPBounds implements PBounds {
 		
 		protected int x;
 		protected int y;
 		protected int w;
 		protected int h;
 		
-		public MutablePBounds() {
-			this(0, 0, 0, 0);
-		}
-		
-		public MutablePBounds(int width, int height) {
-			this(0, 0, width, height);
-		}
-		
-		public MutablePBounds(int x, int y, int width, int height) {
-			super();
+		protected void set(int x, int y, int w, int h) {
 			this.x = x;
 			this.y = y;
-			w = width;
-			h = height;
-		}
-		
-		protected void setX(int value) {
-			x = value;
+			this.w = w;
+			this.h = h;
 		}
 		
 		@Override
@@ -393,26 +377,14 @@ public abstract class AbstractPLayout implements PLayout {
 			return x;
 		}
 		
-		protected void setY(int value) {
-			y = value;
-		}
-		
 		@Override
 		public int getY() {
 			return y;
 		}
 		
-		protected void setWidth(int value) {
-			w = value;
-		}
-		
 		@Override
 		public int getWidth() {
 			return w;
-		}
-		
-		protected void setHeight(int value) {
-			h = value;
 		}
 		
 		@Override

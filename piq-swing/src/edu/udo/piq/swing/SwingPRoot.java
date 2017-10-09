@@ -29,6 +29,7 @@ import edu.udo.piq.PImageResource;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PStyleSheet;
+import edu.udo.piq.components.textbased.PTextArea;
 import edu.udo.piq.tools.AbstractPRoot;
 import edu.udo.piq.util.SoftReferenceCache;
 import edu.udo.piq.util.ThrowException;
@@ -39,7 +40,7 @@ public class SwingPRoot extends AbstractPRoot implements PRoot {
 	private final ReentrantLock renderLock = new ReentrantLock();
 	
 	protected final List<SwingPDialog> openedDialogs = new ArrayList<>();
-	private final SoftReferenceCache<FontInfo, AwtPFontResource> fontMap = new SoftReferenceCache<>();
+	private final SoftReferenceCache<Object, AwtPFontResource> fontMap = new SoftReferenceCache<>();
 	private final SoftReferenceCache<String, AwtPImageResource> imgMap = new SoftReferenceCache<>();
 	protected final SwingPRenderer renderer = new SwingPRenderer();
 	protected final SwingPMouse mouse;
@@ -138,17 +139,37 @@ public class SwingPRoot extends AbstractPRoot implements PRoot {
 	}
 	
 	@Override
-	public PFontResource fetchFontResource(String fontName, int pixelSize, Style style)
+	public PFontResource fetchFontResource(Object fontID)
 			throws NullPointerException, IllegalArgumentException
 	{
-		FontInfo info = new FontInfo(fontName, pixelSize, style);
-		AwtPFontResource fontRes = fontMap.get(info);
+		AwtPFontResource fontRes = fontMap.get(fontID);
 		if (fontRes == null) {
-			int awtStyle = AwtPFontResource.getAwtStyle(info.getStyle());
-			fontRes = new AwtPFontResource(new Font(fontName, awtStyle, pixelSize));
-			fontMap.put(info, fontRes);
+			fontRes = loadFontResource(fontID);
+			fontMap.put(fontID, fontRes);
 		}
 		return fontRes;
+	}
+	
+	private AwtPFontResource loadFontResource(Object fontID) {
+		String fontName = null;
+		int pixelSize = 0;
+		Style style = null;
+		if (fontID instanceof FontInfo) {
+			FontInfo fi = (FontInfo) fontID;
+			fontName = fi.getName();
+			pixelSize = fi.getPixelSize();
+			style = fi.getStyle();
+		} else if (fontID == PTextArea.FONT_ID) {
+			fontName = "Monospaced";
+			pixelSize = 14;
+			style = Style.PLAIN;
+		} else {
+			fontName = "Arial";
+			pixelSize = 14;
+			style = Style.PLAIN;
+		}
+		int awtStyle = AwtPFontResource.getAwtStyle(style);
+		return new AwtPFontResource(new Font(fontName, awtStyle, pixelSize));
 	}
 	
 	@Override

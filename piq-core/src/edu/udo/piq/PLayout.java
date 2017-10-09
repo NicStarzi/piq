@@ -4,12 +4,12 @@ public interface PLayout extends PReadOnlyLayout {
 	
 	/**
 	 * Adds the given {@link PComponent} to this layout with the given constraint.<br>
-	 * If the component is already a child of this layout an {@link IllegalStateException} 
+	 * If the component is already a child of this layout an {@link IllegalStateException}
 	 * will be thrown.<br>
-	 * Furthermore if the constraint is already used by another component and no two 
-	 * components may use the same constraint in this layout an {@link IllegalArgumentException} 
+	 * Furthermore if the constraint is already used by another component and no two
+	 * components may use the same constraint in this layout an {@link IllegalArgumentException}
 	 * will be thrown.<br>
-	 * This method must set the parent of the newly added component to the owner of this 
+	 * This method must set the parent of the newly added component to the owner of this
 	 * layout.<br>
 	 * 
 	 * @param component the component that is to be added
@@ -22,12 +22,12 @@ public interface PLayout extends PReadOnlyLayout {
 	 * @see #clearChildren()
 	 * @see #getChildren()
 	 */
-	public void addChild(PComponent component, Object constraint) 
+	public void addChild(PComponent component, Object constraint)
 			throws NullPointerException, IllegalArgumentException, IllegalStateException;
 	
 	/**
 	 * Removes the given child from this layout.<br>
-	 * If the given component is not a child of this layout an 
+	 * If the given component is not a child of this layout an
 	 * {@link IllegalArgumentException} will be thrown.<br>
 	 * This method must set the parent of the removed component to null.<br>
 	 * 
@@ -39,12 +39,12 @@ public interface PLayout extends PReadOnlyLayout {
 	 * @see #clearChildren()
 	 * @see #containsChild(PComponent)
 	 */
-	public void removeChild(PComponent child) 
+	public void removeChild(PComponent child)
 			throws NullPointerException, IllegalArgumentException;
 	
 	/**
 	 * Removes the child that is registered with the associated constraint.<br>
-	 * If no child was added with the given constraint an 
+	 * If no child was added with the given constraint an
 	 * {@link IllegalStateException} will be thrown.<br>
 	 * This method must set the parent of the removed component to null.<br>
 	 * 
@@ -56,7 +56,7 @@ public interface PLayout extends PReadOnlyLayout {
 	 * @see #getChildConstraint(PComponent)
 	 * @see #containsChild(Object)
 	 */
-	public void removeChild(Object constraint) 
+	public void removeChild(Object constraint)
 			throws IllegalArgumentException, IllegalStateException;
 	
 	/**
@@ -88,7 +88,5 @@ public interface PLayout extends PReadOnlyLayout {
 		}
 		return value;
 	}
-	
-//	public void onChildPrefSizeChanged(PComponent child);
 	
 }

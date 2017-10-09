@@ -4,7 +4,6 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PCursor;
 import edu.udo.piq.PDialog;
 import edu.udo.piq.PFontResource;
-import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.PGlobalEventObs;
 import edu.udo.piq.PImageMeta;
 import edu.udo.piq.PImageResource;
@@ -36,11 +35,9 @@ public abstract class AbstractPDialog extends AbstractPRoot implements PDialog {
 	}
 	
 	@Override
-	public PFontResource fetchFontResource(String fontName, int pixelSize,
-			Style style) throws NullPointerException
-	{
+	public PFontResource fetchFontResource(Object fontID) {
 		throwExceptionIfDisposed();
-		return getSuperRoot().fetchFontResource(fontName, pixelSize, style);
+		return getSuperRoot().fetchFontResource(fontID);
 	}
 	
 	@Override

@@ -22,6 +22,7 @@ public class PTabPanelLayout extends AbstractMapPLayout {
 		super(component);
 	}
 	
+	@Override
 	protected void onChildAdded(PComponent child, Object constraint) {
 		if (constraint == Constraint.TAB) {
 			tabList.add(child);
@@ -39,7 +40,10 @@ public class PTabPanelLayout extends AbstractMapPLayout {
 		}
 	}
 	
-	protected void onChildRemoved(PComponent child, Object constraint) {
+	@Override
+	protected void onChildRemoved(PCompInfo removedCompInfo) {
+		Object constraint = removedCompInfo.getConstraint();
+		PComponent child = removedCompInfo.getComponent();
 		if (constraint == Constraint.TAB) {
 			tabList.remove(child);
 		} else if (constraint == Constraint.TAB_BACKGROUND) {
@@ -116,10 +120,12 @@ public class PTabPanelLayout extends AbstractMapPLayout {
 		return TabPosition.TOP;
 	}
 	
+	@Override
 	protected boolean canAdd(PComponent component, Object constraint) {
 		return constraint != null && constraint instanceof Constraint;
 	}
 	
+	@Override
 	protected void layOutInternal() {
 		PBounds ob = getOwner().getBounds();
 		int x = ob.getX();
@@ -153,6 +159,7 @@ public class PTabPanelLayout extends AbstractMapPLayout {
 		}
 	}
 	
+	@Override
 	protected void onInvalidated() {
 		int maxTabW = 0;
 		int maxTabH = 0;
@@ -197,6 +204,7 @@ public class PTabPanelLayout extends AbstractMapPLayout {
 		prefSize.setHeight(h);
 	}
 	
+	@Override
 	public Collection<PComponent> getChildren() {
 		return Collections.unmodifiableList(sortedChildList);
 	}
@@ -206,10 +214,10 @@ public class PTabPanelLayout extends AbstractMapPLayout {
 	}
 	
 	public static enum TabPosition {
-		TOP, 
-		BOTTOM, 
-		LEFT, 
-		RIGHT, 
+		TOP,
+		BOTTOM,
+		LEFT,
+		RIGHT,
 		;
 		
 		public boolean isHorizontal() {

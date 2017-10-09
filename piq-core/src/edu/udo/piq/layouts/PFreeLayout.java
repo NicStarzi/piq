@@ -31,8 +31,8 @@ public class PFreeLayout extends AbstractMapPLayout {
 	}
 	
 	@Override
-	protected void onChildRemoved(PComponent child, Object constraint) {
-		sortedChildren.remove(child);
+	protected void onChildRemoved(PCompInfo removedCompInfo) {
+		sortedChildren.remove(removedCompInfo.getComponent());
 	}
 	
 	@Override

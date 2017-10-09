@@ -73,12 +73,12 @@ public class PGridLayout extends AbstractMapPLayout {
 	}
 	
 	@Override
-	protected void onChildRemoved(PComponent child, Object constraint) {
-		GridConstraint constr = (GridConstraint) constraint;
+	protected void onChildRemoved(PCompInfo removedCompInfo) {
+		GridConstraint constr = (GridConstraint) removedCompInfo.getConstraint();
 		if (constr.w == 1 && constr.h == 1) {
-			singleCellComps.remove(getInfoFor(child));
+			singleCellComps.remove(removedCompInfo);
 		} else {
-			multiCellComps.remove(getInfoFor(child));
+			multiCellComps.remove(removedCompInfo);
 		}
 		for (int cx = constr.x; cx < constr.x + constr.w; cx++) {
 			for (int cy = constr.y; cy < constr.y + constr.h; cy++) {
@@ -331,7 +331,8 @@ public class PGridLayout extends AbstractMapPLayout {
 		int prefW = prefSize.getWidth() - insets.getWidth();
 		int prefH = prefSize.getHeight() - insets.getHeight();
 		
-//		System.out.println("PGridLayout.growColumnAndRowSizes()");
+//		System.out.println();
+//		System.out.println("============================ "+getOwner()+".growColumnAndRowSizes()");
 		if (totalW > prefW && countGrowCol > 0) {
 			int growW = (totalW - prefW) / countGrowCol;
 //			System.out.println("growW="+growW+"; totalW="+totalW+"; prefW="+prefW+"; countGrow="+countGrowCol);
@@ -344,12 +345,16 @@ public class PGridLayout extends AbstractMapPLayout {
 		}
 		if (totalH > prefH && countGrowRow > 0) {
 			int growH = (totalH - prefH) / countGrowRow;
+//			System.out.println("growH="+growH+"; totalH="+totalH+"; prefH="+prefH+"; countGrow="+countGrowRow);
 			for (int cy = 0; cy < getRowCount(); cy++) {
 				if (growRows[cy] == Growth.MAXIMIZE) {
 					sizeRow[cy] += growH;
+//					System.out.println("sizeRow["+cy+"]="+sizeRow[cy]);
 				}
 			}
 		}
+//		System.out.println("============================ "+getOwner()+".OVER");
+//		System.out.println();
 	}
 	
 	protected void calculateCellSizes() {
@@ -359,7 +364,7 @@ public class PGridLayout extends AbstractMapPLayout {
 		Arrays.fill(sizeCol, 0);
 		Arrays.fill(sizeRow, 0);
 		for (PCompInfo info : singleCellComps) {
-//			System.out.println("singleCellComp="+info.getComponent());
+//			System.out.println("singleCellComp="+info.getComponent()+" at "+info.getConstraint());
 			GridConstraint constr = (GridConstraint) info.getConstraint();
 			PSize cellPrefSize = getPreferredSizeOf(info.getComponent());
 			int cellPrefW = cellPrefSize.getWidth();
@@ -374,7 +379,7 @@ public class PGridLayout extends AbstractMapPLayout {
 			}
 		}
 		for (PCompInfo info : multiCellComps) {
-//			System.out.println("multiCellComp="+info.getComponent());
+//			System.out.println("multiCellComp="+info.getComponent()+" at "+info.getConstraint());
 			GridConstraint constr = (GridConstraint) info.getConstraint();
 			PSize compPrefSize = getPreferredSizeOf(info.getComponent());
 			int compW = compPrefSize.getWidth();
@@ -594,6 +599,24 @@ public class PGridLayout extends AbstractMapPLayout {
 			builder.append(alignV);
 			builder.append("]");
 			return builder.toString();
+		}
+		
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			return (((prime + x) * prime + y) * prime + w) * prime + h;
+		}
+		
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (!(obj instanceof GridConstraint)) {
+				return false;
+			}
+			GridConstraint other = (GridConstraint) obj;
+			return x == other.x && y == other.y && w == other.w && h == other.h;
 		}
 		
 	}

@@ -30,9 +30,9 @@ public class PScrollPanelLayout extends AbstractEnumPLayout<PScrollPanelLayout.C
 	}
 	
 	@Override
-	protected void onChildRemoved(PComponent child, Object constraint) {
-		super.onChildRemoved(child, constraint);
-		if (constraint == Constraint.BODY) {
+	protected void onChildRemoved(PCompInfo removedCompInfo) {
+		super.onChildRemoved(removedCompInfo);
+		if (removedCompInfo.getConstraint() == Constraint.BODY) {
 			needsToCheckScrollbars = true;
 		}
 	}

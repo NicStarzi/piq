@@ -17,7 +17,7 @@ import edu.udo.piq.util.ThrowException;
 
 public class PTextArea extends AbstractPTextComponent {
 	
-	protected static final String DEFAULT_FONT_NAME = "Monospaced";
+	public static final Object FONT_ID = PTextArea.class.toString()+"_DEFAULT_FONT_ID";
 	protected static final PColor DEFAULT_BACKGROUND_COLOR = PColor.WHITE;
 	
 	protected PTextIndexTableMultiLine  idxTab = new PTextIndexTableMultiLine();
@@ -193,6 +193,11 @@ public class PTextArea extends AbstractPTextComponent {
 		return new PListIndex(text.length());
 	}
 	
+	protected void renderBackground(PRenderer renderer, int x, int y, int w, int h) {
+		renderer.setColor(getDefaultBackgroundColor());
+		renderer.drawQuad(x, y, x + w, y + h);
+	}
+	
 	@Override
 	public void defaultRender(PRenderer renderer) {
 //		System.out.println("PTextArea.defaultRender()");
@@ -200,12 +205,8 @@ public class PTextArea extends AbstractPTextComponent {
 		PBounds bounds = getBounds();
 		int x = bounds.getX();
 		int y = bounds.getY();
-		int fx = bounds.getFinalX();
-		int fy = bounds.getFinalY();
 		
-		renderer.setRenderMode(renderer.getRenderModeFill());
-		renderer.setColor(getDefaultBackgroundColor());
-		renderer.drawQuad(x, y, fx, fy);
+		renderBackground(renderer, x, y, bounds.getWidth(), bounds.getHeight());
 		
 		String text = getText();
 		if (text == null) {
@@ -379,8 +380,7 @@ public class PTextArea extends AbstractPTextComponent {
 		if (root == null) {
 			return null;
 		}
-		return root.fetchFontResource(DEFAULT_FONT_NAME,
-				DEFAULT_FONT_SIZE, DEFAULT_FONT_STYLE);
+		return root.fetchFontResource(FONT_ID);
 	}
 	
 	protected static class DrawPos {

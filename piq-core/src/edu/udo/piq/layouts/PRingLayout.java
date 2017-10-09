@@ -27,6 +27,7 @@ public class PRingLayout extends AbstractMapPLayout {
 		super(owner);
 	}
 	
+	@Override
 	protected void onChildAdded(PComponent child, Object constraint) {
 		if (constraint == null) {
 			compList.add(child);
@@ -42,8 +43,11 @@ public class PRingLayout extends AbstractMapPLayout {
 		invalidate();
 	}
 	
-	protected void onChildRemoved(PComponent child, Object constraint) {
-		int index = compList.indexOf(child);
+	@Override
+	protected void onChildRemoved(PCompInfo removedCompInfo) {
+		int index = (Integer) removedCompInfo.getConstraint();
+		ThrowException.ifNotEqual(removedCompInfo.getComponent(), compList.get(index),
+				"compList.get(index) != removedComponent");
 		compList.remove(index);
 		for (int i = index; i < compList.size(); i++) {
 			Integer con = Integer.valueOf(i);
@@ -53,16 +57,19 @@ public class PRingLayout extends AbstractMapPLayout {
 		invalidate();
 	}
 	
+	@Override
 	protected void clearAllInfosInternal() {
 		super.clearAllInfosInternal();
 		setPrefRadiusInvalid(true);
 		compList.clear();
 	}
 	
+	@Override
 	protected void onChildCleared(PComponent child, Object constraint) {
 		setPrefRadiusInvalid(true);
 	}
 	
+	@Override
 	protected void onChildPrefSizeChanged(PComponent child) {
 		super.onChildPrefSizeChanged(child);
 		setPrefRadiusInvalid(true);
@@ -130,6 +137,7 @@ public class PRingLayout extends AbstractMapPLayout {
 		return compList.get(index);
 	}
 	
+	@Override
 	public PComponent getChildAt(int x, int y) {
 		for (int i = 0; i < compList.size(); i++) {
 			PComponent child = compList.get(i);
@@ -159,18 +167,22 @@ public class PRingLayout extends AbstractMapPLayout {
 		return compList.indexOf(child);
 	}
 	
+	@Override
 	public Object getChildConstraint(PComponent child) throws NullPointerException {
 		return Integer.valueOf(getChildIndex(child));
 	}
 	
+	@Override
 	public PComponent getChildForConstraint(Object constraint) {
 		return getChild((Integer) constraint);
 	}
 	
+	@Override
 	protected boolean canAdd(PComponent cmp, Object constraint) {
 		return (constraint == null || constraint instanceof Integer) && !compList.contains(cmp);
 	}
 	
+	@Override
 	protected void onInvalidated() {
 		int compCount = compList.size();
 		if (compPrefSizes == null || compPrefSizes.length != compCount) {
@@ -320,6 +332,7 @@ public class PRingLayout extends AbstractMapPLayout {
 		prefSize.setHeight(maxY - minY + 1);
 	}
 	
+	@Override
 	protected void layOutInternal() {
 		PBounds bounds = getOwner().getBounds();
 		int x = bounds.getX();

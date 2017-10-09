@@ -35,7 +35,7 @@ public class PTreeLayout extends AbstractMapPLayout implements PReadOnlyLayout {
 			sb.append("obj=");
 			sb.append(cell.getElement());
 			sb.append(", list=");
-			sb.append(toElementListString(getChildNodesOf(cmp)));
+			sb.append(PTreeLayout.toElementListString(getChildNodesOf(cmp)));
 			System.out.println(sb.toString());
 		}
 		System.out.println("### !content - constraints! ###");
@@ -126,8 +126,9 @@ public class PTreeLayout extends AbstractMapPLayout implements PReadOnlyLayout {
 	}
 	
 	@Override
-	protected void onChildRemoved(PComponent child, Object constraint) {
-		PTreeIndex index = (PTreeIndex) constraint;
+	protected void onChildRemoved(PCompInfo removedCompInfo) {
+		PComponent child = removedCompInfo.getComponent();
+		PTreeIndex index = (PTreeIndex) removedCompInfo.getConstraint();
 		
 //		PCellComponent cell = (PCellComponent) child;
 //		System.out.println("PTreeLayout2.onChildRemoved obj="+cell.getElement()+", idx="+index);

@@ -61,8 +61,10 @@ public class PListLayout extends AbstractMapPLayout {
 	}
 	
 	@Override
-	protected void onChildRemoved(PComponent child, Object constraint) {
-		int index = compList.indexOf(child);
+	protected void onChildRemoved(PCompInfo removedCompInfo) {
+		int index = (Integer) removedCompInfo.getConstraint();
+		ThrowException.ifNotEqual(removedCompInfo.getComponent(), compList.get(index),
+				"compList.get(index) != removedComponent");
 		compList.remove(index);
 		for (int i = index; i < compList.size(); i++) {
 			Integer con = Integer.valueOf(i);
@@ -120,29 +122,29 @@ public class PListLayout extends AbstractMapPLayout {
 		return compList.get(index);
 	}
 	
-	@Override
-	public PComponent getChildAt(int x, int y) {
-		for (int i = 0; i < compList.size(); i++) {
-			PComponent child = compList.get(i);
-			PBounds bnds = getChildBounds(child);
-			if (bnds.contains(x, y)) {
-				return child;
-			}
-			// This optimization only works for ListAlignment.FROM_TOP...
-//			int cfy = bnds.getFinalY();
-//			if (cfy >= y) {
-//				int cx = bnds.getX();
-//				int cy = bnds.getY();
-//				int cfx = bnds.getFinalX();
-//				if (cy <= y && cfx >= x && cx <= x) {
-//					return child;
-//				} else {
-//					return null;
-//				}
+//	@Override
+//	public PComponent getChildAt(int x, int y) {
+//		for (int i = 0; i < compList.size(); i++) {
+//			PComponent child = compList.get(i);
+//			PBounds bnds = getChildBounds(child);
+//			if (bnds.contains(x, y)) {
+//				return child;
 //			}
-		}
-		return null;
-	}
+//			// This optimization only works for ListAlignment.FROM_TOP...
+////			int cfy = bnds.getFinalY();
+////			if (cfy >= y) {
+////				int cx = bnds.getX();
+////				int cy = bnds.getY();
+////				int cfx = bnds.getFinalX();
+////				if (cy <= y && cfx >= x && cx <= x) {
+////					return child;
+////				} else {
+////					return null;
+////				}
+////			}
+//		}
+//		return null;
+//	}
 	
 	public int getIndexAt(int x, int y) {
 		for (int i = 0; i < compList.size(); i++) {
@@ -213,10 +215,8 @@ public class PListLayout extends AbstractMapPLayout {
 				prefH -= gap;
 			}
 		}
-		prefW += getInsets().getHorizontal();
-		prefH += getInsets().getVertical();
-		prefSize.setWidth(prefW);
-		prefSize.setHeight(prefH);
+		prefSize.set(prefW, prefH);
+		prefSize.add(getInsets());
 	}
 	
 	@Override
@@ -289,6 +289,15 @@ public class PListLayout extends AbstractMapPLayout {
 		public boolean isVertical() {
 			return !isHorizontal();
 		}
+		
+		public int getSize(PSize size) {
+			if (isHorizontal()) {
+				return size.getWidth();
+			} else {
+				return size.getHeight();
+			}
+		}
+		
 	}
 	
 }

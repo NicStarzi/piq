@@ -10,14 +10,27 @@ import edu.udo.piq.tools.MutablePInsets;
 
 public class PLineBorder extends AbstractPBorder {
 	
+	public static final int DEFAULT_LINE_THICKNESS = 1;
+	public static final PColor DEFAULT_LINE_COLOR = PColor.BLACK;
+	
 	protected final MutablePInsets insets = new MutablePInsets();
+	protected PColor color = DEFAULT_LINE_COLOR;
 	
 	public PLineBorder() {
-		this(1);
+		this(DEFAULT_LINE_COLOR, DEFAULT_LINE_THICKNESS);
 	}
 	
 	public PLineBorder(int lineThickness) {
+		this(DEFAULT_LINE_COLOR, lineThickness);
+	}
+	
+	public PLineBorder(PColor lineColor) {
+		this(lineColor, DEFAULT_LINE_THICKNESS);
+	}
+	
+	public PLineBorder(PColor lineColor, int lineThickness) {
 		super();
+		setLineColor(lineColor);
 		setLineThickness(lineThickness);
 	}
 	
@@ -30,6 +43,17 @@ public class PLineBorder extends AbstractPBorder {
 	
 	public int getLineThickness() {
 		return insets.getFromTop();
+	}
+	
+	public void setLineColor(PColor value) {
+		if (!color.equals(value)) {
+			color = value;
+			fireInsetsChangedEvent();
+		}
+	}
+	
+	public PColor getLineColor() {
+		return color;
 	}
 	
 	@Override
@@ -50,7 +74,7 @@ public class PLineBorder extends AbstractPBorder {
 		int fx = bnds.getFinalX();
 		int fy = bnds.getFinalY();
 		
-		renderer.setColor(PColor.BLACK);
+		renderer.setColor(getLineColor());
 		// Draw top
 		renderer.drawQuad( x - 0,  y - 0, fx + 0,  y + top);
 		// Draw left

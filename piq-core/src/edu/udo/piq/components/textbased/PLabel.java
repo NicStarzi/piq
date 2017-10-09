@@ -3,7 +3,6 @@ package edu.udo.piq.components.textbased;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PFontResource;
-import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
@@ -15,17 +14,12 @@ import edu.udo.piq.util.PCompUtil;
 
 public class PLabel extends AbstractPComponent {
 	
-	protected static final String DEFAULT_FONT_NAME = "Arial";
-	protected static final int DEFAULT_FONT_SIZE = 14;
-	protected static final Style DEFAULT_FONT_STYLE = Style.PLAIN;
+	public static final Object FONT_ID = PLabel.class.toString()+"_DEFAULT_FONT_ID";
 	protected static final PColor DEFAULT_TEXT_COLOR = PColor.BLACK;
 	
 	protected final ObserverList<PTextModelObs> modelObsList
 		= PCompUtil.createDefaultObserverList();
-	protected final PTextModelObs modelObs = model -> {
-		firePreferredSizeChangedEvent();
-		fireReRenderEvent();
-	};
+	protected final PTextModelObs modelObs = this::onModelValueChanged;
 	protected PFontResource cachedFont;
 	protected PTextModel model;
 	
@@ -61,6 +55,11 @@ public class PLabel extends AbstractPComponent {
 	
 	public PTextModel getModel() {
 		return model;
+	}
+	
+	protected void onModelValueChanged(PTextModel model) {
+		firePreferredSizeChangedEvent();
+		fireReRenderEvent();
 	}
 	
 	public String getText() {
@@ -120,8 +119,7 @@ public class PLabel extends AbstractPComponent {
 		if (cachedFont != null && root.isFontSupported(cachedFont)) {
 			return cachedFont;
 		}
-		cachedFont = root.fetchFontResource(DEFAULT_FONT_NAME,
-				DEFAULT_FONT_SIZE, DEFAULT_FONT_STYLE);
+		cachedFont = root.fetchFontResource(FONT_ID);
 		return cachedFont;
 	}
 	

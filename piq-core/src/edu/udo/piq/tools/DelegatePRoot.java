@@ -7,7 +7,6 @@ import edu.udo.piq.PCursor;
 import edu.udo.piq.PDialog;
 import edu.udo.piq.PDnDManager;
 import edu.udo.piq.PFontResource;
-import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.PImageMeta;
 import edu.udo.piq.PImageResource;
 import edu.udo.piq.PKeyboard;
@@ -154,11 +153,11 @@ public class DelegatePRoot extends AbstractPRoot implements PRoot {
 	}
 	
 	@Override
-	public PFontResource fetchFontResource(String fontName, int pixelSize, Style style) {
+	public PFontResource fetchFontResource(Object fontID) {
 		if (delegateRoot == null || !enableFetchFont) {
 			return null;
 		}
-		return delegateRoot.fetchFontResource(fontName, pixelSize, style);
+		return delegateRoot.fetchFontResource(fontID);
 	}
 	
 	@Override

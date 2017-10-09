@@ -90,34 +90,34 @@ public class PBorderLayout extends AbstractEnumPLayout<Constraint> {
 		int btm = ob.getFinalY() - insets.getFromBottom();
 		int gap = getGap();
 		
-		PComponent nCmp = getChildForConstraint(Constraint.TOP);
-		PComponent eCmp = getChildForConstraint(Constraint.RIGHT);
-		PComponent wCmp = getChildForConstraint(Constraint.LEFT);
-		PComponent sCmp = getChildForConstraint(Constraint.BOTTOM);
-		PComponent cCmp = getChildForConstraint(Constraint.CENTER);
+		PComponent cmpTop = getChildForConstraint(Constraint.TOP);
+		PComponent cmpRgt = getChildForConstraint(Constraint.RIGHT);
+		PComponent cmpLft = getChildForConstraint(Constraint.LEFT);
+		PComponent cmpBtm = getChildForConstraint(Constraint.BOTTOM);
+		PComponent cmpCtr = getChildForConstraint(Constraint.CENTER);
 		
-		if (nCmp != null/* && nCmp.isVisible()*/) {
-			int cmpPrefH = getPreferredSizeOf(nCmp).getHeight();
-			setChildBounds(nCmp, lft, top, (rgt - lft), cmpPrefH);
+		if (cmpTop != null) {
+			int cmpPrefH = getPreferredSizeOf(cmpTop).getHeight();
+			setChildBounds(cmpTop, lft, top, (rgt - lft), cmpPrefH);
 			top += cmpPrefH + gap;
 		}
-		if (sCmp != null) {
-			int cmpPrefH = getPreferredSizeOf(sCmp).getHeight();
-			setChildBounds(sCmp, lft, (btm - cmpPrefH), (rgt - lft), cmpPrefH);
+		if (cmpBtm != null) {
+			int cmpPrefH = getPreferredSizeOf(cmpBtm).getHeight();
+			setChildBounds(cmpBtm, lft, (btm - cmpPrefH), (rgt - lft), cmpPrefH);
 			btm -= (cmpPrefH + gap);
 		}
-		if (eCmp != null) {
-			int cmpPrefW = getPreferredSizeOf(eCmp).getWidth();
-			setChildBounds(eCmp, (rgt - cmpPrefW), top, cmpPrefW, (btm - top));
+		if (cmpRgt != null) {
+			int cmpPrefW = getPreferredSizeOf(cmpRgt).getWidth();
+			setChildBounds(cmpRgt, (rgt - cmpPrefW), top, cmpPrefW, (btm - top));
 			rgt -= (cmpPrefW + gap);
 		}
-		if (wCmp != null) {
-			int cmpPrefW = getPreferredSizeOf(wCmp).getWidth();
-			setChildBounds(wCmp, lft, top, cmpPrefW, (btm - top));
+		if (cmpLft != null) {
+			int cmpPrefW = getPreferredSizeOf(cmpLft).getWidth();
+			setChildBounds(cmpLft, lft, top, cmpPrefW, (btm - top));
 			lft += cmpPrefW + gap;
 		}
-		if (cCmp != null) {
-			setChildBounds(cCmp, lft, top, (rgt - lft), (btm - top));
+		if (cmpCtr != null) {
+			setChildBounds(cmpCtr, lft, top, (rgt - lft), (btm - top));
 		}
 	}
 	
@@ -137,7 +137,7 @@ public class PBorderLayout extends AbstractEnumPLayout<Constraint> {
 		CENTER,
 		;
 		public static final List<Constraint> ALL =
-				Collections.unmodifiableList(Arrays.asList(values()));
+				Collections.unmodifiableList(Arrays.asList(Constraint.values()));
 		public static final int COUNT = ALL.size();
 	}
 	

@@ -4,7 +4,6 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PFontResource;
-import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PRenderer;
@@ -17,6 +16,8 @@ import edu.udo.piq.tools.AbstractPBorder;
 import edu.udo.piq.tools.MutablePInsets;
 
 public class PTitleBorder extends AbstractPBorder {
+	
+	public static final Object FONT_ID = PTitleBorder.class.toString()+"_DEFAULT_FONT_ID";
 	
 	protected final PTextModelObs modelObs = this::onModelValueChanged;
 	protected final MutablePInsets insets = new MutablePInsets();
@@ -154,7 +155,7 @@ public class PTitleBorder extends AbstractPBorder {
 			insets.set(lineSize + padding);
 			return insets;
 		}
-		PFontResource font = root.fetchFontResource("Arial", 14, Style.PLAIN);
+		PFontResource font = root.fetchFontResource(FONT_ID);
 		if (font == null) {
 			insets.set(lineSize + padding);
 			return insets;
@@ -212,7 +213,7 @@ public class PTitleBorder extends AbstractPBorder {
 			}
 			return;
 		}
-		PFontResource font = root.fetchFontResource("Arial", 14, Style.PLAIN);
+		PFontResource font = root.fetchFontResource(FONT_ID);
 		String titleText = getTitleText();
 		PSize titleSize = font.getSize(titleText, null);
 		int aliMultH = ori.getHorizontalAlignmentMultiplier();

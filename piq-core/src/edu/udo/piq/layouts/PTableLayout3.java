@@ -28,6 +28,7 @@ public class PTableLayout3 extends AbstractMapPLayout {
 		super(component);
 	}
 	
+	@Override
 	protected void onChildAdded(PComponent child, Object constraint) {
 //		DefaultPCellComponent cell = (DefaultPCellComponent) child;
 //		System.out.println("PTableLayout3.childAdded cnstr="+constraint+", child="+cell.getElement());
@@ -45,18 +46,20 @@ public class PTableLayout3 extends AbstractMapPLayout {
 		invalidate();
 	}
 	
-	protected void onChildRemoved(PComponent child, Object constraint) {
+	@Override
+	protected void onChildRemoved(PCompInfo removedCompInfo) {
 //		System.out.println("PTableLayout3.childRemoved cnstr="+constraint+", child="+child);
-		PTableCellIndex index = (PTableCellIndex) constraint;
+		PTableCellIndex index = (PTableCellIndex) removedCompInfo.getConstraint();
 		table.set(index.getColumn(), index.getRow(), null);
-		// We do not need to invalidate here because the size of the table 
+		// We do not need to invalidate here because the size of the table
 		// is not changed by a removed component
 	}
 	
+	@Override
 	protected boolean canAdd(PComponent component, Object constraint) {
 		if (constraint != null && constraint instanceof PTableCellIndex) {
 			PTableCellIndex tableIdx = (PTableCellIndex) constraint;
-			return tableIdx.getColumn() >= 0 && tableIdx.getColumn() < getColumnCount() 
+			return tableIdx.getColumn() >= 0 && tableIdx.getColumn() < getColumnCount()
 					&& tableIdx.getRow() >= 0 && tableIdx.getRow() < getRowCount();
 //					&& getChildForConstraint(constraint) == null;
 		}
@@ -282,6 +285,7 @@ public class PTableLayout3 extends AbstractMapPLayout {
 		return new PTableCellIndex(colIndex, rowIndex);
 	}
 	
+	@Override
 	protected void onInvalidated() {
 		int rowCount = getRowCount();
 		int colCount = getColumnCount();
@@ -314,6 +318,7 @@ public class PTableLayout3 extends AbstractMapPLayout {
 		prefSize.setHeight(prefH);
 	}
 	
+	@Override
 	protected void layOutInternal() {
 		PBounds ob = getOwner().getBounds();
 		PInsets insets = getInsets();
@@ -339,6 +344,7 @@ public class PTableLayout3 extends AbstractMapPLayout {
 		}
 	}
 	
+	@Override
 	protected void onChildPrefSizeChanged(PComponent child) {
 	}
 	

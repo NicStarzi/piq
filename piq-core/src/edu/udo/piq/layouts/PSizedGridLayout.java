@@ -63,8 +63,8 @@ public class PSizedGridLayout extends AbstractMapPLayout {
 	}
 	
 	@Override
-	protected void onChildRemoved(PComponent child, Object constraint) {
-		GridConstraint constr = (GridConstraint) constraint;
+	protected void onChildRemoved(PCompInfo removedCompInfo) {
+		GridConstraint constr = (GridConstraint) removedCompInfo.getConstraint();
 		for (int cx = constr.x; cx < constr.x + constr.w; cx++) {
 			for (int cy = constr.y; cy < constr.y + constr.h; cy++) {
 				componentGrid[cellID(cx, cy)] = null;

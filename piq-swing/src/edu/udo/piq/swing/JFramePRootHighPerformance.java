@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.Transparency;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
@@ -13,6 +14,7 @@ import java.awt.image.VolatileImage;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.WindowConstants;
 
 import edu.udo.piq.PRoot;
 
@@ -193,85 +195,90 @@ public class JFramePRootHighPerformance extends SwingPRoot implements PRoot {
 //	}
 	
 	protected static final double MILLISECOND_FACTOR = 1000 * 1000;
-
+	
 	protected final JFrame frame;
 	protected long timeSleeping = 15 * (long) MILLISECOND_FACTOR;
 	protected long timeYielding = 16 * (long) MILLISECOND_FACTOR;
 	protected int layoutMaxIterCount = 10;
-
+	
 	public JFramePRootHighPerformance() {
 		super(new JFrame());
 		frame = (JFrame) super.getAwtComponent();
 		frame.setSize(640, 480);
 		frame.setLocationRelativeTo(null);
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		frame.setContentPane(new JComponent() {
+			
 			private static final long serialVersionUID = 1L;
-			{setIgnoreRepaint(true);}
-			@Override public void paintComponent(Graphics g) {}
+			{
+				setIgnoreRepaint(true);
+			}
+			
+			@Override
+			public void paintComponent(Graphics g) {}
 		});
 		frame.setIgnoreRepaint(true);
 		frame.addWindowListener(new WindowAdapter() {
+			
 			@Override
 			public void windowOpened(WindowEvent e) {
 				onOpen();
 			}
+			
 			@Override
 			public void windowClosed(WindowEvent e) {
 				onClose();
 			}
 		});
 	}
-
+	
 	public JFrame getJFrame() {
 		return frame;
 	}
-
+	
 	public void dispose() {
 		frame.dispose();
 	}
-
+	
 	public void setVisible(boolean value) {
 		getJFrame().setVisible(value);
 	}
-
+	
 	protected void onOpen() {
 //		new Thread(this::renderLoop).start();
 //		renderLoop();
 	}
-
-	protected void onClose() {
-	}
-
+	
+	protected void onClose() {}
+	
 	protected boolean isRenderNeeded() {
 		return reRenderSet.getSize() > 0;
 	}
-
+	
 //	protected void renderAll(int w, int h) {
 //		Deque<RenderStackInfo> renderStack = AbstractPRoot.createRenderStack(this, reRenderSet, 0, 0, w, h);
 //		AbstractPRoot.defaultRootRender(this, renderer, renderStack);
 ////		reRenderSet.clear();
 //	}
-
+	
 	public void renderLoop() {
-		BufferedImage drawImg = createAcceleratedImg(
-				640, 480, BufferedImage.OPAQUE);
-
+		BufferedImage drawImg = JFramePRootHighPerformance.createAcceleratedImg(640, 480, Transparency.OPAQUE);
+		
 		JFrame frame = getJFrame();
-		GraphicsConfiguration graConf = frame.getGraphicsConfiguration();
+//		GraphicsConfiguration graConf = frame.getGraphicsConfiguration();
 		int frameW = bounds.getWidth();
 		int frameH = bounds.getHeight();
 //		VolatileImage drawBuf = graConf.createCompatibleVolatileImage(frameW, frameH);
-
+		
 		frame.createBufferStrategy(2);
 		BufferStrategy buffer = frame.getBufferStrategy();
-
+		
 		long ts = System.nanoTime();
 		long lastTs = ts;
-
+		
 		// force re-render every few frames.
 		int frameCount = 0;
-
+		
 		while (frame.isDisplayable()) {
 			ts = System.nanoTime();
 			long timeSince = ts - lastTs;
@@ -282,7 +289,8 @@ public class JFramePRootHighPerformance extends SwingPRoot implements PRoot {
 //				System.out.println("sleep="+sleepMillis);
 				try {
 					Thread.sleep(sleepMillis);
-				} catch (InterruptedException e) {
+				}
+				catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 				continue;
@@ -296,34 +304,34 @@ public class JFramePRootHighPerformance extends SwingPRoot implements PRoot {
 				}
 			}
 			lastTs = ts;
-
+			
 //			System.out.println("time="+(timeSince / MILLISECOND_FACTOR));
 			update(timeSince / MILLISECOND_FACTOR);
 			reLayOutAll(layoutMaxIterCount);
 			frameCount++;
-
-			graConf = frame.getGraphicsConfiguration();
+			
+//			graConf = frame.getGraphicsConfiguration();
 			int frameX = frame.getInsets().left;
 			int frameY = frame.getInsets().top;
 			frameW = bounds.getWidth();
 			frameH = bounds.getHeight();
-
+			
 			boolean render;
 			boolean lost = false;
 			/*
- do {
-      int returnCode = vImg.validate(getGraphicsConfiguration());
-      if (returnCode == VolatileImage.IMAGE_RESTORED) {
-          // Contents need to be restored
-          renderOffscreen();      // restore contents
-      } else if (returnCode == VolatileImage.IMAGE_INCOMPATIBLE) {
-          // old vImg doesn't work with new GraphicsConfig; re-create it
-          vImg = createVolatileImage(w, h);
-          renderOffscreen();
-      }
-      gScreen.drawImage(vImg, 0, 0, this);
- } while (vImg.contentsLost());
-
+			 * do {
+			 * int returnCode = vImg.validate(getGraphicsConfiguration());
+			 * if (returnCode == VolatileImage.IMAGE_RESTORED) {
+			 * // Contents need to be restored
+			 * renderOffscreen(); // restore contents
+			 * } else if (returnCode == VolatileImage.IMAGE_INCOMPATIBLE) {
+			 * // old vImg doesn't work with new GraphicsConfig; re-create it
+			 * vImg = createVolatileImage(w, h);
+			 * renderOffscreen();
+			 * }
+			 * gScreen.drawImage(vImg, 0, 0, this);
+			 * } while (vImg.contentsLost());
+			 * 
 			 */
 			do {
 				boolean restored = false;
@@ -336,7 +344,7 @@ public class JFramePRootHighPerformance extends SwingPRoot implements PRoot {
 						fullRootRender();
 						reRenderSet.clear();
 						drawG.dispose();
-
+						
 //						do {
 //							int valCode = drawBuf.validate(graConf);
 //							if (valCode == VolatileImage.IMAGE_RESTORED) {
@@ -347,7 +355,7 @@ public class JFramePRootHighPerformance extends SwingPRoot implements PRoot {
 //							}
 //						} while (drawBuf.contentsLost());
 //						reRenderSet.clear();
-
+						
 						Graphics bufferG = buffer.getDrawGraphics();
 //						Graphics2D bufferG = (Graphics2D) buffer.getDrawGraphics();
 //						bufferG.translate(frameX, frameY);
@@ -360,8 +368,9 @@ public class JFramePRootHighPerformance extends SwingPRoot implements PRoot {
 					if (restored) {
 						System.out.println("restored");
 					}
-				} while (restored);
-
+				}
+				while (restored);
+				
 				if (render) {
 					buffer.show();
 				}
@@ -369,14 +378,13 @@ public class JFramePRootHighPerformance extends SwingPRoot implements PRoot {
 				if (lost) {
 					System.out.println("lost");
 				}
-			} while (lost);
+			}
+			while (lost);
 		}
 	}
 	
 	protected void renderIntoBuffer(VolatileImage drawBuf, GraphicsConfiguration graConf, int frameW, int frameH) {
-		if (drawBuf.validate(graConf)
-				== VolatileImage.IMAGE_INCOMPATIBLE)
-		{
+		if (drawBuf.validate(graConf) == VolatileImage.IMAGE_INCOMPATIBLE) {
 			drawBuf = graConf.createCompatibleVolatileImage(frameW, frameH);
 		}
 		Graphics2D drawG = drawBuf.createGraphics();
@@ -394,8 +402,8 @@ public class JFramePRootHighPerformance extends SwingPRoot implements PRoot {
 	}
 	
 	public static BufferedImage createAcceleratedImgCopy(final BufferedImage img) {
-		BufferedImage compImg = createAcceleratedImg(img.getWidth(),
-				img.getHeight(), img.getTransparency());
+		BufferedImage compImg = JFramePRootHighPerformance.createAcceleratedImg(img.getWidth(), img.getHeight(),
+				img.getTransparency());
 		Graphics compG = compImg.createGraphics();
 		compG.drawImage(img, 0, 0, null);
 		compG.dispose();

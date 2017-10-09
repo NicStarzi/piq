@@ -1,6 +1,5 @@
 package edu.udo.piq;
 
-import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.components.containers.PGlassPanel;
 import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.layouts.PRootLayout;
@@ -221,7 +220,7 @@ public interface PRoot extends PComponent {
 	 * @throws NullPointerException if fontName is null or style is null
 	 * @throws IllegalArgumentException if an arguments value is not supported
 	 */
-	public PFontResource fetchFontResource(String fontName, int pixelSize, Style style)
+	public PFontResource fetchFontResource(Object fontID)
 			throws NullPointerException, IllegalArgumentException;
 	
 	public boolean isFontSupported(PFontResource font);
@@ -240,7 +239,7 @@ public interface PRoot extends PComponent {
 	 * @return						an instance of {@link PImageResource}
 	 * @throws NullPointerException	if imgID is null
 	 */
-	public PImageResource fetchImageResource(Object imgID)
+	public PImageResource fetchImageResource(Object imageID)
 			throws NullPointerException;
 	
 	public boolean isImageSupported(PImageResource imageResource);

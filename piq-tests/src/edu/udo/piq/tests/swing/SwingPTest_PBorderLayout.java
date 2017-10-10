@@ -1,4 +1,4 @@
-package edu.udo.piq.swing.tests;
+package edu.udo.piq.tests.swing;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -27,6 +27,7 @@ public class SwingPTest_PBorderLayout extends AbstractSwingPTest {
 		super(480, 320);
 	}
 	
+	@Override
 	public void buildGUI() {
 		PPanel bodyPnl = new PPanel();
 		
@@ -85,11 +86,13 @@ public class SwingPTest_PBorderLayout extends AbstractSwingPTest {
 			firePreferredSizeChangedEvent();
 		}
 		
+		@Override
 		public void defaultRender(PRenderer renderer) {
 			renderer.setColor(color);
 			renderer.drawQuad(getBounds());
 		}
 		
+		@Override
 		public PSize getDefaultPreferredSize() {
 			return prefSize;
 		}

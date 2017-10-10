@@ -1,9 +1,8 @@
-package edu.udo.piq.swing.tests;
+package edu.udo.piq.tests.swing;
 
 import edu.udo.piq.PColor;
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PClickObs;
-import edu.udo.piq.components.PClickable;
 import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.components.containers.PSizeTestArea;
 import edu.udo.piq.components.textbased.PLabel;
@@ -21,6 +20,7 @@ public class SwingPTest_InnerPRoot extends AbstractSwingPTest {
 		super(640, 480);
 	}
 	
+	@Override
 	protected void buildGUI() {
 		PPanel body = new PPanel();
 		body.setLayout(new PFreeLayout(body));
@@ -50,11 +50,7 @@ public class SwingPTest_InnerPRoot extends AbstractSwingPTest {
 //		innerRoot.getDummyRoot().setBody(innerBody);
 		
 		PButton innerBtn = new PButton();//new PLabel("Test")
-		innerBtn.addObs(new PClickObs() {
-			public void onClick(PClickable clickable) {
-				System.out.println("Click!");
-			}
-		});
+		innerBtn.addObs((PClickObs) clickable -> System.out.println("Click!"));
 //		innerBody.addChild(innerBtn, PBorderLayout.Constraint.BOTTOM);
 		innerRoot.getDelegateRoot().setBody(innerBtn);
 //		innerRoot.getDelegateRoot().setMouse(null);

@@ -1,4 +1,4 @@
-package edu.udo.piq.swing.tests;
+package edu.udo.piq.tests.swing;
 
 import edu.udo.piq.components.PRadioButton;
 import edu.udo.piq.components.PRadioButtonGroup;
@@ -18,6 +18,7 @@ public class SwingPTest_PRadioButton extends AbstractSwingPTest {
 		super(640, 480);
 	}
 	
+	@Override
 	public void buildGUI() {
 		PPanel bodyPnl = new PPanel();
 		bodyPnl.setLayout(new PFreeLayout(bodyPnl));

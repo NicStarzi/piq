@@ -1,4 +1,4 @@
-package edu.udo.piq.swing.tests;
+package edu.udo.piq.tests.swing;
 
 import java.util.ArrayList;
 import java.util.EnumMap;

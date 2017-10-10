@@ -37,12 +37,14 @@ public class PRingMenu extends AbstractPLayoutOwner {
 		setLayout(layout);
 	}
 	
+	@Override
 	protected void setLayout(PLayout layout) {
-		ThrowException.ifTypeCastFails(layout, PRingLayout.class, 
+		ThrowException.ifTypeCastFails(layout, PRingLayout.class,
 				"(layout instanceof PRingLayout) == false");
 		super.setLayout(layout);
 	}
 	
+	@Override
 	protected PRingLayout getLayoutInternal() {
 		return (PRingLayout) super.getLayout();
 	}
@@ -171,6 +173,7 @@ public class PRingMenu extends AbstractPLayoutOwner {
 		}
 	}
 	
+	@Override
 	public void defaultRender(PRenderer renderer) {
 		renderer.setColor(PColor.GREY75);
 		renderer.drawQuad(getBounds());

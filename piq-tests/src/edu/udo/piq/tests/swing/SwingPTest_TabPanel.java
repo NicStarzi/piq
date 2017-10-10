@@ -1,4 +1,4 @@
-package edu.udo.piq.swing.tests;
+package edu.udo.piq.tests.swing;
 
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PClickObs;
@@ -18,6 +18,7 @@ public class SwingPTest_TabPanel extends AbstractSwingPTest {
 		super(640, 480);
 	}
 	
+	@Override
 	public void buildGUI() {
 		PTabPanel bodyPnl = new PTabPanel();
 		root.setBody(bodyPnl);

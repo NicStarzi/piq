@@ -1,4 +1,4 @@
-package edu.udo.piq.tests;
+package edu.udo.piq.tests.swing;
 
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PPicture;

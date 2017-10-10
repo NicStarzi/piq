@@ -1,4 +1,4 @@
-package edu.udo.piq.swing.tests;
+package edu.udo.piq.tests.swing;
 
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PClickObs;
@@ -30,6 +30,7 @@ public class SwingPTest_PTable extends AbstractSwingPTest {
 		super(640, 480);
 	}
 	
+	@Override
 	public void buildGUI() {
 		PPanel bodyPnl = new PPanel();
 		bodyPnl.setLayout(new PBorderLayout(bodyPnl));
@@ -109,9 +110,11 @@ public class SwingPTest_PTable extends AbstractSwingPTest {
 			tm.remove(new PRowIndex(row));
 		});
 		table.addObs(new PSelectionObs() {
+			@Override
 			public void onSelectionAdded(PSelection selection, PModelIndex index) {
 				update();
 			}
+			@Override
 			public void onSelectionRemoved(PSelection selection, PModelIndex index) {
 				update();
 			}

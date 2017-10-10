@@ -1,14 +1,12 @@
-package edu.udo.piq.swing.tests;
+package edu.udo.piq.tests.swing;
 
 import edu.udo.piq.PInsets;
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PClickObs;
-import edu.udo.piq.components.PClickable;
 import edu.udo.piq.components.PSlider;
 import edu.udo.piq.components.PSliderModel;
 import edu.udo.piq.components.PSliderModelObs;
 import edu.udo.piq.components.PSpinner;
-import edu.udo.piq.components.PSpinnerModel;
 import edu.udo.piq.components.PSpinnerModelObs;
 import edu.udo.piq.components.collections.PList;
 import edu.udo.piq.components.collections.PListIndex;
@@ -41,6 +39,7 @@ public class SwingPTest_PList2 extends AbstractSwingPTest {
 		super(640, 480);
 	}
 	
+	@Override
 	public void buildGUI() {
 		PPanel bodyPnl = new PPanel();
 		bodyPnl.setLayout(new PBorderLayout(bodyPnl));
@@ -72,8 +71,9 @@ public class SwingPTest_PList2 extends AbstractSwingPTest {
 		selectAlign.getList().setModel(new DefaultPListModel(alignments));
 		selectAlign.getList().setSelected(list.getAlignment());
 		selectAlign.getList().addObs(new PSelectionObs() {
-			public void onLastSelectedChanged(PSelection selection, 
-					PModelIndex prevLastSelected, PModelIndex newLastSelected) 
+			@Override
+			public void onLastSelectedChanged(PSelection selection,
+					PModelIndex prevLastSelected, PModelIndex newLastSelected)
 			{
 				if (newLastSelected != null) {
 					PModel model = selectAlign.getList().getModel();
@@ -87,6 +87,7 @@ public class SwingPTest_PList2 extends AbstractSwingPTest {
 		ctrlPnl.addChild(new PLabel("Gap"), new GridConstraint("0 1 alignY=C"));
 		PSlider selectGap = new PSlider(new DefaultPSliderModel(list.getGap(), 0, 50));
 		selectGap.addObs(new PSliderModelObs() {
+			@Override
 			public void onValueChanged(PSliderModel model) {
 				list.setGap(model.getValue());
 			}
@@ -109,15 +110,13 @@ public class SwingPTest_PList2 extends AbstractSwingPTest {
 		PSpinner selectFB = new PSpinner(new PSpinnerModelInt(list.getInsets().getFromBottom(), 0, 100));
 		ctrlPnl.addChild(selectFB, new GridConstraint("1 5 alignX=F alignY=C"));
 		
-		PSpinnerModelObs selectInsetsObs = new PSpinnerModelObs() {
-			public void onValueChanged(PSpinnerModel model, Object oldValue) {
-				int ft = (int) selectFT.getModel().getValue();
-				int fl = (int) selectFL.getModel().getValue();
-				int fr = (int) selectFR.getModel().getValue();
-				int fb = (int) selectFB.getModel().getValue();
-				PInsets insets = new ImmutablePInsets(ft, fb, fl, fr);
-				list.setInsets(insets);
-			}
+		PSpinnerModelObs selectInsetsObs = (model, oldValue) -> {
+			int ft = (int) selectFT.getModel().getValue();
+			int fl = (int) selectFL.getModel().getValue();
+			int fr = (int) selectFR.getModel().getValue();
+			int fb = (int) selectFB.getModel().getValue();
+			PInsets insets = new ImmutablePInsets(ft, fb, fl, fr);
+			list.setInsets(insets);
 		};
 		selectFT.addObs(selectInsetsObs);
 		selectFL.addObs(selectInsetsObs);
@@ -129,30 +128,26 @@ public class SwingPTest_PList2 extends AbstractSwingPTest {
 		
 		PButton btnAdd = new PButton(new PLabel("Add"));
 		ctrlPnl.addChild(btnAdd, new GridConstraint("0 6 alignX=F"));
-		btnAdd.addObs(new PClickObs() {
-			public void onClick(PClickable clickable) {
-				String str = inputAdd.getText();
-				if (str == null || str.trim().isEmpty()) {
-					return;
-				}
-				PModelIndex index = list.getLastSelectedIndex();
-				if (index == null) {
-					index = new PListIndex(list.getModel().getSize());
-				}
-				list.getModel().add(index, str);
+		btnAdd.addObs((PClickObs) clickable -> {
+			String str = inputAdd.getText();
+			if (str == null || str.trim().isEmpty()) {
+				return;
 			}
+			PModelIndex index = list.getLastSelectedIndex();
+			if (index == null) {
+				index = new PListIndex(list.getModel().getSize());
+			}
+			list.getModel().add(index, str);
 		});
 		
 		PButton btnRemove = new PButton(new PLabel("Remove"));
 		ctrlPnl.addChild(btnRemove, new GridConstraint("0 7 alignX=F"));
-		btnRemove.addObs(new PClickObs() {
-			public void onClick(PClickable clickable) {
-				PModelIndex index = list.getLastSelectedIndex();
-				if (index == null) {
-					return;
-				}
-				list.getModel().remove(index);
+		btnRemove.addObs((PClickObs) clickable -> {
+			PModelIndex index = list.getLastSelectedIndex();
+			if (index == null) {
+				return;
 			}
+			list.getModel().remove(index);
 		});
 	}
 	

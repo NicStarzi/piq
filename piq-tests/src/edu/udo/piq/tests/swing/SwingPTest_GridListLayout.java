@@ -1,4 +1,4 @@
-package edu.udo.piq.tests;
+package edu.udo.piq.tests.swing;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;

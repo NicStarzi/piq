@@ -1,4 +1,4 @@
-package edu.udo.piq.swing.tests;
+package edu.udo.piq.tests.swing;
 
 import edu.udo.piq.PColor;
 import edu.udo.piq.PRenderer;
@@ -36,6 +36,7 @@ public class SwingPTest_PGridLayout extends AbstractSwingPTest {
 		super(800, 600);
 	}
 	
+	@Override
 	public void buildGUI() {
 		PGridLayout layout = new PGridLayout(body, 5, 6);
 		layout.setInsets(new ImmutablePInsets(1));
@@ -125,8 +126,9 @@ public class SwingPTest_PGridLayout extends AbstractSwingPTest {
 			selectAlignY.getList().setModel(new DefaultPListModel(AlignmentY.ALL));
 			
 			PSelectionObs alignObs = new PSelectionObs() {
-				public void onLastSelectedChanged(PSelection selection, 
-						PModelIndex prevLastSelected, PModelIndex newLastSelected) 
+				@Override
+				public void onLastSelectedChanged(PSelection selection,
+						PModelIndex prevLastSelected, PModelIndex newLastSelected)
 				{
 					updateAlignment();
 				}
@@ -144,11 +146,13 @@ public class SwingPTest_PGridLayout extends AbstractSwingPTest {
 			layout.addChild(selectAlignY, PTupleLayout.Constraint.SECOND);
 		}
 		
+		@Override
 		public void defaultRender(PRenderer renderer) {
 			renderer.setColor(color);
 			renderer.drawQuad(getBounds());
 		}
 		
+		@Override
 		public PSize getDefaultPreferredSize() {
 			if (prefSize == null) {
 				return super.getDefaultPreferredSize();
@@ -163,8 +167,8 @@ public class SwingPTest_PGridLayout extends AbstractSwingPTest {
 			AlignmentX alignX = (AlignmentX) selectAlignX.getList().getSelectedValue();
 			AlignmentY alignY = (AlignmentY) selectAlignY.getList().getSelectedValue();
 			GridConstraint oldConstraint = (GridConstraint) getConstraintAtParent();
-			if (alignX == oldConstraint.getAlignX() 
-					&& alignY == oldConstraint.getAlignY()) 
+			if (alignX == oldConstraint.getAlignX()
+					&& alignY == oldConstraint.getAlignY())
 			{
 				return;
 			}
@@ -179,6 +183,7 @@ public class SwingPTest_PGridLayout extends AbstractSwingPTest {
 			updateGridPanelConstraint(this, newConstraint);
 		}
 		
+		@Override
 		protected void onThisLaidOut(Object constraint) {
 			GridConstraint c = (GridConstraint) constraint;
 			selectAlignX.getList().setSelected(c.getAlignX());

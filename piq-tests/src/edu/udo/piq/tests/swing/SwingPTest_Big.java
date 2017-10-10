@@ -1,4 +1,4 @@
-package edu.udo.piq.tests;
+package edu.udo.piq.tests.swing;
 
 import java.util.ArrayList;
 import java.util.List;

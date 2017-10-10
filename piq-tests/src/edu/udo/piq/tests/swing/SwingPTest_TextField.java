@@ -1,4 +1,4 @@
-package edu.udo.piq.swing.tests;
+package edu.udo.piq.tests.swing;
 
 import edu.udo.piq.components.PSpinner;
 import edu.udo.piq.components.containers.PComboBox;

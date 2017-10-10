@@ -1,4 +1,4 @@
-package edu.udo.piq.swing.tests;
+package edu.udo.piq.tests.swing;
 
 import edu.udo.piq.PColor;
 import edu.udo.piq.components.charts.PBarChart;
@@ -16,6 +16,7 @@ public class SwingPTest_PBarChart extends AbstractSwingPTest {
 		super(640, 480);
 	}
 	
+	@Override
 	protected void buildGUI() {
 		PSizeTestArea sizeTest = new PSizeTestArea();
 		sizeTest.setBackgroundColor(PColor.GREY75);

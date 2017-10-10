@@ -1,4 +1,4 @@
-package edu.udo.piq.swing.tests;
+package edu.udo.piq.tests.swing;
 
 import edu.udo.piq.PColor;
 import edu.udo.piq.components.PCheckBox;
@@ -23,6 +23,7 @@ public class SwingPTest_PCollapsiblePanel extends AbstractSwingPTest {
 		super(640, 480);
 	}
 	
+	@Override
 	public void buildGUI() {
 		PPanel body = new PPanel();
 		body.setLayout(new PListLayout(body, ListAlignment.TOP_TO_BOTTOM));

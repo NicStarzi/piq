@@ -1,4 +1,4 @@
-package edu.udo.piq.swing.tests;
+package edu.udo.piq.tests.swing;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,7 +9,6 @@ import edu.udo.piq.PRenderer;
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PClickObs;
 import edu.udo.piq.components.collections.PCellComponent;
-import edu.udo.piq.components.collections.PCellFactory;
 import edu.udo.piq.components.collections.PList;
 import edu.udo.piq.components.collections.PListIndex;
 import edu.udo.piq.components.collections.PModel;
@@ -37,6 +36,7 @@ public class SwingPTest_PList extends AbstractSwingPTest {
 		super(640, 480);
 	}
 	
+	@Override
 	public void buildGUI() {
 		PPanel bodyPnl = new PPanel();
 		bodyPnl.setLayout(new PBorderLayout(bodyPnl));
@@ -64,70 +64,72 @@ public class SwingPTest_PList extends AbstractSwingPTest {
 		};
 		
 		final PList list1 = new PList(new DefaultPListModel((Object[]) males) {
+			@Override
 			public boolean canAdd(int index, Object content) {
 				return super.canAdd(index, content) && content instanceof Person;
 			}
 		});
-		list1.setCellFactory(new PCellFactory() {
-			public PCellComponent makeCellComponent(PModel model, PModelIndex index) {
-				DefaultPCellComponent cellComp = new DefaultPCellComponent();
-				cellComp.setModel(new DefaultPTextModel() {
-					public String getText() {
-						Person p = (Person) getValue();
-						return p.getName();
-					}
-				});
-				cellComp.setElement(model, index);
-				return cellComp;
-			}
+		list1.setCellFactory((model, index) -> {
+			DefaultPCellComponent cellComp = new DefaultPCellComponent();
+			cellComp.setModel(new DefaultPTextModel() {
+				@Override
+				public String getText() {
+					Person p = (Person) getValue();
+					return p.getName();
+				}
+			});
+			cellComp.setElement(model, index);
+			return cellComp;
 		});
 		list1.setID("LEFT");
 		list1.setDragAndDropSupport(new DefaultPDnDSupport());
 		splitPnl.setFirstComponent(list1);
 		
 		final PList list2 = new PList(new DefaultPListModel((Object[]) females) {
+			@Override
 			public boolean canAdd(int index, Object content) {
 				return super.canAdd(index, content) && content instanceof Person;
 			}
 		});
-		list2.setCellFactory(new PCellFactory() {
-			public PCellComponent makeCellComponent(PModel model, PModelIndex index) {
-				final Person p = (Person) model.get(index);
-				
-				final DefaultPCellComponent lblName = new DefaultPCellComponent();
-				lblName.setModel(new DefaultPTextModel() {
-					public String getText() {
-						Person person = (Person) getValue();
-						if (person == null) {
-							return "<No Person>";
-						}
-						return person.getName();
+		list2.setCellFactory((model, index) -> {
+			final Person p = (Person) model.get(index);
+			
+			final DefaultPCellComponent lblName = new DefaultPCellComponent();
+			lblName.setModel(new DefaultPTextModel() {
+				@Override
+				public String getText() {
+					Person person = (Person) getValue();
+					if (person == null) {
+						return "<No Person>";
 					}
+					return person.getName();
+				}
+			});
+			
+			PButton btn = new PButton();
+			btn.setContent(new PLabel("Click here!"));
+			btn.addObs((PClickObs) (cmp) -> {
+					p.setName(p.getName() + "*");
+					lblName.getModel().setValue(p);
 				});
-				
-				PButton btn = new PButton();
-				btn.setContent(new PLabel("Click here!"));
-				btn.addObs((PClickObs) (cmp) -> {
-						p.setName(p.getName() + "*");
-						lblName.getModel().setValue(p);
-					});
-				
-				PersonCellComp cellComp = new PersonCellComp() {
-					public void setElement(PModel model, PModelIndex index) {
-						super.setElement(model, index);
-						lblName.setElement(model, index);
-					}
-					public Object getElement() {
-						return lblName.getElement();
-					}
-				};
-				cellComp.setElement(model, index);
-				cellComp.setLayout(new PListLayout(cellComp, ListAlignment.LEFT_TO_RIGHT));
-				cellComp.addChild(lblName, null);
-				cellComp.addChild(btn, null);
-				
-				return cellComp;
-			}
+			
+			PersonCellComp cellComp = new PersonCellComp() {
+				@Override
+				public void setElement(PModel model, PModelIndex index) {
+					super.setElement(model, index);
+					lblName.setElement(model, index);
+				}
+				@Override
+				public Object getElement() {
+					return lblName.getElement();
+				}
+			};
+			cellComp.setElement(model, index);
+			cellComp.setLayout(new PListLayout(cellComp, ListAlignment.LEFT_TO_RIGHT));
+			cellComp.addChild(lblName, null);
+			cellComp.addChild(btn, null);
+			
+			return cellComp;
 		});
 		list2.setID("RIGHT");
 		list2.setDragAndDropSupport(new DefaultPDnDSupport());
@@ -146,8 +148,8 @@ public class SwingPTest_PList extends AbstractSwingPTest {
 		btnPnl.addChild(btnRemove, null);
 		
 		final List<String> names = new ArrayList<>(Arrays.asList(new String[] {
-				"A", "B", "C", "D", "E", "F", "G", "H", "I", 
-				"J", "K", "L", "M", "N", "O", "P", "Q", "R", 
+				"A", "B", "C", "D", "E", "F", "G", "H", "I",
+				"J", "K", "L", "M", "N", "O", "P", "Q", "R",
 				"S", "T", "U", "V", "W", "X", "Y", "Z",
 		}));
 		
@@ -184,6 +186,7 @@ public class SwingPTest_PList extends AbstractSwingPTest {
 			return name;
 		}
 		
+		@Override
 		public String toString() {
 			StringBuilder sb = new StringBuilder();
 			sb.append(getClass().getSimpleName());
@@ -202,37 +205,45 @@ public class SwingPTest_PList extends AbstractSwingPTest {
 		protected boolean selected = false;
 		protected boolean dropHighLight = false;
 		
+		@Override
 		public void setSelected(boolean isSelected) {
 			selected = isSelected;
 			fireReRenderEvent();
 		}
 		
+		@Override
 		public boolean isSelected() {
 			return selected;
 		}
 		
+		@Override
 		public void setDropHighlighted(boolean isHighlighted) {
 			dropHighLight = isHighlighted;
 			fireReRenderEvent();
 		}
 		
+		@Override
 		public boolean isDropHighlighted() {
 			return dropHighLight;
 		}
 		
+		@Override
 		public void setElement(PModel model, PModelIndex index) {
 			this.model = model;
 			this.index = index;
 		}
 		
+		@Override
 		public PModel getElementModel() {
 			return model;
 		}
 		
+		@Override
 		public PModelIndex getElementIndex() {
 			return index;
 		}
 		
+		@Override
 		public void defaultRender(PRenderer renderer) {
 			super.defaultRender(renderer);
 			if (isSelected()) {

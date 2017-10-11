@@ -18,6 +18,7 @@ import edu.udo.piq.components.textbased.PTextModel;
 import edu.udo.piq.components.textbased.PTextModelObs;
 import edu.udo.piq.components.textbased.PTextSelection;
 import edu.udo.piq.components.textbased.PTextSelector;
+import edu.udo.piq.components.util.SymbolicFontKey;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
 
@@ -26,7 +27,7 @@ public abstract class AbstractPTextComponent
 	implements PTextComponent
 {
 	
-	public static final Object FONT_ID = AbstractPTextComponent.class.toString()+"_DEFAULT_FONT_ID";
+	public static final Object FONT_ID = new SymbolicFontKey(AbstractPTextComponent.class);
 	protected static final PColor DEFAULT_TEXT_UNSELECTED_COLOR = PColor.BLACK;
 	protected static final PColor DEFAULT_TEXT_SELECTED_COLOR = PColor.WHITE;
 	protected static final PColor DEFAULT_SELECTION_BACKGROUND_COLOR = PColor.BLUE;

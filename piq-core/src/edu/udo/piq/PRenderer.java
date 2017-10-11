@@ -190,9 +190,14 @@ public interface PRenderer extends PDisposable {
 	 */
 	public void setColor1(double r, double g, double b, double a);
 	
+	public default void drawImage(PImageResource imgRes, float x, float y) {
+		int w = imgRes.getWidth();
+		int h = imgRes.getWidth();
+		drawImage(imgRes, 0, 0, w, h, x, y, x + h, y + h);
+	}
+	
 	public default void drawImage(PImageResource imgRes, float x, float y, float fx, float fy) {
-		PSize size = imgRes.getSize();
-		drawImage(imgRes, 0, 0, size.getWidth(), size.getHeight(), x, y, fx, fy);
+		drawImage(imgRes, 0, 0, imgRes.getWidth(), imgRes.getHeight(), x, y, fx, fy);
 	}
 	
 	public void drawImage(PImageResource imgRes, int u, int v, int fu, int fv,

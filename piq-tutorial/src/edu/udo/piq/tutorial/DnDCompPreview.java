@@ -31,7 +31,7 @@ public class DnDCompPreview extends AbstractPComponent implements PDnDIndicator 
 		return dropPossible;
 	}
 	
-	public boolean isElusive() {
+	public boolean isIgnoredByPicking() {
 		return true;
 	}
 	

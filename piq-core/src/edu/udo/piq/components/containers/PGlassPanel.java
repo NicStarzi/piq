@@ -15,7 +15,7 @@ public class PGlassPanel extends PPanel {
 		return false;
 	}
 	
-	public boolean isElusive() {
+	public boolean isIgnoredByPicking() {
 		return true;
 	}
 	

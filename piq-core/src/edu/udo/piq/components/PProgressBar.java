@@ -8,6 +8,8 @@ import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.defaults.DefaultPProgressBarModel;
+import edu.udo.piq.components.textbased.PLabel;
+import edu.udo.piq.components.util.SymbolicFontKey;
 import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.util.ObserverList;
@@ -16,7 +18,7 @@ import edu.udo.piq.util.PCompUtil;
 public class PProgressBar extends AbstractPComponent {
 	
 	public static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(100, 20);
-	public static final Object FONT_ID = PProgressBar.class.toString()+"_DEFAULT_FONT_ID";
+	public static final Object FONT_ID = new SymbolicFontKey(PProgressBar.class);
 	public static final PColor DEFAULT_TEXT_COLOR = PColor.BLACK;
 	public static final PColor DEFAULT_TEXT_HIGHLIGHT_COLOR = PColor.WHITE;
 	public static final PColor DEFAULT_BACKGROUND_COLOR = PColor.WHITE;

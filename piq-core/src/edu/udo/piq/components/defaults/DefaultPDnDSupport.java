@@ -13,16 +13,22 @@ import edu.udo.piq.components.collections.PModel;
 import edu.udo.piq.components.collections.PModelExport;
 import edu.udo.piq.components.collections.PModelImport;
 import edu.udo.piq.components.collections.PModelIndex;
+import edu.udo.piq.components.util.SymbolicImageKey;
 import edu.udo.piq.tools.ImmutablePDnDTransfer;
 import edu.udo.piq.util.ThrowException;
 
 public class DefaultPDnDSupport implements PDnDSupport {
 	
+	public static final Object IMAGE_ID_DND_POSSIBLE = 
+			new SymbolicImageKey(DefaultPDnDSupport.class+"_possible");
+	public static final Object IMAGE_ID_DND_IMPOSSIBLE = 
+			new SymbolicImageKey(DefaultPDnDSupport.class+"_impossible");
+	
 	protected PModelImport modelImport = null;
 	protected PModelExport modelExport = null;
 	protected PDnDTransfer activeTransfer;
-	protected Object dndPosImageID = "DnDPossible.png";
-	protected Object dndImpImageID = "DnDNotPossible.png";
+	protected Object dndPosImageID = IMAGE_ID_DND_POSSIBLE;
+	protected Object dndImpImageID = IMAGE_ID_DND_IMPOSSIBLE;
 	protected boolean dragAllowed = true;
 	protected boolean dropAllowed = true;
 	protected boolean removeOnDrag = true;

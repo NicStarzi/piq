@@ -139,7 +139,7 @@ public abstract class AbstractPLayout implements PLayout {
 			return null;
 		}
 		for (PCompInfo info : getAllInfos()) {
-			if (info.comp.isElusive()) {
+			if (info.comp.isIgnoredByPicking()) {
 				if (info.comp.getLayout() != null) {
 					PComponent grandChild = info.comp.getLayout().getChildAt(x, y);
 					if (grandChild != null) {

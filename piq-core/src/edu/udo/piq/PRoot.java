@@ -1,9 +1,21 @@
 package edu.udo.piq;
 
+import java.io.File;
+
+import edu.udo.piq.borders.PTitleBorder;
+import edu.udo.piq.components.PProgressBar;
 import edu.udo.piq.components.containers.PGlassPanel;
+import edu.udo.piq.components.containers.PMenuBar;
 import edu.udo.piq.components.containers.PPanel;
+import edu.udo.piq.components.defaults.DefaultPDnDSupport;
+import edu.udo.piq.components.textbased.PLabel;
+import edu.udo.piq.components.textbased.PTextArea;
+import edu.udo.piq.components.util.StandardFontKey;
+import edu.udo.piq.components.util.SymbolicFontKey;
+import edu.udo.piq.components.util.SymbolicImageKey;
 import edu.udo.piq.layouts.PRootLayout;
 import edu.udo.piq.layouts.PRootLayout.Constraint;
+import edu.udo.piq.tools.AbstractPTextComponent;
 import edu.udo.piq.util.DepthFirstDescendantIterator;
 
 /**
@@ -20,8 +32,9 @@ import edu.udo.piq.util.DepthFirstDescendantIterator;
 public interface PRoot extends PComponent {
 
 	/**
-	 * Returns this.<br>
-	 * @return this
+	 * <p>A root always returns itself as its root.</p>
+	 * @return this root
+	 * @author Nic
 	 */
 	@Override
 	public default PRoot getRoot() {
@@ -29,18 +42,26 @@ public interface PRoot extends PComponent {
 	}
 	
 	/**
-	 * Returns the {@link PReadOnlyLayout} of this {@link PRoot}.<br>
-	 * The layout of a root is always an instance of {@link PRootLayout} as it is
-	 * needed to support {@link PRootOverlay PRootOverlays} and body {@link PPanel panels}.<br>
+	 * <p>Returns the {@link PReadOnlyLayout layout} of this {@link PRoot} which 
+	 * is always an instance of {@link PRootLayout}.</p>
+	 * <p>The root layout supports a body, an {@link PRootOverlay overlay} and a {@link PMenuBar menu bar}.</p>
 	 * 
+	 * @return a non-null {@link PRootLayout}
+	 * @see #setBody(PComponent)
+	 * @see #getBody()
 	 * @see #getOverlay()
+	 * @see #getMenuBar()
+	 * @author Nic
 	 */
 	@Override
 	public PRootLayout getLayout();
 	
 	/**
-	 * Throws an {@link UnsupportedOperationException}.<br>
+	 * <p>A root never has a parent.
+	 * Always throws an exception.</p>
+	 * @param parent ignored
 	 * @throws UnsupportedOperationException
+	 * @author Nic
 	 */
 	@Override
 	public default void setParent(PComponent parent)
@@ -50,8 +71,9 @@ public interface PRoot extends PComponent {
 	}
 	
 	/**
-	 * Returns null.<br>
-	 * @return null
+	 * <p>A root never has a parent.</p>
+	 * @return always {@code null}
+	 * @author Nic
 	 */
 	@Override
 	public default PComponent getParent() {
@@ -59,8 +81,11 @@ public interface PRoot extends PComponent {
 	}
 	
 	/**
-	 * Throws an {@link UnsupportedOperationException}.<br>
+	 * <p>A root can not be styled. 
+	 * Always throws an exception.</p>
+	 * @param style ignored
 	 * @throws UnsupportedOperationException
+	 * @author Nic
 	 */
 	@Override
 	public default void setCustomStyle(PStyleComponent style)
@@ -70,8 +95,9 @@ public interface PRoot extends PComponent {
 	}
 	
 	/**
-	 * Returns null.<br>
-	 * @return null
+	 * <p>A root can not be styled. This method will always return {@code null}.</p>
+	 * @return always {@code null}
+	 * @author Nic
 	 */
 	@Override
 	public default PStyleComponent getCustomStyle() {
@@ -79,8 +105,11 @@ public interface PRoot extends PComponent {
 	}
 	
 	/**
-	 * Throws an {@link UnsupportedOperationException}.<br>
+	 * <p>A root can not be styled. 
+	 * Always throws an exception.</p>
+	 * @param style ignored
 	 * @throws UnsupportedOperationException
+	 * @author Nic
 	 */
 	@Override
 	public default void setStyle(PStyleComponent style)
@@ -90,8 +119,9 @@ public interface PRoot extends PComponent {
 	}
 	
 	/**
-	 * Returns null.<br>
-	 * @return null
+	 * <p>A root can not be styled. This method will always return {@code null}.</p>
+	 * @return always {@code null}
+	 * @author Nic
 	 */
 	@Override
 	public default PStyleComponent getStyle() {
@@ -99,7 +129,9 @@ public interface PRoot extends PComponent {
 	}
 	
 	/**
-	 * Always returns null by default.<br>
+	 * <p>A root does not support drag and drop.</p>
+	 * @return always {@code null}
+	 * @author Nic
 	 */
 	@Override
 	public default PDnDSupport getDragAndDropSupport() {
@@ -107,8 +139,9 @@ public interface PRoot extends PComponent {
 	}
 	
 	/**
-	 * Returns null.<br>
-	 * @return null
+	 * <p>A root never has a {@link PBorder border}.</p>
+	 * @return always {@code null}
+	 * @author Nic
 	 */
 	@Override
 	public default PBorder getBorder() {
@@ -116,8 +149,11 @@ public interface PRoot extends PComponent {
 	}
 	
 	/**
-	 * Throws an {@link UnsupportedOperationException}.<br>
+	 * <p>A root is never rendered. 
+	 * Always throws an exception.</p>
+	 * @param renderer ignored
 	 * @throws UnsupportedOperationException
+	 * @author Nic
 	 */
 	@Override
 	public default void defaultRender(PRenderer renderer)
@@ -127,8 +163,9 @@ public interface PRoot extends PComponent {
 	}
 	
 	/**
-	 * Always returns true for {@link PRoot} instances.<br>
+	 * <p>A root is never rendered. This value is meaningless.</p>
 	 * @return true
+	 * @author Nic
 	 */
 	@Override
 	public default boolean defaultFillsAllPixels() {
@@ -136,17 +173,19 @@ public interface PRoot extends PComponent {
 	}
 	
 	/**
-	 * Always returns false for {@link PRoot} instances.<br>
-	 * @return false
+	 * <p>A root is should never be picked. This value is always true.</p>
+	 * @return true
+	 * @author Nic
 	 */
 	@Override
-	public default boolean isElusive() {
-		return false;
+	public default boolean isIgnoredByPicking() {
+		return true;
 	}
 	
 	/**
-	 * Always returns false for {@link PRoot} instances.<br>
+	 * <p>A root should never get focus. This value is always false.</p>
 	 * @return false
+	 * @author Nic
 	 */
 	@Override
 	public default boolean isFocusable() {
@@ -154,8 +193,11 @@ public interface PRoot extends PComponent {
 	}
 	
 	/**
-	 * Throws an {@link UnsupportedOperationException}.<br>
+	 * <p>A root can not be {@link #isIgnoredByPicking() picked}. 
+	 * Always throws an exception.</p>
+	 * @param cursor ignored
 	 * @throws UnsupportedOperationException
+	 * @author Nic
 	 */
 	@Override
 	public default void setMouseOverCursor(PCursor cursor) {
@@ -224,45 +266,138 @@ public interface PRoot extends PComponent {
 	public PDialog createDialog();
 	
 	/**
-	 * Returns an instance of {@link PFontResource} that represents the
-	 * desired font defined by the name, size and style.<br>
-	 * The implementation is platform dependent.<br>
-	 * <br>
-	 * The root is free to cache font resources and return the same
-	 * instance for each invocation of this method with the same
-	 * arguments.<br>
-	 * This method should never return null.<br>
+	 * <p>Returns an instance of {@link PFontResource} for the given 
+	 * font identifier. This method should always return the same 
+	 * resource for the same identifier. All font resource objects 
+	 * returned by this method are safe to be used for rendering 
+	 * within the GUI of this root. The validity of a font resource 
+	 * object can be checked with the {@link #isFontSupported(PFontResource)} 
+	 * method.</p>
 	 * 
-	 * @param fontName the name of the font, for example "Arial"
-	 * @param pixelSize the size of the font in pixels
-	 * @param style the style of the font, either PLAIN, BOLD, ITALIC or BOLD_ITALIC
+	 * <p>Common types of font identifiers include:<pre>
+	 * * {@link SymbolicFontKey} which defines a unique constant
+	 * * {@link StandardFontKey} which defines a font by name, size and style
+	 * * {@link File} which should refer to a true type font file or similar font file
+	 * * {@link String} which can be interpreted as the path to a file
+	 * </pre>An implementation is not limited to only the above types of identifiers, 
+	 * nor is it required to support all of these.</p>
+	 * 
+	 * <p>The implementation of this method should try to not return 
+	 * {@code null}. A standard font resource should be provided for 
+	 * any unknown font identifiers. </p>
+	 * 
+	 * <p>Any implementation is supposed to support the preset font 
+	 * resources from the core library. These are:<pre>
+	 * * {@link AbstractPTextComponent#FONT_ID}
+	 * * {@link PLabel#FONT_ID}
+	 * * {@link PTextArea#FONT_ID}
+	 * * {@link PProgressBar#FONT_ID}
+	 * * {@link PTitleBorder#FONT_ID}
+	 * </pre>All of the above font identifiers are instances of {@link SymbolicFontKey}.
+	 * </p>
+	 * 
+	 * <p>If {@link PDisposable#dispose() disposing} of font resources is necessary 
+	 * then either the root or the PFontResource implementation should take care of 
+	 * the disposal. Once disposed, a font resource should no longer be considered 
+	 * valid as defined by {@link #isFontSupported(PFontResource)}. The font identifier 
+	 * of the disposed font should still be able to fetch a valid font resource after 
+	 * disposal.</p> 
+	 * 
+	 * @param fontID		an identifier for the font resource
 	 * @return an instance of {@link PFontResource}
-	 * @throws NullPointerException if fontName is null or style is null
-	 * @throws IllegalArgumentException if an arguments value is not supported
+	 * @see PFontResource
+	 * @see #isFontSupported(PFontResource)
+	 * @see PRenderer#drawString(PFontResource, String, float, float)
+	 * @author Nic
 	 */
-	public PFontResource fetchFontResource(Object fontID)
-			throws NullPointerException, IllegalArgumentException;
+	public PFontResource fetchFontResource(Object fontID);
 	
+	/**
+	 * <p>Checks if the given {@link PFontResource} can be used for 
+	 * {@link PRenderer#drawString(PFontResource, String, float, float) rendering} 
+	 * within the GUI of this root. Any font resource returned by the method
+	 * {@link #fetchFontResource(Object)} of this root should be supported unless 
+	 * it has been {@link PDisposable#dispose() disposed}. If a font resource is 
+	 * not supported it must not be used for size calculations or rendering within 
+	 * the GUI of this root. A new font resource must be fetched via the 
+	 * {@link #fetchFontResource(Object)} method.</p>
+	 * 
+	 * @param font		a non-null instance of PFontResource
+	 * @return			true if the given font resource can be used for rendering, otherwise false
+	 * @throws			NullPointerException if font is null
+	 * @see PFontResource
+	 * @see #fetchFontResource(Object)
+	 * @see PRenderer#drawString(PFontResource, String, float, float)
+	 * @author Nic
+	 */
 	public boolean isFontSupported(PFontResource font);
 	
 	/**
-	 * Returns an instance of {@link PImageResource} that was loaded from
-	 * the given path.<br>
-	 * The implementation is platform dependent.<br>
-	 * <br>
-	 * The root is free to cache image resources and return the same
-	 * instance for each invocation of this method with the same
-	 * arguments.<br>
-	 * This method should never return null.<br>
+	 * <p>Returns an instance of {@link PImageResource} for the given 
+	 * image identifier. This method should always return the same 
+	 * resource for the same identifier. All image resource objects 
+	 * returned by this method are safe to be used for rendering 
+	 * within the GUI of this root. The validity of an image resource 
+	 * object can be checked with the {@link #isImageSupported(PImageResource)} 
+	 * method.</p>
 	 * 
-	 * @param imgID					a platform dependent object used to identify the image resource
-	 * @return						an instance of {@link PImageResource}
-	 * @throws NullPointerException	if imgID is null
+	 * <p>Common types of image identifiers include:<pre>
+	 * * {@link SymbolicImageKey} which defines a unique constant
+	 * * {@link File} which should refer to an image file
+	 * * {@link String} which can be interpreted as the path to a file
+	 * </pre>An implementation is not limited to only the above types of identifiers, 
+	 * nor is it required to support all of these.</p>
+	 * 
+	 * <p>The implementation of this method should try to not return 
+	 * {@code null}. An empty standard image resource should be provided for 
+	 * any unknown image identifiers. </p>
+	 * 
+	 * <p>Any implementation is supposed to support the preset image 
+	 * resources from the core library. These are:<pre>
+	 * * {@link DefaultPDnDSupport#IMAGE_ID_DND_POSSIBLE}
+	 * * {@link DefaultPDnDSupport#IMAGE_ID_DND_IMPOSSIBLE}
+	 * </pre>All of the above image identifiers are instances of {@link SymbolicImageKey}.
+	 * </p>
+	 * 
+	 * <p>If {@link PDisposable#dispose() disposing} of image resources is necessary 
+	 * then either the root or the PImageResource implementation should take care of 
+	 * the disposal. Once disposed, an image resource should no longer be considered 
+	 * valid as defined by {@link #isImageSupported(PImageResource)}. The image identifier 
+	 * of the disposed image should still be able to fetch a valid image resource after 
+	 * disposal.</p> 
+	 * 
+	 * @param imageID		an identifier for the image resource
+	 * @return an instance of {@link PImageResource}
+	 * @see PImageResource
+	 * @see #isImageSupported(PImageResource)
+	 * @see PRenderer#drawImage(PImageResource, float, float, float, float)
+	 * @see PRenderer#drawImage(PImageResource, int, int, int, int, float, float, float, float)
+	 * @author Nic
 	 */
-	public PImageResource fetchImageResource(Object imageID)
-			throws NullPointerException;
 	
-	public boolean isImageSupported(PImageResource imageResource);
+	public PImageResource fetchImageResource(Object imageID);
+	
+	/**
+	 * <p>Checks if the given {@link PImageResource} can be used for 
+	 * {@link PRenderer#drawImage(PImageResource, float, float, float, float) rendering} 
+	 * within the GUI of this root. Any image resource returned by the method
+	 * {@link #fetchImageResource(Object)} of this root should be supported unless 
+	 * it has been {@link PDisposable#dispose() disposed}. If an image resource is 
+	 * not supported it must not be used for size calculations or rendering within 
+	 * the GUI of this root. A new image resource must be fetched via the 
+	 * {@link #fetchImageResource(Object)} method.</p>
+	 * 
+	 * @param image		a non-null instance of {@link PImageResource}
+	 * @return			true if the given image resource can be used for rendering, otherwise false
+	 * @throws			NullPointerException if image is null
+	 * @see PImageResource
+	 * @see #fetchImageResource(Object)
+	 * @see PRenderer#drawImage(PImageResource, float, float, float, float)
+	 * @see PRenderer#drawImage(PImageResource, int, int, int, int, float, float, float, float)
+	 * @author Nic
+	 */
+	public boolean isImageSupported(PImageResource image);
+	
 	
 	/**
 	 * 

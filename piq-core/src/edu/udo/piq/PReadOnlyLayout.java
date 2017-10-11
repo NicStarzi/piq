@@ -140,7 +140,7 @@ public interface PReadOnlyLayout extends PDisposable, PStyleable<PStyleLayout> {
 	 */
 	public default PComponent getChildAt(int x, int y) {
 		for (PComponent child : getChildren()) {
-			if (child.isElusive()) {
+			if (child.isIgnoredByPicking()) {
 				if (child.getLayout() != null) {
 					PComponent grandChild = child.getLayout().getChildAt(x, y);
 					if (grandChild != null) {

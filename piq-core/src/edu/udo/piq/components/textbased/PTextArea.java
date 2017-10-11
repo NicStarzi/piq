@@ -9,6 +9,7 @@ import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.collections.PListIndex;
+import edu.udo.piq.components.util.SymbolicFontKey;
 import edu.udo.piq.tools.AbstractPTextComponent;
 import edu.udo.piq.tools.ImmutablePBounds;
 import edu.udo.piq.tools.MutablePBounds;
@@ -17,7 +18,7 @@ import edu.udo.piq.util.ThrowException;
 
 public class PTextArea extends AbstractPTextComponent {
 	
-	public static final Object FONT_ID = PTextArea.class.toString()+"_DEFAULT_FONT_ID";
+	public static final Object FONT_ID = new SymbolicFontKey(PTextArea.class);
 	protected static final PColor DEFAULT_BACKGROUND_COLOR = PColor.WHITE;
 	
 	protected PTextIndexTableMultiLine  idxTab = new PTextIndexTableMultiLine();

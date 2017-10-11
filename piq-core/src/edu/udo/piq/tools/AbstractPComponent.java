@@ -32,7 +32,7 @@ import edu.udo.piq.util.PCompUtil;
 public class AbstractPComponent implements PComponent {
 	
 	/**
-	 * The value returned by {@link #isElusive()} if the user does not
+	 * The value returned by {@link #isIgnoredByPicking()} if the user does not
 	 * call the {@link #setElusive(boolean)} method is false.<br>
 	 */
 	public static final boolean DEFAULT_IS_ELUSIVE = false;
@@ -218,7 +218,7 @@ public class AbstractPComponent implements PComponent {
 	private PMouse currentMouse;
 	private boolean mouseObsRegistered;
 	/**
-	 * Used by the {@link #isElusive()} method
+	 * Used by the {@link #isIgnoredByPicking()} method
 	 */
 	private boolean elusive = DEFAULT_IS_ELUSIVE;
 	
@@ -532,12 +532,12 @@ public class AbstractPComponent implements PComponent {
 	}
 	
 	/**
-	 * Sets the value that will be returned by the {@link #isElusive()} method
+	 * Sets the value that will be returned by the {@link #isIgnoredByPicking()} method
 	 * hereafter.<br>
 	 * 
 	 * @param isElusive whether this component is elusive or not
 	 * @see #DEFAULT_IS_ELUSIVE
-	 * @see #isElusive()
+	 * @see #isIgnoredByPicking()
 	 */
 	public void setElusive(boolean isElusive) {
 		elusive = isElusive;
@@ -552,7 +552,7 @@ public class AbstractPComponent implements PComponent {
 	 * @see #setElusive(boolean)
 	 */
 	@Override
-	public boolean isElusive() {
+	public boolean isIgnoredByPicking() {
 		return elusive;
 	}
 	

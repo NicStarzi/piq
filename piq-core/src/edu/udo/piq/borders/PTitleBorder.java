@@ -12,12 +12,13 @@ import edu.udo.piq.PSize;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.components.textbased.PTextModel;
 import edu.udo.piq.components.textbased.PTextModelObs;
+import edu.udo.piq.components.util.SymbolicFontKey;
 import edu.udo.piq.tools.AbstractPBorder;
 import edu.udo.piq.tools.MutablePInsets;
 
 public class PTitleBorder extends AbstractPBorder {
 	
-	public static final Object FONT_ID = PTitleBorder.class.toString()+"_DEFAULT_FONT_ID";
+	public static final Object FONT_ID = new SymbolicFontKey(PTitleBorder.class);
 	
 	protected final PTextModelObs modelObs = this::onModelValueChanged;
 	protected final MutablePInsets insets = new MutablePInsets();

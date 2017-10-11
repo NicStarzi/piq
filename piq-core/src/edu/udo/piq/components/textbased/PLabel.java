@@ -8,13 +8,14 @@ import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
+import edu.udo.piq.components.util.SymbolicFontKey;
 import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
 
 public class PLabel extends AbstractPComponent {
 	
-	public static final Object FONT_ID = PLabel.class.toString()+"_DEFAULT_FONT_ID";
+	public static final Object FONT_ID = new SymbolicFontKey(PLabel.class);
 	protected static final PColor DEFAULT_TEXT_COLOR = PColor.BLACK;
 	
 	protected final ObserverList<PTextModelObs> modelObsList

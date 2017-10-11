@@ -193,7 +193,7 @@ public class DelegatePRoot extends AbstractPRoot implements PRoot {
 	}
 
 	@Override
-	public boolean isElusive() {
+	public boolean isIgnoredByPicking() {
 		return false;
 	}
 	

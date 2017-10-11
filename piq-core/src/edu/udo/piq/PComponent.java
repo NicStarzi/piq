@@ -252,7 +252,7 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 	 * 
 	 * @return true if this component can not be returned by {@link PReadOnlyLayout#getChildAt(int, int)}
 	 */
-	public boolean isElusive();
+	public boolean isIgnoredByPicking();
 	
 	/**
 	 * Returns either an instance of {@link PDnDSupport} if this component supports

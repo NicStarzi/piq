@@ -63,12 +63,12 @@ public class SwingPRoot extends AbstractPRoot implements PRoot {
 		awtComp.addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentShown(ComponentEvent e) {
-				reRender(SwingPRoot.this);
+				scheduleReRender(SwingPRoot.this);
 				fireSizeChanged();
 			}
 			@Override
 			public void componentResized(ComponentEvent e) {
-				reRender(SwingPRoot.this);
+				scheduleReRender(SwingPRoot.this);
 				fireSizeChanged();
 			}
 		});
@@ -225,7 +225,7 @@ public class SwingPRoot extends AbstractPRoot implements PRoot {
 	}
 	
 	@Override
-	public void reRender(PComponent component) {
+	public void scheduleReRender(PComponent component) {
 		Component awtComp = getAwtComponent();
 		if (awtComp != null) {
 //			System.out.println("SwingPRoot.reRender="+component);

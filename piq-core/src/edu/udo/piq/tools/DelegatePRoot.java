@@ -53,7 +53,7 @@ public class DelegatePRoot extends AbstractPRoot implements PRoot {
 	public void setRepresentative(PComponent component) {
 		reprComp = component;
 		if (getDelegateRoot() != null && getRepresentative() != null) {
-			getDelegateRoot().reRender(getRepresentative());
+			getDelegateRoot().scheduleReRender(getRepresentative());
 		}
 	}
 	
@@ -216,10 +216,10 @@ public class DelegatePRoot extends AbstractPRoot implements PRoot {
 	}
 	
 	@Override
-	public void reRender(PComponent component) {
+	public void scheduleReRender(PComponent component) {
 		reRenderSet.add(component);
 		if (getDelegateRoot() != null && getRepresentative() != null) {
-			getDelegateRoot().reRender(getRepresentative());
+			getDelegateRoot().scheduleReRender(getRepresentative());
 		}
 	}
 	

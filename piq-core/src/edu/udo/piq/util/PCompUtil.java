@@ -90,7 +90,7 @@ public class PCompUtil {
 	
 	/**
 	 * If component is part of a GUI hierarchy with a {@link PRoot} at the
-	 * top the {@link PRoot#reRender(PComponent)} method is called on the root
+	 * top the {@link PRoot#scheduleReRender(PComponent)} method is called on the root
 	 * of component with component as an argument.<br>
 	 * If no such PRoot exists for component this method does nothing.<br>
 	 * 
@@ -101,7 +101,7 @@ public class PCompUtil {
 		if (root == null) {
 			return;
 		}
-		root.reRender(component);
+		root.scheduleReRender(component);
 	}
 	
 	/**

@@ -107,7 +107,7 @@ public class SwingPDialog extends AbstractPDialog implements PDialog {
 	}
 	
 	@Override
-	public void reRender(PComponent component) {
+	public void scheduleReRender(PComponent component) {
 		if (panel != null) {
 			panel.repaint();
 		}

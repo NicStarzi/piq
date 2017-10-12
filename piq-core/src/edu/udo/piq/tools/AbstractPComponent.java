@@ -339,7 +339,7 @@ public class AbstractPComponent implements PComponent {
 			cachedRoot.addObs(rootFocusObs);
 			cachedRoot.fireComponentAddedToGui(this);
 			if (needReLayout) {
-				cachedRoot.reLayOut(this);
+				cachedRoot.scheduleLayout(this);
 			}
 		}
 		fireRootChangedEvent(oldCachedRoot);
@@ -502,7 +502,7 @@ public class AbstractPComponent implements PComponent {
 	 * May fire a {@link #firePreferredSizeChangedEvent()} as necessary.<br>
 	 */
 	@Override
-	public void reLayOut() {
+	public void redoLayOut() {
 		if (needReLayout && getLayout() != null) {
 			getLayout().layOut();
 			needReLayout = false;
@@ -558,8 +558,10 @@ public class AbstractPComponent implements PComponent {
 	
 	@Override
 	public void setMouseOverCursor(PCursor cursor) {
-		mouseOverCursor = cursor;
-		fireMouseOverCursorChangedEvent();
+		if (!Objects.equals(mouseOverCursor, cursor)) {
+			mouseOverCursor = cursor;
+			fireMouseOverCursorChangedEvent();
+		}
 	}
 	
 	@Override
@@ -645,7 +647,7 @@ public class AbstractPComponent implements PComponent {
 	protected void fireReRenderEvent() {
 		PRoot root = getRoot();
 		if (root != null) {
-			root.reRender(this);
+			root.scheduleReRender(this);
 		}
 	}
 	
@@ -660,7 +662,7 @@ public class AbstractPComponent implements PComponent {
 		needReLayout = true;
 		PRoot root = getRoot();
 		if (root != null) {
-			root.reLayOut(this);
+			root.scheduleLayout(this);
 		}
 	}
 	

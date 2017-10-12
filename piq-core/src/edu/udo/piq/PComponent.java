@@ -272,13 +272,13 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 	 * {@link PComponent} if it exists. Otherwise nothing happens.<br>
 	 * If this {@link PComponent PComponents} preferred size, as returned by
 	 * {@link PCompUtil#getPreferredSizeOf(PComponent)} changes as a result of
-	 * the layouting this component will call the {@link PRoot#reLayOut(PComponent)}
+	 * the layouting this component will call the {@link PRoot#scheduleLayout(PComponent)}
 	 * method of its {@link PRoot}.<br>
 	 * 
 	 * @see #getRoot()
-	 * @see PRoot#reLayOut(PComponent)
+	 * @see PRoot#scheduleLayout(PComponent)
 	 */
-	public void reLayOut();
+	public void redoLayOut();
 	
 	/**
 	 * Adds an observer to this {@link PComponent}.<br>

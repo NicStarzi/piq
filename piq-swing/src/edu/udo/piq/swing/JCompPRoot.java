@@ -20,11 +20,11 @@ public class JCompPRoot extends SwingPRoot implements PRoot {
 	protected final WindowListener wndListener = new WindowAdapter() {
 		@Override
 		public void windowIconified(WindowEvent e) {
-			reRender(JCompPRoot.this);
+			scheduleReRender(JCompPRoot.this);
 		}
 		@Override
 		public void windowDeiconified(WindowEvent e) {
-			reRender(JCompPRoot.this);
+			scheduleReRender(JCompPRoot.this);
 		}
 	};
 	protected final InnerJPanel panel;
@@ -40,8 +40,8 @@ public class JCompPRoot extends SwingPRoot implements PRoot {
 	}
 	
 	@Override
-	public void reRender(PComponent component) {
-		super.reRender(component);
+	public void scheduleReRender(PComponent component) {
+		super.scheduleReRender(component);
 		panel.repaint();
 	}
 	

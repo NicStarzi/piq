@@ -17,6 +17,7 @@ import edu.udo.piq.layouts.PRootLayout;
 import edu.udo.piq.layouts.PRootLayout.Constraint;
 import edu.udo.piq.tools.AbstractPTextComponent;
 import edu.udo.piq.util.DepthFirstDescendantIterator;
+import edu.udo.piq.util.PCompUtil;
 
 /**
  * The root of a GUI tree. Such a root is also a {@link PComponent}.<br>
@@ -205,48 +206,115 @@ public interface PRoot extends PComponent {
 	}
 	
 	/**
-	 * Returns the {@link PBounds} of this {@link PRoot}.<br>
-	 * Since a root does not have a parent its bounds are not defined
-	 * by a layout, instead the bounds of a root should be set directly
-	 * by the user.<br>
+	 * <p>Returns the current {@link PBounds} of this root. The bounds of a 
+	 * root should always have an X- and Y-coordinate of 0. Since a root 
+	 * does not have a parent, its size is not defined by a layout.</p>
 	 * 
-	 * @return the bounds of this root
+	 * @return a non-null instance of {@link PBounds}.
+	 * @author Nic
 	 */
 	@Override
 	public PBounds getBounds();
 	
+	/**
+	 * <p>Returns the current style sheet for the GUI of this root. A 
+	 * {@link PStyleSheet} is used to quickly change the style of all 
+	 * components within a GUI.</p>
+	 * 
+	 * <p>How the style sheet is set is not defined within this interface. 
+	 * A root implementation may not support the use of style sheets.</p>
+	 * 
+	 * @return an instance of {@link PStyleSheet} or null
+	 * @author Nic
+	 * @see PStyleSheet
+	 * @see PStyleable
+	 * @see PStyleComponent
+	 * @see PStyleLayout
+	 * @see PStyleBorder
+	 */
 	public PStyleSheet getStyleSheet();
 	
 	/**
-	 * This method should be called if a {@link PComponent} needs to
-	 * be re-rendered.<br>
+	 * <p>This method is called by a {@link PComponent component} when 
+	 * it needs to be re-rendered. After this method has been called 
+	 * the root will schedule a re-rendering of the GUI tree in parts 
+	 * or completely at some time in the near future.</p>
 	 * 
-	 * @param component the component that needs re-rendering
+	 * <p>User code does not need to ever call this method. It is intended 
+	 * for internal use only.</p>
+	 * 
+	 * @param component		the component that needs re-rendering
+	 * @author Nic
+	 * @see PRenderer
+	 * @see PCompUtil#fireReRenderEventFor(PComponent)
 	 */
-	public void reRender(PComponent component);
+	public void scheduleReRender(PComponent component);
 	
-	//TODO
+	/**
+	 * <p>This method is called by a {@link PComponent component} when 
+	 * its mouse-over {@link PCursor cursor} has changed. It may be needed 
+	 * by a root to correctly update the displayed mouse cursor.</p>
+	 * 
+	 * <p>User code does not need to ever call this method. It is intended 
+	 * for internal use only.</p>
+	 *  
+	 * @param component		the component for which the cursor has changed
+	 * @author Nic
+	 * @see PCursor
+	 * @see #createCustomCursor(PImageResource, int, int)
+	 * @see PMouse
+	 * @see PMouse#getCurrentCursor()
+	 * @see PMouse#getCursorDefault()
+	 * @see PMouse#getCursorText()
+	 * @see PMouse#getCursorBusy()
+	 * @see PMouse#getCursorScroll()
+	 * @see PMouse#getCursorHand()
+	 * @see PComponent#getMouseOverCursor(PMouse)
+	 * @see PComponent#setMouseOverCursor(PCursor)
+	 */
 	public void onMouseOverCursorChanged(PComponent component);
 	
 	/**
-	 * Registers that a {@link PComponent} needs a refresh for its {@link PLayout} in the near future.<br>
-	 * The refresh should happen soon but not necessarily immediately to have the possibility of combining
-	 * several re-layouting operations into one.<br>
+	 * <p>This method is called by a {@link PComponent component} which needs 
+	 * to have its {@link PLayout layout} done again. After this method has 
+	 * been called the root will schedule a layout operation for all layouts 
+	 * of the GUI tree in parts or completely at some time in the near future.</p>
 	 * 
-	 * @param component a non-null component
+	 * <p>User code does not need to ever call this method. It is intended 
+	 * for internal use only.</p>
+	 * 
+	 * @param component					the component that requested the layouting
+	 * @throws NullPointerException		if component is null
+	 * @throws IllegalStateException	if component is not part of this GUI
+	 * @author Nic
+	 * @see PReadOnlyLayout
+	 * @see PReadOnlyLayout#layOut()
+	 * @see PLayout
+	 * @see PComponent#getLayout()
+	 * @see PComponent#redoLayOut()
+	 * @see #reLayOutTheEntireGui()
 	 */
-	public void reLayOut(PComponent component);
+	public void scheduleLayout(PComponent component);
 	
 	/**
-	 * Immediately lays out all components within this GUI. This method is costly and should only be used
-	 * when the entire GUI needs a refresh, for example when the {@link PDesignSheet} was changed.<br>
+	 * <p>Causes an immediate {@link PLayout#layOut() layout} of all {@link PLayout layouts} 
+	 * within the GUI of this root. This is a costly operation and should only ever be used 
+	 * in cases of incorrectly laid out layouts.</p>
+	 * 
+	 * @author Nic
+	 * @see #scheduleLayout(PComponent)
+	 * @see PReadOnlyLayout
+	 * @see PReadOnlyLayout#layOut()
+	 * @see PLayout
+	 * @see PComponent#getLayout()
+	 * @see PComponent#redoLayOut()
 	 */
 	public default void reLayOutTheEntireGui() {
 		//TODO: Not a very nice solution but it works.
 		for (PComponent comp : new DepthFirstDescendantIterator(this)) {
 			PReadOnlyLayout layout = comp.getLayout();
 			if (layout != null) {
-//				System.out.println("comp="+comp+", layout="+layout);
+				// it is important to invalidate the layout before calling the layOut method.
 				layout.invalidate();
 				layout.layOut();
 			}
@@ -254,14 +322,22 @@ public interface PRoot extends PComponent {
 	}
 	
 	/**
-	 * Creates a new instance of {@link PDialog} and returns it.<br>
-	 * The implementation is platform dependent.<br>
-	 * The returned dialog will use the same {@link PDesignSheet}
-	 * as this root.<br>
+	 * <p>Creates an instance of a {@link PDialog} and returns it.
+	 * The created dialog will use the same {@link PStyleSheet} as this 
+	 * root. The dialog is not disposed and not shown initially.</p>
 	 * 
-	 * @return a newly created dialog
+	 * <p>An implementation may decide to recycle dialog objects in 
+	 * which case the returned dialog may not be a newly created 
+	 * instance. References to dialogs should not be kept after they 
+	 * are disposed. No assumptions should be made about whether a 
+	 * created dialog is a new instance or not.</p>
+	 * 
+	 * @return an instance of {@link PDialog}
 	 * @see PDialog
-	 * @see PDesignSheet
+	 * @see PDialog#dispose()
+	 * @see PDialog#show()
+	 * @see #getStyleSheet()
+	 * @author Nic
 	 */
 	public PDialog createDialog();
 	

@@ -215,7 +215,7 @@ public class GlfwPRoot extends AbstractPRoot {
 	}
 	
 	@Override
-	public void reRender(PComponent component) {
+	public void scheduleReRender(PComponent component) {
 //		System.out.println("GlfwPRoot.reRender() c="+component);
 		needReRender = true;
 	}

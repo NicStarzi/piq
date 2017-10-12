@@ -68,16 +68,16 @@ public abstract class AbstractPRoot implements PRoot {
 	protected final PLayoutObs layoutObs = new PLayoutObs() {
 		@Override
 		public void onLayoutInvalidated(PReadOnlyLayout layout) {
-			reLayOut(AbstractPRoot.this);
+			scheduleLayout(AbstractPRoot.this);
 		}
 		@Override
 		public void onChildRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
-			reLayOut(AbstractPRoot.this);
+			scheduleLayout(AbstractPRoot.this);
 		}
 		@Override
 		public void onChildAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
-			reLayOut(AbstractPRoot.this);
-			reLayOut(child);
+			scheduleLayout(AbstractPRoot.this);
+			scheduleLayout(child);
 		}
 	};
 	protected final ObserverList<PComponentObs> compObsList = PCompUtil.createDefaultObserverList();
@@ -116,7 +116,7 @@ public abstract class AbstractPRoot implements PRoot {
 	}
 	
 	@Override
-	public void reLayOut() {
+	public void redoLayOut() {
 		if (needReLayout) {
 			getLayout().invalidate();
 			getLayout().layOut();
@@ -125,7 +125,7 @@ public abstract class AbstractPRoot implements PRoot {
 	}
 	
 	@Override
-	public void reLayOut(PComponent component) {
+	public void scheduleLayout(PComponent component) {
 //		System.out.println("reLayOut "+component);
 		reLayOutCompsFront.add(component);
 		if (component == this) {
@@ -155,7 +155,7 @@ public abstract class AbstractPRoot implements PRoot {
 			for (PComponent comp : reLayOutCompsBack) {
 				//				System.out.println("LayOut="+comp);
 				if (comp.getRoot() == this) {
-					comp.reLayOut();
+					comp.redoLayOut();
 				}
 			}
 			reLayOutCompsBack.clear();
@@ -168,7 +168,7 @@ public abstract class AbstractPRoot implements PRoot {
 	}
 	
 	@Override
-	public void reRender(PComponent component) {
+	public void scheduleReRender(PComponent component) {
 		reRenderSet.add(component);
 	}
 	
@@ -429,8 +429,8 @@ public abstract class AbstractPRoot implements PRoot {
 			getStyleSheet().setRoot(this);
 		}
 		fireStyleSheetChanged(oldStyleSheet);
-		reLayOut(this);
-		reRender(this);
+		scheduleLayout(this);
+		scheduleReRender(this);
 	}
 	
 	@Override
@@ -539,8 +539,8 @@ public abstract class AbstractPRoot implements PRoot {
 	}
 	
 	protected void fireSizeChanged() {
-		reRender(this);
-		reLayOut(this);
+		scheduleReRender(this);
+		scheduleLayout(this);
 		compObsList.fireEvent((obs) -> obs.onPreferredSizeChanged(this));
 	}
 	

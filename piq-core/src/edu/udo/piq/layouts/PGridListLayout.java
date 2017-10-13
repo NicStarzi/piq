@@ -112,6 +112,9 @@ public class PGridListLayout extends AbstractMapPLayout {
 	protected void clearAllInfosInternal() {
 		super.clearAllInfosInternal();
 		rowList.clear();
+		Arrays.fill(cachedColSizes, 0);
+		cachedRowSize = 0;
+		nextAddIdx = 0;
 	}
 	
 	public int getColumnCount() {

@@ -7,17 +7,23 @@ import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.defaults.DefaultPPictureModel;
+import edu.udo.piq.layouts.AlignmentX;
+import edu.udo.piq.layouts.AlignmentY;
 import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PCompUtil;
 
 public class PPicture extends AbstractPComponent {
 	
+	public static final AlignmentX DEFAULT_ALIGNMENT_X = AlignmentX.CENTER;
+	public static final AlignmentY DEFAULT_ALIGNMENT_Y = AlignmentY.CENTER;
+	
 	protected final ObserverList<PPictureModelObs> modelObsList
 		= PCompUtil.createDefaultObserverList();
 	protected final PPictureModelObs modelObs = model -> PPicture.this.onImagePathChanged();
 	protected PPictureModel model;
-	protected boolean stretchToSize = false;
+	protected AlignmentX alignX = DEFAULT_ALIGNMENT_X;
+	protected AlignmentY alignY = DEFAULT_ALIGNMENT_Y;
 	
 	public PPicture() {
 		super();
@@ -52,13 +58,31 @@ public class PPicture extends AbstractPComponent {
 		return model;
 	}
 	
-	public void setStretchToSize(boolean isEnabled) {
-		stretchToSize = isEnabled;
-		fireReRenderEvent();
+	public void setAlignment(AlignmentX alignmentX, AlignmentY alignmentY) {
+		setAlignmentX(alignmentX);
+		setAlignmentY(alignmentY);
 	}
 	
-	public boolean isStretchToSizeEnabled() {
-		return stretchToSize;
+	public void setAlignmentX(AlignmentX value) {
+		if (alignX != value) {
+			alignX = value;
+			fireReRenderEvent();
+		}
+	}
+	
+	public AlignmentX getAlignmentX() {
+		return alignX;
+	}
+	
+	public void setAlignmentY(AlignmentY value) {
+		if (alignY != value) {
+			alignY = value;
+			fireReRenderEvent();
+		}
+	}
+	
+	public AlignmentY getAlignmentY() {
+		return alignY;
 	}
 	
 	@Override
@@ -67,19 +91,24 @@ public class PPicture extends AbstractPComponent {
 		if (imgRes == null) {
 			return;
 		}
+		AlignmentX alignX = getAlignmentX();
+		AlignmentY alignY = getAlignmentY();
+		
 		PBounds bounds = getBounds();
 		int x = bounds.getX();
 		int y = bounds.getY();
-		if (isStretchToSizeEnabled()) {
-			int fx = bounds.getFinalX();
-			int fy = bounds.getFinalY();
-			renderer.drawImage(imgRes, x, y, fx, fy);
-		} else {
-			PSize imgSize = imgRes.getSize();
-			int imgW = imgSize.getWidth();
-			int imgH = imgSize.getHeight();
-			renderer.drawImage(imgRes, x, y, x + imgW, y + imgH);
-		}
+		int w = bounds.getWidth();
+		int h = bounds.getHeight();
+		
+		PSize imgSize = imgRes.getSize();
+		int imgW = imgSize.getWidth();
+		int imgH = imgSize.getHeight();
+		int imgX = alignX.getLeftX(x, w, imgW);
+		int imgFx = imgX + alignX.getWidth(x, w, imgW);
+		int imgY = alignY.getTopY(y, h, imgH);
+		int imgFy = imgY + alignY.getHeight(y, h, imgH);
+		
+		renderer.drawImage(imgRes, imgX, imgY, imgFx, imgFy);
 	}
 	
 	@Override

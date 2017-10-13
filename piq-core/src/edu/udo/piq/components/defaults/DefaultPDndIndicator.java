@@ -4,6 +4,8 @@ import java.util.Objects;
 
 import edu.udo.piq.PDnDIndicator;
 import edu.udo.piq.components.PPicture;
+import edu.udo.piq.layouts.AlignmentX;
+import edu.udo.piq.layouts.AlignmentY;
 
 public class DefaultPDndIndicator extends PPicture implements PDnDIndicator {
 	
@@ -12,7 +14,8 @@ public class DefaultPDndIndicator extends PPicture implements PDnDIndicator {
 	private boolean dropPossible;
 	
 	public DefaultPDndIndicator() {
-		setStretchToSize(true);
+		setAlignmentX(AlignmentX.FILL);
+		setAlignmentY(AlignmentY.FILL);
 		setElusive(true);
 	}
 	
@@ -48,6 +51,7 @@ public class DefaultPDndIndicator extends PPicture implements PDnDIndicator {
 		return dndImpImageID;
 	}
 	
+	@Override
 	public void setDropPossible(boolean value) {
 		if (isDropPossible() != value) {
 			dropPossible = value;
@@ -59,6 +63,7 @@ public class DefaultPDndIndicator extends PPicture implements PDnDIndicator {
 		}
 	}
 	
+	@Override
 	public boolean isDropPossible() {
 		return dropPossible;
 	}

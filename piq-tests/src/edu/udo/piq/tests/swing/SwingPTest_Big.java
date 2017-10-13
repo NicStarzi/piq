@@ -31,6 +31,8 @@ import edu.udo.piq.components.popup.PPopupOptionsProvider;
 import edu.udo.piq.components.popup.PPopupSubMenu;
 import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.components.textbased.PTextArea;
+import edu.udo.piq.layouts.AlignmentX;
+import edu.udo.piq.layouts.AlignmentY;
 import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
 import edu.udo.piq.layouts.PSplitLayout.Orientation;
@@ -68,7 +70,8 @@ public class SwingPTest_Big extends AbstractSwingPTest {
 		PPicture pic = new PPicture();
 		pic.setID("Picture");
 		pic.getModel().setValue("Tex.png");
-		pic.setStretchToSize(true);
+		pic.setAlignmentX(AlignmentX.FILL);
+		pic.setAlignmentY(AlignmentY.FILL);
 		splitH.setFirstComponent(pic);
 		
 		PList list = new PList(new DefaultPListModel(new Object[] {

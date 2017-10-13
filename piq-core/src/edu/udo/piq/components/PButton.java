@@ -25,7 +25,7 @@ import edu.udo.piq.layouts.PAnchorLayout;
 import edu.udo.piq.tools.AbstractPInputLayoutOwner;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 
 public class PButton extends AbstractPInputLayoutOwner implements PClickable, PGlobalEventGenerator {
 	
@@ -67,9 +67,9 @@ public class PButton extends AbstractPInputLayoutOwner implements PClickable, PG
 	}
 	
 	protected final ObserverList<PButtonModelObs> modelObsList
-		= PCompUtil.createDefaultObserverList();
+		= PiqUtil.createDefaultObserverList();
 	protected final ObserverList<PClickObs> obsList
-		= PCompUtil.createDefaultObserverList();
+		= PiqUtil.createDefaultObserverList();
 	protected final PButtonModelObs modelObs = (mdl) -> onModelChange();
 	protected PTimer repeatTimer;
 	protected PButtonModel model;
@@ -178,16 +178,12 @@ public class PButton extends AbstractPInputLayoutOwner implements PClickable, PG
 		PButtonModel oldModel = getModel();
 		if (oldModel != null) {
 			oldModel.removeObs(modelObs);
-			for (PButtonModelObs obs : modelObsList) {
-				oldModel.removeObs(obs);
-			}
+			modelObsList.forEach(obs -> oldModel.removeObs(obs));
 		}
 		this.model = model;
 		if (model != null) {
 			model.addObs(modelObs);
-			for (PButtonModelObs obs : modelObsList) {
-				model.addObs(obs);
-			}
+			modelObsList.forEach(obs -> model.addObs(obs));
 		}
 		fireReRenderEvent();
 	}

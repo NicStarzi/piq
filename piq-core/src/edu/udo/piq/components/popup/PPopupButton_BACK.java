@@ -9,14 +9,14 @@ import edu.udo.piq.components.PIconLabel;
 import edu.udo.piq.components.PPicture;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 
 public class PPopupButton_BACK extends PButton implements PPopupComponent {
 	
 	public static final PColor DEFAULT_HIGHLIGHT_COLOR = PColor.BLUE;
 	
 	protected final ObserverList<PPopupComponentObs> obsList
-			= PCompUtil.createDefaultObserverList();
+			= PiqUtil.createDefaultObserverList();
 	private boolean highlighted;
 	
 	public PPopupButton_BACK(Object iconImgID, Object labelModelValue) {
@@ -93,18 +93,14 @@ public class PPopupButton_BACK extends PButton implements PPopupComponent {
 	protected void onChildAdded(PComponent child, Object constraint) {
 		if (child instanceof PPopupComponent) {
 			PPopupComponent popupChild = (PPopupComponent) child;
-			for (PPopupComponentObs obs : obsList) {
-				popupChild.addObs(obs);
-			}
+			obsList.forEach(obs -> popupChild.addObs(obs));
 		}
 	}
 	
 	protected void onChildRemoved(PComponent child, Object constraint) {
 		if (child instanceof PPopupComponent) {
 			PPopupComponent popupChild = (PPopupComponent) child;
-			for (PPopupComponentObs obs : obsList) {
-				popupChild.removeObs(obs);
-			}
+			obsList.forEach(obs -> popupChild.removeObs(obs));
 		}
 	}
 	

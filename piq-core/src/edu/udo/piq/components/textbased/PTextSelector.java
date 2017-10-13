@@ -6,7 +6,7 @@ import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.components.collections.PListIndex;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 
 public class PTextSelector {
 	
@@ -72,7 +72,7 @@ public class PTextSelector {
 			}
 			owner.getSelection().addSelection(index);
 			owner.takeFocus();
-			PCompUtil.fireReRenderEventFor(owner);
+			PiqUtil.fireReRenderEventFor(owner);
 		}
 	}
 	
@@ -111,14 +111,14 @@ public class PTextSelector {
 				owner.getSelection().addSelection(pressedIndex);
 			}
 			owner.takeFocus();
-			PCompUtil.fireReRenderEventFor(owner);
+			PiqUtil.fireReRenderEventFor(owner);
 		}
 	}
 	
 	protected void onMouseButtonReleased(PMouse mouse, MouseButton btn) {
 		if (btn == MouseButton.LEFT && pressedIndex != null) {
 			pressedIndex = null;
-			PCompUtil.fireReRenderEventFor(owner);
+			PiqUtil.fireReRenderEventFor(owner);
 		}
 	}
 	

@@ -5,12 +5,12 @@ import edu.udo.piq.components.collections.PModelIndex;
 import edu.udo.piq.components.collections.PModelObs;
 import edu.udo.piq.components.util.PModelHistory;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 
 public abstract class AbstractPModel implements PModel {
 	
 	protected final ObserverList<PModelObs> obsList
-		= PCompUtil.createDefaultObserverList();
+		= PiqUtil.createDefaultObserverList();
 	
 	public PModelHistory getHistory() {
 		return null;

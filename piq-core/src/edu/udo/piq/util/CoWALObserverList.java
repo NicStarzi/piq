@@ -1,6 +1,5 @@
 package edu.udo.piq.util;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -58,9 +57,9 @@ public class CoWALObserverList<E> implements ObserverList<E> {
 			E obs = internalList.get(i);
 			try {
 				msg.notifyObs(obs);
-			} catch (Exception e) {
-				if (PGuiUtil.getGlobalExceptionHandler() != null) {
-					PGuiUtil.getGlobalExceptionHandler().onException(e);
+			} catch (Throwable e) {
+				if (PiqUtil.getStaticExceptionHandler() != null) {
+					PiqUtil.getStaticExceptionHandler().accept(e);
 				} else {
 					e.printStackTrace();
 				}
@@ -68,8 +67,8 @@ public class CoWALObserverList<E> implements ObserverList<E> {
 		}
 	}
 	
-	public Iterator<E> iterator() {
-		return internalList.iterator();
-	}
+//	public Iterator<E> iterator() {
+//		return internalList.iterator();
+//	}
 	
 }

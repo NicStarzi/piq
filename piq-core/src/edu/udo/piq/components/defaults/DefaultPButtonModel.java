@@ -3,12 +3,12 @@ package edu.udo.piq.components.defaults;
 import edu.udo.piq.components.PButtonModel;
 import edu.udo.piq.components.PButtonModelObs;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 
 public class DefaultPButtonModel implements PButtonModel {
 	
 	protected final ObserverList<PButtonModelObs> obsList
-		= PCompUtil.createDefaultObserverList();
+		= PiqUtil.createDefaultObserverList();
 	protected boolean pressed;
 	
 	public void setPressed(boolean isPressed) {

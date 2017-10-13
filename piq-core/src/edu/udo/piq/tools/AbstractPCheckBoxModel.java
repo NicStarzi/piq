@@ -3,12 +3,12 @@ package edu.udo.piq.tools;
 import edu.udo.piq.components.PCheckBoxModel;
 import edu.udo.piq.components.PCheckBoxModelObs;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 
 public abstract class AbstractPCheckBoxModel implements PCheckBoxModel {
 	
 	protected final ObserverList<PCheckBoxModelObs> obsList
-		= PCompUtil.createDefaultObserverList();
+		= PiqUtil.createDefaultObserverList();
 	
 	public void addObs(PCheckBoxModelObs obs) {
 		obsList.add(obs);

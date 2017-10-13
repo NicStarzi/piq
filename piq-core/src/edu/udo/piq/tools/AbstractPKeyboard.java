@@ -3,12 +3,12 @@ package edu.udo.piq.tools;
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PKeyboardObs;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 
 public abstract class AbstractPKeyboard implements PKeyboard {
 	
 	protected final ObserverList<PKeyboardObs> obsList
-		= PCompUtil.createDefaultObserverList();
+		= PiqUtil.createDefaultObserverList();
 	
 	@Override
 	public void addObs(PKeyboardObs obs) {

@@ -3,7 +3,7 @@ package edu.udo.piq;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.components.containers.PGlassPanel;
 import edu.udo.piq.layouts.PFreeLayout.FreeConstraint;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 import edu.udo.piq.util.ThrowException;
 
 /**
@@ -295,7 +295,7 @@ public class PDnDManager {
 	protected PComponent getDropTarget(int x, int y) throws IllegalStateException {
 		throwExceptionIfNoDragActive();
 		
-		PComponent current = PCompUtil.getComponentAt(getRoot(), x, y);
+		PComponent current = PiqUtil.getComponentAt(getRoot(), x, y);
 		PDnDSupport dndSup = null;
 		while (current != null) {
 			dndSup = current.getDragAndDropSupport();

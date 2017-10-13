@@ -14,16 +14,16 @@ import edu.udo.piq.components.defaults.DefaultPCheckBoxModel;
 import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 
 public class PCheckBox extends AbstractPComponent implements PClickable, PGlobalEventGenerator {
 	
 	private static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(12, 12);
 	
 	protected final ObserverList<PCheckBoxModelObs> modelObsList
-	= PCompUtil.createDefaultObserverList();
+	= PiqUtil.createDefaultObserverList();
 	protected final ObserverList<PClickObs> obsList
-	= PCompUtil.createDefaultObserverList();
+	= PiqUtil.createDefaultObserverList();
 	protected final PMouseObs mouseObs = new PMouseObs() {
 		@Override
 		public void onButtonTriggered(PMouse mouse, MouseButton btn, int clickCount) {
@@ -54,16 +54,12 @@ public class PCheckBox extends AbstractPComponent implements PClickable, PGlobal
 		PCheckBoxModel oldModel = getModel();
 		if (oldModel != null) {
 			oldModel.removeObs(modelObs);
-			for (PCheckBoxModelObs obs : modelObsList) {
-				oldModel.removeObs(obs);
-			}
+			modelObsList.forEach(obs -> oldModel.removeObs(obs));
 		}
 		this.model = model;
 		if (model != null) {
 			model.addObs(modelObs);
-			for (PCheckBoxModelObs obs : modelObsList) {
-				model.addObs(obs);
-			}
+			modelObsList.forEach(obs -> model.addObs(obs));
 		}
 		fireReRenderEvent();
 	}

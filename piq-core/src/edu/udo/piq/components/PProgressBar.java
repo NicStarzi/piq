@@ -8,12 +8,11 @@ import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.defaults.DefaultPProgressBarModel;
-import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.components.util.SymbolicFontKey;
 import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 
 public class PProgressBar extends AbstractPComponent {
 	
@@ -26,7 +25,7 @@ public class PProgressBar extends AbstractPComponent {
 	public static final PColor DEFAULT_PROGRESS_COLOR = PColor.BLUE;
 	
 	protected final ObserverList<PProgressBarModelObs> modelObsList
-		= PCompUtil.createDefaultObserverList();
+		= PiqUtil.createDefaultObserverList();
 	protected final PProgressBarModelObs modelObs = model -> PProgressBar.this.onModelValueChanged();
 	protected PProgressBarModel model;
 	
@@ -44,16 +43,12 @@ public class PProgressBar extends AbstractPComponent {
 		PProgressBarModel oldModel = getModel();
 		if (oldModel != null) {
 			oldModel.removeObs(modelObs);
-			for (PProgressBarModelObs obs : modelObsList) {
-				oldModel.removeObs(obs);
-			}
+			modelObsList.forEach(obs -> oldModel.removeObs(obs));
 		}
 		this.model = model;
 		if (model != null) {
 			model.addObs(modelObs);
-			for (PProgressBarModelObs obs : modelObsList) {
-				model.addObs(obs);
-			}
+			modelObsList.forEach(obs -> model.addObs(obs));
 		}
 		fireReRenderEvent();
 	}

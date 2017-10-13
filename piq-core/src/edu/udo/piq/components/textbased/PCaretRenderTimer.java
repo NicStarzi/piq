@@ -7,7 +7,7 @@ import edu.udo.piq.components.collections.PListIndex;
 import edu.udo.piq.components.collections.PModelIndex;
 import edu.udo.piq.components.collections.PSelection;
 import edu.udo.piq.components.collections.PSelectionObs;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 
 public class PCaretRenderTimer {
 	
@@ -93,13 +93,13 @@ public class PCaretRenderTimer {
 				&& selectionFrom.equals(selectionTo))
 		{
 			focusRenderToggle = !focusRenderToggle;
-			PCompUtil.fireReRenderEventFor(owner);
+			PiqUtil.fireReRenderEventFor(owner);
 		}
 	}
 	
 	protected void resetFocusRenderTimer() {
 		focusRenderToggle = true;
-		PCompUtil.fireReRenderEventFor(owner);
+		PiqUtil.fireReRenderEventFor(owner);
 	}
 	
 }

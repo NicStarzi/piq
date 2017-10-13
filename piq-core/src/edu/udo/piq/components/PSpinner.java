@@ -26,7 +26,7 @@ import edu.udo.piq.layouts.PSpinnerLayout.Constraint;
 import edu.udo.piq.tools.AbstractPInputLayoutOwner;
 import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 import edu.udo.piq.util.ThrowException;
 
 public class PSpinner extends AbstractPInputLayoutOwner {
@@ -52,7 +52,7 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 	public static final Consumer<PSpinner> REACTION_PRESS_DOWN = PSpinner::selectPrevious;
 	
 	protected final ObserverList<PSpinnerModelObs> modelObsList =
-			PCompUtil.createDefaultObserverList();
+			PiqUtil.createDefaultObserverList();
 	protected final PSpinnerModelObs modelObs = this::onModelValueChanged;
 	protected PSpinnerModel model;
 	protected Function<Object, String> encoder;
@@ -134,15 +134,11 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 	
 	public void setModel(PSpinnerModel model) {
 		if (getModel() != null) {
-			for (PSpinnerModelObs obs : modelObsList) {
-				getModel().removeObs(obs);
-			}
+			modelObsList.forEach(obs -> getModel().removeObs(obs));
 		}
 		this.model = model;
 		if (getModel() != null) {
-			for (PSpinnerModelObs obs : modelObsList) {
-				getModel().addObs(obs);
-			}
+			modelObsList.forEach(obs -> getModel().addObs(obs));
 		}
 		setModel(getLayoutInternal().getEditor());
 		setModel(getLayoutInternal().getNextButton());

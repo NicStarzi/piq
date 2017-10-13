@@ -14,7 +14,7 @@ public enum AlignmentY {
 	},
 	CENTER {
 		public int getTopY(int topY, int maxHeight, int prefHeight) {
-			return topY + maxHeight / 2 - prefHeight / 2;
+			return topY + (maxHeight - prefHeight) / 2;
 		}
 	},
 	FILL {

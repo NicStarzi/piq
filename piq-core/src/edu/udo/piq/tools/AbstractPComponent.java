@@ -27,7 +27,7 @@ import edu.udo.piq.PStyleBorder;
 import edu.udo.piq.PStyleComponent;
 import edu.udo.piq.PStyleLayout;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 
 public class AbstractPComponent implements PComponent {
 	
@@ -49,22 +49,22 @@ public class AbstractPComponent implements PComponent {
 	 * Holds all {@link PComponentObs PComponentObservers} of this component.
 	 */
 	protected final ObserverList<PComponentObs> compObsList
-		= PCompUtil.createDefaultObserverList();
+		= PiqUtil.createDefaultObserverList();
 	/**
 	 * Holds all {@link PFocusObs PFocusObservers} of this component.
 	 */
 	protected final ObserverList<PFocusObs> focusObsList
-		= PCompUtil.createDefaultObserverList();
+		= PiqUtil.createDefaultObserverList();
 	/**
 	 * Holds all {@link PMouseObs PMouseObservers} of this component.
 	 */
 	protected final ObserverList<PMouseObs> mouseObsList
-		= PCompUtil.createDefaultObserverList();
+		= PiqUtil.createDefaultObserverList();
 	/**
 	 * Holds all {@link PKeyboardObs PKeyboardObservers} of this component.
 	 */
 	protected final ObserverList<PKeyboardObs> keyboardObsList
-		= PCompUtil.createDefaultObserverList();
+		= PiqUtil.createDefaultObserverList();
 	/**
 	 * Is registered at the {@link PRoot} of this component.<br>
 	 * This observer is used to propagate focus events to {@link PFocusObs}

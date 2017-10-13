@@ -19,7 +19,7 @@ import edu.udo.piq.layouts.PListLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 import edu.udo.piq.util.ThrowException;
 
 public class PPopup {
@@ -31,7 +31,7 @@ public class PPopup {
 		= (comp) -> new PListPanel();
 	
 	protected final ObserverList<PPopupObs> obsList
-		= PCompUtil.createDefaultObserverList();
+		= PiqUtil.createDefaultObserverList();
 	protected final PMouseObs mouseObs = new PMouseObs() {
 		@Override
 		public void onButtonTriggered(PMouse mouse, MouseButton btn, int clickCount) {

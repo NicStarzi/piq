@@ -8,12 +8,12 @@ import edu.udo.piq.components.collections.PTableCellIndex;
 import edu.udo.piq.components.collections.PTableHeaderObs;
 import edu.udo.piq.components.collections.PTableModel;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 
 public abstract class AbstractPTableModel extends AbstractPModel implements PTableModel {
 	
 	protected final ObserverList<PTableHeaderObs> obsList = 
-			PCompUtil.createDefaultObserverList();
+			PiqUtil.createDefaultObserverList();
 	
 	public Iterator<PModelIndex> iterator() {
 		return new DefaultPTableIterator(this);

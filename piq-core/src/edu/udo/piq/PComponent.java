@@ -11,8 +11,7 @@ import edu.udo.piq.tools.MutablePBounds;
 import edu.udo.piq.util.AncestorIterator;
 import edu.udo.piq.util.BreadthFirstDescendantIterator;
 import edu.udo.piq.util.DepthFirstDescendantIterator;
-import edu.udo.piq.util.PCompUtil;
-import edu.udo.piq.util.PGuiUtil;
+import edu.udo.piq.util.PiqUtil;
 import edu.udo.piq.util.ThrowException;
 
 /**
@@ -34,7 +33,7 @@ import edu.udo.piq.util.ThrowException;
  * pattern. All implementations of PComponent should provide a way of adding
  * and removing observers without throwing {@link ConcurrentModificationException}s
  * if an observer is added / removed while an event is fired. The use of
- * {@link PCompUtil#createDefaultObserverList()} is encouraged but is not enforced.<br>
+ * {@link PiqUtil#createDefaultObserverList()} is encouraged but is not enforced.<br>
  * <br>
  * For an easy to use abstract implementation of the PComponent interface
  * have a look at the {@link AbstractPComponent} class.
@@ -271,7 +270,7 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 	 * Calls the {@link PLayout#layOut()} method on the {@link PLayout} of this
 	 * {@link PComponent} if it exists. Otherwise nothing happens.<br>
 	 * If this {@link PComponent PComponents} preferred size, as returned by
-	 * {@link PCompUtil#getPreferredSizeOf(PComponent)} changes as a result of
+	 * {@link PiqUtil#getPreferredSizeOf(PComponent)} changes as a result of
 	 * the layouting this component will call the {@link PRoot#scheduleLayout(PComponent)}
 	 * method of its {@link PRoot}.<br>
 	 * 
@@ -340,7 +339,7 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 	 * 
 	 * @param value the new id for this component
 	 * @see #getID()
-	 * @see PCompUtil#getDescendantByID(PComponent, String)
+	 * @see PiqUtil#getDescendantByID(PComponent, String)
 	 * @see PGuiUtil#componentToString(PComponent)
 	 * @see PGuiUtil#guiTreeToString(PComponent)
 	 */
@@ -354,7 +353,7 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 	 * 
 	 * @return the id use for debugging purposes
 	 * @see #setID(String)
-	 * @see PCompUtil#getDescendantByID(PComponent, String)
+	 * @see PiqUtil#getDescendantByID(PComponent, String)
 	 * @see PGuiUtil#componentToString(PComponent)
 	 * @see PGuiUtil#guiTreeToString(PComponent)
 	 */
@@ -701,13 +700,13 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 	 * @return the clipped {@link PBounds} of this component or null
 	 * @see #getBounds()
 	 * @see PBounds#createIntersection(PBounds)
-	 * @see PCompUtil#fillClippedBounds(MutablePBounds, PComponent)
+	 * @see PiqUtil#fillClippedBounds(MutablePBounds, PComponent)
 	 */
 	public default PBounds getClippedBounds() {
 		if (getParent() == null) {
 			return null;
 		}
-		return PCompUtil.fillClippedBounds(null, this);
+		return PiqUtil.fillClippedBounds(null, this);
 	}
 	
 	/**
@@ -744,7 +743,7 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 	 * @return true if the mouse is currently on top of this component
 	 * @see #isMouseOverThisOrChild()
 	 * @see #getMouse()
-	 * @see PCompUtil#getComponentAt(PComponent, int, int)
+	 * @see PiqUtil#getComponentAt(PComponent, int, int)
 	 */
 	public default boolean isMouseOver() {
 		PMouse mouse = getMouse();
@@ -764,7 +763,7 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 	 * @return true if the mouse is currently on top of this component
 	 * @see #isMouseOver()
 	 * @see #getMouse()
-	 * @see PCompUtil#getComponentAt(PComponent, int, int)
+	 * @see PiqUtil#getComponentAt(PComponent, int, int)
 	 */
 	public default boolean isMouseOverThisOrChild() {
 		PMouse mouse = getMouse();

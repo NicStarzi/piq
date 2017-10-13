@@ -6,11 +6,11 @@ import java.util.Map.Entry;
 import edu.udo.piq.components.util.PDictionary;
 import edu.udo.piq.components.util.PDictionaryObs;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 
 public abstract class AbstractMapDictionary<E> implements PDictionary {
 	
-	protected final ObserverList<PDictionaryObs> obsList = PCompUtil
+	protected final ObserverList<PDictionaryObs> obsList = PiqUtil
 			.createDefaultObserverList();
 	
 	protected abstract Map<E, String> getTranslationMap();

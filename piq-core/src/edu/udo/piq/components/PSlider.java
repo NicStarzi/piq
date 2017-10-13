@@ -20,7 +20,7 @@ import edu.udo.piq.components.util.PKeyInput;
 import edu.udo.piq.tools.AbstractPInputComponent;
 import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 
 public class PSlider extends AbstractPInputComponent implements PGlobalEventGenerator {
 	
@@ -50,7 +50,7 @@ public class PSlider extends AbstractPInputComponent implements PGlobalEventGene
 	public static final String INPUT_ID_PRESS_CTRL_RIGHT = "ctrlRight";
 	
 	protected final ObserverList<PSliderModelObs> modelObsList
-	= PCompUtil.createDefaultObserverList();
+		= PiqUtil.createDefaultObserverList();
 	protected final PSliderModelObs modelObs = new PSliderModelObs() {
 		@Override
 		public void onRangeChanged(PSliderModel model) {
@@ -124,16 +124,12 @@ public class PSlider extends AbstractPInputComponent implements PGlobalEventGene
 		PSliderModel oldModel = getModel();
 		if (oldModel != null) {
 			oldModel.removeObs(modelObs);
-			for (PSliderModelObs obs : modelObsList) {
-				oldModel.removeObs(obs);
-			}
+			modelObsList.forEach(obs -> oldModel.removeObs(obs));
 		}
 		this.model = model;
 		if (model != null) {
 			model.addObs(modelObs);
-			for (PSliderModelObs obs : modelObsList) {
-				model.addObs(obs);
-			}
+			modelObsList.forEach(obs -> model.addObs(obs));
 		}
 		fireReRenderEvent();
 	}

@@ -7,7 +7,7 @@ import java.util.List;
 import edu.udo.piq.components.collections.PSelectionComponent;
 import edu.udo.piq.components.popup.PPopup;
 import edu.udo.piq.tools.ImmutablePPoint;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 
 public interface PMouse {
 	
@@ -142,7 +142,7 @@ public interface PMouse {
 	 * 
 	 * @return the {@link PComponent} that is positioned at this {@link PMouse PMouses} x- and y-coordinates or null
 	 * @see PComponent#getClippedBounds()
-	 * @see PCompUtil#getComponentAt(PComponent, int, int)
+	 * @see PiqUtil#getComponentAt(PComponent, int, int)
 	 * @see PLayout#getChildAt(int, int)
 	 */
 	public PComponent getComponentAtMouse();

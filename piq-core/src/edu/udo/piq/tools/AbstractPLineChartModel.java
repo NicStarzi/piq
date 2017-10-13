@@ -3,12 +3,12 @@ package edu.udo.piq.tools;
 import edu.udo.piq.components.charts.PLineChartModel;
 import edu.udo.piq.components.charts.PLineChartModelObs;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 
 public abstract class AbstractPLineChartModel implements PLineChartModel {
 	
 	protected final ObserverList<PLineChartModelObs> obsList
-		= PCompUtil.createDefaultObserverList();
+		= PiqUtil.createDefaultObserverList();
 	
 	public boolean canAddDataPoint(Object value) {
 		return canAddDataPoint(getDataCount(), value);

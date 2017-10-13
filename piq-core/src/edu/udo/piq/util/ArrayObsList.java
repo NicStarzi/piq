@@ -1,10 +1,6 @@
 package edu.udo.piq.util;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
 
 /**
  * An implementation of {@link ObserverList} that uses an
@@ -180,9 +176,9 @@ public class ArrayObsList<E> implements ObserverList<E> {
 			if (arr[i] != null && modTimeStamp[i] <= modCountNow) {
 				try {
 					msg.notifyObs((E) arr[i]);
-				} catch (Exception e) {
-					if (PGuiUtil.getGlobalExceptionHandler() != null) {
-						PGuiUtil.getGlobalExceptionHandler().onException(e);
+				} catch (Throwable e) {
+					if (PiqUtil.getStaticExceptionHandler() != null) {
+						PiqUtil.getStaticExceptionHandler().accept(e);
 					} else {
 						e.printStackTrace();
 					}
@@ -192,55 +188,55 @@ public class ArrayObsList<E> implements ObserverList<E> {
 		msgCount--;
 	}
 	
-	@Override
-	public Iterator<E> iterator() {
-		if (isEmpty()) {
-			List<E> emptyList = Collections.emptyList();
-			return emptyList.iterator();
-		}
-		return new ArrayObsListIterator<>(this);
-	}
+//	@Override
+//	public Iterator<E> iterator() {
+//		if (isEmpty()) {
+//			List<E> emptyList = Collections.emptyList();
+//			return emptyList.iterator();
+//		}
+//		return new ArrayObsListIterator<>(this);
+//	}
 
-	private static class ArrayObsListIterator<E> implements Iterator<E> {
-
-		private final ArrayObsList<E>	obsList;
-		private final Object[]			arr;
-		private final long[]			modTimeStamp;
-		private final long				timeStamp;
-		private int						pos;
-
-		public ArrayObsListIterator(ArrayObsList<E> list) {
-			obsList = list;
-			arr = obsList.arr;
-			modTimeStamp = obsList.modTimeStamp;
-			timeStamp = obsList.modCount;
-			obsList.msgCount++;
-			pos = 0;
-		}
-
-		@Override
-		public boolean hasNext() {
-			for (; pos < arr.length; pos++) {
-				if (arr[pos] != null && modTimeStamp[pos] < timeStamp) {
-					return true;
-				}
-			}
-			return false;
-		}
-
-		@Override
-		@SuppressWarnings("unchecked")
-		public E next() {
-			if (!hasNext()) {
-				throw new NoSuchElementException();
-			}
-			E next = (E) arr[pos++];
-			if (!hasNext()) {
-				obsList.msgCount--;
-			}
-			return next;
-		}
-
-	}
+//	private static class ArrayObsListIterator<E> implements Iterator<E> {
+//
+//		private final ArrayObsList<E>	obsList;
+//		private final Object[]			arr;
+//		private final long[]			modTimeStamp;
+//		private final long				timeStamp;
+//		private int						pos;
+//
+//		public ArrayObsListIterator(ArrayObsList<E> list) {
+//			obsList = list;
+//			arr = obsList.arr;
+//			modTimeStamp = obsList.modTimeStamp;
+//			timeStamp = obsList.modCount;
+//			obsList.msgCount++;
+//			pos = 0;
+//		}
+//
+//		@Override
+//		public boolean hasNext() {
+//			for (; pos < arr.length; pos++) {
+//				if (arr[pos] != null && modTimeStamp[pos] < timeStamp) {
+//					return true;
+//				}
+//			}
+//			return false;
+//		}
+//
+//		@Override
+//		@SuppressWarnings("unchecked")
+//		public E next() {
+//			if (!hasNext()) {
+//				throw new NoSuchElementException();
+//			}
+//			E next = (E) arr[pos++];
+//			if (!hasNext()) {
+//				obsList.msgCount--;
+//			}
+//			return next;
+//		}
+//
+//	}
 	
 }

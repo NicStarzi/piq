@@ -3,7 +3,7 @@ package edu.udo.piq.components.defaults;
 import edu.udo.piq.components.PProgressBarModel;
 import edu.udo.piq.components.PProgressBarModelObs;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 
 public class DefaultPProgressBarModel implements PProgressBarModel {
 	
@@ -11,7 +11,7 @@ public class DefaultPProgressBarModel implements PProgressBarModel {
 	public static final int DEFAULT_VALUE = 0;
 	
 	protected final ObserverList<PProgressBarModelObs> obsList
-		= PCompUtil.createDefaultObserverList();
+		= PiqUtil.createDefaultObserverList();
 	private int maxValue = DEFAULT_MAX_VALUE;
 	private int value = DEFAULT_VALUE;
 	

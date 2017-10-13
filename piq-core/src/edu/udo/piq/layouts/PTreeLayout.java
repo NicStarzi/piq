@@ -18,7 +18,7 @@ import edu.udo.piq.components.collections.PTreeIndex;
 import edu.udo.piq.tools.AbstractMapPLayout;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 import edu.udo.piq.util.ThrowException;
 
 public class PTreeLayout extends AbstractMapPLayout implements PReadOnlyLayout {
@@ -67,7 +67,7 @@ public class PTreeLayout extends AbstractMapPLayout implements PReadOnlyLayout {
 	public static final int DEFAULT_GAP = 2;
 	
 	protected final ObserverList<PTreeLayoutObs> obsList =
-			PCompUtil.createDefaultObserverList();
+			PiqUtil.createDefaultObserverList();
 	protected final Map<PComponent, List<PComponent>> childMap = new HashMap<>();
 	protected final List<LayoutData> layoutCache = new ArrayList<>(20);
 	protected PComponent rootComp;

@@ -17,7 +17,7 @@ import edu.udo.piq.layouts.PRootLayout;
 import edu.udo.piq.layouts.PRootLayout.Constraint;
 import edu.udo.piq.tools.AbstractPTextComponent;
 import edu.udo.piq.util.DepthFirstDescendantIterator;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 
 /**
  * The root of a GUI tree. Such a root is also a {@link PComponent}.<br>
@@ -246,7 +246,7 @@ public interface PRoot extends PComponent {
 	 * @param component		the component that needs re-rendering
 	 * @author Nic
 	 * @see PRenderer
-	 * @see PCompUtil#fireReRenderEventFor(PComponent)
+	 * @see PiqUtil#fireReRenderEventFor(PComponent)
 	 */
 	public void scheduleReRender(PComponent component);
 	

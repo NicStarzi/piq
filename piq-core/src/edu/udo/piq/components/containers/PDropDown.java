@@ -30,11 +30,11 @@ import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.tools.MutablePSize;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 
 public class PDropDown extends AbstractPInputLayoutOwner {
 	
-	protected final ObserverList<PDropDownObs> obsList = PCompUtil.createDefaultObserverList();
+	protected final ObserverList<PDropDownObs> obsList = PiqUtil.createDefaultObserverList();
 	protected final PMouseObs mouseObs = new PMouseObs() {
 		@Override
 		public void onButtonTriggered(PMouse mouse, MouseButton btn, int clickCount) {

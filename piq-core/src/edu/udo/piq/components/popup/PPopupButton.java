@@ -16,16 +16,16 @@ import edu.udo.piq.layouts.PAnchorLayout;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 
 public class PPopupButton extends AbstractPLayoutOwner implements PPopupComponent, PClickable, PGlobalEventGenerator {
 	
 	public static final PColor DEFAULT_HIGHLIGHT_COLOR = PColor.BLUE;
 	
 	protected final ObserverList<PClickObs> obsListClick
-	= PCompUtil.createDefaultObserverList();
+	= PiqUtil.createDefaultObserverList();
 	protected final ObserverList<PPopupComponentObs> obsListPopup
-	= PCompUtil.createDefaultObserverList();
+	= PiqUtil.createDefaultObserverList();
 	protected PGlobalEventProvider globEvProv;
 	protected boolean enabled = true;
 	protected boolean pressed;
@@ -199,9 +199,7 @@ public class PPopupButton extends AbstractPLayoutOwner implements PPopupComponen
 	protected void onChildAdded(PComponent child, Object constraint) {
 		if (child instanceof PPopupComponent) {
 			PPopupComponent popupChild = (PPopupComponent) child;
-			for (PPopupComponentObs obs : obsListPopup) {
-				popupChild.addObs(obs);
-			}
+			obsListPopup.forEach(obs -> popupChild.addObs(obs));
 		}
 	}
 	
@@ -209,9 +207,7 @@ public class PPopupButton extends AbstractPLayoutOwner implements PPopupComponen
 	protected void onChildRemoved(PComponent child, Object constraint) {
 		if (child instanceof PPopupComponent) {
 			PPopupComponent popupChild = (PPopupComponent) child;
-			for (PPopupComponentObs obs : obsListPopup) {
-				popupChild.removeObs(obs);
-			}
+			obsListPopup.forEach(obs -> popupChild.removeObs(obs));
 		}
 	}
 	

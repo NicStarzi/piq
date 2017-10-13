@@ -5,13 +5,13 @@ import java.util.ArrayList;
 import edu.udo.piq.components.charts.PBarChartModel;
 import edu.udo.piq.components.charts.PBarChartModelObs;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 import edu.udo.piq.util.ThrowException;
 
 public class DefaultPBarChartModel implements PBarChartModel {
 	
 	protected final ObserverList<PBarChartModelObs> obsList
-		= PCompUtil.createDefaultObserverList();
+		= PiqUtil.createDefaultObserverList();
 	protected final ArrayList<Integer> barValues = new ArrayList<>();
 //	private final int[] barHeights;
 	

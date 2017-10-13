@@ -3,12 +3,12 @@ package edu.udo.piq.components.defaults;
 import edu.udo.piq.components.PSliderModel;
 import edu.udo.piq.components.PSliderModelObs;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 
 public class DefaultPSliderModel implements PSliderModel {
 	
 	protected final ObserverList<PSliderModelObs> obsList
-		= PCompUtil.createDefaultObserverList();
+		= PiqUtil.createDefaultObserverList();
 	protected boolean pressed;
 	protected int value = 0;
 	protected int max = 100;

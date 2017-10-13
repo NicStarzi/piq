@@ -20,7 +20,7 @@ import edu.udo.piq.components.textbased.PTextSelection;
 import edu.udo.piq.components.textbased.PTextSelector;
 import edu.udo.piq.components.util.SymbolicFontKey;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 
 public abstract class AbstractPTextComponent
 	extends AbstractPInputComponent
@@ -33,9 +33,9 @@ public abstract class AbstractPTextComponent
 	protected static final PColor DEFAULT_SELECTION_BACKGROUND_COLOR = PColor.BLUE;
 	
 	protected final ObserverList<PTextModelObs> modelObsList
-		= PCompUtil.createDefaultObserverList();
+		= PiqUtil.createDefaultObserverList();
 	protected final ObserverList<PSelectionObs> selectionObsList
-		= PCompUtil.createDefaultObserverList();
+		= PiqUtil.createDefaultObserverList();
 	protected final PTextModelObs modelObs = (mdl) -> AbstractPTextComponent.this.onTextChanged();
 	protected final PSelectionObs selectionObs = new PSelectionObs() {
 		@Override

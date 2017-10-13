@@ -4,12 +4,12 @@ import edu.udo.piq.components.PRadioButtonModel;
 import edu.udo.piq.components.PRadioButtonModelObs;
 import edu.udo.piq.components.util.PModelHistory;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 
 public class DefaultPRadioButtonModel implements PRadioButtonModel {
 	
 	protected final ObserverList<PRadioButtonModelObs> obsList
-		= PCompUtil.createDefaultObserverList();
+		= PiqUtil.createDefaultObserverList();
 	protected boolean selected;
 	
 	public void setSelected(final boolean isSelected) {

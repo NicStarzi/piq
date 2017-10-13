@@ -1,10 +1,13 @@
 package edu.udo.piq.components.popup;
 
+import java.util.function.Function;
+
 import edu.udo.piq.PBorder;
 import edu.udo.piq.PComponent;
 
-public interface PPopupBorderProvider {
+public interface PPopupBorderProvider extends Function<PComponent, PBorder> {
 	
-	public PBorder createBorder(PComponent component);
+	@Override
+	public PBorder apply(PComponent component);
 	
 }

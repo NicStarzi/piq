@@ -20,7 +20,7 @@ import edu.udo.piq.layouts.PTupleLayout;
 import edu.udo.piq.layouts.PTupleLayout.Constraint;
 import edu.udo.piq.tools.AbstractPInputLayoutOwner;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 import edu.udo.piq.util.ThrowException;
 
 public class PRadioButtonTuple extends AbstractPInputLayoutOwner implements PClickable, PGlobalEventGenerator {
@@ -40,7 +40,7 @@ public class PRadioButtonTuple extends AbstractPInputLayoutOwner implements PCli
 	}
 	
 	protected final ObserverList<PClickObs> obsList
-	= PCompUtil.createDefaultObserverList();
+	= PiqUtil.createDefaultObserverList();
 	protected final PClickObs radBtnObs = (btn) -> onRadioBtnClick();
 	private PGlobalEventProvider globEvProv;
 	

@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.ConcurrentModificationException;
 
 import edu.udo.piq.tools.AbstractMapPLayout;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 
 /**
  * A layout defines how components are added to a container in a GUI.<br>
@@ -15,7 +15,7 @@ import edu.udo.piq.util.PCompUtil;
  * pattern. All implementations of PLayout should provide a way of adding
  * and removing observers without throwing {@link ConcurrentModificationException}s
  * if an observer is added / removed while an event is fired. The use of the
- * {@link PCompUtil#createDefaultObserverList()} is encouraged but is not enforced.<br>
+ * {@link PiqUtil#createDefaultObserverList()} is encouraged but is not enforced.<br>
  * <br>
  * For an easy to use abstract implementation of the PLayout interface
  * have a look at the {@link AbstractMapPLayout} class.
@@ -203,7 +203,7 @@ public interface PReadOnlyLayout extends PDisposable, PStyleable<PStyleLayout> {
 	 * @see #getChildBounds(PComponent)
 	 * @see PComponent#getDefaultPreferredSize()
 	 * @see PDesign#getPreferredSize(PComponent)
-	 * @see PCompUtil#getPreferredSizeOf(PComponent)
+	 * @see PiqUtil#getPreferredSizeOf(PComponent)
 	 */
 	public PSize getPreferredSize();
 	

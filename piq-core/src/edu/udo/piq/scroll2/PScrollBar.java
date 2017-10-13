@@ -20,7 +20,7 @@ import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 import edu.udo.piq.util.ThrowException;
 
 public class PScrollBar extends AbstractPLayoutOwner {
@@ -253,7 +253,7 @@ public class PScrollBar extends AbstractPLayoutOwner {
 		}
 		
 		protected final ObserverList<PClickObs> obsList
-			= PCompUtil.createDefaultObserverList();
+			= PiqUtil.createDefaultObserverList();
 		protected final PTimer repeatTimer;
 		protected final Axis scrollBarAxis;
 		protected final boolean thisIsIncr;

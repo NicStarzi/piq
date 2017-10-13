@@ -8,7 +8,7 @@ import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PSize;
 import edu.udo.piq.PStyleLayout;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 import edu.udo.piq.util.ThrowException;
 
 public abstract class AbstractPLayout implements PLayout {
@@ -27,7 +27,7 @@ public abstract class AbstractPLayout implements PLayout {
 	};
 	
 	protected final ObserverList<PLayoutObs> obsList
-		= PCompUtil.createDefaultObserverList();
+		= PiqUtil.createDefaultObserverList();
 	protected final PComponent owner;
 	private PStyleLayout style;
 	private Object styleID = getClass();

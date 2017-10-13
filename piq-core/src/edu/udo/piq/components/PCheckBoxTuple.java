@@ -20,7 +20,7 @@ import edu.udo.piq.layouts.PTupleLayout;
 import edu.udo.piq.layouts.PTupleLayout.Constraint;
 import edu.udo.piq.tools.AbstractPInputLayoutOwner;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 
 public class PCheckBoxTuple extends AbstractPInputLayoutOwner implements PClickable, PGlobalEventGenerator {
 	
@@ -39,7 +39,7 @@ public class PCheckBoxTuple extends AbstractPInputLayoutOwner implements PClicka
 	}
 	
 	protected final ObserverList<PClickObs> obsList
-	= PCompUtil.createDefaultObserverList();
+	= PiqUtil.createDefaultObserverList();
 	private final PClickObs chkBxObs = (chkBx) -> PCheckBoxTuple.this.onCheckBoxClick();
 	private PGlobalEventProvider globEvProv;
 	

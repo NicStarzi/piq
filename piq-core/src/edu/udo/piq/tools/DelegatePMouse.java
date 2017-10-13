@@ -6,13 +6,13 @@ import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 import edu.udo.piq.util.ThrowException;
 
 public class DelegatePMouse implements PMouse {
 	
 	protected final ObserverList<PMouseObs> obsList
-		= PCompUtil.createDefaultObserverList();
+		= PiqUtil.createDefaultObserverList();
 	protected final PMouseObs delegateObs = new PMouseObs() {
 		@Override
 		public void onMouseMoved(PMouse mouse) {
@@ -123,7 +123,7 @@ public class DelegatePMouse implements PMouse {
 			return null;
 		}
 		if (!compAtMouseCacheValid) {
-			compAtMouseCache = PCompUtil.getComponentAt(root, delegate.getX(), delegate.getY());
+			compAtMouseCache = PiqUtil.getComponentAt(root, delegate.getX(), delegate.getY());
 			compAtMouseCacheValid = true;
 		}
 		return compAtMouseCache;

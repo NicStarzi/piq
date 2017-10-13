@@ -11,7 +11,7 @@ import edu.udo.piq.layouts.AlignmentX;
 import edu.udo.piq.layouts.AlignmentY;
 import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 
 public class PPicture extends AbstractPComponent {
 	
@@ -19,7 +19,7 @@ public class PPicture extends AbstractPComponent {
 	public static final AlignmentY DEFAULT_ALIGNMENT_Y = AlignmentY.CENTER;
 	
 	protected final ObserverList<PPictureModelObs> modelObsList
-		= PCompUtil.createDefaultObserverList();
+		= PiqUtil.createDefaultObserverList();
 	protected final PPictureModelObs modelObs = model -> PPicture.this.onImagePathChanged();
 	protected PPictureModel model;
 	protected AlignmentX alignX = DEFAULT_ALIGNMENT_X;
@@ -39,16 +39,12 @@ public class PPicture extends AbstractPComponent {
 		PPictureModel oldModel = getModel();
 		if (oldModel != null) {
 			oldModel.removeObs(modelObs);
-			for (PPictureModelObs obs : modelObsList) {
-				oldModel.removeObs(obs);
-			}
+			modelObsList.forEach(obs -> oldModel.removeObs(obs));
 		}
 		this.model = model;
 		if (model != null) {
 			model.addObs(modelObs);
-			for (PPictureModelObs obs : modelObsList) {
-				model.addObs(obs);
-			}
+			modelObsList.forEach(obs -> model.addObs(obs));
 		}
 		firePreferredSizeChangedEvent();
 		fireReRenderEvent();

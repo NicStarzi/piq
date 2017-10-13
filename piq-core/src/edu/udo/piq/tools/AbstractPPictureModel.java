@@ -3,12 +3,12 @@ package edu.udo.piq.tools;
 import edu.udo.piq.components.PPictureModel;
 import edu.udo.piq.components.PPictureModelObs;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 
 public abstract class AbstractPPictureModel implements PPictureModel {
 	
 	protected final ObserverList<PPictureModelObs> obsList
-		= PCompUtil.createDefaultObserverList();
+		= PiqUtil.createDefaultObserverList();
 	
 	public void addObs(PPictureModelObs obs) {
 		obsList.add(obs);

@@ -1,6 +1,8 @@
 package edu.udo.piq.util;
 
-public interface ObserverList<E> extends Iterable<E> {//extends Iterable<E>
+import java.util.function.Consumer;
+
+public interface ObserverList<E> {
 	
 	/**
 	 * Adds the new observer to this {@link ObserverList}. If an observer is
@@ -60,6 +62,10 @@ public interface ObserverList<E> extends Iterable<E> {//extends Iterable<E>
 	 * @throws NullPointerException		if msg is null
 	 */
 	public void fireEvent(Message<E> msg);
+	
+	public default void forEach(Consumer<E> action) {
+		fireEvent(obs -> action.accept(obs));
+	}
 	
 	/**
 	 * This functional interface represents the message that is to be sent to all

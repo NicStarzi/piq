@@ -12,7 +12,7 @@ public class MovingPLayout extends AbstractMapPLayout {
 	
 	protected final PTimer timer = new PTimer(MovingPLayout.this::onTimerTick);
 	private final PComponentObs ownerObs = new PComponentObs() {
-		public void onRootChanged(PComponent component, PRoot currentRoot) {
+		public void onRootChanged(PComponent component, PRoot currentRoot, PRoot oldRoot) {
 			if (currentRoot == null) {
 				timer.stop();
 			} else {
@@ -63,11 +63,11 @@ public class MovingPLayout extends AbstractMapPLayout {
 		return radius;
 	}
 	
-	public void setMoveUpdateDelay(int value) {
+	public void setMoveUpdateDelay(double value) {
 		timer.setDelay(value);
 	}
 	
-	public int getMoveUpdateDelay() {
+	public double getMoveUpdateDelay() {
 		return timer.getDelay();
 	}
 	

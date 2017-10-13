@@ -38,7 +38,7 @@ import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PRootLayout;
 import edu.udo.piq.layouts.PRootLayout.Constraint;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 import edu.udo.piq.util.ThrowException;
 
 public abstract class AbstractPRoot implements PRoot {
@@ -56,8 +56,8 @@ public abstract class AbstractPRoot implements PRoot {
 		return depth1 - depth2;
 	};
 	
-	protected final ObserverList<PGlobalEventObs> globalObsList = PCompUtil.createDefaultObserverList();
-	protected final ObserverList<PRootObs> rootObsList = PCompUtil.createDefaultObserverList();
+	protected final ObserverList<PGlobalEventObs> globalObsList = PiqUtil.createDefaultObserverList();
+	protected final ObserverList<PRootObs> rootObsList = PiqUtil.createDefaultObserverList();
 	protected final PRootLayout layout;
 	protected PStyleSheet styleSheet = new AbstractPStyleSheet();
 	protected PMouse mouse;
@@ -80,8 +80,8 @@ public abstract class AbstractPRoot implements PRoot {
 			scheduleLayout(child);
 		}
 	};
-	protected final ObserverList<PComponentObs> compObsList = PCompUtil.createDefaultObserverList();
-	protected final ObserverList<PFocusObs> focusObsList = PCompUtil.createDefaultObserverList();
+	protected final ObserverList<PComponentObs> compObsList = PiqUtil.createDefaultObserverList();
+	protected final ObserverList<PFocusObs> focusObsList = PiqUtil.createDefaultObserverList();
 	protected final Set<PTimer> timerSet = new HashSet<>();
 	protected final List<Runnable> timerSetWriteBuffer = new ArrayList<>();
 	protected Set<PComponent> reLayOutCompsFront = new TreeSet<>(COMPONENT_DEPTH_COMPARATOR);
@@ -244,7 +244,7 @@ public abstract class AbstractPRoot implements PRoot {
 				// We check to see whether the component is still part of this
 				// GUI tree (might have been removed by now)
 				if (child.getRoot() == root) {
-					PBounds clipBnds = PCompUtil.fillClippedBounds(tmpBnds, child);
+					PBounds clipBnds = PiqUtil.fillClippedBounds(tmpBnds, child);
 					// If the clipped bounds are null the component is
 					// completely
 					// concealed and does not need to be rendered

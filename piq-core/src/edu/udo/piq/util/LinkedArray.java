@@ -37,7 +37,7 @@ public class LinkedArray<E> implements Iterable<E> {
 			}
 		}
 		if (size >= buffer.length / 2) {
-			// tight packed buffer
+			// tightly packed buffer
 			for (int i = 0; i < buffer.length; i++) {
 				if (buffer[i] == null) {
 					if (obj == null) {

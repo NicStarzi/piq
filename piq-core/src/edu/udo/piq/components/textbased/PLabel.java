@@ -11,7 +11,7 @@ import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.components.util.SymbolicFontKey;
 import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 
 public class PLabel extends AbstractPComponent {
 	
@@ -19,7 +19,7 @@ public class PLabel extends AbstractPComponent {
 	protected static final PColor DEFAULT_TEXT_COLOR = PColor.BLACK;
 	
 	protected final ObserverList<PTextModelObs> modelObsList
-		= PCompUtil.createDefaultObserverList();
+		= PiqUtil.createDefaultObserverList();
 	protected final PTextModelObs modelObs = this::onModelValueChanged;
 	protected PFontResource cachedFont;
 	protected PTextModel model;

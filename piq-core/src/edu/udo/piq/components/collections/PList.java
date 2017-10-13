@@ -32,7 +32,7 @@ import edu.udo.piq.layouts.PListLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
 import edu.udo.piq.tools.AbstractPInputLayoutOwner;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 import edu.udo.piq.util.ThrowException;
 
 public class PList extends AbstractPInputLayoutOwner implements PDropComponent {
@@ -96,8 +96,8 @@ public class PList extends AbstractPInputLayoutOwner implements PDropComponent {
 				&& self.getSelection().getLastSelected() != null;
 	}
 	
-	protected final ObserverList<PModelObs> modelObsList = PCompUtil.createDefaultObserverList();
-	protected final ObserverList<PSelectionObs> selectionObsList = PCompUtil.createDefaultObserverList();
+	protected final ObserverList<PModelObs> modelObsList = PiqUtil.createDefaultObserverList();
+	protected final ObserverList<PSelectionObs> selectionObsList = PiqUtil.createDefaultObserverList();
 	protected final PSelectionObs selectionObs = new PSelectionObs() {
 		
 		@Override
@@ -276,16 +276,12 @@ public class PList extends AbstractPInputLayoutOwner implements PDropComponent {
 		if (getSelection() != null) {
 			getSelection().clearSelection();
 			getSelection().removeObs(selectionObs);
-			for (PSelectionObs obs : selectionObsList) {
-				getSelection().removeObs(obs);
-			}
+			selectionObsList.forEach(obs -> getSelection().removeObs(obs));
 		}
 		selection = listSelection;
 		if (getSelection() != null) {
 			getSelection().addObs(selectionObs);
-			for (PSelectionObs obs : selectionObsList) {
-				getSelection().addObs(obs);
-			}
+			selectionObsList.forEach(obs -> getSelection().addObs(obs));
 		}
 	}
 	
@@ -359,9 +355,7 @@ public class PList extends AbstractPInputLayoutOwner implements PDropComponent {
 	public void setModel(PListModel listModel) {
 		if (getModel() != null) {
 			getModel().removeObs(modelObs);
-			for (PModelObs obs : modelObsList) {
-				getModel().removeObs(obs);
-			}
+			modelObsList.forEach(obs -> getModel().removeObs(obs));
 		}
 		model = listModel;
 		getLayoutInternal().clearChildren();
@@ -369,9 +363,7 @@ public class PList extends AbstractPInputLayoutOwner implements PDropComponent {
 			PListModel model = getModel();
 			
 			model.addObs(modelObs);
-			for (PModelObs obs : modelObsList) {
-				model.addObs(obs);
-			}
+			modelObsList.forEach(obs -> model.addObs(obs));
 			for (PModelIndex index : model) {
 				contentAdded((PListIndex) index, model.get(index));
 			}

@@ -1,7 +1,7 @@
 package edu.udo.piq;
 
 import edu.udo.piq.tools.MutablePSize;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 
 /**
  * This interface defines abstract platform independent font resources.<br>
@@ -55,7 +55,7 @@ public interface PFontResource extends PDisposable {
 	 * @see PComponent#getDefaultPreferredSize()
 	 * @see PDesign#getPreferredSize(PComponent)
 	 * @see PReadOnlyLayout#getPreferredSize()
-	 * @see PCompUtil#getPreferredSizeOf(PComponent)
+	 * @see PiqUtil#getPreferredSizeOf(PComponent)
 	 */
 	public PSize getSize(String text, MutablePSize result);
 	

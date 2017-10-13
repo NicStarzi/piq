@@ -3,12 +3,12 @@ package edu.udo.piq.components.defaults;
 import edu.udo.piq.components.containers.PSplitPanelModel;
 import edu.udo.piq.components.containers.PSplitPanelModelObs;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 
 public class DefaultPSplitPanelModel implements PSplitPanelModel {
 	
 	protected final ObserverList<PSplitPanelModelObs> obsList
-		= PCompUtil.createDefaultObserverList();
+		= PiqUtil.createDefaultObserverList();
 	protected double position;
 	
 	public void setSplitPosition(Object value) {

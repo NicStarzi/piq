@@ -6,14 +6,14 @@ import edu.udo.piq.PMouse;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.components.PCheckBoxTuple;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 
 public class PPopupCheckBox extends PCheckBoxTuple implements PPopupComponent {
 	
 	public static final PColor DEFAULT_HIGHLIGHT_COLOR = PColor.BLUE;
 	
 	protected final ObserverList<PPopupComponentObs> obsList
-			= PCompUtil.createDefaultObserverList();
+			= PiqUtil.createDefaultObserverList();
 	private boolean highlighted;
 	
 	public PPopupCheckBox(Object labelModelValue) {
@@ -83,18 +83,14 @@ public class PPopupCheckBox extends PCheckBoxTuple implements PPopupComponent {
 	protected void onChildAdded(PComponent child, Object constraint) {
 		if (obsList != null && child instanceof PPopupComponent) {
 			PPopupComponent popupChild = (PPopupComponent) child;
-			for (PPopupComponentObs obs : obsList) {
-				popupChild.addObs(obs);
-			}
+			obsList.forEach(obs -> popupChild.addObs(obs));
 		}
 	}
 	
 	protected void onChildRemoved(PComponent child, Object constraint) {
 		if (obsList != null && child instanceof PPopupComponent) {
 			PPopupComponent popupChild = (PPopupComponent) child;
-			for (PPopupComponentObs obs : obsList) {
-				popupChild.removeObs(obs);
-			}
+			obsList.forEach(obs -> popupChild.removeObs(obs));
 		}
 	}
 	

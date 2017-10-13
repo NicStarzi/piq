@@ -6,12 +6,12 @@ import edu.udo.piq.components.collections.PModelIndex;
 import edu.udo.piq.components.collections.PSelection;
 import edu.udo.piq.components.collections.PSelectionObs;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 
 public abstract class AbstractPSelection implements PSelection {
 	
 	protected final ObserverList<PSelectionObs> obsList
-		= PCompUtil.createDefaultObserverList();
+		= PiqUtil.createDefaultObserverList();
 	protected PModelIndex lastSelected = null;
 	
 	protected void setLastSelected(PModelIndex index) {

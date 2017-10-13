@@ -6,11 +6,11 @@ import edu.udo.piq.PBorder;
 import edu.udo.piq.PBorderObs;
 import edu.udo.piq.PStyleBorder;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 
 public abstract class AbstractPBorder implements PBorder {
 	
-	protected final ObserverList<PBorderObs> obsList = PCompUtil.createDefaultObserverList();
+	protected final ObserverList<PBorderObs> obsList = PiqUtil.createDefaultObserverList();
 	protected PStyleBorder style;
 	private Object styleID = getClass();
 	

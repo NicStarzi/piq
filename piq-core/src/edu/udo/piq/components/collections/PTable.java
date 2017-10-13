@@ -22,7 +22,7 @@ import edu.udo.piq.components.defaults.ReRenderPFocusObs;
 import edu.udo.piq.layouts.PTableLayout3;
 import edu.udo.piq.tools.AbstractPInputLayoutOwner;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 
 public class PTable extends AbstractPInputLayoutOwner
 	implements PDropComponent
@@ -34,9 +34,9 @@ public class PTable extends AbstractPInputLayoutOwner
 	protected static final int DRAG_AND_DROP_DISTANCE = 20;
 	
 	protected final ObserverList<PModelObs> modelObsList
-		= PCompUtil.createDefaultObserverList();
+		= PiqUtil.createDefaultObserverList();
 	protected final ObserverList<PSelectionObs> selectionObsList
-		= PCompUtil.createDefaultObserverList();
+		= PiqUtil.createDefaultObserverList();
 	protected final PSelectionObs selectionObs = new PSelectionObs() {
 		@Override
 		public void onSelectionAdded(PSelection selection, PModelIndex index) {
@@ -165,16 +165,12 @@ public class PTable extends AbstractPInputLayoutOwner
 		if (getSelection() != null) {
 			getSelection().clearSelection();
 			getSelection().removeObs(selectionObs);
-			for (PSelectionObs obs : selectionObsList) {
-				getSelection().removeObs(obs);
-			}
+			selectionObsList.forEach(obs -> getSelection().removeObs(obs));
 		}
 		selection = listSelection;
 		if (getSelection() != null) {
 			getSelection().addObs(selectionObs);
-			for (PSelectionObs obs : selectionObsList) {
-				getSelection().addObs(obs);
-			}
+			selectionObsList.forEach(obs -> getSelection().addObs(obs));
 		}
 	}
 	
@@ -186,9 +182,7 @@ public class PTable extends AbstractPInputLayoutOwner
 	public void setModel(PTableModel listModel) {
 		if (getModel() != null) {
 			getModel().removeObs(modelObs);
-			for (PModelObs obs : modelObsList) {
-				getModel().removeObs(obs);
-			}
+			modelObsList.forEach(obs -> getModel().removeObs(obs));
 		}
 		model = listModel;
 		rebuildCellComponents();
@@ -196,9 +190,7 @@ public class PTable extends AbstractPInputLayoutOwner
 			PTableModel model = getModel();
 			
 			model.addObs(modelObs);
-			for (PModelObs obs : modelObsList) {
-				model.addObs(obs);
-			}
+			modelObsList.forEach(obs -> model.addObs(obs));
 		}
 	}
 	

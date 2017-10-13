@@ -18,12 +18,12 @@ import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 
 public class PSplitPanel extends AbstractPLayoutOwner {
 
 	protected final PSplitPanelDivider divider;
-	protected final ObserverList<PSplitPanelObs> obsList = PCompUtil.createDefaultObserverList();
+	protected final ObserverList<PSplitPanelObs> obsList = PiqUtil.createDefaultObserverList();
 	protected final PMouseObs mouseObs = new PMouseObs() {
 		@Override
 		public void onMouseMoved(PMouse mouse) {

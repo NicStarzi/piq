@@ -14,7 +14,7 @@ public enum AlignmentX {
 	},
 	CENTER {
 		public int getLeftX(int minX, int maxWidth, int prefWidth) {
-			return minX + maxWidth / 2 - prefWidth / 2;
+			return minX + (maxWidth - prefWidth) / 2;
 		}
 	},
 	FILL {

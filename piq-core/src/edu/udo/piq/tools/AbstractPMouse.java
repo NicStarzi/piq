@@ -3,12 +3,12 @@ package edu.udo.piq.tools;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 
 public abstract class AbstractPMouse implements PMouse {
 	
 	protected final ObserverList<PMouseObs> obsList
-	= PCompUtil.createDefaultObserverList();
+		= PiqUtil.createDefaultObserverList();
 	
 	@Override
 	public void addObs(PMouseObs obs) {

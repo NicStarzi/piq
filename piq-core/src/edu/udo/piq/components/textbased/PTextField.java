@@ -19,7 +19,7 @@ import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.tools.MutablePBounds;
 import edu.udo.piq.tools.MutablePSize;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 import edu.udo.piq.util.ThrowException;
 
 public class PTextField extends AbstractPTextComponent {
@@ -30,7 +30,7 @@ public class PTextField extends AbstractPTextComponent {
 	protected static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(200, 24);
 	
 	protected final ObserverList<PTextFieldObs> obsList =
-			PCompUtil.createDefaultObserverList();
+			PiqUtil.createDefaultObserverList();
 	protected final MutablePSize prefSize = new MutablePSize(200, 22);
 	protected PTextIndexTableSingleLine idxTab = new PTextIndexTableSingleLine();
 	protected PInsets insets;

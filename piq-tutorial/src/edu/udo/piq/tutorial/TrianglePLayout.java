@@ -60,10 +60,11 @@ public class TrianglePLayout extends AbstractEnumPLayout<Pos> {
 		
 		int wTop = sizeTop.getWidth();
 		int wBtm = sizeLft.getWidth() + sizeRgt.getWidth();
-		
 		int prefW = Math.max(wTop, wBtm);
-		int prefH = sizeTop.getHeight() + 
-				Math.max(sizeLft.getHeight(), sizeRgt.getHeight());
+		
+		int hTop = sizeTop.getHeight();
+		int hBtm = Math.max(sizeLft.getHeight(), sizeRgt.getHeight());
+		int prefH = hTop + hBtm;
 		
 		prefSize.setWidth(prefW);
 		prefSize.setHeight(prefH);

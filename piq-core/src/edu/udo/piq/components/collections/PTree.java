@@ -32,7 +32,7 @@ import edu.udo.piq.layouts.PTreeLayout;
 import edu.udo.piq.layouts.PTreeLayout.PTreeLayoutObs;
 import edu.udo.piq.tools.AbstractPInputLayoutOwner;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 import edu.udo.piq.util.ThrowException;
 
 public class PTree extends AbstractPInputLayoutOwner
@@ -66,9 +66,9 @@ public class PTree extends AbstractPInputLayoutOwner
 	public static final String INPUT_ID_MOVE_LEFT = "moveLeft";
 	
 	protected final ObserverList<PModelObs> obsListModel
-		= PCompUtil.createDefaultObserverList();
+		= PiqUtil.createDefaultObserverList();
 	protected final ObserverList<PSelectionObs> obsListSelection
-		= PCompUtil.createDefaultObserverList();
+		= PiqUtil.createDefaultObserverList();
 	protected final Set<PTreeIndex> hiddenIdxSet = new HashSet<>();
 	protected final PSelectionObs selectionObs = new PSelectionObs() {
 		@Override
@@ -194,16 +194,12 @@ public class PTree extends AbstractPInputLayoutOwner
 		if (getSelection() != null) {
 			getSelection().clearSelection();
 			getSelection().removeObs(selectionObs);
-			for (PSelectionObs obs : obsListSelection) {
-				getSelection().removeObs(obs);
-			}
+			obsListSelection.forEach(obs -> getSelection().removeObs(obs));
 		}
 		this.selection = selection;
 		if (getSelection() != null) {
 			getSelection().addObs(selectionObs);
-			for (PSelectionObs obs : obsListSelection) {
-				getSelection().addObs(obs);
-			}
+			obsListSelection.forEach(obs -> getSelection().addObs(obs));
 		}
 	}
 	
@@ -215,9 +211,7 @@ public class PTree extends AbstractPInputLayoutOwner
 	public void setModel(PTreeModel treeModel) {
 		if (getModel() != null) {
 			getModel().removeObs(modelObs);
-			for (PModelObs obs : obsListModel) {
-				getModel().removeObs(obs);
-			}
+			obsListModel.forEach(obs -> getModel().removeObs(obs));
 		}
 		model = treeModel;
 		getLayoutInternal().clearChildren();
@@ -225,9 +219,7 @@ public class PTree extends AbstractPInputLayoutOwner
 			PTreeModel model = getModel();
 			
 			model.addObs(modelObs);
-			for (PModelObs obs : obsListModel) {
-				model.addObs(obs);
-			}
+			obsListModel.forEach(obs -> model.addObs(obs));
 			for (PModelIndex index : model.createBreadthOrderIterator()) {
 				addContent((PTreeIndex) index, model.get(index));
 			}

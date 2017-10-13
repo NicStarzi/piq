@@ -3,12 +3,12 @@ package edu.udo.piq.tools;
 import edu.udo.piq.components.PSpinnerModel;
 import edu.udo.piq.components.PSpinnerModelObs;
 import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 
 public abstract class AbstractPSpinnerModel implements PSpinnerModel {
 	
 	protected final ObserverList<PSpinnerModelObs> obsList = 
-			PCompUtil.createDefaultObserverList();
+			PiqUtil.createDefaultObserverList();
 	
 	public void addObs(PSpinnerModelObs obs) {
 		obsList.add(obs);

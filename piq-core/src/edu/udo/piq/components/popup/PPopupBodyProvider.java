@@ -1,10 +1,13 @@
 package edu.udo.piq.components.popup;
 
+import java.util.function.Function;
+
 import edu.udo.piq.PComponent;
 import edu.udo.piq.components.containers.PListPanel;
 
-public interface PPopupBodyProvider {
+public interface PPopupBodyProvider extends Function<PComponent, PListPanel> {
 	
-	public PListPanel createBody(PComponent component);
+	@Override
+	public PListPanel apply(PComponent t);
 	
 }

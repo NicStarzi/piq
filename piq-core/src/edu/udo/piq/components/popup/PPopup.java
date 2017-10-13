@@ -126,8 +126,8 @@ public class PPopup {
 			/*
 			 * This should not be possible since the showPopup method
 			 * is called from a mouse event.
-			 * If this happened a virtual mouse event was somehow
-			 * created by the user.
+			 * If we reach this line of code, a virtual mouse event must 
+			 * have been created by the user.
 			 */
 			return;
 		}
@@ -135,11 +135,11 @@ public class PPopup {
 		ThrowException.ifNull(getBorderProvider(), "getBorderProvider() == null");
 		ThrowException.ifNull(getOptionsProvider(), "getPopupProvider() == null");
 		
-		PListPanel body = getBodyProvider().createBody(owner);
+		PListPanel body = getBodyProvider().apply(owner);
 		if (body == null) {
 			return;
 		}
-		List<PComponent> options = getOptionsProvider().createOptions(owner);
+		List<PComponent> options = getOptionsProvider().apply(owner);
 		if (options.isEmpty()) {
 			return;
 		}
@@ -158,7 +158,7 @@ public class PPopup {
 		PRootOverlay overlay = root.getOverlay();
 		
 		popupComp = body;
-		PBorder border = getBorderProvider().createBorder(owner);
+		PBorder border = getBorderProvider().apply(owner);
 		if (border != null) {
 			popupComp.setBorder(border);
 		}

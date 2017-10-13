@@ -3,7 +3,6 @@ package edu.udo.piq.tutorial;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PFontResource;
-import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
@@ -11,15 +10,13 @@ import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
 import edu.udo.piq.PTimer;
+import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.MutablePSize;
 
 public class ClickSpeedTester extends AbstractPComponent {
 	
-	private static final String	DEFAULT_FONT_NAME = "Arial";
-	private static final int	DEFAULT_FONT_SIZE = 16;
-	private static final Style	DEFAULT_FONT_STYLE = Style.PLAIN;
-	private static final int	DEFAULT_PADDING = 8;
+	private static final int DEFAULT_PADDING = 8;
 	
 	private static final int STATUS_NOT_STARTED	= 0;
 	private static final int STATUS_COUNT_DOWN	= 1;
@@ -32,7 +29,7 @@ public class ClickSpeedTester extends AbstractPComponent {
 	private static final int TIME_SHOW_RESULTS = 10;
 	private static final int TIME_SHOW_ERROR = 5;
 	
-	private final MutablePSize prefSize = new MutablePSize();
+	private final MutablePSize tmpSize = new MutablePSize();
 	private final PTimer timer;
 	private int status = STATUS_NOT_STARTED;
 	private int step = -1;
@@ -41,7 +38,7 @@ public class ClickSpeedTester extends AbstractPComponent {
 	
 	public ClickSpeedTester() {
 		addObs(new PMouseObs() {
-			public void onButtonTriggered(PMouse mouse, MouseButton btn) {
+			public void onButtonTriggered(PMouse mouse, MouseButton btn, int clickCount) {
 				if (btn == MouseButton.LEFT && isMouseOver()) {
 					onClick();
 				}
@@ -156,7 +153,7 @@ public class ClickSpeedTester extends AbstractPComponent {
 			return;
 		}
 		String text = getText();
-		PSize textSize = font.getSize(text);
+		PSize textSize = font.getSize(text, tmpSize);
 		int txtX = x + bounds.getWidth() / 2 - textSize.getWidth() / 2;
 		int txtY = y + bounds.getHeight() / 2 - textSize.getHeight() / 2;
 		
@@ -171,7 +168,7 @@ public class ClickSpeedTester extends AbstractPComponent {
 			prefSize.setHeight(DEFAULT_PADDING * 2);
 			return prefSize;
 		}
-		PSize textSize = font.getSize(getText());
+		PSize textSize = font.getSize(getText(), tmpSize);
 		prefSize.setWidth(textSize.getWidth() + DEFAULT_PADDING * 2);
 		prefSize.setHeight(textSize.getHeight() + DEFAULT_PADDING * 2);
 		return prefSize;
@@ -186,8 +183,7 @@ public class ClickSpeedTester extends AbstractPComponent {
 		if (root == null) {
 			return null;
 		}
-		return root.fetchFontResource(DEFAULT_FONT_NAME, 
-				DEFAULT_FONT_SIZE, DEFAULT_FONT_STYLE);
+		return root.fetchFontResource(PLabel.FONT_ID);
 	}
 	
 }

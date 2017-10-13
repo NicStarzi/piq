@@ -26,7 +26,7 @@ public class DnDArea extends AbstractPLayoutOwner {
 		setLayout(new PFreeLayout(this));
 		
 		addObs(new PMouseObs() {
-			public void onButtonTriggered(PMouse mouse, MouseButton btn) {
+			public void onButtonTriggered(PMouse mouse, MouseButton btn, int clickCount) {
 				if (btn != MouseButton.LEFT) {
 					return;
 				}
@@ -37,7 +37,7 @@ public class DnDArea extends AbstractPLayoutOwner {
 				dragY = mouse.getY();
 				dragSelected = dndSup.canDrag(DnDArea.this, dragX, dragY);
 			}
-			public void onButtonReleased(PMouse mouse, MouseButton btn) {
+			public void onButtonReleased(PMouse mouse, MouseButton btn, int clickCount) {
 				if (btn != MouseButton.LEFT) {
 					return;
 				}

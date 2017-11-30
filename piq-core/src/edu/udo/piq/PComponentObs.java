@@ -27,6 +27,9 @@ public interface PComponentObs {
 	 */
 	public default void onPreferredSizeChanged(PComponent component) {}
 	
+	public default void onLayoutChanged(PComponent component, 
+			PReadOnlyLayout currentLayout, PReadOnlyLayout oldLayout) {}
+	
 	/**
 	 * This event is fired when the {@link PBounds} of a {@link PComponent} have changed.<br>
 	 * The bounds of a component change when the component is laid out by its parents

@@ -1,5 +1,6 @@
 package edu.udo.piq.components.containers;
 
+import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.layouts.PListLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
@@ -33,6 +34,10 @@ public class PListPanel extends AbstractPContainer<Integer> {
 	
 	public PListLayout getLayout() {
 		return (PListLayout) super.getLayout();
+	}
+	
+	public PComponent getChild(int index) {
+		return getLayout().getChild(index);
 	}
 	
 	public int getGap() {

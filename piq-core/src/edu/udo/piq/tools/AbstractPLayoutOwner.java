@@ -63,6 +63,7 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 			getLayout().addObs(layoutObs);
 			fireReLayOutEvent();
 		}
+		fireLayoutChangedEvent(oldLayout);
 	}
 	
 	@Override

@@ -89,7 +89,11 @@ public class PGridListLayout extends AbstractMapPLayout {
 	
 	@Override
 	protected void onChildRemoved(PCompInfo removedCompInfo) {
-		PTableCellIndex idx = (PTableCellIndex) removedCompInfo.getConstraint();
+		onChildRemoved(removedCompInfo.getComponent(), removedCompInfo.getConstraint());
+	}
+	
+	protected void onChildRemoved(PComponent child, Object constraint) {
+		PTableCellIndex idx = (PTableCellIndex) constraint;
 		int colIdx = idx.getColumn();
 		int rowIdx = idx.getRow();
 		PComponent[] row = rowList.get(rowIdx);

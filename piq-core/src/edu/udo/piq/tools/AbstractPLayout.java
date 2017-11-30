@@ -232,7 +232,6 @@ public abstract class AbstractPLayout implements PLayout {
 	
 	@Override
 	public void invalidate() {
-		pushState(DebugState.INVALIDATED);
 		invalidated = true;
 		fireInvalidateEvent();
 	}
@@ -244,10 +243,8 @@ public abstract class AbstractPLayout implements PLayout {
 		}
 		if (invalidated) {
 			invalidated = false;
-			pushState(DebugState.ON_INVALIDATED);
 			onInvalidated();
 		}
-		pushState(DebugState.LAYOUT);
 		layOutInternal();
 	}
 	
@@ -257,10 +254,8 @@ public abstract class AbstractPLayout implements PLayout {
 	public PSize getPreferredSize() {
 		if (invalidated) {
 			invalidated = false;
-			pushState(DebugState.ON_INVALIDATED);
 			onInvalidated();
 		}
-		pushState(DebugState.GET_PREF_SIZE);
 		return getPreferredSizeInternal();
 	}
 	
@@ -392,48 +387,6 @@ public abstract class AbstractPLayout implements PLayout {
 			return h;
 		}
 		
-	}
-	
-//	private DebugState curState;
-//	private int stateCounter;
-//	private static int[] staticStateCounter = new int[DebugState.values().length];
-//
-	private void pushState(DebugState state) {
-		//FIXME: This is just for debugging purposes
-//		boolean wasOnInv = curState == DebugState.ON_INVALIDATED;
-//		boolean wasGPS = curState == DebugState.GET_PREF_SIZE;
-//		if (getClass() != PRootLayout.class
-//				&& state == DebugState.LAYOUT && !(wasOnInv || wasGPS))
-//		{
-//			System.err.println("current="+curState+", next="+state);
-//		}
-//		if (curState == state) {
-//			stateCounter++;
-//		} else {
-//			curState = state;
-//			stateCounter = 1;
-//		}
-//		staticStateCounter[curState.ordinal()]++;
-//		if (curState == DebugState.LAYOUT || curState == DebugState.ON_INVALIDATED) {
-//			StringBuilder sb = new StringBuilder();
-//			sb.append(getOwner());
-//			sb.append(" ");
-//			sb.append(curState);
-//			sb.append(" (");
-//			sb.append(stateCounter);
-//			sb.append(")[");
-//			sb.append(staticStateCounter[state.ordinal()]);
-//			sb.append("]");
-//			System.out.println(sb.toString());
-//		}
-	}
-	
-	private static enum DebugState {
-		INVALIDATED,
-		ON_INVALIDATED,
-		LAYOUT,
-		GET_PREF_SIZE,
-		;
 	}
 	
 }

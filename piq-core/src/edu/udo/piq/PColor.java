@@ -49,35 +49,41 @@ public interface PColor {
 	 * An immutable PColor implementation representing absolute red.
 	 */
 	public static final PColor RED		= new ImmutablePColor(1.00, 0.00, 0.00);
-	public static final PColor DARK_RED	= new ImmutablePColor(0.50, 0.00, 0.00);
+	public static final PColor DARK_RED		= RED.mult1(0.5);
+	public static final PColor LIGHT_RED	= RED.add1(0.5);
 	/**
 	 * An immutable PColor implementation representing absolute green.
 	 */
 	public static final PColor GREEN	= new ImmutablePColor(0.00, 1.00, 0.00);
-	public static final PColor DARK_GREEN	= new ImmutablePColor(0.00, 0.50, 0.00);
+	public static final PColor DARK_GREEN	= GREEN.mult1(0.5);
+	public static final PColor LIGHT_GREEN	= GREEN.add1(0.5);
 	/**
 	 * An immutable PColor implementation representing absolute blue.
 	 */
 	public static final PColor BLUE		= new ImmutablePColor(0.00, 0.00, 1.00);
-	public static final PColor DARK_BLUE	= new ImmutablePColor(0.00, 0.00, 0.50);
+	public static final PColor DARK_BLUE	= BLUE.mult1(0.5);
+	public static final PColor LIGHT_BLUE	= BLUE.add1(0.5);
 	/**
 	 * An immutable PColor implementation representing absolute magenta
 	 * (red = 100%, blue = 100%).
 	 */
 	public static final PColor MAGENTA	= new ImmutablePColor(1.00, 0.00, 1.00);
-	public static final PColor DARK_MAGENTA	= new ImmutablePColor(0.50, 0.00, 0.50);
+	public static final PColor DARK_MAGENTA		= MAGENTA.mult1(0.5);
+	public static final PColor LIGHT_MAGENTA	= MAGENTA.add1(0.5);
 	/**
 	 * An immutable PColor implementation representing absolute yellow
 	 * (red = 100%, green = 100%).
 	 */
 	public static final PColor YELLOW	= new ImmutablePColor(1.00, 1.00, 0.00);
-	public static final PColor DARK_YELLOW	= new ImmutablePColor(0.50, 0.50, 0.00);
+	public static final PColor DARK_YELLOW	= YELLOW.mult1(0.5);
+	public static final PColor LIGHT_YELLOW	= YELLOW.add1(0.5);
 	/**
 	 * An immutable PColor implementation representing absolute teal
 	 * (green = 100%, blue = 100%).
 	 */
 	public static final PColor TEAL		= new ImmutablePColor(0.00, 1.00, 1.00);
-	public static final PColor DARK_TEAL	= new ImmutablePColor(0.00, 0.50, 0.50);
+	public static final PColor DARK_TEAL	= TEAL.mult1(0.5);
+	public static final PColor LIGHT_TEAL	= TEAL.add1(0.5);
 	
 	/**
 	 * Returns the value for the red color component in integer format.<br>
@@ -171,6 +177,10 @@ public interface PColor {
 		return mult1(other.getRed1(), other.getGreen1(), other.getBlue1(), other.getAlpha1());
 	}
 	
+	public default PColor add1(double increment) {
+		return add1(increment, increment, increment);
+	}
+	
 	public default PColor add1(double r, double g, double b) {
 		r = PColor.addColorComponent1(getRed1(), r);
 		g = PColor.addColorComponent1(getGreen1(), g);
@@ -184,6 +194,10 @@ public interface PColor {
 		b = PColor.addColorComponent1(getBlue1(), b);
 		a = PColor.addColorComponent1(getAlpha1(), a);
 		return new ImmutablePColor(r, g, b, a);
+	}
+	
+	public default PColor mult1(double factor) {
+		return mult1(factor, factor, factor);
 	}
 	
 	public default PColor mult1(double r, double g, double b) {
@@ -216,6 +230,10 @@ public interface PColor {
 		return new ImmutablePColor(r, g, b, a);
 	}
 	
+	public default PColor add255(int increment) {
+		return add255(increment, increment, increment);
+	}
+	
 	public default PColor mult255(int r, int g, int b) {
 		r = PColor.multColorComponent255(getRed255(), r);
 		g = PColor.multColorComponent255(getGreen255(), g);
@@ -229,6 +247,10 @@ public interface PColor {
 		b = PColor.multColorComponent255(getBlue255(), b);
 		a = PColor.multColorComponent255(getAlpha255(), a);
 		return new ImmutablePColor(r, g, b, a);
+	}
+	
+	public default PColor mult255(int factor) {
+		return mult255(factor, factor, factor);
 	}
 	
 	public static double addColorComponent1(double c1, double c2) {

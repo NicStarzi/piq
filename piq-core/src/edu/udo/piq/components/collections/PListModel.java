@@ -8,6 +8,10 @@ public interface PListModel extends PModel {
 	
 	public boolean contains(int index);
 	
+	public boolean canSet(int index, Object content);
+	
+	public void set(int index, Object content);
+	
 	public boolean canAdd(int index, Object content);
 	
 	public void add(int index, Object content);

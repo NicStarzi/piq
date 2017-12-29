@@ -11,7 +11,7 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PCursor;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.tools.AbstractPMouse;
-import edu.udo.piq.util.PCompUtil;
+import edu.udo.piq.util.PiqUtil;
 import edu.udo.piq.util.ThrowException;
 
 public class GlfwPMouse extends AbstractPMouse implements PMouse {
@@ -181,7 +181,7 @@ public class GlfwPMouse extends AbstractPMouse implements PMouse {
 	@Override
 	public PComponent getComponentAtMouse() {
 		if (!compAtMouseCacheValid) {
-			compAtMouseCache = PCompUtil.getComponentAt(root, getX(), getY());
+			compAtMouseCache = PiqUtil.getComponentAt(root, getX(), getY());
 			compAtMouseCacheValid = true;
 			refreshCursor();
 		}

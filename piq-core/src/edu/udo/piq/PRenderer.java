@@ -192,8 +192,8 @@ public interface PRenderer extends PDisposable {
 	
 	public default void drawImage(PImageResource imgRes, float x, float y) {
 		int w = imgRes.getWidth();
-		int h = imgRes.getWidth();
-		drawImage(imgRes, 0, 0, w, h, x, y, x + h, y + h);
+		int h = imgRes.getHeight();
+		drawImage(imgRes, 0, 0, w, h, x, y, x + w, y + h);
 	}
 	
 	public default void drawImage(PImageResource imgRes, float x, float y, float fx, float fy) {

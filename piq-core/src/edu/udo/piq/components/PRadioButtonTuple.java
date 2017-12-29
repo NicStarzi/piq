@@ -7,26 +7,26 @@ import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PGlobalEventGenerator;
 import edu.udo.piq.PGlobalEventProvider;
-import edu.udo.piq.PKeyboard.Key;
+import edu.udo.piq.PKeyboard.ActualKey;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.components.defaults.ReRenderPFocusObs;
-import edu.udo.piq.components.util.DefaultPKeyInput;
-import edu.udo.piq.components.util.PKeyInput;
-import edu.udo.piq.components.util.PKeyInput.KeyInputType;
+import edu.udo.piq.components.util.DefaultPAccelerator;
+import edu.udo.piq.components.util.PAccelerator;
+import edu.udo.piq.components.util.PAccelerator.KeyInputType;
+import edu.udo.piq.layouts.PComponentLayoutData;
 import edu.udo.piq.layouts.PTupleLayout;
 import edu.udo.piq.layouts.PTupleLayout.Constraint;
 import edu.udo.piq.tools.AbstractPInputLayoutOwner;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PiqUtil;
-import edu.udo.piq.util.ThrowException;
 
 public class PRadioButtonTuple extends AbstractPInputLayoutOwner implements PClickable, PGlobalEventGenerator {
 	
-	public static final PKeyInput<PRadioButtonTuple> INPUT_TRIGGER_ENTER =
-			new DefaultPKeyInput<>(KeyInputType.TRIGGER, Key.ENTER, PRadioButtonTuple::canTriggerEnter);
+	public static final PAccelerator<PRadioButtonTuple> INPUT_TRIGGER_ENTER =
+			new DefaultPAccelerator<>(KeyInputType.TRIGGER, ActualKey.ENTER, PRadioButtonTuple::canTriggerEnter);
 	public static final Consumer<PRadioButtonTuple> REACTION_TRIGGER_ENTER = PRadioButtonTuple::onTriggerEnter;
 	public static final String INPUT_IDENTIFIER_TRIGGER_ENTER = "triggerEnter";
 	
@@ -40,7 +40,7 @@ public class PRadioButtonTuple extends AbstractPInputLayoutOwner implements PCli
 	}
 	
 	protected final ObserverList<PClickObs> obsList
-	= PiqUtil.createDefaultObserverList();
+		= PiqUtil.createDefaultObserverList();
 	protected final PClickObs radBtnObs = (btn) -> onRadioBtnClick();
 	private PGlobalEventProvider globEvProv;
 	
@@ -68,7 +68,7 @@ public class PRadioButtonTuple extends AbstractPInputLayoutOwner implements PCli
 		});
 		addObs(new ReRenderPFocusObs());
 		
-		defineInput(INPUT_IDENTIFIER_TRIGGER_ENTER, INPUT_TRIGGER_ENTER, REACTION_TRIGGER_ENTER);
+		defineInput(PRadioButtonTuple.INPUT_IDENTIFIER_TRIGGER_ENTER, PRadioButtonTuple.INPUT_TRIGGER_ENTER, PRadioButtonTuple.REACTION_TRIGGER_ENTER);
 	}
 	
 	public PRadioButtonTuple(PComponent secondComponent) {
@@ -86,6 +86,7 @@ public class PRadioButtonTuple extends AbstractPInputLayoutOwner implements PCli
 		return globEvProv;
 	}
 	
+	@Override
 	protected PTupleLayout getLayoutInternal() {
 		return (PTupleLayout) super.getLayout();
 	}
@@ -179,18 +180,20 @@ public class PRadioButtonTuple extends AbstractPInputLayoutOwner implements PCli
 	}
 	
 	@Override
-	protected void onChildAdded(PComponent child, Object constraint) {
-		if (constraint == Constraint.FIRST) {
-			PRadioButton btn = ThrowException.ifTypeCastFails(child,
-					PRadioButton.class, "!(child instanceof PRadioButton)");
-			btn.addObs(radBtnObs);
+	protected void onChildAdded(PComponentLayoutData data) {
+		if (data.getConstraint() == Constraint.FIRST) {
+			PComponent child = data.getComponent();
+			if (!(child instanceof PRadioButton)) {
+				throw new IllegalArgumentException("child="+child);
+			}
+			((PRadioButton) child).addObs(radBtnObs);
 		}
 	}
 	
 	@Override
-	protected void onChildRemoved(PComponent child, Object constraint) {
-		if (constraint == Constraint.FIRST) {
-			((PRadioButton) child).removeObs(radBtnObs);
+	protected void onChildRemoved(PComponentLayoutData data) {
+		if (data.getConstraint() == Constraint.FIRST) {
+			((PRadioButton) data.getComponent()).removeObs(radBtnObs);
 		}
 	}
 	

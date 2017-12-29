@@ -20,17 +20,17 @@ public class PCheckBox extends AbstractPComponent implements PClickable, PGlobal
 	
 	private static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(12, 12);
 	
-	protected final ObserverList<PCheckBoxModelObs> modelObsList
-	= PiqUtil.createDefaultObserverList();
+	protected final ObserverList<PSingleValueModelObs> modelObsList
+		= PiqUtil.createDefaultObserverList();
 	protected final ObserverList<PClickObs> obsList
-	= PiqUtil.createDefaultObserverList();
+		= PiqUtil.createDefaultObserverList();
 	protected final PMouseObs mouseObs = new PMouseObs() {
 		@Override
 		public void onButtonTriggered(PMouse mouse, MouseButton btn, int clickCount) {
 			PCheckBox.this.onMouseButtonTriggered(mouse, btn);
 		}
 	};
-	protected final PCheckBoxModelObs modelObs = (mdl) -> PCheckBox.this.onModelChange();
+	protected final PSingleValueModelObs modelObs = this::onModelChange;
 	protected PCheckBoxModel model;
 	protected PGlobalEventProvider globEvProv;
 	
@@ -66,6 +66,13 @@ public class PCheckBox extends AbstractPComponent implements PClickable, PGlobal
 	
 	public PCheckBoxModel getModel() {
 		return model;
+	}
+	
+	public void setModelValue(Object value) {
+		if (getModel() == null) {
+			return;
+		}
+		getModel().setValue(value);
 	}
 	
 	public boolean isChecked() {
@@ -116,14 +123,14 @@ public class PCheckBox extends AbstractPComponent implements PClickable, PGlobal
 		obsList.remove(obs);
 	}
 	
-	public void addObs(PCheckBoxModelObs obs) {
+	public void addObs(PSingleValueModelObs obs) {
 		modelObsList.add(obs);
 		if (getModel() != null) {
 			getModel().addObs(obs);
 		}
 	}
 	
-	public void removeObs(PCheckBoxModelObs obs) {
+	public void removeObs(PSingleValueModelObs obs) {
 		modelObsList.remove(obs);
 		if (getModel() != null) {
 			getModel().removeObs(obs);
@@ -135,7 +142,7 @@ public class PCheckBox extends AbstractPComponent implements PClickable, PGlobal
 		fireGlobalEvent();
 	}
 	
-	protected void onModelChange() {
+	protected void onModelChange(PSingleValueModel model, Object oldValue, Object newValue) {
 		fireGlobalEvent();
 		firePreferredSizeChangedEvent();
 		fireReRenderEvent();

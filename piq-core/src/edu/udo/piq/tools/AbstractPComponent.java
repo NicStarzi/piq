@@ -1,7 +1,10 @@
 package edu.udo.piq.tools;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
 
+import edu.udo.piq.DefaultPLayoutPreference;
 import edu.udo.piq.PBorder;
 import edu.udo.piq.PBorderObs;
 import edu.udo.piq.PBounds;
@@ -12,7 +15,7 @@ import edu.udo.piq.PDnDSupport;
 import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PFocusTraversal;
 import edu.udo.piq.PKeyboard;
-import edu.udo.piq.PKeyboard.Key;
+import edu.udo.piq.PKeyboard.ActualKey;
 import edu.udo.piq.PKeyboard.Modifier;
 import edu.udo.piq.PKeyboardObs;
 import edu.udo.piq.PLayoutObs;
@@ -26,8 +29,12 @@ import edu.udo.piq.PSize;
 import edu.udo.piq.PStyleBorder;
 import edu.udo.piq.PStyleComponent;
 import edu.udo.piq.PStyleLayout;
+import edu.udo.piq.actions.PComponentAction;
+import edu.udo.piq.actions.PComponentActionMap;
+import edu.udo.piq.layouts.PComponentLayoutData;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PiqUtil;
+import edu.udo.piq.util.ThrowException;
 
 public class AbstractPComponent implements PComponent {
 	
@@ -45,6 +52,10 @@ public class AbstractPComponent implements PComponent {
 	private PBorder border;
 	private PStyleComponent customStyle;
 	private PStyleComponent sheetStyle;
+	protected final DefaultPLayoutPreference layoutPref = new DefaultPLayoutPreference();
+	private PComponentLayoutData layoutData;
+	protected PComponentActionMap actionMap;
+//	protected Map<Object, PComponentAction> actionMap;
 	/**
 	 * Holds all {@link PComponentObs PComponentObservers} of this component.
 	 */
@@ -99,11 +110,13 @@ public class AbstractPComponent implements PComponent {
 	 */
 	protected final PLayoutObs parentLayoutObs = new PLayoutObs() {
 		@Override
-		public void onChildLaidOut(PReadOnlyLayout layout, PComponent child, Object constraint) {
-			if (child == AbstractPComponent.this) {
-				cachedBoundsInvalid = true;
+		public void onChildLaidOut(PReadOnlyLayout layout, PComponentLayoutData data) {
+			if (data.getComponent() == AbstractPComponent.this) {
+				PComponentLayoutData oldData = layoutData;
+				layoutData = data;
+				fireLayoutDataChangedEvent(oldData);
 				checkForBoundsChange();
-				AbstractPComponent.this.onThisLaidOut(constraint);
+				onThisLaidOut(data);
 			}
 		}
 	};
@@ -155,15 +168,15 @@ public class AbstractPComponent implements PComponent {
 			keyboardObsList.fireEvent(obs -> obs.onModifierToggled(keyboard, modifier));
 		}
 		@Override
-		public void onKeyPressed(PKeyboard keyboard, Key key) {
+		public void onKeyPressed(PKeyboard keyboard, ActualKey key) {
 			keyboardObsList.fireEvent(obs -> obs.onKeyPressed(keyboard, key));
 		}
 		@Override
-		public void onKeyTriggered(PKeyboard keyboard, Key key) {
+		public void onKeyTriggered(PKeyboard keyboard, ActualKey key) {
 			keyboardObsList.fireEvent(obs -> obs.onKeyTriggered(keyboard, key));
 		}
 		@Override
-		public void onKeyReleased(PKeyboard keyboard, Key key) {
+		public void onKeyReleased(PKeyboard keyboard, ActualKey key) {
 			keyboardObsList.fireEvent(obs -> obs.onKeyReleased(keyboard, key));
 		}
 	};
@@ -178,8 +191,8 @@ public class AbstractPComponent implements PComponent {
 	 * change of the parents root is noticed.<br>
 	 */
 	private PRoot cachedRoot;
-	private PBounds cachedBounds;
-	private boolean cachedBoundsInvalid = true;
+//	private PBounds cachedBounds;
+//	private boolean cachedBoundsInvalid = true;
 	protected final MutablePSize prefSize = new MutablePSize();
 	private MutablePBounds bndsNoBorder;
 	protected PCursor mouseOverCursor = null;
@@ -220,7 +233,7 @@ public class AbstractPComponent implements PComponent {
 	/**
 	 * Used by the {@link #isIgnoredByPicking()} method
 	 */
-	private boolean elusive = DEFAULT_IS_ELUSIVE;
+	private boolean elusive = AbstractPComponent.DEFAULT_IS_ELUSIVE;
 	
 	/**
 	 * The root is being cached by the {@link AbstractPComponent}.<br>
@@ -233,6 +246,7 @@ public class AbstractPComponent implements PComponent {
 		return null;
 	}
 	
+	@Override
 	public void setCustomStyle(PStyleComponent style) {
 		if (!Objects.equals(customStyle, style)) {
 			customStyle = style;
@@ -242,6 +256,7 @@ public class AbstractPComponent implements PComponent {
 		}
 	}
 	
+	@Override
 	public PStyleComponent getCustomStyle() {
 		return customStyle;
 	}
@@ -296,8 +311,7 @@ public class AbstractPComponent implements PComponent {
 		} if (parent != null && isDescendantOf(parent)) {
 			throw new IllegalArgumentException(this+" is descendant of "+parent);
 		}
-		cachedBoundsInvalid = true;
-		cachedBounds = null;
+		layoutData = null;
 		lastPrefW = lastPrefH = -1;
 		lastBndsX = lastBndsY = lastBndsW = lastBndsH = -1;
 		PComponent oldParent = this.parent;
@@ -409,11 +423,11 @@ public class AbstractPComponent implements PComponent {
 	
 	@Override
 	public PBounds getBounds() {
-		if (cachedBoundsInvalid) {
-			cachedBounds = PComponent.super.getBounds();
-			cachedBoundsInvalid = false;
+		PComponentLayoutData data = getLayoutData();
+		if (data == null) {// no parent
+			return null;
 		}
-		return cachedBounds;
+		return data.getComponentBounds();
 	}
 	
 	@Override
@@ -434,6 +448,30 @@ public class AbstractPComponent implements PComponent {
 		}
 		bndsNoBorder.subtract(border.getInsets(this));
 		return bndsNoBorder;
+	}
+	
+	@Override
+	public DefaultPLayoutPreference getLayoutPreference() {
+		return layoutPref;
+	}
+	
+	@Override
+	public PComponentLayoutData getLayoutData() {
+		// no parent => no layout data
+		PComponent parent = getParent();
+		if (parent == null) {
+			return null;
+		}
+		/*
+		 * layoutData is null if parent was changed but this component has not been laid out yet. 
+		 * In this case fetch layout data from the parent layout directly.
+		 */
+		if (layoutData == null) {
+			// cache the fetched copy. This should never be null!
+			layoutData = parent.getLayout().getDataFor(this);
+			ThrowException.ifNull(layoutData, "getParent().getLayout().getDataFor(this) == null");
+		}
+		return layoutData;
 	}
 	
 	/**
@@ -520,6 +558,52 @@ public class AbstractPComponent implements PComponent {
 	@Override
 	public boolean isFocusable() {
 		return false;
+	}
+	
+	@Override
+	public void addActionMapping(Object actionKey, PComponentAction action) {
+		if (actionMap == null) {
+			if (action == null) {
+				return;
+			}
+			actionMap = new PComponentActionMap(this);
+		}
+		actionMap.addAction(actionKey, action);
+	}
+	
+	@Override
+	public void removeActionMapping(Object actionKey) {
+		if (actionMap == null) {
+			return;
+		}
+		actionMap.removeAction(actionKey);
+	}
+	
+	@Override
+	public void clearActionMap() {
+		if (actionMap == null) {
+			return;
+		}
+		actionMap.clear();
+		actionMap = null;
+	}
+	
+	@Override
+	public PComponentAction getAction(Object actionKey) {
+		if (actionMap == null) {
+			return null;
+		}
+		return actionMap.getAction(actionKey);
+	}
+	
+	@Override
+	public Collection<PComponentAction> getAllActions() {
+		return Collections.unmodifiableCollection(actionMap.getActions());
+	}
+	
+	@Override
+	public boolean hasAction(PComponentAction action) {
+		return actionMap.hasAction(action);
 	}
 	
 	protected void setFocusTraversal(PFocusTraversal focusTraversal) {
@@ -620,7 +704,24 @@ public class AbstractPComponent implements PComponent {
 	
 	protected void fireRootChangedEvent(PRoot oldRoot) {
 		AbstractPComponent.this.onRootChanged(oldRoot);
-		compObsList.fireEvent(obs -> obs.onRootChanged(this, cachedRoot, oldRoot));
+		if (oldRoot != null) {
+			AbstractPComponent.this.onRemovedFromUi(oldRoot);
+		}
+		PRoot currentRoot = cachedRoot;
+		if (currentRoot != null) {
+			AbstractPComponent.this.onAddedToUi(currentRoot);
+		}
+		compObsList.fireEvent(obs -> obs.onRootChanged(this, currentRoot, oldRoot));
+	}
+	
+	protected void fireLayoutChangedEvent(PReadOnlyLayout oldLayout) {
+		PReadOnlyLayout currentLayout = getLayout();
+		compObsList.fireEvent(obs -> obs.onLayoutChanged(this, currentLayout, oldLayout));
+	}
+	
+	protected void fireLayoutDataChangedEvent(PComponentLayoutData oldData) {
+		PComponentLayoutData curData = getLayoutData();
+		compObsList.fireEvent(obs -> obs.onLayoutDataChanged(this, curData));
 	}
 	
 	protected void fireAddedEvent() {
@@ -723,9 +824,13 @@ public class AbstractPComponent implements PComponent {
 	
 	protected void onRootChanged(PRoot oldRoot) {}
 	
+	protected void onAddedToUi(PRoot newRoot) {}
+	
+	protected void onRemovedFromUi(PRoot oldRoot) {}
+	
 	protected void onParentChanged(PComponent oldParent) {}
 	
-	protected void onThisLaidOut(Object constraint) {}
+	protected void onThisLaidOut(PComponentLayoutData data) {}
 	
 	@Override
 	public void setID(String value) {

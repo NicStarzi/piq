@@ -24,14 +24,18 @@ public class SwingPTest_TabPanel extends AbstractSwingPTest {
 		root.setBody(bodyPnl);
 		
 		PPanel tab1 = new PPanel();
+		tab1.setID("Tab 1");
 		tab1.setLayout(new PFreeLayout(tab1));
+		
 		PButton btnTab1 = new PButton();
 		btnTab1.setContent(new PLabel("Button 1"));
 		btnTab1.addObs((PClickObs) (cmp) -> System.out.println("Button Tab 1"));
 		tab1.addChild(btnTab1, new FreeConstraint(13, 47));
 		
 		PPanel tab2 = new PPanel();
+		tab2.setID("Tab 2");
 		tab2.setLayout(new PFreeLayout(tab2));
+		
 		PButton btnTab2 = new PButton();
 		btnTab2.setContent(new PLabel("Button B"));
 		btnTab2.addObs((PClickObs) (cmp) -> System.out.println("Button Tab 2"));

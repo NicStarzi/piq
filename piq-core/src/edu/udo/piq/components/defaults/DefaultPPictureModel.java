@@ -5,17 +5,16 @@ import edu.udo.piq.tools.AbstractPPictureModel;
 
 public class DefaultPPictureModel extends AbstractPPictureModel implements PPictureModel {
 	
-	private Object imgId = null;
+	private Object imgKey = null;
 	
-	public void setValue(Object obj) {
-		if (imgId == null ? imgId != obj : !imgId.equals(obj)) {
-			imgId = obj;
-			fireImageIDChanged();
-		}
+	@Override
+	protected void setValueInternal(Object newValue) {
+		imgKey = newValue;
 	}
 	
+	@Override
 	public Object getValue() {
-		return imgId;
+		return imgKey;
 	}
 	
 }

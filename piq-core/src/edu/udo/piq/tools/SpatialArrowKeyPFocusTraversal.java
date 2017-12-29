@@ -5,14 +5,14 @@ import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import edu.udo.piq.Axis;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PFocusTraversal;
 import edu.udo.piq.PKeyboard;
-import edu.udo.piq.PKeyboard.Key;
+import edu.udo.piq.PKeyboard.ActualKey;
 import edu.udo.piq.PKeyboard.Modifier;
 import edu.udo.piq.components.textbased.PTextComponent;
+import edu.udo.piq.layouts.Axis;
 
 public class SpatialArrowKeyPFocusTraversal extends AbstractPFocusTraversal implements PFocusTraversal {
 	
@@ -27,7 +27,7 @@ public class SpatialArrowKeyPFocusTraversal extends AbstractPFocusTraversal impl
 	}
 	
 	@Override
-	protected void onKeyTriggered(PKeyboard keyboard, Key key) {
+	protected void onKeyTriggered(PKeyboard keyboard, ActualKey key) {
 		PComponent focusOwner = curRoot.getFocusOwner();
 		if (focusOwner == null) {
 			return;

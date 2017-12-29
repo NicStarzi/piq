@@ -3,7 +3,7 @@ package edu.udo.piq.layouts;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
-import edu.udo.piq.tools.AbstractMapPLayout;
+import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.tools.ImmutablePInsets;
 
 public class PBoxLayout extends AbstractMapPLayout {
@@ -17,8 +17,8 @@ public class PBoxLayout extends AbstractMapPLayout {
 	}
 	
 	@Override
-	protected void onChildAdded(PComponent child, Object constraint) {
-		Box box = (Box) constraint;
+	protected void onChildAdded(PComponentLayoutData data) {
+		Box box = (Box) data.getConstraint();
 		if (box.isBox()) {
 			throw new IllegalArgumentException("constraint.isBox()=true");
 		}
@@ -33,7 +33,7 @@ public class PBoxLayout extends AbstractMapPLayout {
 	}
 	
 	public PInsets getInsets() {
-		return getStyleAttribute(ATTRIBUTE_KEY_INSETS, insets);
+		return getStyleAttribute(PReadOnlyLayout.ATTRIBUTE_KEY_INSETS, insets);
 	}
 	
 	public Box getRootBox() {
@@ -60,7 +60,7 @@ public class PBoxLayout extends AbstractMapPLayout {
 		if (root.isBox()) {
 			recursiveLayOut(root, x, y, w, h);
 		} else {
-			setChildBounds(getChildForConstraint(root), x, y, w, h);
+			setChildCellFilled(getChildForConstraint(root), x, y, w, h);
 		}
 	}
 	
@@ -95,14 +95,14 @@ public class PBoxLayout extends AbstractMapPLayout {
 			recursiveLayOut(one, x1, y1, w1, h1);
 		} else {
 			PComponent child = getChildForConstraint(one);
-			setChildBounds(child, x1, y1, w1, h1);
+			setChildCellFilled(child, x1, y1, w1, h1);
 		}
 		Box other = box.other;
 		if (other.isBox()) {
 			recursiveLayOut(other, x2, y2, w2, h2);
 		} else {
 			PComponent child = getChildForConstraint(other);
-			setChildBounds(child, x2, y2, w2, h2);
+			setChildCellFilled(child, x2, y2, w2, h2);
 		}
 	}
 	

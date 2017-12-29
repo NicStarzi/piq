@@ -11,6 +11,7 @@ import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
+import edu.udo.piq.components.PSingleValueModel;
 import edu.udo.piq.components.collections.PListIndex;
 import edu.udo.piq.tools.AbstractPTextComponent;
 import edu.udo.piq.tools.ImmutablePBounds;
@@ -114,10 +115,10 @@ public class PTextField extends AbstractPTextComponent {
 	}
 	
 	@Override
-	protected void onTextChanged() {
+	protected void onTextChanged(PSingleValueModel model, Object oldValue, Object newValue) {
 		contentsWereChanged = true;
 		idxTab.setLastIndexInRow(getText().length());
-		super.onTextChanged();
+		super.onTextChanged(model, oldValue, newValue);
 	}
 	
 	public void setInsets(PInsets value) {

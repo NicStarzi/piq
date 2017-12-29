@@ -2,7 +2,7 @@ package edu.udo.piq.tutorial;
 
 import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.layouts.PAnchorLayout;
-import edu.udo.piq.swing.tests.AbstractSwingPTest;
+import edu.udo.piq.tests.swing.AbstractSwingPTest;
 
 public class TestClickSpeedTester extends AbstractSwingPTest {
 	

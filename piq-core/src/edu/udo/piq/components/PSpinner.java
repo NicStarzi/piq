@@ -6,7 +6,7 @@ import java.util.function.Function;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PKeyboard.Key;
+import edu.udo.piq.PKeyboard.ActualKey;
 import edu.udo.piq.PLayout;
 import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PRenderer;
@@ -17,10 +17,10 @@ import edu.udo.piq.components.defaults.PSpinnerModelInt;
 import edu.udo.piq.components.textbased.PTextField;
 import edu.udo.piq.components.textbased.PTextFieldObs;
 import edu.udo.piq.components.textbased.PTextSelection;
-import edu.udo.piq.components.util.DefaultPKeyInput;
-import edu.udo.piq.components.util.PKeyInput;
-import edu.udo.piq.components.util.PKeyInput.FocusPolicy;
-import edu.udo.piq.components.util.PKeyInput.KeyInputType;
+import edu.udo.piq.components.util.DefaultPAccelerator;
+import edu.udo.piq.components.util.PAccelerator;
+import edu.udo.piq.components.util.PAccelerator.FocusPolicy;
+import edu.udo.piq.components.util.PAccelerator.KeyInputType;
 import edu.udo.piq.layouts.PSpinnerLayout;
 import edu.udo.piq.layouts.PSpinnerLayout.Constraint;
 import edu.udo.piq.tools.AbstractPInputLayoutOwner;
@@ -37,8 +37,8 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 	 * is enabled, the next value of the spinners model will be selected.
 	 */
 	public static final String INPUT_IDENTIFIER_PRESS_UP = "pressUp";
-	public static final PKeyInput<PSpinner> INPUT_PRESS_UP = new DefaultPKeyInput<>(
-			FocusPolicy.THIS_OR_CHILD_HAS_FOCUS, KeyInputType.PRESS, Key.UP, PSpinner::canSelectNextOrPrevious);
+	public static final PAccelerator<PSpinner> INPUT_PRESS_UP = new DefaultPAccelerator<>(
+			FocusPolicy.THIS_OR_CHILD_HAS_FOCUS, KeyInputType.PRESS, ActualKey.UP, PSpinner::canSelectNextOrPrevious);
 	public static final Consumer<PSpinner> REACTION_PRESS_UP = PSpinner::selectNext;
 	
 	/*
@@ -47,8 +47,8 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 	 * is enabled, the previous value of the spinners model will be selected.
 	 */
 	public static final String INPUT_IDENTIFIER_PRESS_DOWN = "pressDown";
-	public static final PKeyInput<PSpinner> INPUT_PRESS_DOWN = new DefaultPKeyInput<>(
-			FocusPolicy.THIS_OR_CHILD_HAS_FOCUS, KeyInputType.PRESS, Key.DOWN, PSpinner::canSelectNextOrPrevious);
+	public static final PAccelerator<PSpinner> INPUT_PRESS_DOWN = new DefaultPAccelerator<>(
+			FocusPolicy.THIS_OR_CHILD_HAS_FOCUS, KeyInputType.PRESS, ActualKey.DOWN, PSpinner::canSelectNextOrPrevious);
 	public static final Consumer<PSpinner> REACTION_PRESS_DOWN = PSpinner::selectPrevious;
 	
 	protected final ObserverList<PSpinnerModelObs> modelObsList =
@@ -355,9 +355,9 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 		
 		protected void onSpinnerModelValueChanged() {
 			if (getPSpinnerBtnDir() == PSpinnerBtnDir.NEXT) {
-				setEnabled(getSpinnerModel().hasNext());
+				setThisIsEnabled(getSpinnerModel().hasNext());
 			} else {
-				setEnabled(getSpinnerModel().hasPrevious());
+				setThisIsEnabled(getSpinnerModel().hasPrevious());
 			}
 		}
 		
@@ -418,7 +418,7 @@ public class PSpinner extends AbstractPInputLayoutOwner {
 			}
 			spnrModel = model;
 			if (getSpinnerModel() == null) {
-				setEnabled(false);
+				setThisIsEnabled(false);
 			} else {
 				onSpinnerModelValueChanged();
 				getSpinnerModel().addObs(spnrModelObs);

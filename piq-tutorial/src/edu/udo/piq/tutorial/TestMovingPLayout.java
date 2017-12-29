@@ -7,7 +7,7 @@ import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.components.containers.PTabPanel;
 import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.layouts.PAnchorLayout;
-import edu.udo.piq.swing.tests.AbstractSwingPTest;
+import edu.udo.piq.tests.swing.AbstractSwingPTest;
 
 public class TestMovingPLayout extends AbstractSwingPTest {
 	

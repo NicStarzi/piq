@@ -17,7 +17,7 @@ import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.components.textbased.PTextField;
 import edu.udo.piq.components.textbased.PTextFieldObs;
 import edu.udo.piq.layouts.PBorderLayout;
-import edu.udo.piq.layouts.PBorderLayout.Constraint;
+import edu.udo.piq.layouts.PBorderLayout.BorderLayoutConstraint;
 import edu.udo.piq.layouts.PGridLayout;
 
 public class SwingPTest_PTable extends AbstractSwingPTest {
@@ -48,14 +48,14 @@ public class SwingPTest_PTable extends AbstractSwingPTest {
 		PTable table = new PTable(tm);
 //		table.setOutputEncoder((element) -> Objects.toString(element, ""));
 		table.setSelection(new PTableMultiSelection());
-		bodyPnl.addChild(table, Constraint.CENTER);
+		bodyPnl.addChild(table, BorderLayoutConstraint.CENTER);
 		
 		/*
 		 * Control Elements
 		 */
 		
 		PPanel ctrlPnl = new PPanel();
-		bodyPnl.addChild(ctrlPnl, Constraint.BOTTOM);
+		bodyPnl.addChild(ctrlPnl, BorderLayoutConstraint.BOTTOM);
 		PGridLayout layout = new PGridLayout(ctrlPnl, 4, 3);
 		ctrlPnl.setLayout(layout);
 		

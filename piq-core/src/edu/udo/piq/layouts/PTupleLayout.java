@@ -9,7 +9,6 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PSize;
 import edu.udo.piq.layouts.PTupleLayout.Constraint;
-import edu.udo.piq.tools.AbstractEnumPLayout;
 import edu.udo.piq.util.ThrowException;
 
 public class PTupleLayout extends AbstractEnumPLayout<Constraint> {
@@ -120,13 +119,13 @@ public class PTupleLayout extends AbstractEnumPLayout<Constraint> {
 		int prefSecondH = prefSizeSecond.getHeight();
 		
 		dataX.sizeTotal = w;
-		dataX.size1 = min(prefFirstW, dataX.sizeTotal);
-		dataX.size2 = min(prefSecondW, dataX.sizeTotal);
+		dataX.size1 = Math.min(prefFirstW, dataX.sizeTotal);
+		dataX.size2 = Math.min(prefSecondW, dataX.sizeTotal);
 		dataX.pos1 = x;
 		dataX.gap = gap;
 		dataY.sizeTotal = h;
-		dataY.size1 = min(prefFirstH, dataY.sizeTotal);
-		dataY.size2 = min(prefSecondH, dataY.sizeTotal);
+		dataY.size1 = Math.min(prefFirstH, dataY.sizeTotal);
+		dataY.size2 = Math.min(prefSecondH, dataY.sizeTotal);
 		dataY.pos1 = y;
 		dataY.gap = gap;
 		LayoutData dataPrim;
@@ -145,13 +144,13 @@ public class PTupleLayout extends AbstractEnumPLayout<Constraint> {
 		if (getOrientation() == Orientation.LEFT_TO_RIGHT) {
 			int scndPos1 = y + dataScnd.pos1 - dataScnd.size1 / 2;
 			int scndPos2 = y + dataScnd.pos1 - dataScnd.size2 / 2;
-			setChildBounds(first, dataPrim.pos1, scndPos1, dataPrim.size1, dataScnd.size1);
-			setChildBounds(second, primPos2, scndPos2, dataPrim.size2, dataScnd.size2);
+			setChildCellFilled(first, dataPrim.pos1, scndPos1, dataPrim.size1, dataScnd.size1);
+			setChildCellFilled(second, primPos2, scndPos2, dataPrim.size2, dataScnd.size2);
 		} else {
 			int scndPos1 = x + dataScnd.pos1 - dataScnd.size1 / 2;
 			int scndPos2 = x + dataScnd.pos1 - dataScnd.size2 / 2;
-			setChildBounds(first, scndPos1, dataPrim.pos1, dataScnd.size1, dataPrim.size1);
-			setChildBounds(second, scndPos2, primPos2, dataScnd.size2, dataPrim.size2);
+			setChildCellFilled(first, scndPos1, dataPrim.pos1, dataScnd.size1, dataPrim.size1);
+			setChildCellFilled(second, scndPos2, primPos2, dataScnd.size2, dataPrim.size2);
 		}
 	}
 	
@@ -171,9 +170,9 @@ public class PTupleLayout extends AbstractEnumPLayout<Constraint> {
 			if (first != null && second != null) {
 				prefW += gap;
 			}
-			prefH += max(sizeFirst.getHeight(), sizeSecond.getHeight());
+			prefH += Math.max(sizeFirst.getHeight(), sizeSecond.getHeight());
 		} else {
-			prefW += max(sizeFirst.getWidth(), sizeSecond.getWidth());
+			prefW += Math.max(sizeFirst.getWidth(), sizeSecond.getWidth());
 			prefH += sizeFirst.getHeight();
 			prefH += sizeSecond.getHeight();
 			if (first != null && second != null) {

@@ -5,7 +5,6 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.PSpinnerPart;
 import edu.udo.piq.layouts.PSpinnerLayout.Constraint;
-import edu.udo.piq.tools.AbstractEnumPLayout;
 
 public class PSpinnerLayout extends AbstractEnumPLayout<Constraint> {
 	
@@ -45,7 +44,7 @@ public class PSpinnerLayout extends AbstractEnumPLayout<Constraint> {
 		PComponent btnPrev = getPrevButton();
 		PSize btnNextSize = getPreferredSizeOf(btnNext);
 		PSize btnPrevSize = getPreferredSizeOf(btnPrev);
-		int btnW = max(btnNextSize.getWidth(), btnPrevSize.getWidth());
+		int btnW = Math.max(btnNextSize.getWidth(), btnPrevSize.getWidth());
 		limit(btnW, 0, w);
 		int editorW = w - btnW;
 		
@@ -61,13 +60,13 @@ public class PSpinnerLayout extends AbstractEnumPLayout<Constraint> {
 			btnNextH = btnPrevH = h / 2;
 		}
 		if (btnNext != null) {
-			setChildBounds(btnNext, x + editorW, y, btnW, btnNextH);
+			setChildCellFilled(btnNext, x + editorW, y, btnW, btnNextH);
 		}
 		if (btnPrev != null) {
-			setChildBounds(btnPrev, x + editorW, y + btnNextH, btnW, btnPrevH);
+			setChildCellFilled(btnPrev, x + editorW, y + btnNextH, btnW, btnPrevH);
 		}
 		if (editor != null) {
-			setChildBounds(editor, x, y, editorW, h);
+			setChildCellFilled(editor, x, y, editorW, h);
 		}
 	}
 	
@@ -78,11 +77,21 @@ public class PSpinnerLayout extends AbstractEnumPLayout<Constraint> {
 		PSize editorSize = getPreferredSizeOf(editor);
 		PSize btnNextSize = getPreferredSizeOf(btnNext);
 		PSize btnPrevSize = getPreferredSizeOf(btnPrev);
-		int btnW = max(btnNextSize.getWidth(), btnPrevSize.getWidth());
+		int btnW = Math.max(btnNextSize.getWidth(), btnPrevSize.getWidth());
 		int btnH = btnNextSize.getHeight() + btnPrevSize.getHeight();
 		
 		prefSize.setWidth(editorSize.getWidth() + btnW);
-		prefSize.setHeight(max(editorSize.getHeight(), btnH));
+		prefSize.setHeight(Math.max(editorSize.getHeight(), btnH));
+	}
+	
+	public static int limit(int value, int min, int max) {
+		if (value < min) {
+			return min;
+		}
+		if (value > max) {
+			return max;
+		}
+		return value;
 	}
 	
 	public static enum Constraint {

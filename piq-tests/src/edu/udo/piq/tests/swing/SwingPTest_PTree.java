@@ -3,9 +3,10 @@ package edu.udo.piq.tests.swing;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PInsets;
-import edu.udo.piq.PKeyboard.Key;
-import edu.udo.piq.components.PCheckBoxModelObs;
+import edu.udo.piq.PKeyboard.ActualKey;
+import edu.udo.piq.components.PCheckBoxModel;
 import edu.udo.piq.components.PCheckBoxTuple;
+import edu.udo.piq.components.PSingleValueModelObs;
 import edu.udo.piq.components.PSpinner;
 import edu.udo.piq.components.collections.PCellComponent;
 import edu.udo.piq.components.collections.PCellComponentWrapper;
@@ -25,7 +26,7 @@ import edu.udo.piq.components.defaults.PTreePCellComponent;
 import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.components.textbased.PTextField;
 import edu.udo.piq.components.textbased.PTextFieldObs;
-import edu.udo.piq.components.util.DefaultPKeyInput;
+import edu.udo.piq.components.util.DefaultPAccelerator;
 import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PGridLayout;
 import edu.udo.piq.scroll.PScrollPanel;
@@ -48,7 +49,7 @@ public class SwingPTest_PTree extends AbstractSwingPTest {
 		root.setBody(body);
 		
 		PSplitPanel splitPnl = new PSplitPanel();
-		body.addChild(splitPnl, PBorderLayout.Constraint.CENTER);
+		body.addChild(splitPnl, PBorderLayout.BorderLayoutConstraint.CENTER);
 		
 		PTree tree = new PTree();
 		PScrollPanel scroll = new PScrollPanel(tree);
@@ -73,7 +74,7 @@ public class SwingPTest_PTree extends AbstractSwingPTest {
 		
 		PPanel ctrlPnl = new PPanel();
 		ctrlPnl.setLayout(new PGridLayout(ctrlPnl, 2, 3));
-		body.addChild(ctrlPnl, PBorderLayout.Constraint.BOTTOM);
+		body.addChild(ctrlPnl, PBorderLayout.BorderLayoutConstraint.BOTTOM);
 		
 		ctrlPnl.addChild(new PLabel("Gap Size"), "0 0");
 		PSpinner inputGap = new PSpinner(new PSpinnerModelInt(0, 0, 100));
@@ -89,7 +90,7 @@ public class SwingPTest_PTree extends AbstractSwingPTest {
 		
 		PCheckBoxTuple inputHideRoot = new PCheckBoxTuple(new PLabel("Hide Root"));
 		ctrlPnl.addChild(inputHideRoot, "0 2 2 1 alignX=Left");
-		inputHideRoot.addObs((PCheckBoxModelObs) (mdl) -> tree.setHideRootNode(mdl.isChecked()));
+		inputHideRoot.addObs((PSingleValueModelObs) (mdl, oldVal, newVal) -> tree.setHideRootNode(((PCheckBoxModel) mdl).isChecked()));
 		inputHideRoot.getCheckBox().getModel().setValue(tree.isHideRootNode());
 		
 		tree.setCellFactory((mdl, idx) -> new ComplicatedTreeCell(mdl, idx));
@@ -128,7 +129,7 @@ public class SwingPTest_PTree extends AbstractSwingPTest {
 					setEditorVisible(false);
 				}
 			});
-			inputText.defineInput("escape", new DefaultPKeyInput<>(Key.ESC), (c) -> {
+			inputText.defineInput("escape", new DefaultPAccelerator<>(ActualKey.ESCAPE), (c) -> {
 				PTree tree = inputText.getFirstAncestorOfType(PTree.class);
 				setEditorVisible(false);
 				tree.takeFocus();

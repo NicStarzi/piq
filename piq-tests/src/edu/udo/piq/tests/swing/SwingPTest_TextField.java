@@ -70,8 +70,6 @@ public class SwingPTest_TextField extends AbstractSwingPTest {
 		txtField.addObs((PTextFieldObs) (c) -> cmbBox.setOutputEncoder(null));
 		txtField.addObs((PTextFieldObs) (c) -> cmbBox.getList().setOutputEncoder(null));
 		
-		
-		
 		PSpinner spinnerColor = new PSpinner(new PSpinnerModelInt(3, -16, 162, 4));
 		spinnerColor.setModel(new AbstractPSpinnerModel() {
 			Farbe f = Farbe.ROT;

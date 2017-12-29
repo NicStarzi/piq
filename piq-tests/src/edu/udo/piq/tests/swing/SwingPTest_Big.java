@@ -1,9 +1,5 @@
 package edu.udo.piq.tests.swing;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import edu.udo.piq.PComponent;
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PCheckBoxTuple;
 import edu.udo.piq.components.PClickObs;
@@ -13,8 +9,6 @@ import edu.udo.piq.components.PProgressBar;
 import edu.udo.piq.components.PSlider;
 import edu.udo.piq.components.PSliderModel;
 import edu.udo.piq.components.PSliderModelObs;
-import edu.udo.piq.components.PStraightLine;
-import edu.udo.piq.components.PStraightLine.LineOrientation;
 import edu.udo.piq.components.collections.PList;
 import edu.udo.piq.components.collections.PListIndex;
 import edu.udo.piq.components.containers.PDropDownList;
@@ -23,12 +17,6 @@ import edu.udo.piq.components.containers.PSplitPanel;
 import edu.udo.piq.components.containers.PToolTip;
 import edu.udo.piq.components.defaults.DefaultPListModel;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
-import edu.udo.piq.components.popup.PPopup;
-import edu.udo.piq.components.popup.PPopupButton;
-import edu.udo.piq.components.popup.PPopupCheckBox;
-import edu.udo.piq.components.popup.PPopupObs;
-import edu.udo.piq.components.popup.PPopupOptionsProvider;
-import edu.udo.piq.components.popup.PPopupSubMenu;
 import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.components.textbased.PTextArea;
 import edu.udo.piq.layouts.AlignmentX;
@@ -60,7 +48,7 @@ public class SwingPTest_Big extends AbstractSwingPTest {
 		PSplitPanel splitV = new PSplitPanel();
 		splitV.setID("SplitPanel Vertical");
 		splitV.setOrientation(Orientation.VERTICAL);
-		bodyPnl.addChild(splitV, PBorderLayout.Constraint.CENTER);
+		bodyPnl.addChild(splitV, PBorderLayout.BorderLayoutConstraint.CENTER);
 		
 		PSplitPanel splitH = new PSplitPanel();
 		splitH.setID("SplitPanel Horizontal");
@@ -119,63 +107,63 @@ public class SwingPTest_Big extends AbstractSwingPTest {
 		scrollTxtAr.setBody(txtAr);
 		splitV.setSecondComponent(scrollTxtAr);
 		
-		PPopup popupTxtAr = new PPopup(txtAr);
-		popupTxtAr.addObs(new PPopupObs() {
-			@Override
-			public void onPopupShown(PPopup popup, PComponent popupComp) {
-				System.out.println("onPopupShown");
-			}
-			@Override
-			public void onPopupHidden(PPopup popup, PComponent popupComp) {
-				System.out.println("onPopupHidden");
-			}
-		});
-//		popupTxtAr.setBodyProvider((comp) -> new PGlassPanel());
-//		popupTxtAr.setBorderProvider((comp) -> null);
-		popupTxtAr.setOptionsProvider(new PPopupOptionsProvider() {
-			boolean chkBxVal = false;
-			@Override
-			public List<PComponent> createOptions(PComponent component) {
-				List<PComponent> result = new ArrayList<>();
-				
-				PPopupButton btnNew = new PPopupButton("New");
-				btnNew.setGlobalEventProvider((btn) -> "CreateNew");
-//				btnNew.addObs((PButton btn) -> System.out.println("New!"));
-				result.add(btnNew);
-				
-				PStraightLine sep1 = new PStraightLine(LineOrientation.HORIZONTAL);
-				result.add(sep1);
-				
-				PPopupButton btnEdit = new PPopupButton("Edit");
-//				btnEdit.addObs((PButton btn) -> System.out.println("Edit!"));
-				result.add(btnEdit);
-				
-				PPopupCheckBox chkRmb = new PPopupCheckBox("Remember");
-				chkRmb.getCheckBox().getModel().setValue(chkBxVal);
-				chkRmb.addObs((PClickObs) (chkBx) -> chkBxVal = !chkBxVal);
-				result.add(chkRmb);
-				
-				PPopupSubMenu subMn = new PPopupSubMenu("Sub-Menu");
-				result.add(subMn);
-				
-				PStraightLine sep2 = new PStraightLine(LineOrientation.HORIZONTAL);
-				result.add(sep2);
-				
-				PPopupButton btnDelete = new PPopupButton("Delete");
-				btnDelete.setEnabled(false);
-//				btnDelete.addObs((PButton btn) -> System.out.println("Delete!"));
-				result.add(btnDelete);
-				
-				return result;
-			}
-		});
-		popupTxtAr.setEnabled(true);
+//		PPopup popupTxtAr = new PPopup(txtAr);
+//		popupTxtAr.addObs(new PPopupObs() {
+//			@Override
+//			public void onPopupShown(PPopup popup, PComponent popupComp) {
+//				System.out.println("onPopupShown");
+//			}
+//			@Override
+//			public void onPopupHidden(PPopup popup, PComponent popupComp) {
+//				System.out.println("onPopupHidden");
+//			}
+//		});
+////		popupTxtAr.setBodyProvider((comp) -> new PGlassPanel());
+////		popupTxtAr.setBorderProvider((comp) -> null);
+//		popupTxtAr.setOptionsProvider(new PPopupOptionsProvider() {
+//			boolean chkBxVal = false;
+//			@Override
+//			public List<PComponent> apply(PComponent component) {
+//				List<PComponent> result = new ArrayList<>();
+//				
+//				PPopupButton btnNew = new PPopupButton("New");
+//				btnNew.setGlobalEventProvider((btn) -> "CreateNew");
+////				btnNew.addObs((PButton btn) -> System.out.println("New!"));
+//				result.add(btnNew);
+//				
+//				PStraightLine sep1 = new PStraightLine(LineOrientation.HORIZONTAL);
+//				result.add(sep1);
+//				
+//				PPopupButton btnEdit = new PPopupButton("Edit");
+////				btnEdit.addObs((PButton btn) -> System.out.println("Edit!"));
+//				result.add(btnEdit);
+//				
+//				PPopupCheckBox chkRmb = new PPopupCheckBox("Remember");
+//				chkRmb.getCheckBox().getModel().setValue(chkBxVal);
+//				chkRmb.addObs((PClickObs) (chkBx) -> chkBxVal = !chkBxVal);
+//				result.add(chkRmb);
+//				
+//				PPopupSubMenu subMn = new PPopupSubMenu("Sub-Menu");
+//				result.add(subMn);
+//				
+//				PStraightLine sep2 = new PStraightLine(LineOrientation.HORIZONTAL);
+//				result.add(sep2);
+//				
+//				PPopupButton btnDelete = new PPopupButton("Delete");
+//				btnDelete.setThisIsEnabled(false);
+////				btnDelete.addObs((PButton btn) -> System.out.println("Delete!"));
+//				result.add(btnDelete);
+//				
+//				return result;
+//			}
+//		});
+//		popupTxtAr.setEnabled(true);
 		
 		PPanel btnPnl = new PPanel();
 		btnPnl.setID("Button Panel");
 		btnPnl.setLayout(new PWrapLayout(btnPnl, ListAlignment.LEFT_TO_RIGHT));
 //		btnPnl.setLayout(new PListLayout(btnPnl, ListAlignment.FROM_LEFT));
-		bodyPnl.addChild(btnPnl, PBorderLayout.Constraint.BOTTOM);
+		bodyPnl.addChild(btnPnl, PBorderLayout.BorderLayoutConstraint.BOTTOM);
 		
 		final PButton btnChange = new PButton();
 		btnChange.setGlobalEventProvider((btn) -> "CreateNew");
@@ -264,8 +252,11 @@ public class SwingPTest_Big extends AbstractSwingPTest {
 		});
 		lblChkBx.setModel(new AbstractPTextModel() {
 			@Override
-			public void setValue(Object text) {
-				fireTextChangeEvent();
+			public void setValue(Object value) {
+				fireChangeEvent(null);
+			}
+			@Override
+			public void setValueInternal(Object text) {
 			}
 			@Override
 			public Object getValue() {
@@ -281,9 +272,11 @@ public class SwingPTest_Big extends AbstractSwingPTest {
 		});
 		lblSld.setModel(new AbstractPTextModel() {
 			@Override
-			public void setValue(Object text) {
-				fireTextChangeEvent();
+			public void setValue(Object value) {
+				fireChangeEvent(null);
 			}
+			@Override
+			public void setValueInternal(Object text) {}
 			@Override
 			public Object getValue() {
 				return null;

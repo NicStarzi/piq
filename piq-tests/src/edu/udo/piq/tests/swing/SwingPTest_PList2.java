@@ -59,11 +59,11 @@ public class SwingPTest_PList2 extends AbstractSwingPTest {
 		
 //		PScrollPanel scroll = new PScrollPanel(list);
 //		bodyPnl.addChild(scroll, PBorderLayout.Constraint.CENTER);
-		bodyPnl.addChild(list, PBorderLayout.Constraint.CENTER);
+		bodyPnl.addChild(list, PBorderLayout.BorderLayoutConstraint.CENTER);
 		
 		PPanel ctrlPnl = new PPanel();
 		ctrlPnl.setLayout(new PGridLayout(ctrlPnl, 2, 8));
-		bodyPnl.addChild(ctrlPnl, PBorderLayout.Constraint.RIGHT);
+		bodyPnl.addChild(ctrlPnl, PBorderLayout.BorderLayoutConstraint.RIGHT);
 		
 		ctrlPnl.addChild(new PLabel("List Alignment"), new GridConstraint("0 0 alignY=C"));
 		PDropDownList selectAlign = new PDropDownList();

@@ -29,9 +29,6 @@ public class SwingPTest_PRingLayout extends AbstractSwingPTest {
 		String[] btnTxts = {"Button #1", "Button #2", "Button #3",
 				"Button #4", "Button #5", "Button #6"};
 		
-		/*
-		 * Ring
-		 */
 		PRingMenu menu = new PRingMenu();
 		for (int i = 0; i < btnTxts.length; i++) {
 			String text = btnTxts[i];
@@ -41,9 +38,10 @@ public class SwingPTest_PRingLayout extends AbstractSwingPTest {
 			});
 			menu.addChild(btn);
 		}
-		bodyPnl.addChild(menu, PBorderLayout.Constraint.CENTER);
+		bodyPnl.addChild(menu, PBorderLayout.BorderLayoutConstraint.CENTER);
 		menu.addObs(new PMouseObs() {
-			public void onButtonTriggered(PMouse mouse, MouseButton btn) {
+			@Override
+			public void onButtonTriggered(PMouse mouse, MouseButton btn, int clickCount) {
 				if (btn == MouseButton.RIGHT) {
 					if (menu.isOpen()) {
 						menu.close();
@@ -53,79 +51,6 @@ public class SwingPTest_PRingLayout extends AbstractSwingPTest {
 				}
 			}
 		});
-		
-//		PPanel ringPnl = new PPanel();
-//		PRingLayout layout = new PRingLayout(ringPnl);
-//		layout.setRadius(100);
-//		ringPnl.setLayout(layout);
-//		bodyPnl.addChild(ringPnl, PBorderLayout.Constraint.CENTER);
-//
-//		int BTN_COUNT = 6;
-//
-//		for (int i = 0; i < BTN_COUNT; i++) {
-//			addButtonToPanel(ringPnl);
-//		}
-//		PTimer rotTimer = new PTimer(() -> {
-//			double rot = layout.getRotationInDeg() + 1;
-//			layout.setRotationInDeg(rot);
-//		});
-//		rotTimer.setDelay(1);
-//		rotTimer.setRepeating(true);
-//		rotTimer.setOwner(ringPnl);
-//		rotTimer.start();
-		
-		/*
-		 * Buttons
-		 */
-//		PPanel btnPnl = new PPanel();
-//		btnPnl.setLayout(new PListLayout(btnPnl, ListAlignment.CENTERED_LEFT_TO_RIGHT));
-//		bodyPnl.addChild(btnPnl, PBorderLayout.Constraint.BOTTOM);
-//
-//		PSpinner inputRadius = new PSpinner();
-//		inputRadius.setModel(new PSpinnerModelDouble(layout.getRadius(), 0, Double.MAX_VALUE, 1));
-//		inputRadius.addObs((mdl, oldVal) -> layout.setRadius((Double) mdl.getValue()));
-//		btnPnl.addChild(inputRadius, null);
-//
-//		PCheckBoxTuple inputUsePref = new PCheckBoxTuple(new PLabel("Use Pref Radius"));
-//		inputUsePref.addObs((PCheckBoxModelObs) (mdl) -> layout.setUsePreferredRadius(mdl.isChecked()));
-//		btnPnl.addChild(inputUsePref, null);
-//
-//		PSpinner inputRotation = new PSpinner();
-//		inputRotation.setModel(new PSpinnerModelDouble(layout.getRotationInDeg()));
-//		inputRotation.setEnabled(false);
-//		inputRotation.addObs((mdl, oldVal) -> layout.setRotationInDeg((Double) mdl.getValue()));
-//		inputRotation.setOutputEncoder((valObj) -> {
-//			int valInt = (int) ((double) valObj) % 360;
-//			return Integer.toString(valInt);
-//		});
-//		btnPnl.addChild(inputRotation, null);
-//
-//		PButton btnAdd = new PButton(new PLabel("Add"));
-//		btnAdd.addObs((PClickObs) (b) -> addButtonToPanel(ringPnl));
-//		btnPnl.addChild(btnAdd, null);
-//
-//		PButton btnRemove = new PButton(new PLabel("Remove"));
-//		btnRemove.addObs((PClickObs) (b) -> removeButtonFromPanel(ringPnl));
-//		btnPnl.addChild(btnRemove, null);
-//
-//		layout.addObs(new PLayoutObs() {
-//			public void onLayoutInvalidated(PReadOnlyLayout l) {
-////				inputRadius.getModel().setValue(layout.getRadius());
-//				inputUsePref.getCheckBox().getModel().setValue(layout.isUsePreferredRadius());
-//				inputRotation.getModel().setValue(layout.getRotationInDeg());
-//			}
-//		});
 	}
-	
-//	private void addButtonToPanel(PPanel ringPnl) {
-//		String name = "Button #"+ringPnl.getChildCount();
-//		PButton btn = new PButton(new PLabel(name));
-//		btn.addObs((PClickObs) (b) -> System.out.println("clicked "+name));
-//		ringPnl.addChild(btn, null);
-//	}
-//
-//	private void removeButtonFromPanel(PPanel ringPnl) {
-//		ringPnl.removeChild(Integer.valueOf(0));
-//	}
 	
 }

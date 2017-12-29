@@ -1,12 +1,13 @@
 package edu.udo.piq.components;
 
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PGlobalEventGenerator;
 import edu.udo.piq.PGlobalEventProvider;
-import edu.udo.piq.PKeyboard.Key;
+import edu.udo.piq.PKeyboard.ActualKey;
 import edu.udo.piq.PKeyboard.Modifier;
 import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PMouse;
@@ -16,7 +17,7 @@ import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.defaults.DefaultPSliderModel;
 import edu.udo.piq.components.defaults.ReRenderPFocusObs;
-import edu.udo.piq.components.util.PKeyInput;
+import edu.udo.piq.components.util.PAccelerator;
 import edu.udo.piq.tools.AbstractPInputComponent;
 import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.util.ObserverList;
@@ -28,14 +29,14 @@ public class PSlider extends AbstractPInputComponent implements PGlobalEventGene
 	protected static final int DEFAULT_SLIDER_HEIGHT = 12;
 	protected static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(100, DEFAULT_SLIDER_HEIGHT + 2);
 	
-	public static final PKeyInput<PSlider> INPUT_PRESS_UP = new PSliderKeyInput(Key.UP);
-	public static final PKeyInput<PSlider> INPUT_PRESS_RIGHT = new PSliderKeyInput(Key.RIGHT);
-	public static final PKeyInput<PSlider> INPUT_PRESS_DOWN = new PSliderKeyInput(Key.DOWN);
-	public static final PKeyInput<PSlider> INPUT_PRESS_LEFT = new PSliderKeyInput(Key.LEFT);
-	public static final PKeyInput<PSlider> INPUT_PRESS_CTRL_UP = new PSliderKeyInput(Key.UP, true);
-	public static final PKeyInput<PSlider> INPUT_PRESS_CTRL_RIGHT = new PSliderKeyInput(Key.RIGHT, true);
-	public static final PKeyInput<PSlider> INPUT_PRESS_CTRL_DOWN = new PSliderKeyInput(Key.DOWN, true);
-	public static final PKeyInput<PSlider> INPUT_PRESS_CTRL_LEFT = new PSliderKeyInput(Key.LEFT, true);
+	public static final PAccelerator<PSlider> INPUT_PRESS_UP = new PSliderKeyInput(ActualKey.UP);
+	public static final PAccelerator<PSlider> INPUT_PRESS_RIGHT = new PSliderKeyInput(ActualKey.RIGHT);
+	public static final PAccelerator<PSlider> INPUT_PRESS_DOWN = new PSliderKeyInput(ActualKey.DOWN);
+	public static final PAccelerator<PSlider> INPUT_PRESS_LEFT = new PSliderKeyInput(ActualKey.LEFT);
+	public static final PAccelerator<PSlider> INPUT_PRESS_CTRL_UP = new PSliderKeyInput(ActualKey.UP, true);
+	public static final PAccelerator<PSlider> INPUT_PRESS_CTRL_RIGHT = new PSliderKeyInput(ActualKey.RIGHT, true);
+	public static final PAccelerator<PSlider> INPUT_PRESS_CTRL_DOWN = new PSliderKeyInput(ActualKey.DOWN, true);
+	public static final PAccelerator<PSlider> INPUT_PRESS_CTRL_LEFT = new PSliderKeyInput(ActualKey.LEFT, true);
 	public static final Consumer<PSlider> REACTION_ADD = new PSliderAction(1, 0);
 	public static final Consumer<PSlider> REACTION_SUB = new PSliderAction(-1, 0);
 	public static final Consumer<PSlider> REACTION_ADD_FAST = new PSliderAction(0, 0.1);
@@ -246,22 +247,22 @@ public class PSlider extends AbstractPInputComponent implements PGlobalEventGene
 		fireReRenderEvent();
 	}
 	
-	protected static class PSliderKeyInput implements PKeyInput<PSlider> {
+	protected static class PSliderKeyInput implements PAccelerator<PSlider> {
 		
-		protected final Key key;
+		protected final ActualKey key;
 		protected final boolean ctrlDown;
 		
-		public PSliderKeyInput(Key key) {
+		public PSliderKeyInput(ActualKey key) {
 			this(key, false);
 		}
 		
-		public PSliderKeyInput(Key key, boolean requiresCtrl) {
+		public PSliderKeyInput(ActualKey key, boolean requiresCtrl) {
 			this.key = key;
 			ctrlDown = requiresCtrl;
 		}
 		
 		@Override
-		public Key getKey() {
+		public ActualKey getKey() {
 			return key;
 		}
 		
@@ -271,7 +272,7 @@ public class PSlider extends AbstractPInputComponent implements PGlobalEventGene
 		}
 		
 		@Override
-		public Condition<PSlider> getCondition() {
+		public Predicate<PSlider> getCondition() {
 			return self -> self.isEnabled() && self.getModel() != null;
 		}
 		

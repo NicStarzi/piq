@@ -27,6 +27,13 @@ public class PRadioButtonGroup {
 		}
 	}
 	
+	public void clear() {
+		for (PRadioButton btn : btnList) {
+			btn.removeObs(modelObs);
+		}
+		btnList.clear();
+	}
+	
 	public void add(PRadioButton radioBtn) {
 		ThrowException.ifIncluded(btnList, radioBtn, "btnList.contains(radioBtn) == true");
 		radioBtn.addObs(modelObs);

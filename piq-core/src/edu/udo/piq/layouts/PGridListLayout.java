@@ -2,6 +2,7 @@ package edu.udo.piq.layouts;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import edu.udo.piq.PBounds;
@@ -9,9 +10,9 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.collections.PTableCellIndex;
+import edu.udo.piq.components.collections.PTableIndex;
 import edu.udo.piq.layouts.PGridLayout.Growth;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
-import edu.udo.piq.tools.AbstractMapPLayout;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.util.ThrowException;
 
@@ -55,10 +56,10 @@ public class PGridListLayout extends AbstractMapPLayout {
 	}
 	
 	@Override
-	protected void onChildAdded(PComponent child, Object constraint) {
+	protected void onChildAdded(PComponentLayoutData data) {
 		int numOfCols = getColumnCount();
 		
-		PTableCellIndex idx = (PTableCellIndex) constraint;
+		PTableCellIndex idx = (PTableCellIndex) data.getConstraint();
 		int colIdx, rowIdx;
 		if (idx == null) {
 			colIdx = nextAddIdx % numOfCols;
@@ -70,14 +71,14 @@ public class PGridListLayout extends AbstractMapPLayout {
 		if (rowIdx < getRowCount()) {
 			PComponent[] row = rowList.get(rowIdx);
 			ThrowException.ifNotNull(row[colIdx], "row[colIdx] != null");
-			row[colIdx] = child;
+			row[colIdx] = data.getComponent();
 		} else {
 			for (int i = getRowCount(); i < rowIdx; i++) {
 				PComponent[] row = new PComponent[numOfCols];
 				rowList.add(row);
 			}
 			PComponent[] row = new PComponent[numOfCols];
-			row[colIdx] = child;
+			row[colIdx] = data.getComponent();
 			rowList.add(row);
 		}
 		int addIdx = colIdx + rowIdx * numOfCols;
@@ -88,8 +89,8 @@ public class PGridListLayout extends AbstractMapPLayout {
 	}
 	
 	@Override
-	protected void onChildRemoved(PCompInfo removedCompInfo) {
-		onChildRemoved(removedCompInfo.getComponent(), removedCompInfo.getConstraint());
+	protected void onChildRemoved(PComponentLayoutData data) {
+		onChildRemoved(data.getComponent(), data.getConstraint());
 	}
 	
 	protected void onChildRemoved(PComponent child, Object constraint) {
@@ -113,8 +114,8 @@ public class PGridListLayout extends AbstractMapPLayout {
 	}
 	
 	@Override
-	protected void clearAllInfosInternal() {
-		super.clearAllInfosInternal();
+	protected void clearAllDataInternal() {
+		super.clearAllDataInternal();
 		rowList.clear();
 		Arrays.fill(cachedColSizes, 0);
 		cachedRowSize = 0;
@@ -229,6 +230,39 @@ public class PGridListLayout extends AbstractMapPLayout {
 	
 	public PInsets getInsets() {
 		return getStyleAttribute(ATTRIBUTE_KEY_INSETS, insets);
+	}
+	
+	public List<PComponent> getChildren(PTableIndex index) {
+		return getChildren(index, null);
+	}
+	
+	public List<PComponent> getChildren(PTableIndex index, List<PComponent> result) {
+		int colIdx = index.getColumn();
+		int rowIdx = index.getRow();
+		if (colIdx == -1) {
+			int resultSize = getColumnCount();
+			if (result == null) {
+				result = new ArrayList<>(resultSize);
+			}
+			for (colIdx = 0; colIdx < resultSize; colIdx++) {
+				result.add(getChild(colIdx, rowIdx));
+			}
+		} else if (rowIdx == -1) {
+			int resultSize = getRowCount();
+			if (result == null) {
+				result = new ArrayList<>(resultSize);
+			}
+			for (rowIdx = 0; rowIdx < resultSize; rowIdx++) {
+				result.add(getChild(colIdx, rowIdx));
+			}
+		} else {
+			PComponent comp = getChild(colIdx, rowIdx);
+			if (result == null) {
+				return Collections.singletonList(comp);
+			}
+			result.add(comp);
+		}
+		return result;
 	}
 	
 	public PComponent getChild(PTableCellIndex index) {
@@ -414,20 +448,27 @@ public class PGridListLayout extends AbstractMapPLayout {
 					cellW = sizeCol;
 					cellH = sizeRow;
 				}
+				if (cellX + cellW > fx) {
+					cellW = Math.max(0, fx - cellX);
+				}
+				if (cellY + cellH > fy) {
+					cellH = Math.max(0, fy - cellY);
+				}
 				PComponent child = row[colIdx];
-				PSize childPrefSize = getPreferredSizeOf(child);
-				int childPrefW = childPrefSize.getWidth();
-				int childPrefH = childPrefSize.getHeight();
-				int childX = alignX.getLeftX(cellX, cellW, childPrefW);
-				int childY = alignY.getTopY(cellY, cellH, childPrefH);
-				int childW = alignX.getWidth(cellX, cellW, childPrefW);
-				int childH = alignY.getHeight(cellY, cellH, childPrefH);
-				int childFx = Math.min(childX + childW, fx);
-				int childFy = Math.min(childY + childH, fy);
-				childW = Math.max(childFx - childX, 0);
-				childH = Math.max(childFy - childY, 0);
+//				PSize childPrefSize = getPreferredSizeOf(child);
+//				int childPrefW = childPrefSize.getWidth();
+//				int childPrefH = childPrefSize.getHeight();
+//				int childX = alignX.getLeftX(cellX, cellW, childPrefW);
+//				int childY = alignY.getTopY(cellY, cellH, childPrefH);
+//				int childW = alignX.getWidth(cellX, cellW, childPrefW);
+//				int childH = alignY.getHeight(cellY, cellH, childPrefH);
+//				int childFx = Math.min(childX + childW, fx);
+//				int childFy = Math.min(childY + childH, fy);
+//				childW = Math.max(childFx - childX, 0);
+//				childH = Math.max(childFy - childY, 0);
 				
-				setChildBounds(child, childX, childY, childW, childH);
+//				setChildCellFilled(child, childX, childY, childW, childH);
+				setChildCell(child, cellX, cellY, cellW, cellH, alignX, alignY);
 				if (isHorizontal) {
 					cellY += cellH + gapCol;
 				} else {

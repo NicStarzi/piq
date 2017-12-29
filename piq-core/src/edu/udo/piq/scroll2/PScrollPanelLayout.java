@@ -1,10 +1,11 @@
 package edu.udo.piq.scroll2;
 
-import edu.udo.piq.Axis;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PSize;
-import edu.udo.piq.tools.AbstractEnumPLayout;
+import edu.udo.piq.layouts.AbstractEnumPLayout;
+import edu.udo.piq.layouts.Axis;
+import edu.udo.piq.layouts.PComponentLayoutData;
 
 public class PScrollPanelLayout extends AbstractEnumPLayout<PScrollPanelLayout.Constraint> {
 	
@@ -30,9 +31,9 @@ public class PScrollPanelLayout extends AbstractEnumPLayout<PScrollPanelLayout.C
 	}
 	
 	@Override
-	protected void onChildRemoved(PCompInfo removedCompInfo) {
-		super.onChildRemoved(removedCompInfo);
-		if (removedCompInfo.getConstraint() == Constraint.BODY) {
+	protected void onChildRemoved(PComponentLayoutData data) {
+		super.onChildRemoved(data);
+		if (data.getConstraint() == Constraint.BODY) {
 			needsToCheckScrollbars = true;
 		}
 	}
@@ -140,8 +141,8 @@ public class PScrollPanelLayout extends AbstractEnumPLayout<PScrollPanelLayout.C
 		PScrollBar barY = getScrollBarY();
 		int barPrefW = getPreferredSizeOf(barY).getWidth();
 		int barPrefH = getPreferredSizeOf(barX).getHeight();
-		setChildBounds(barX, x, fy - barPrefH, w - barPrefW, barPrefH);
-		setChildBounds(barY, fx - barPrefW, y, barPrefW, h - barPrefH);
+		setChildCellFilled(barX, x, fy - barPrefH, w - barPrefW, barPrefH);
+		setChildCellFilled(barY, fx - barPrefW, y, barPrefW, h - barPrefH);
 		w -= barPrefW;
 		h -= barPrefH;
 		
@@ -157,7 +158,7 @@ public class PScrollPanelLayout extends AbstractEnumPLayout<PScrollPanelLayout.C
 		int bodyY = y - offsetY;
 		int bodyW = w + offsetX;
 		int bodyH = h + offsetY;
-		setChildBounds(body, bodyX, bodyY, bodyW, bodyH);
+		setChildCellFilled(body, bodyX, bodyY, bodyW, bodyH);
 		owner.onBodyLaidOut(w, h);
 	}
 	

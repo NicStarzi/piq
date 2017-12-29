@@ -7,11 +7,14 @@ public class DefaultPCheckBoxModel extends AbstractPCheckBoxModel implements PCh
 	
 	protected boolean checked;
 	
+	@Override
 	public void toggleChecked() {
+		Boolean oldValue = Boolean.valueOf(checked);
 		checked = !isChecked();
-		fireChangeEvent();
+		fireChangeEvent(oldValue);
 	}
 	
+	@Override
 	public boolean isChecked() {
 		return checked;
 	}

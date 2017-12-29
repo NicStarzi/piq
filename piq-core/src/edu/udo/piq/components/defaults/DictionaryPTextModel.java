@@ -40,18 +40,20 @@ public class DictionaryPTextModel extends AbstractPTextModel implements PTextMod
 			oldDictionary.removeObs(dctObs);
 		}
 		dct = dictionary;
+		Object oldValue = cachedStr;
 		if (getDictionary() != null) {
 			if (dctObs == null) {
 				dctObs = new PDictionaryObs() {
 					@Override
 					public void onTranslationChangedFor(Object value) {
+						Object oldValue = cachedStr;
 						if (Objects.equals(value, content)) {
-							fireTextChangeEvent();
+							fireChangeEvent(oldValue);
 						}
 					}
 					@Override
 					public void onDictionaryChanged() {
-						fireTextChangeEvent();
+						fireChangeEvent(null);
 					}
 				};
 			}
@@ -60,12 +62,12 @@ public class DictionaryPTextModel extends AbstractPTextModel implements PTextMod
 			String newStr = getDictionary().translate(getValue());
 			if (!Objects.equals(cachedStr, newStr)) {
 				cachedStr = newStr;
-				fireTextChangeEvent();
+				fireChangeEvent(oldValue);
 			}
 		} else {
 			dctObs = null;
 			cachedStr = null;
-			fireTextChangeEvent();
+			fireChangeEvent(oldValue);
 		}
 	}
 	
@@ -74,13 +76,9 @@ public class DictionaryPTextModel extends AbstractPTextModel implements PTextMod
 	}
 	
 	@Override
-	public void setValue(Object value) {
-		if (Objects.equals(content, value)) {
-			return;
-		}
-		content = value;
+	protected void setValueInternal(Object newValue) {
+		content = newValue;
 		cachedStr = null;
-		fireTextChangeEvent();
 	}
 	
 	@Override

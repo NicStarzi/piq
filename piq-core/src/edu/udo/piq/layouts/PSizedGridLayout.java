@@ -7,7 +7,6 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PSize;
 import edu.udo.piq.layouts.PGridLayout.GridConstraint;
-import edu.udo.piq.tools.AbstractMapPLayout;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.util.ThrowException;
 
@@ -17,7 +16,7 @@ public class PSizedGridLayout extends AbstractMapPLayout {
 	public static final int DEFAULT_GAP_BETWEEN_COLUMNS = 4;
 	public static final int DEFAULT_GAP_BETWEEN_ROWS = 4;
 	
-	protected final PCompInfo[] componentGrid;
+	protected final PComponentLayoutData[] componentGrid;
 	protected final SizeUnit[] unitCol;
 	protected final SizeUnit[] unitRow;
 	protected final int[] sizeValCol;
@@ -32,7 +31,7 @@ public class PSizedGridLayout extends AbstractMapPLayout {
 			int numberOfColumns, int numberOfRows)
 	{
 		super(component);
-		componentGrid = new PCompInfo[numberOfColumns * numberOfRows];
+		componentGrid = new PComponentLayoutData[numberOfColumns * numberOfRows];
 		
 		unitCol = new SizeUnit[numberOfColumns];
 		unitRow = new SizeUnit[numberOfRows];
@@ -49,7 +48,9 @@ public class PSizedGridLayout extends AbstractMapPLayout {
 	}
 	
 	@Override
-	protected void onChildAdded(PComponent child, Object constraint) {
+	protected void onChildAdded(PComponentLayoutData data) {
+		Object constraint = data.getConstraint();
+		PComponent child = data.getComponent();
 		if (constraint instanceof String) {
 			constraint = new GridConstraint((String) constraint);
 			setChildConstraint(child, constraint);
@@ -57,14 +58,14 @@ public class PSizedGridLayout extends AbstractMapPLayout {
 		GridConstraint constr = (GridConstraint) constraint;
 		for (int cx = constr.x; cx < constr.x + constr.w; cx++) {
 			for (int cy = constr.y; cy < constr.y + constr.h; cy++) {
-				componentGrid[cellID(cx, cy)] = getInfoFor(child);
+				componentGrid[cellID(cx, cy)] = getDataFor(child);
 			}
 		}
 	}
 	
 	@Override
-	protected void onChildRemoved(PCompInfo removedCompInfo) {
-		GridConstraint constr = (GridConstraint) removedCompInfo.getConstraint();
+	protected void onChildRemoved(PComponentLayoutData data) {
+		GridConstraint constr = (GridConstraint) data.getConstraint();
 		for (int cx = constr.x; cx < constr.x + constr.w; cx++) {
 			for (int cy = constr.y; cy < constr.y + constr.h; cy++) {
 				componentGrid[cellID(cx, cy)] = null;
@@ -219,14 +220,14 @@ public class PSizedGridLayout extends AbstractMapPLayout {
 				"cx < 0 || cx >= getColumnCount()");
 		ThrowException.ifNotWithin(0, getRowCount(), cy,
 				"cy < 0 || cy >= getRowCount()");
-		PCompInfo info = getCellInternal(cx, cy);
-		if (info == null) {
+		PComponentLayoutData data = getCellInternal(cx, cy);
+		if (data == null) {
 			return null;
 		}
-		return info.getComponent();
+		return data.getComponent();
 	}
 	
-	protected PCompInfo getCellInternal(int cx, int cy) {
+	protected PComponentLayoutData getCellInternal(int cx, int cy) {
 		return componentGrid[cellID(cx, cy)];
 	}
 	
@@ -238,6 +239,8 @@ public class PSizedGridLayout extends AbstractMapPLayout {
 	protected void layOutInternal() {
 		PInsets insets = getInsets();
 		PBounds bounds = getOwner().getBoundsWithoutBorder();
+		int fx = bounds.getFinalX() - insets.getFromRight();
+		int fy = bounds.getFinalY() - insets.getFromBottom();
 		int x = bounds.getX() + insets.getFromLeft();
 		int y = bounds.getY() + insets.getFromTop();
 		
@@ -253,10 +256,10 @@ public class PSizedGridLayout extends AbstractMapPLayout {
 			for (int cy = 0; cy < getRowCount(); cy++) {
 				int rowH = sizeRow[cy];
 				
-				PCompInfo info = getCellInternal(cx, cy);
-				if (info != null) {
-					PComponent cell = info.getComponent();
-					GridConstraint constr = (GridConstraint) info.getConstraint();
+				PComponentLayoutData data = getCellInternal(cx, cy);
+				if (data != null) {
+					PComponent child = data.getComponent();
+					GridConstraint constr = (GridConstraint) data.getConstraint();
 					
 					if (cx == constr.x && cy == constr.y) {
 //						System.out.println("cx="+cx+", cy="+cy+", cell="+cell);
@@ -268,21 +271,28 @@ public class PSizedGridLayout extends AbstractMapPLayout {
 						for (int oy = 1; oy < constr.h; oy++) {
 							cellH += sizeRow[cy + oy] + getGapAfterRow(cy + oy - 1);
 						}
+						if (cellX + cellW > fx) {
+							cellW = Math.max(0, fx - cellX);
+						}
+						if (cellY + cellH > fy) {
+							cellH = Math.max(0, fy - cellY);
+						}
 						
-						PSize cellPrefSize = getPreferredSizeOf(cell);
-						int cellPrefW = cellPrefSize.getWidth();
-						int cellPrefH = cellPrefSize.getHeight();
-						int childX = constr.alignH.getLeftX(cellX, cellW, cellPrefW);
-						int childY = constr.alignV.getTopY(cellY, cellH, cellPrefH);
-						int childW = constr.alignH.getWidth(cellX, cellW, cellPrefW);
-						int childH = constr.alignV.getHeight(cellY, cellH, cellPrefH);
+//						PSize cellPrefSize = getPreferredSizeOf(cell);
+//						int cellPrefW = cellPrefSize.getWidth();
+//						int cellPrefH = cellPrefSize.getHeight();
+//						int childX = constr.alignH.getLeftX(cellX, cellW, cellPrefW);
+//						int childY = constr.alignV.getTopY(cellY, cellH, cellPrefH);
+//						int childW = constr.alignH.getWidth(cellX, cellW, cellPrefW);
+//						int childH = constr.alignV.getHeight(cellY, cellH, cellPrefH);
 						
 //						System.out.println("prefSize="+cellPrefSize);
 //						System.out.println("cellX="+cellX+", cellY="+cellY+", cellW="+cellW+", cellH="+cellH);
 //						System.out.println("childX="+childX+", childY="+childY+", childW="+childW+", childH="+childH);
 //						System.out.println();
 						
-						setChildBounds(cell, childX, childY, childW, childH);
+//						setChildCellFilled(cell, childX, childY, childW, childH);
+						setChildCell(child, cellX, cellY, cellW, cellH, constr.getAlignX(), constr.getAlignY());
 					}
 				}
 				cellY += rowH + getGapAfterRow(cy);
@@ -332,11 +342,11 @@ public class PSizedGridLayout extends AbstractMapPLayout {
 			sizeCol[cx] = 0;
 			// Refresh row and column sizes (column by column)
 			for (int cy = 0; cy < getRowCount(); cy++) {
-				PCompInfo info = getCellInternal(cx, cy);
-				if (info == null) {
+				PComponentLayoutData data = getCellInternal(cx, cy);
+				if (data == null) {
 					continue;
 				}
-				GridConstraint constr = (GridConstraint) info.getConstraint();
+				GridConstraint constr = (GridConstraint) data.getConstraint();
 				/*
 				 * A component can be placed in more than one cell if the width
 				 * and/or height of its constraint are larger than 1.
@@ -346,8 +356,8 @@ public class PSizedGridLayout extends AbstractMapPLayout {
 				if (cx != constr.x || cy != constr.y) {
 					continue;
 				}
-				PSize cellPrefSize = getPreferredSizeOf(info.getComponent());
-//				System.out.println("cx="+cx+"; comp="+info.getComponent()+"; prefSize="+cellPrefSize+"; constr="+constr);
+				PSize cellPrefSize = getPreferredSizeOf(data.getComponent());
+//				System.out.println("cx="+cx+"; comp="+data.getComponent()+"; prefSize="+cellPrefSize+"; constr="+constr);
 				int colW = (int) Math.ceil(cellPrefSize.getWidth() / (double) constr.w);
 				int rowH = (int) Math.ceil(cellPrefSize.getHeight() / (double) constr.h);
 				for (int cellX = 0; cellX < constr.w; cellX++) {

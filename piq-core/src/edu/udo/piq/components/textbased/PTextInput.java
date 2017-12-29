@@ -7,7 +7,7 @@ import java.util.Map;
 
 import edu.udo.piq.PClipboard;
 import edu.udo.piq.PKeyboard;
-import edu.udo.piq.PKeyboard.Key;
+import edu.udo.piq.PKeyboard.ActualKey;
 import edu.udo.piq.PKeyboard.Modifier;
 import edu.udo.piq.PKeyboard.VirtualKey;
 import edu.udo.piq.PKeyboardObs;
@@ -18,7 +18,7 @@ public class PTextInput {
 	
 	protected static final int PAGE_UP_OR_DOWN_ROW_COUNT = 20;
 	
-	protected static final Map<Key, KeyResponse> KEY_RESPONSE_MAP = new EnumMap<>(Key.class);
+	protected static final Map<ActualKey, KeyResponse> KEY_RESPONSE_MAP = new EnumMap<>(ActualKey.class);
 	protected static final List<VirtualKeyResponse> VIRTUAL_KEY_RESPONSE_LIST = new ArrayList<>();
 	
 	protected final PKeyboardObs keyObs = new PKeyboardObs() {
@@ -27,11 +27,11 @@ public class PTextInput {
 			PTextInput.this.onStringTyped(keyboard, typedString);
 		}
 		@Override
-		public void onKeyPressed(PKeyboard keyboard, Key key) {
+		public void onKeyPressed(PKeyboard keyboard, ActualKey key) {
 			PTextInput.this.onKeyPressed(keyboard, key);
 		}
 		@Override
-		public void onKeyTriggered(PKeyboard keyboard, Key key) {
+		public void onKeyTriggered(PKeyboard keyboard, ActualKey key) {
 			PTextInput.this.onKeyTriggered(keyboard, key);
 		}
 	};
@@ -57,7 +57,7 @@ public class PTextInput {
 		return owner.getIndexTable();
 	}
 	
-	protected boolean skipInput(PKeyboard keyboard, Key key) {
+	protected boolean skipInput(PKeyboard keyboard, ActualKey key) {
 		return !owner.hasFocus()
 				|| owner.getSelection() == null
 				|| !owner.getSelection().hasSelection()
@@ -89,7 +89,7 @@ public class PTextInput {
 		selection.addSelection(new PListIndex(newFrom));
 	}
 	
-	protected void onKeyPressed(PKeyboard keyboard, Key key) {
+	protected void onKeyPressed(PKeyboard keyboard, ActualKey key) {
 		if (skipInput(keyboard, key)) {
 			return;
 		}
@@ -99,7 +99,7 @@ public class PTextInput {
 		}
 	}
 	
-	protected void onKeyTriggered(PKeyboard keyboard, Key key) {
+	protected void onKeyTriggered(PKeyboard keyboard, ActualKey key) {
 		if (skipInput(keyboard, key)) {
 			return;
 		}
@@ -424,17 +424,17 @@ public class PTextInput {
 	}
 	
 	static {
-		KEY_RESPONSE_MAP.put(Key.BACKSPACE, (kb, self) -> self.keyBackspace(kb));
-		KEY_RESPONSE_MAP.put(Key.DEL, (kb, self) -> self.keyDelete(kb));
-		KEY_RESPONSE_MAP.put(Key.HOME, (kb, self) -> self.keyHome(kb));
-		KEY_RESPONSE_MAP.put(Key.END, (kb, self) -> self.keyEnd(kb));
-		KEY_RESPONSE_MAP.put(Key.LEFT, (kb, self) -> self.keyLeft(kb));
-		KEY_RESPONSE_MAP.put(Key.RIGHT, (kb, self) -> self.keyRight(kb));
-		KEY_RESPONSE_MAP.put(Key.UP, (kb, self) -> self.keyUp(kb));
-		KEY_RESPONSE_MAP.put(Key.DOWN, (kb, self) -> self.keyDown(kb));
-		KEY_RESPONSE_MAP.put(Key.PAGE_UP, (kb, self) -> self.keyPageUp(kb));
-		KEY_RESPONSE_MAP.put(Key.PAGE_DOWN, (kb, self) -> self.keyPageDown(kb));
-		KEY_RESPONSE_MAP.put(Key.A, (kb, self) -> self.keySelectAll(kb));
+		KEY_RESPONSE_MAP.put(ActualKey.BACKSPACE, (kb, self) -> self.keyBackspace(kb));
+		KEY_RESPONSE_MAP.put(ActualKey.DELETE, (kb, self) -> self.keyDelete(kb));
+		KEY_RESPONSE_MAP.put(ActualKey.HOME, (kb, self) -> self.keyHome(kb));
+		KEY_RESPONSE_MAP.put(ActualKey.END, (kb, self) -> self.keyEnd(kb));
+		KEY_RESPONSE_MAP.put(ActualKey.LEFT, (kb, self) -> self.keyLeft(kb));
+		KEY_RESPONSE_MAP.put(ActualKey.RIGHT, (kb, self) -> self.keyRight(kb));
+		KEY_RESPONSE_MAP.put(ActualKey.UP, (kb, self) -> self.keyUp(kb));
+		KEY_RESPONSE_MAP.put(ActualKey.DOWN, (kb, self) -> self.keyDown(kb));
+		KEY_RESPONSE_MAP.put(ActualKey.PAGE_UP, (kb, self) -> self.keyPageUp(kb));
+		KEY_RESPONSE_MAP.put(ActualKey.PAGE_DOWN, (kb, self) -> self.keyPageDown(kb));
+		KEY_RESPONSE_MAP.put(ActualKey.A, (kb, self) -> self.keySelectAll(kb));
 		
 		VIRTUAL_KEY_RESPONSE_LIST.add((kb, self) -> {
 			if (kb.isTriggered(VirtualKey.COPY)) {

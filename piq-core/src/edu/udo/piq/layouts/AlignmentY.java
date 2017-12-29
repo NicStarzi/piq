@@ -22,6 +22,11 @@ public enum AlignmentY {
 			return maxHeight;
 		}
 	},
+	PREFERRED_OR_CENTER {
+		public int getTopY(int topY, int maxHeight, int prefHeight) {
+			return CENTER.getTopY(topY, maxHeight, prefHeight);
+		}
+	},
 	;
 	public static final AlignmentY T = TOP;
 	public static final AlignmentY B = BOTTOM;

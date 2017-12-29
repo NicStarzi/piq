@@ -7,109 +7,158 @@ import java.util.List;
 public interface PKeyboard {
 	
 	/**
-	 * Returns true if the given {@link Key} is being pressed
+	 * Returns true if the given {@link ActualKey} is being pressed
 	 * down at this update cycle.<br>
 	 * 
 	 * @param key the key
 	 * @return whether the key is being pressed right now
 	 * @throws NullPointerException if key is null
 	 */
-	public boolean isPressed(Key key);
+	public boolean isPressed(ActualKey key);
 	
 	/**
-	 * Returns true if the given {@link Key} has just been
+	 * Returns true if the given {@link ActualKey} has just been
 	 * released in the last update cycle.<br>
 	 * 
 	 * @param key the key
 	 * @return whether the key has been released just now
 	 * @throws NullPointerException if key is null
 	 */
-	public boolean isReleased(Key key);
+	public boolean isReleased(ActualKey key);
 	
 	/**
-	 * Returns true if the given {@link Key} has just been
+	 * Returns true if the given {@link ActualKey} has just been
 	 * triggered in the last update cycle.<br>
 	 * 
 	 * @param key the key
 	 * @return whether the key has been triggered just now
 	 * @throws NullPointerException if key is null
 	 */
-	public boolean isTriggered(Key key);
+	public boolean isTriggered(ActualKey key);
 	
-	public default boolean isPressed(VirtualKey key) {
-		switch (key) {
+	public default boolean isEqualKey(ActualKey actualKey, Key unknownKey) {
+		if (unknownKey instanceof ActualKey) {
+			return actualKey == unknownKey;
+		}
+		if (!(unknownKey instanceof VirtualKey)) {
+			return false;
+		}
+		switch ((VirtualKey) unknownKey) {
 		case COPY:
-			return isPressed(Key.C) && isModifierToggled(Modifier.CTRL);
+			return actualKey == ActualKey.C && isModifierToggled(Modifier.CTRL);
 		case CUT:
-			return isPressed(Key.X) && isModifierToggled(Modifier.CTRL);
+			return actualKey == ActualKey.X && isModifierToggled(Modifier.CTRL);
 		case FOCUS_UP:
-			return isPressed(Key.TAB) && isModifierToggled(Modifier.CTRL);
+			return actualKey == ActualKey.TAB && isModifierToggled(Modifier.CTRL);
 		case FOCUS_DOWN:
-			return isPressed(Key.TAB) && isModifierToggled(Modifier.SHIFT)
+			return actualKey == ActualKey.TAB && isModifierToggled(Modifier.SHIFT)
 					&& isModifierToggled(Modifier.CTRL);
 		case FOCUS_NEXT:
-			return isPressed(Key.TAB);
+			return actualKey == ActualKey.TAB;
 		case FOCUS_PREV:
-			return isPressed(Key.TAB) && isModifierToggled(Modifier.SHIFT);
+			return actualKey == ActualKey.TAB && isModifierToggled(Modifier.SHIFT);
 		case PASTE:
-			return isPressed(Key.V) && isModifierToggled(Modifier.CTRL);
+			return actualKey == ActualKey.V && isModifierToggled(Modifier.CTRL);
 		case REDO:
-			return isPressed(Key.Y) && isModifierToggled(Modifier.CTRL);
+			return actualKey == ActualKey.Y && isModifierToggled(Modifier.CTRL);
 		case UNDO:
-			return isPressed(Key.Z) && isModifierToggled(Modifier.CTRL);
+			return actualKey == ActualKey.Z && isModifierToggled(Modifier.CTRL);
+		case COMMAND:
+			return actualKey == ActualKey.CTRL || isModifierToggled(Modifier.CTRL);
 		default:
 			return false;
 		}
 	}
 	
-	public default boolean isReleased(VirtualKey key) {
-		switch (key) {
+	public default boolean isPressed(Key key) {
+		if (!(key instanceof VirtualKey)) {
+			return false;
+		}
+		switch ((VirtualKey) key) {
 		case COPY:
-			return isReleased(Key.C) && isModifierToggled(Modifier.CTRL);
+			return isPressed(ActualKey.C) && isModifierToggled(Modifier.CTRL);
 		case CUT:
-			return isReleased(Key.X) && isModifierToggled(Modifier.CTRL);
+			return isPressed(ActualKey.X) && isModifierToggled(Modifier.CTRL);
 		case FOCUS_UP:
-			return isReleased(Key.TAB) && isModifierToggled(Modifier.CTRL);
+			return isPressed(ActualKey.TAB) && isModifierToggled(Modifier.CTRL);
 		case FOCUS_DOWN:
-			return isReleased(Key.TAB) && isModifierToggled(Modifier.SHIFT)
+			return isPressed(ActualKey.TAB) && isModifierToggled(Modifier.SHIFT)
 					&& isModifierToggled(Modifier.CTRL);
 		case FOCUS_NEXT:
-			return isReleased(Key.TAB);
+			return isPressed(ActualKey.TAB);
 		case FOCUS_PREV:
-			return isReleased(Key.TAB) && isModifierToggled(Modifier.SHIFT);
+			return isPressed(ActualKey.TAB) && isModifierToggled(Modifier.SHIFT);
 		case PASTE:
-			return isReleased(Key.V) && isModifierToggled(Modifier.CTRL);
+			return isPressed(ActualKey.V) && isModifierToggled(Modifier.CTRL);
 		case REDO:
-			return isReleased(Key.Y) && isModifierToggled(Modifier.CTRL);
+			return isPressed(ActualKey.Y) && isModifierToggled(Modifier.CTRL);
 		case UNDO:
-			return isReleased(Key.Z) && isModifierToggled(Modifier.CTRL);
+			return isPressed(ActualKey.Z) && isModifierToggled(Modifier.CTRL);
+		case COMMAND:
+			return isPressed(ActualKey.CTRL) || isModifierToggled(Modifier.CTRL);
 		default:
 			return false;
 		}
 	}
 	
-	public default boolean isTriggered(VirtualKey key) {
-		switch (key) {
+	public default boolean isReleased(Key key) {
+		if (!(key instanceof VirtualKey)) {
+			return false;
+		}
+		switch ((VirtualKey) key) {
+		case COPY:
+			return isReleased(ActualKey.C) && isModifierToggled(Modifier.CTRL);
+		case CUT:
+			return isReleased(ActualKey.X) && isModifierToggled(Modifier.CTRL);
 		case FOCUS_UP:
-			return isTriggered(Key.TAB) && !isModifierToggled(Modifier.SHIFT)
-					&& isModifierToggled(Modifier.CTRL);
+			return isReleased(ActualKey.TAB) && isModifierToggled(Modifier.CTRL);
 		case FOCUS_DOWN:
-			return isTriggered(Key.TAB) && isModifierToggled(Modifier.SHIFT)
+			return isReleased(ActualKey.TAB) && isModifierToggled(Modifier.SHIFT)
 					&& isModifierToggled(Modifier.CTRL);
 		case FOCUS_NEXT:
-			return isTriggered(Key.TAB) && !isModifierToggled(Modifier.SHIFT);
+			return isReleased(ActualKey.TAB);
 		case FOCUS_PREV:
-			return isTriggered(Key.TAB) && isModifierToggled(Modifier.SHIFT);
-		case COPY:
-			return isTriggered(Key.C) && isModifierToggled(Modifier.CTRL);
-		case CUT:
-			return isTriggered(Key.X) && isModifierToggled(Modifier.CTRL);
+			return isReleased(ActualKey.TAB) && isModifierToggled(Modifier.SHIFT);
 		case PASTE:
-			return isTriggered(Key.V) && isModifierToggled(Modifier.CTRL);
+			return isReleased(ActualKey.V) && isModifierToggled(Modifier.CTRL);
 		case REDO:
-			return isTriggered(Key.Y) && isModifierToggled(Modifier.CTRL);
+			return isReleased(ActualKey.Y) && isModifierToggled(Modifier.CTRL);
 		case UNDO:
-			return isTriggered(Key.Z) && isModifierToggled(Modifier.CTRL);
+			return isReleased(ActualKey.Z) && isModifierToggled(Modifier.CTRL);
+		case COMMAND:
+			return isReleased(ActualKey.CTRL);
+		default:
+			return false;
+		}
+	}
+	
+	public default boolean isTriggered(Key key) {
+		if (!(key instanceof VirtualKey)) {
+			return false;
+		}
+		switch ((VirtualKey) key) {
+		case FOCUS_UP:
+			return isTriggered(ActualKey.TAB) && !isModifierToggled(Modifier.SHIFT)
+					&& isModifierToggled(Modifier.CTRL);
+		case FOCUS_DOWN:
+			return isTriggered(ActualKey.TAB) && isModifierToggled(Modifier.SHIFT)
+					&& isModifierToggled(Modifier.CTRL);
+		case FOCUS_NEXT:
+			return isTriggered(ActualKey.TAB) && !isModifierToggled(Modifier.SHIFT);
+		case FOCUS_PREV:
+			return isTriggered(ActualKey.TAB) && isModifierToggled(Modifier.SHIFT);
+		case COPY:
+			return isTriggered(ActualKey.C) && isModifierToggled(Modifier.CTRL);
+		case CUT:
+			return isTriggered(ActualKey.X) && isModifierToggled(Modifier.CTRL);
+		case PASTE:
+			return isTriggered(ActualKey.V) && isModifierToggled(Modifier.CTRL);
+		case REDO:
+			return isTriggered(ActualKey.Y) && isModifierToggled(Modifier.CTRL);
+		case UNDO:
+			return isTriggered(ActualKey.Z) && isModifierToggled(Modifier.CTRL);
+		case COMMAND:
+			return isTriggered(ActualKey.CTRL);
 		default:
 			return false;
 		}
@@ -129,6 +178,9 @@ public interface PKeyboard {
 	
 	public void removeObs(PKeyboardObs obs);
 	
+	public static interface Key {
+		public String getName();
+	}
 	/**
 	 * An enumeration of all Keyboard keys that are supported by
 	 * a {@link PKeyboard} implementation.<br>
@@ -137,7 +189,7 @@ public interface PKeyboard {
 	 * {@link PKeyboard} implementation its methods will simply ignore
 	 * this key.
 	 */
-	public static enum Key {
+	public static enum ActualKey implements Key {
 		A, B, C, D, E, F, G, H, I,
 		J, K, L, M, N, O, P, Q, R,
 		S, T, U, V, W, X, Y, Z,
@@ -148,16 +200,20 @@ public interface PKeyboard {
 		UP, DOWN, LEFT, RIGHT,
 		
 		SHIFT, TAB, CTRL, SPACE, ENTER, BACKSPACE,
-		DEL, HOME, PAGE_UP, PAGE_DOWN, ALT_GR,
-		ESC, CAPSLOCK, ALT, END,
+		DELETE, HOME, PAGE_UP, PAGE_DOWN, ALT_GRAPH,
+		ESCAPE, CAPSLOCK, ALT, END,
 		;
-		public static final List<PKeyboard.Key> ALL =
-				Collections.unmodifiableList(Arrays.asList(Key.values()));
+		public static final List<PKeyboard.ActualKey> ALL =
+				Collections.unmodifiableList(Arrays.asList(ActualKey.values()));
 		public static final int COUNT = ALL.size();
 		
 		public final int ID = ordinal();
+		
+		public String getName() {
+			return name();
+		}
 	}
-	public static enum VirtualKey {
+	public static enum VirtualKey implements Key {
 		/**
 		 * When this key is triggered the next component in the
 		 * current {@link PFocusTraversal} will become focused.<br>
@@ -179,31 +235,40 @@ public interface PKeyboard {
 		 */
 		FOCUS_DOWN,
 		/**
-		 * This key is used for the COPY-shortcuts. By default this is Ctrl + C.<br>
+		 * This key is used for the COPY-shortcuts. By default this is COMMAND + C.<br>
 		 */
 		COPY,
 		/**
-		 * This key is used for the CUT-shortcuts. By default this is Ctrl + X.<br>
+		 * This key is used for the CUT-shortcuts. By default this is COMMAND + X.<br>
 		 */
 		CUT,
 		/**
-		 * This key is used for the PASTE-shortcuts. By default this is Ctrl + V.<br>
+		 * This key is used for the PASTE-shortcuts. By default this is COMMAND + V.<br>
 		 */
 		PASTE,
 		/**
-		 * This key is used for the UNDO-shortcuts. By default this is Ctrl + Z.<br>
+		 * This key is used for the UNDO-shortcuts. By default this is COMMAND + Z.<br>
 		 */
 		UNDO,
 		/**
-		 * This key is used for the REDO-shortcuts. By default this is Ctrl + Y.<br>
+		 * This key is used for the REDO-shortcuts. By default this is COMMAND + Y.<br>
 		 */
 		REDO,
+		/**
+		 * This key is an alias for the key used in most key combinations like copy, cut and paste.
+		 * On Windows this would be Ctrl. On MacOS this would be Command.
+		 */
+		COMMAND,
 		;
 		public static final List<PKeyboard.VirtualKey> ALL
 			= Collections.unmodifiableList(Arrays.asList(PKeyboard.VirtualKey.values()));
 		public static final int COUNT = ALL.size();
 		
 		public final int ID = ordinal();
+		
+		public String getName() {
+			return name();
+		}
 	}
 	
 	/**
@@ -218,6 +283,7 @@ public interface PKeyboard {
 		ALT_GRAPH,
 		CTRL,
 		META,
+		COMMAND,
 		;
 		public static final List<PKeyboard.Modifier> ALL =
 				Collections.unmodifiableList(Arrays.asList(Modifier.values()));

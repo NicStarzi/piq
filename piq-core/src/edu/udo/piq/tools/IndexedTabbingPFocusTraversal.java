@@ -8,7 +8,7 @@ import java.util.List;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PFocusTraversal;
 import edu.udo.piq.PKeyboard;
-import edu.udo.piq.PKeyboard.Key;
+import edu.udo.piq.PKeyboard.ActualKey;
 import edu.udo.piq.PKeyboard.VirtualKey;
 import edu.udo.piq.components.textbased.PTextComponent;
 
@@ -22,7 +22,7 @@ public class IndexedTabbingPFocusTraversal extends AbstractPFocusTraversal imple
 	}
 	
 	@Override
-	protected void onKeyTriggered(PKeyboard keyboard, Key key) {
+	protected void onKeyTriggered(PKeyboard keyboard, ActualKey key) {
 		PComponent focusOwner = curRoot.getFocusOwner();
 		if (focusOwner == null) {
 			return;

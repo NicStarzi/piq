@@ -6,22 +6,23 @@ import edu.udo.piq.PLayout;
 import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PStyleComponent;
+import edu.udo.piq.layouts.PComponentLayoutData;
 import edu.udo.piq.util.ThrowException;
 
 public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 	
 	protected final PLayoutObs layoutObs = new PLayoutObs() {
 		@Override
-		public void onChildRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {
-			AbstractPLayoutOwner.this.onChildRemoved(child, constraint);
+		public void onChildRemoved(PReadOnlyLayout layout, PComponentLayoutData data) {
+			AbstractPLayoutOwner.this.onChildRemoved(data);
 		}
 		@Override
-		public void onChildAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {
-			AbstractPLayoutOwner.this.onChildAdded(child, constraint);
+		public void onChildAdded(PReadOnlyLayout layout, PComponentLayoutData data) {
+			AbstractPLayoutOwner.this.onChildAdded(data);
 		}
 		@Override
-		public void onChildLaidOut(PReadOnlyLayout layout, PComponent child, Object constraint) {
-			AbstractPLayoutOwner.this.onChildLaidOut(child, constraint);
+		public void onChildLaidOut(PReadOnlyLayout layout, PComponentLayoutData data) {
+			AbstractPLayoutOwner.this.onChildLaidOut(data);
 		}
 		@Override
 		public void onLayoutInvalidated(PReadOnlyLayout layout) {
@@ -97,22 +98,22 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 	 * @return true if this container has any children
 	 */
 	protected boolean hasChildren() {
-		return getChildren().isEmpty();
+		return getLayout().isEmpty();
 	}
 	
-	protected void onChildRemoved(PComponent child, Object constraint) {
-		child.removeObs(childObs);
+	protected void onChildRemoved(PComponentLayoutData data) {
+		data.getComponent().removeObs(childObs);
 		checkForPreferredSizeChange();
 		fireReRenderEvent();
 	}
 	
-	protected void onChildAdded(PComponent child, Object constraint) {
-		child.addObs(childObs);
+	protected void onChildAdded(PComponentLayoutData data) {
+		data.getComponent().addObs(childObs);
 		checkForPreferredSizeChange();
 		fireReRenderEvent();
 	}
 	
-	protected void onChildLaidOut(PComponent child, Object constraint) {
+	protected void onChildLaidOut(PComponentLayoutData data) {
 		fireReRenderEvent();
 	}
 	

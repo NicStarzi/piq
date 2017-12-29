@@ -3,7 +3,7 @@ package edu.udo.piq.tutorial;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PSize;
-import edu.udo.piq.tools.AbstractEnumPLayout;
+import edu.udo.piq.layouts.AbstractEnumPLayout;
 import edu.udo.piq.tutorial.TrianglePLayout.Pos;
 
 public class TrianglePLayout extends AbstractEnumPLayout<Pos> {
@@ -27,7 +27,7 @@ public class TrianglePLayout extends AbstractEnumPLayout<Pos> {
 			int cmpH = sizeCmp.getHeight();
 			int cmpX = x + w / 2 - cmpW / 2;
 			int cmpY = y;
-			setChildBounds(top, cmpX, cmpY, cmpW, cmpH);
+			setChildCellFilled(top, cmpX, cmpY, cmpW, cmpH);
 		}
 		PComponent lft = getChildForConstraint(Pos.BOTTOM_LEFT);
 		if (lft != null) {
@@ -36,7 +36,7 @@ public class TrianglePLayout extends AbstractEnumPLayout<Pos> {
 			int cmpH = sizeCmp.getHeight();
 			int cmpX = x;
 			int cmpY = fy - cmpH;
-			setChildBounds(lft, cmpX, cmpY, cmpW, cmpH);
+			setChildCellFilled(lft, cmpX, cmpY, cmpW, cmpH);
 		}
 		PComponent rgt = getChildForConstraint(Pos.BOTTOM_RIGHT);
 		if (rgt != null) {
@@ -45,7 +45,7 @@ public class TrianglePLayout extends AbstractEnumPLayout<Pos> {
 			int cmpH = sizeCmp.getHeight();
 			int cmpX = fx - cmpW;
 			int cmpY = fy - cmpH;
-			setChildBounds(rgt, cmpX, cmpY, cmpW, cmpH);
+			setChildCellFilled(rgt, cmpX, cmpY, cmpW, cmpH);
 		}
 	}
 	

@@ -11,7 +11,7 @@ import edu.udo.piq.components.PSpinnerModelObs;
 import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.components.defaults.PSpinnerModelInt;
 import edu.udo.piq.layouts.PBorderLayout;
-import edu.udo.piq.layouts.PBorderLayout.Constraint;
+import edu.udo.piq.layouts.PBorderLayout.BorderLayoutConstraint;
 import edu.udo.piq.layouts.PGridLayout;
 import edu.udo.piq.layouts.PGridLayout.GridConstraint;
 import edu.udo.piq.layouts.PGridLayout.Growth;
@@ -35,14 +35,14 @@ public class SwingPTest_PBorderLayout extends AbstractSwingPTest {
 		bodyPnl.setLayout(borderLayout);
 		root.setBody(bodyPnl);
 		
-		Map<Constraint, PColor> colorMap = new EnumMap<>(Constraint.class);
-		colorMap.put(Constraint.TOP,	PColor.RED);
-		colorMap.put(Constraint.LEFT,	PColor.BLUE);
-		colorMap.put(Constraint.RIGHT,	PColor.GREEN);
-		colorMap.put(Constraint.BOTTOM,	PColor.MAGENTA);
-		colorMap.put(Constraint.CENTER,	PColor.YELLOW);
+		Map<BorderLayoutConstraint, PColor> colorMap = new EnumMap<>(BorderLayoutConstraint.class);
+		colorMap.put(BorderLayoutConstraint.TOP,	PColor.RED);
+		colorMap.put(BorderLayoutConstraint.LEFT,	PColor.BLUE);
+		colorMap.put(BorderLayoutConstraint.RIGHT,	PColor.GREEN);
+		colorMap.put(BorderLayoutConstraint.BOTTOM,	PColor.MAGENTA);
+		colorMap.put(BorderLayoutConstraint.CENTER,	PColor.YELLOW);
 		
-		for (Constraint c : Constraint.ALL) {
+		for (BorderLayoutConstraint c : BorderLayoutConstraint.ALL) {
 			TestPanel cell = new TestPanel(colorMap.get(c));
 			bodyPnl.addChild(cell, c);
 		}

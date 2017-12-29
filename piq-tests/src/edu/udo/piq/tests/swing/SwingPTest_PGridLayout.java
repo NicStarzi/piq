@@ -15,6 +15,7 @@ import edu.udo.piq.components.defaults.PSpinnerModelEnum;
 import edu.udo.piq.components.defaults.PSpinnerModelInt;
 import edu.udo.piq.layouts.AlignmentX;
 import edu.udo.piq.layouts.AlignmentY;
+import edu.udo.piq.layouts.PComponentLayoutData;
 import edu.udo.piq.layouts.PGridLayout;
 import edu.udo.piq.layouts.PGridLayout.GridConstraint;
 import edu.udo.piq.layouts.PGridLayout.Growth;
@@ -164,8 +165,8 @@ public class SwingPTest_PGridLayout extends AbstractSwingPTest {
 			if (getParent() == null) {
 				return;
 			}
-			AlignmentX alignX = (AlignmentX) selectAlignX.getList().getSelectedValue();
-			AlignmentY alignY = (AlignmentY) selectAlignY.getList().getSelectedValue();
+			AlignmentX alignX = (AlignmentX) selectAlignX.getList().getLastSelectedContent();
+			AlignmentY alignY = (AlignmentY) selectAlignY.getList().getLastSelectedContent();
 			GridConstraint oldConstraint = (GridConstraint) getConstraintAtParent();
 			if (alignX == oldConstraint.getAlignX()
 					&& alignY == oldConstraint.getAlignY())
@@ -184,8 +185,8 @@ public class SwingPTest_PGridLayout extends AbstractSwingPTest {
 		}
 		
 		@Override
-		protected void onThisLaidOut(Object constraint) {
-			GridConstraint c = (GridConstraint) constraint;
+		protected void onThisLaidOut(PComponentLayoutData data) {
+			GridConstraint c = (GridConstraint) data.getConstraint();
 			selectAlignX.getList().setSelected(c.getAlignX());
 			selectAlignY.getList().setSelected(c.getAlignY());
 		}

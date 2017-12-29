@@ -1,4 +1,11 @@
-package edu.udo.piq;
+package edu.udo.piq.layouts;
+
+import edu.udo.piq.PBounds;
+import edu.udo.piq.PComponent;
+import edu.udo.piq.PInsets;
+import edu.udo.piq.PMouse;
+import edu.udo.piq.PPoint;
+import edu.udo.piq.PSize;
 
 public enum Axis {
 	
@@ -56,9 +63,9 @@ public enum Axis {
 	
 	public final int getCenterCoordinate(PBounds bounds) {
 		if (this == X) {
-			return bounds.getX() + bounds.getWidth() / 2;
+			return bounds.getCenterX();
 		} else {
-			return bounds.getY() + bounds.getHeight() / 2;
+			return bounds.getCenterY();
 		}
 	}
 	

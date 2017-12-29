@@ -6,7 +6,7 @@ import edu.udo.piq.PComponentObs;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
 import edu.udo.piq.PTimer;
-import edu.udo.piq.tools.AbstractMapPLayout;
+import edu.udo.piq.layouts.AbstractMapPLayout;
 
 public class MovingPLayout extends AbstractMapPLayout {
 	
@@ -93,7 +93,7 @@ public class MovingPLayout extends AbstractMapPLayout {
 		int childX = circleX - childW / 2;
 		int childY = circleY - childH / 2;
 		
-		setChildBounds(content, childX, childY, childW, childH);
+		setChildCellFilled(content, childX, childY, childW, childH);
 	}
 	
 	protected void onInvalidated() {

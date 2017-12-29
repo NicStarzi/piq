@@ -7,15 +7,18 @@ import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PGlobalEventGenerator;
 import edu.udo.piq.PGlobalEventProvider;
-import edu.udo.piq.PKeyboard.Key;
+import edu.udo.piq.PKeyboard.ActualKey;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.components.defaults.ReRenderPFocusObs;
-import edu.udo.piq.components.util.DefaultPKeyInput;
-import edu.udo.piq.components.util.PKeyInput;
-import edu.udo.piq.components.util.PKeyInput.KeyInputType;
+import edu.udo.piq.components.textbased.PLabel;
+import edu.udo.piq.components.textbased.PTextModel;
+import edu.udo.piq.components.util.DefaultPAccelerator;
+import edu.udo.piq.components.util.PAccelerator;
+import edu.udo.piq.components.util.PAccelerator.KeyInputType;
+import edu.udo.piq.layouts.PComponentLayoutData;
 import edu.udo.piq.layouts.PTupleLayout;
 import edu.udo.piq.layouts.PTupleLayout.Constraint;
 import edu.udo.piq.tools.AbstractPInputLayoutOwner;
@@ -24,8 +27,8 @@ import edu.udo.piq.util.PiqUtil;
 
 public class PCheckBoxTuple extends AbstractPInputLayoutOwner implements PClickable, PGlobalEventGenerator {
 	
-	public static final PKeyInput<PCheckBoxTuple> INPUT_TRIGGER_ENTER =
-			new DefaultPKeyInput<>(KeyInputType.TRIGGER, Key.ENTER, PCheckBoxTuple::canTriggerEnter);
+	public static final PAccelerator<PCheckBoxTuple> INPUT_TRIGGER_ENTER =
+			new DefaultPAccelerator<>(KeyInputType.TRIGGER, ActualKey.ENTER, PCheckBoxTuple::canTriggerEnter);
 	public static final Consumer<PCheckBoxTuple> REACTION_TRIGGER_ENTER = PCheckBoxTuple::onTriggerEnter;
 	public static final String INPUT_IDENTIFIER_TRIGGER_ENTER = "triggerEnter";
 	
@@ -39,7 +42,7 @@ public class PCheckBoxTuple extends AbstractPInputLayoutOwner implements PClicka
 	}
 	
 	protected final ObserverList<PClickObs> obsList
-	= PiqUtil.createDefaultObserverList();
+		= PiqUtil.createDefaultObserverList();
 	private final PClickObs chkBxObs = (chkBx) -> PCheckBoxTuple.this.onCheckBoxClick();
 	private PGlobalEventProvider globEvProv;
 	
@@ -67,12 +70,20 @@ public class PCheckBoxTuple extends AbstractPInputLayoutOwner implements PClicka
 		});
 		addObs(new ReRenderPFocusObs());
 		
-		defineInput(INPUT_IDENTIFIER_TRIGGER_ENTER, INPUT_TRIGGER_ENTER, REACTION_TRIGGER_ENTER);
+		defineInput(PCheckBoxTuple.INPUT_IDENTIFIER_TRIGGER_ENTER, PCheckBoxTuple.INPUT_TRIGGER_ENTER, PCheckBoxTuple.REACTION_TRIGGER_ENTER);
 	}
 	
 	public PCheckBoxTuple(PComponent secondComponent) {
 		this();
 		setSecondComponent(secondComponent);
+	}
+	
+	public PCheckBoxTuple(Object initialLabelValue) {
+		this(new PLabel(initialLabelValue));
+	}
+	
+	public PCheckBoxTuple(PTextModel labelModel) {
+		this(new PLabel(labelModel));
 	}
 	
 	@Override
@@ -85,6 +96,7 @@ public class PCheckBoxTuple extends AbstractPInputLayoutOwner implements PClicka
 		return globEvProv;
 	}
 	
+	@Override
 	protected PTupleLayout getLayoutInternal() {
 		return (PTupleLayout) super.getLayout();
 	}
@@ -151,11 +163,11 @@ public class PCheckBoxTuple extends AbstractPInputLayoutOwner implements PClicka
 		obsList.remove(obs);
 	}
 	
-	public void addObs(PCheckBoxModelObs obs) {
+	public void addObs(PSingleValueModelObs obs) {
 		getCheckBox().addObs(obs);
 	}
 	
-	public void removeObs(PCheckBoxModelObs obs) {
+	public void removeObs(PSingleValueModelObs obs) {
 		getCheckBox().removeObs(obs);
 	}
 	
@@ -182,8 +194,9 @@ public class PCheckBoxTuple extends AbstractPInputLayoutOwner implements PClicka
 	}
 	
 	@Override
-	protected void onChildAdded(PComponent child, Object constraint) {
-		if (constraint == Constraint.FIRST) {
+	protected void onChildAdded(PComponentLayoutData data) {
+		if (data.getConstraint() == Constraint.FIRST) {
+			PComponent child = data.getComponent();
 			if (!(child instanceof PCheckBox)) {
 				throw new IllegalArgumentException("child="+child);
 			}
@@ -192,9 +205,9 @@ public class PCheckBoxTuple extends AbstractPInputLayoutOwner implements PClicka
 	}
 	
 	@Override
-	protected void onChildRemoved(PComponent child, Object constraint) {
-		if (constraint == Constraint.FIRST) {
-			((PCheckBox) child).removeObs(chkBxObs);
+	protected void onChildRemoved(PComponentLayoutData data) {
+		if (data.getConstraint() == Constraint.FIRST) {
+			((PCheckBox) data.getComponent()).removeObs(chkBxObs);
 		}
 	}
 	

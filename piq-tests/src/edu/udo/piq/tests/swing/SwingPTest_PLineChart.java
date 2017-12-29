@@ -9,7 +9,7 @@ import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.layouts.PAnchorLayout;
 import edu.udo.piq.layouts.PBorderLayout;
-import edu.udo.piq.layouts.PBorderLayout.Constraint;
+import edu.udo.piq.layouts.PBorderLayout.BorderLayoutConstraint;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
 import edu.udo.piq.layouts.PWrapLayout;
 
@@ -31,7 +31,7 @@ public class SwingPTest_PLineChart extends AbstractSwingPTest {
 		
 		PPanel btm = new PPanel();
 		btm.setLayout(new PWrapLayout(btm, ListAlignment.CENTERED_LEFT_TO_RIGHT));
-		bodyPnl.addChild(btm, Constraint.BOTTOM);
+		bodyPnl.addChild(btm, BorderLayoutConstraint.BOTTOM);
 		
 		PSlider sldAdd = new PSlider();
 		sldAdd.getModel().setMinValue(0);
@@ -49,7 +49,7 @@ public class SwingPTest_PLineChart extends AbstractSwingPTest {
 		
 		PPanel cnt = new PPanel();
 		cnt.setLayout(new PAnchorLayout(cnt));
-		bodyPnl.addChild(cnt, Constraint.CENTER);
+		bodyPnl.addChild(cnt, BorderLayoutConstraint.CENTER);
 		
 		PLineChart chart = new PLineChart();
 		int i = 0;

@@ -1,4 +1,4 @@
-package edu.udo.piq.tools;
+package edu.udo.piq.layouts;
 
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PLayout;
@@ -34,8 +34,8 @@ public abstract class AbstractEnumPLayout<K extends Enum<K>> extends AbstractArr
 				&& getChildForConstraint(constraint) == null;
 	}
 	
-	protected int getOrdinal(PCompInfo info) {
-		return getOrdinal(info.constr);
+	protected int getOrdinal(PComponentLayoutData data) {
+		return getOrdinal(data.getConstraint());
 	}
 	
 	protected int getOrdinal(Object constr) {

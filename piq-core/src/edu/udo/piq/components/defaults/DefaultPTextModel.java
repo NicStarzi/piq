@@ -6,7 +6,7 @@ import edu.udo.piq.tools.AbstractPTextModel;
 public class DefaultPTextModel extends AbstractPTextModel implements PTextModel {
 	
 	protected Object content;
-	protected String cachedStr;
+	protected String cachedStr = "";
 	
 	public DefaultPTextModel() {
 	}
@@ -17,10 +17,9 @@ public class DefaultPTextModel extends AbstractPTextModel implements PTextModel 
 	}
 	
 	@Override
-	public void setValue(Object value) {
-		content = value;
+	protected void setValueInternal(Object newValue) {
+		content = newValue;
 		cachedStr = null;
-		fireTextChangeEvent();
 	}
 	
 	@Override
@@ -33,11 +32,14 @@ public class DefaultPTextModel extends AbstractPTextModel implements PTextModel 
 		if (cachedStr != null) {
 			return cachedStr;
 		}
-		Object value = getValue();
-		if (value != null) {
-			cachedStr = value.toString();
+		if (getValue() != null) {
+			refreshCachedStringValue();
 		}
 		return cachedStr;
+	}
+	
+	protected void refreshCachedStringValue() {
+		cachedStr = getValue().toString();
 	}
 	
 }

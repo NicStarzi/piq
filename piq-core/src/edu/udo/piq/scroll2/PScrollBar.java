@@ -1,6 +1,5 @@
 package edu.udo.piq.scroll2;
 
-import edu.udo.piq.Axis;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
@@ -15,7 +14,8 @@ import edu.udo.piq.components.PClickObs;
 import edu.udo.piq.components.PClickable;
 import edu.udo.piq.components.PColoredShape;
 import edu.udo.piq.components.PColoredShape.Shape;
-import edu.udo.piq.tools.AbstractEnumPLayout;
+import edu.udo.piq.layouts.AbstractEnumPLayout;
+import edu.udo.piq.layouts.Axis;
 import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.tools.ImmutablePSize;
@@ -489,13 +489,13 @@ public class PScrollBar extends AbstractPLayoutOwner {
 				knobX = x;
 				knobY = y + btnH + knobH / 2 + (int) ((bgH - knobH) * scrollPercent) - knobH / 2;
 			}
-			setChildBounds(btnUp, x, y, btnW, btnH);
-			setChildBounds(btnDown, btnDownX, btnDownY, btnW, btnH);
+			setChildCellFilled(btnUp, x, y, btnW, btnH);
+			setChildCellFilled(btnDown, btnDownX, btnDownY, btnW, btnH);
 			
 			PComponent bg = getChildForConstraint(Part.BACKGROUND);
-			setChildBounds(bg, bgX, bgY, bgW, bgH);
+			setChildCellFilled(bg, bgX, bgY, bgW, bgH);
 			
-			setChildBounds(knob, knobX, knobY, knobW, knobH);
+			setChildCellFilled(knob, knobX, knobY, knobW, knobH);
 		}
 		
 	}

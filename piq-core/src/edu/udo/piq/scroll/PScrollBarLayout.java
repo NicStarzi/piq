@@ -7,7 +7,7 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PLayout;
 import edu.udo.piq.PSize;
-import edu.udo.piq.tools.AbstractEnumPLayout;
+import edu.udo.piq.layouts.AbstractEnumPLayout;
 
 public class PScrollBarLayout 
 	extends AbstractEnumPLayout<PScrollBarLayout.Constraint> 
@@ -132,7 +132,7 @@ public class PScrollBarLayout
 				h -= compH;
 				y += compH;
 			}
-			setChildBounds(btn1, compX, compY, compW, compH);
+			setChildCellFilled(btn1, compX, compY, compW, compH);
 		}
 		PComponent btn2 = getChildForConstraint(Constraint.BTN2);
 		if (btn2 != null) {
@@ -156,7 +156,7 @@ public class PScrollBarLayout
 				h -= compH;
 				fy -= compH;
 			}
-			setChildBounds(btn2, compX, compY, compW, compH);
+			setChildCellFilled(btn2, compX, compY, compW, compH);
 		}
 		PScrollBarThumb thumb = (PScrollBarThumb) getChildForConstraint(Constraint.THUMB);
 		int thumbX;
@@ -180,7 +180,7 @@ public class PScrollBarLayout
 				thumbX = x;
 				thumbY = y + (int) (h * scroll);
 			}
-			setChildBounds(thumb, thumbX, thumbY, thumbW, thumbH);
+			setChildCellFilled(thumb, thumbX, thumbY, thumbW, thumbH);
 		} else {
 			thumbX = x;
 			thumbY = y;
@@ -206,7 +206,7 @@ public class PScrollBarLayout
 				compH = thumbY - compY;
 				h -= compH;
 			}
-			setChildBounds(bg1, compX, compY, compW, compH);
+			setChildCellFilled(bg1, compX, compY, compW, compH);
 		}
 		PComponent bg2 = getChildForConstraint(Constraint.BG2);
 		if (bg2 != null) {
@@ -225,7 +225,7 @@ public class PScrollBarLayout
 				compW = w;
 				compH = h;
 			}
-			setChildBounds(bg2, compX, compY, compW, compH);
+			setChildCellFilled(bg2, compX, compY, compW, compH);
 		}
 	}
 	

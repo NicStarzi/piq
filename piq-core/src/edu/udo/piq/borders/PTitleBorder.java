@@ -9,9 +9,10 @@ import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
+import edu.udo.piq.components.PSingleValueModel;
+import edu.udo.piq.components.PSingleValueModelObs;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.components.textbased.PTextModel;
-import edu.udo.piq.components.textbased.PTextModelObs;
 import edu.udo.piq.components.util.SymbolicFontKey;
 import edu.udo.piq.tools.AbstractPBorder;
 import edu.udo.piq.tools.MutablePInsets;
@@ -20,7 +21,7 @@ public class PTitleBorder extends AbstractPBorder {
 	
 	public static final Object FONT_ID = new SymbolicFontKey(PTitleBorder.class);
 	
-	protected final PTextModelObs modelObs = this::onModelValueChanged;
+	protected final PSingleValueModelObs modelObs = this::onModelValueChanged;
 	protected final MutablePInsets insets = new MutablePInsets();
 	protected PTextModel model;
 	protected Orientation orientation = Orientation.TOP_LEFT;
@@ -72,7 +73,7 @@ public class PTitleBorder extends AbstractPBorder {
 		setOrientation(orientation);
 	}
 	
-	protected void onModelValueChanged(PTextModel model) {
+	protected void onModelValueChanged(PSingleValueModel model, Object oldValue, Object newValue) {
 		fireInsetsChangedEvent();
 		fireReRenderEvent();
 	}

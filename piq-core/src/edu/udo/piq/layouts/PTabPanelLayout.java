@@ -1,14 +1,12 @@
 package edu.udo.piq.layouts;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PSize;
-import edu.udo.piq.tools.AbstractMapPLayout;
 
 public class PTabPanelLayout extends AbstractMapPLayout {
 	
@@ -23,7 +21,9 @@ public class PTabPanelLayout extends AbstractMapPLayout {
 	}
 	
 	@Override
-	protected void onChildAdded(PComponent child, Object constraint) {
+	protected void onChildAdded(PComponentLayoutData data) {
+		Object constraint = data.getConstraint();
+		PComponent child = data.getComponent();
 		if (constraint == Constraint.TAB) {
 			tabList.add(child);
 		} else if (constraint == Constraint.TAB_BACKGROUND) {
@@ -41,9 +41,9 @@ public class PTabPanelLayout extends AbstractMapPLayout {
 	}
 	
 	@Override
-	protected void onChildRemoved(PCompInfo removedCompInfo) {
-		Object constraint = removedCompInfo.getConstraint();
-		PComponent child = removedCompInfo.getComponent();
+	protected void onChildRemoved(PComponentLayoutData data) {
+		Object constraint = data.getConstraint();
+		PComponent child = data.getComponent();
 		if (constraint == Constraint.TAB) {
 			tabList.remove(child);
 		} else if (constraint == Constraint.TAB_BACKGROUND) {
@@ -136,7 +136,7 @@ public class PTabPanelLayout extends AbstractMapPLayout {
 		int tabH = getTabsHeight();
 		
 		if (getTabBackground() != null) {
-			setChildBounds(getTabBackground(), x, y, w, tabH);
+			setChildCellFilled(getTabBackground(), x, y, w, tabH);
 		}
 		
 		int tabX = x;
@@ -144,7 +144,7 @@ public class PTabPanelLayout extends AbstractMapPLayout {
 		for (PComponent tab : tabList) {
 			PSize tabPrefSize = getPreferredSizeOf(tab);
 			int tabW = tabPrefSize.getWidth();
-			setChildBounds(tab, tabX, tabY, tabW, tabH);
+			setChildCellFilled(tab, tabX, tabY, tabW, tabH);
 			tabX += tabW;
 		}
 		
@@ -152,9 +152,9 @@ public class PTabPanelLayout extends AbstractMapPLayout {
 		for (int i = 0; i < bodyList.size(); i++) {
 			PComponent body = bodyList.get(i);
 			if (i == selectedIndex) {
-				setChildBounds(body, x, y + tabH, w, h - tabH);
+				setChildCellFilled(body, x, y + tabH, w, h - tabH);
 			} else {
-				setChildBounds(body, x, y + tabH, 0, 0);
+				setChildCellFilled(body, x, y + tabH, 0, 0);
 			}
 		}
 	}
@@ -205,7 +205,7 @@ public class PTabPanelLayout extends AbstractMapPLayout {
 	}
 	
 	@Override
-	public Collection<PComponent> getChildren() {
+	public Iterable<PComponent> getChildren() {
 		return Collections.unmodifiableList(sortedChildList);
 	}
 	

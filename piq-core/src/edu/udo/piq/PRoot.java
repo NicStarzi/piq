@@ -1,18 +1,22 @@
 package edu.udo.piq;
 
 import java.io.File;
+import java.util.Collection;
+import java.util.Collections;
 
+import edu.udo.piq.actions.PComponentAction;
 import edu.udo.piq.borders.PTitleBorder;
 import edu.udo.piq.components.PProgressBar;
 import edu.udo.piq.components.containers.PGlassPanel;
-import edu.udo.piq.components.containers.PMenuBar;
 import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.components.defaults.DefaultPDnDSupport;
+import edu.udo.piq.components.popup2.PMenuBar;
 import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.components.textbased.PTextArea;
 import edu.udo.piq.components.util.StandardFontKey;
 import edu.udo.piq.components.util.SymbolicFontKey;
 import edu.udo.piq.components.util.SymbolicImageKey;
+import edu.udo.piq.layouts.PComponentLayoutData;
 import edu.udo.piq.layouts.PRootLayout;
 import edu.udo.piq.layouts.PRootLayout.Constraint;
 import edu.udo.piq.tools.AbstractPTextComponent;
@@ -82,6 +86,26 @@ public interface PRoot extends PComponent {
 	}
 	
 	/**
+	 * <p>A root is never laid out.</p>
+	 * @return always {@code null}
+	 * @author Nic
+	 */
+	@Override
+	default PComponentLayoutData getLayoutData() {
+		return null;
+	}
+	
+	/**
+	 * <p>A root is never laid out.</p>
+	 * @return always {@code null}
+	 * @author Nic
+	 */
+	@Override
+	default PLayoutPreference getLayoutPreference() {
+		return PComponent.super.getLayoutPreference();
+	}
+	
+	/**
 	 * <p>A root can not be styled. 
 	 * Always throws an exception.</p>
 	 * @param style ignored
@@ -137,6 +161,41 @@ public interface PRoot extends PComponent {
 	@Override
 	public default PDnDSupport getDragAndDropSupport() {
 		return null;
+	}
+	
+	@Override
+	public default void addActionMapping(Object featureKey, PComponentAction feature) {
+		throw new UnsupportedOperationException("this instanceof PRoot");
+	}
+	
+	@Override
+	public default void removeActionMapping(Object actionKey) {
+		throw new UnsupportedOperationException("this instanceof PRoot");
+	}
+	
+	@Override
+	public default void clearActionMap() {
+		throw new UnsupportedOperationException("this instanceof PRoot");
+	}
+	
+	@Override
+	public default PComponentAction getAction(Object actionKey) {
+		return null;
+	}
+	
+	@Override
+	public default Collection<PComponentAction> getAllActions() {
+		return Collections.emptySet();
+	}
+	
+	@Override
+	public default boolean hasActionForKey(Object actionKey) {
+		return false;
+	}
+	
+	@Override
+	public default boolean hasAction(PComponentAction action) {
+		return false;
 	}
 	
 	/**
@@ -637,6 +696,8 @@ public interface PRoot extends PComponent {
 	 * @see #setFocusOwner(PComponent)
 	 */
 	public PComponent getFocusOwner();
+	
+	public PComponent getLastStrongFocusOwner();
 	
 	/**
 	 * Sets the focused {@link PComponent} of this GUI to the given component.<br>

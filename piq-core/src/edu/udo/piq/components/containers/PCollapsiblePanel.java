@@ -7,15 +7,17 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.borders.PLineBorder;
 import edu.udo.piq.components.PCheckBox;
-import edu.udo.piq.components.PCheckBoxModelObs;
+import edu.udo.piq.components.PCheckBoxModel;
 import edu.udo.piq.components.PExpandButton;
+import edu.udo.piq.components.PSingleValueModel;
+import edu.udo.piq.components.PSingleValueModelObs;
 import edu.udo.piq.layouts.PCollapsibleLayout;
 import edu.udo.piq.layouts.PCollapsibleLayout.Constraint;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
 
 public class PCollapsiblePanel extends AbstractPLayoutOwner {
 	
-	private final PCheckBoxModelObs expandModelObs = (mdl) -> getLayout().setExpanded(mdl.isChecked());
+	private final PSingleValueModelObs expandModelObs = this::onExpandChanged;
 	
 	public PCollapsiblePanel() {
 		this(null, new PPanel());
@@ -40,6 +42,11 @@ public class PCollapsiblePanel extends AbstractPLayoutOwner {
 		setLayout(new PCollapsibleLayout(this));
 		setExpandButton(new PExpandButton());
 		getExpandButton().getModel().setValue(initiallyExpanded);
+	}
+	
+	protected void onExpandChanged(PSingleValueModel model, Object oldValue, Object newValue) {
+		PCheckBoxModel chkBxMdl = (PCheckBoxModel) model;
+		getLayout().setExpanded(chkBxMdl.isChecked());
 	}
 	
 	public void setExpanded(boolean value) {

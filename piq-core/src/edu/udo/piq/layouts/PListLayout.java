@@ -6,8 +6,8 @@ import java.util.List;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
+import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PSize;
-import edu.udo.piq.tools.AbstractMapPLayout;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.util.ThrowException;
 
@@ -15,6 +15,8 @@ public class PListLayout extends AbstractMapPLayout {
 	
 	public static final ListAlignment DEFAULT_ALIGNMENT = ListAlignment.TOP_TO_BOTTOM;
 	public static final PInsets DEFAULT_INSETS = new ImmutablePInsets(4);
+	public static final AlignmentX DEFAULT_ALIGN_X = AlignmentX.PREFERRED_OR_CENTER;
+	public static final AlignmentY DEFAULT_ALIGN_Y = AlignmentY.PREFERRED_OR_CENTER;
 	public static final int DEFAULT_GAP = 2;
 	
 	/**
@@ -23,6 +25,8 @@ public class PListLayout extends AbstractMapPLayout {
 	protected final List<PComponent> compList = new ArrayList<>();
 	protected PSize[] cachedPrefSizes;
 	protected ListAlignment align = DEFAULT_ALIGNMENT;
+	protected AlignmentX alignX = DEFAULT_ALIGN_X;
+	protected AlignmentY alignY = DEFAULT_ALIGN_Y;
 	protected PInsets insets = DEFAULT_INSETS;
 	protected int gap = DEFAULT_GAP;
 	
@@ -46,13 +50,13 @@ public class PListLayout extends AbstractMapPLayout {
 	}
 	
 	@Override
-	protected void onChildAdded(PComponent child, Object constraint) {
-		if (constraint == null) {
-			compList.add(child);
+	protected void onChildAdded(PComponentLayoutData data) {
+		if (data.getConstraint() == null) {
+			compList.add(data.getComponent());
 		} else {
-			compList.add((Integer) constraint, child);
+			compList.add((Integer) data.getConstraint(), data.getComponent());
 		}
-		int index = compList.indexOf(child);
+		int index = compList.indexOf(data.getComponent());
 		for (int i = index; i < compList.size(); i++) {
 			Integer con = Integer.valueOf(i);
 			setChildConstraint(compList.get(i), con);
@@ -61,9 +65,9 @@ public class PListLayout extends AbstractMapPLayout {
 	}
 	
 	@Override
-	protected void onChildRemoved(PCompInfo removedCompInfo) {
-		int index = (Integer) removedCompInfo.getConstraint();
-		ThrowException.ifNotEqual(removedCompInfo.getComponent(), compList.get(index),
+	protected void onChildRemoved(PComponentLayoutData data) {
+		int index = (Integer) data.getConstraint();
+		ThrowException.ifNotEqual(data.getComponent(), compList.get(index),
 				"compList.get(index) != removedComponent");
 		compList.remove(index);
 		for (int i = index; i < compList.size(); i++) {
@@ -74,8 +78,8 @@ public class PListLayout extends AbstractMapPLayout {
 	}
 	
 	@Override
-	protected void clearAllInfosInternal() {
-		super.clearAllInfosInternal();
+	protected void clearAllDataInternal() {
+		super.clearAllDataInternal();
 		compList.clear();
 	}
 	
@@ -101,6 +105,35 @@ public class PListLayout extends AbstractMapPLayout {
 	
 	public ListAlignment getAlignment() {
 		return align;
+	}
+	
+	public void setAlignment(AlignmentX alignmentX, AlignmentY alignmentY) {
+		setAlignmentX(alignmentX);
+		setAlignmentY(alignmentY);
+	}
+	
+	public void setAlignmentX(AlignmentX value) {
+		ThrowException.ifNull(value, "value == null");
+		if (alignX != value) {
+			alignX = value;
+			invalidate();
+		}
+	}
+	
+	public AlignmentX getAlignmentX() {
+		return getStyleAttribute(PReadOnlyLayout.ATTRIBUTE_KEY_ALIGNMENT_X, alignX);
+	}
+	
+	public void setAlignmentY(AlignmentY value) {
+		ThrowException.ifNull(value, "value == null");
+		if (alignY != value) {
+			alignY = value;
+			invalidate();
+		}
+	}
+	
+	public AlignmentY getAlignmentY() {
+		return getStyleAttribute(PReadOnlyLayout.ATTRIBUTE_KEY_ALIGNMENT_Y, alignY);
 	}
 	
 	public void setInsets(PInsets value) {
@@ -256,6 +289,9 @@ public class PListLayout extends AbstractMapPLayout {
 		int x = Math.max(alignedX, minX);
 		int y = Math.max(alignedY, minY);
 		
+		AlignmentX alignX = getAlignmentX();
+		AlignmentY alignY = getAlignmentY();
+		
 		for (int i = 0; i < compList.size(); i++) {
 			PComponent comp = compList.get(i);
 			PSize compPrefSize = cachedPrefSizes[i];
@@ -263,10 +299,10 @@ public class PListLayout extends AbstractMapPLayout {
 			int compPrefH = compPrefSize.getHeight();
 			
 			if (isHorizontal) {
-				setChildBounds(comp, x, y, compPrefW, h);
+				setChildCell(comp, x, y, compPrefW, h, alignX, alignY);
 				x += compPrefW + gap;
 			} else {
-				setChildBounds(comp, x, y, w, compPrefH);
+				setChildCell(comp, x, y, w, compPrefH, alignX, alignY);
 				y += compPrefH + gap;
 			}
 		}

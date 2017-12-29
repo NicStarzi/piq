@@ -1,7 +1,5 @@
 package edu.udo.piq;
 
-import java.util.Collection;
-
 import edu.udo.piq.components.containers.PGlassPanel;
 import edu.udo.piq.layouts.PFreeLayout;
 
@@ -38,7 +36,7 @@ public interface PRootOverlay {
 	 */
 	public PFreeLayout getLayout();
 	
-	public default Collection<PComponent> getChildren() {
+	public default Iterable<PComponent> getChildren() {
 		return getLayout().getChildren();
 	}
 	

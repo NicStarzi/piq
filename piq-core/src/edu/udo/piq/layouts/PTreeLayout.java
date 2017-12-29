@@ -15,7 +15,6 @@ import edu.udo.piq.PInsets;
 import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.collections.PTreeIndex;
-import edu.udo.piq.tools.AbstractMapPLayout;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PiqUtil;
@@ -100,14 +99,14 @@ public class PTreeLayout extends AbstractMapPLayout implements PReadOnlyLayout {
 	}
 	
 	@Override
-	protected void onChildAdded(PComponent child, Object constraint) {
-		PTreeIndex index = (PTreeIndex) constraint;
+	protected void onChildAdded(PComponentLayoutData data) {
+		PTreeIndex index = (PTreeIndex) data.getConstraint();
 		
 //		PCellComponent cell = (PCellComponent) child;
 //		System.out.println("PTreeLayout2.onChildAdded obj="+cell.getElement()+", idx="+index);
 		if (rootComp == null) {
 			ThrowException.ifFalse(index.isRoot(), "rootIndex.isRoot() == false");
-			rootComp = child;
+			rootComp = data.getComponent();
 			return;
 		}
 		
@@ -119,16 +118,16 @@ public class PTreeLayout extends AbstractMapPLayout implements PReadOnlyLayout {
 			sibblings = new ArrayList<>();
 			childMap.put(parent, sibblings);
 		}
-		sibblings.add(indexVal, child);
+		sibblings.add(indexVal, data.getComponent());
 		if (index.getLastIndex() != sibblings.size() - 1) {
 			correctChildConstraints(sibblings, index.getLastIndex());
 		}
 	}
 	
 	@Override
-	protected void onChildRemoved(PCompInfo removedCompInfo) {
-		PComponent child = removedCompInfo.getComponent();
-		PTreeIndex index = (PTreeIndex) removedCompInfo.getConstraint();
+	protected void onChildRemoved(PComponentLayoutData data) {
+		PComponent child = data.getComponent();
+		PTreeIndex index = (PTreeIndex) data.getConstraint();
 		
 //		PCellComponent cell = (PCellComponent) child;
 //		System.out.println("PTreeLayout2.onChildRemoved obj="+cell.getElement()+", idx="+index);
@@ -156,7 +155,7 @@ public class PTreeLayout extends AbstractMapPLayout implements PReadOnlyLayout {
 	}
 	
 	@Override
-	protected void onChildCleared(PComponent child, Object constraint) {
+	protected void onChildCleared(PComponentLayoutData data) {
 		rootComp = null;
 		childMap.clear();
 		invalidate();
@@ -328,10 +327,10 @@ public class PTreeLayout extends AbstractMapPLayout implements PReadOnlyLayout {
 		int y = ob.getY() + insets.getFromTop();
 		
 		if (isHideRootNode()) {
-			setChildBounds(getRootComponent(), x, y, 0, 0);
+			setChildCellFilled(getRootComponent(), x, y, 0, 0);
 		}
 		for (LayoutData data : layoutCache) {
-			setChildBounds(data.comp, x + data.x, y + data.y, data.w, data.h);
+			setChildCellFilled(data.comp, x + data.x, y + data.y, data.w, data.h);
 		}
 		layoutCache.clear();
 	}

@@ -8,6 +8,7 @@ import edu.udo.piq.PMouse;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
+import edu.udo.piq.components.PSingleValueModel;
 import edu.udo.piq.components.collections.PListIndex;
 import edu.udo.piq.components.util.SymbolicFontKey;
 import edu.udo.piq.tools.AbstractPTextComponent;
@@ -77,9 +78,9 @@ public class PTextArea extends AbstractPTextComponent {
 	}
 	
 	@Override
-	protected void onTextChanged() {
+	protected void onTextChanged(PSingleValueModel model, Object oldValue, Object newValue) {
 		idxTableIsDirty = true;
-		super.onTextChanged();
+		super.onTextChanged(model, oldValue, newValue);
 	}
 	
 	@Override

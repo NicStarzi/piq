@@ -65,9 +65,9 @@ public abstract class PTableIndex implements PModelIndex {
 		if (this == obj) {
 			return true;
 		}
-		if (obj != null && obj instanceof PTableCellIndex) {
-			return getColumn() == ((PTableCellIndex) obj).getColumn()
-					&& getRow() == ((PTableCellIndex) obj).getRow();
+		if (obj != null && obj instanceof PTableIndex) {
+			return getColumn() == ((PTableIndex) obj).getColumn()
+					&& getRow() == ((PTableIndex) obj).getRow();
 		}
 		return false;
 	}

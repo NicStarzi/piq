@@ -1,5 +1,7 @@
 package edu.udo.piq;
 
+import edu.udo.piq.util.ThrowException;
+
 public interface PLayout extends PReadOnlyLayout {
 	
 	/**
@@ -22,8 +24,7 @@ public interface PLayout extends PReadOnlyLayout {
 	 * @see #clearChildren()
 	 * @see #getChildren()
 	 */
-	public void addChild(PComponent component, Object constraint)
-			throws NullPointerException, IllegalArgumentException, IllegalStateException;
+	public void addChild(PComponent component, Object constraint);
 	
 	/**
 	 * Removes the given child from this layout.<br>
@@ -39,8 +40,7 @@ public interface PLayout extends PReadOnlyLayout {
 	 * @see #clearChildren()
 	 * @see #containsChild(PComponent)
 	 */
-	public void removeChild(PComponent child)
-			throws NullPointerException, IllegalArgumentException;
+	public void removeChild(PComponent child);
 	
 	/**
 	 * Removes the child that is registered with the associated constraint.<br>
@@ -56,8 +56,11 @@ public interface PLayout extends PReadOnlyLayout {
 	 * @see #getChildConstraint(PComponent)
 	 * @see #containsChild(Object)
 	 */
-	public void removeChild(Object constraint)
-			throws IllegalArgumentException, IllegalStateException;
+	public default void removeChild(Object constraint) {
+		PComponent child = getChildForConstraint(constraint);
+		ThrowException.ifNull(child, "containsChild(constraint) == false");
+		removeChild(child);
+	}
 	
 	/**
 	 * Removes all children of this layout if this layout contains any children.<br>
@@ -70,23 +73,5 @@ public interface PLayout extends PReadOnlyLayout {
 	 * @see #clearChildren()
 	 */
 	public void clearChildren();
-	
-	public default int max(int a, int b) {
-		return Math.max(a, b);
-	}
-	
-	public default int min(int a, int b) {
-		return Math.min(a, b);
-	}
-	
-	public default int limit(int value, int min, int max) {
-		if (value <= min) {
-			return min;
-		}
-		if (value >= max) {
-			return max;
-		}
-		return value;
-	}
 	
 }

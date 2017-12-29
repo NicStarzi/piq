@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import edu.udo.piq.util.ThrowException;
+
 public interface PSelectionComponent {
 	
 	public PSelection getSelection();
@@ -11,6 +13,55 @@ public interface PSelectionComponent {
 	public PModel getModel();
 	
 	public PModelIndex getIndexAt(int x, int y);
+	
+	public default void setSelected(Object value) {
+		ThrowException.ifNull(getModel(), "getModel() == null");
+		PModelIndex index = getModel().getIndexOf(value);
+		ThrowException.ifNull(index, "getModel().getIndexOf(value) == null");
+		
+		PSelection sel = getSelection();
+		if (sel == null) {
+			return;
+		}
+		if (sel.isSelected(index)) {
+			return;
+		}
+		getSelection().clearSelection();
+		getSelection().addSelection(index);
+	}
+	
+	public default void setSelected(PModelIndex index) {
+		ThrowException.ifNull(index, "index == null");
+		if (getSelection() != null) {
+			getSelection().clearSelection();
+			getSelection().addSelection(index);
+		}
+	}
+	
+	public default List<PModelIndex> getAllSelectedIndices() {
+		if (getSelection() == null) {
+			return Collections.emptyList();
+		}
+		return getSelection().getAllSelected();
+	}
+	
+	public default PModelIndex getLastSelectedIndex() {
+		if (getSelection() == null) {
+			return null;
+		}
+		return getSelection().getLastSelected();
+	}
+	
+	public default Object getLastSelectedContent() {
+		if (getSelection() == null || getModel() == null) {
+			return null;
+		}
+		PModelIndex index = getSelection().getLastSelected();
+		if (index == null) {
+			return null;
+		}
+		return getModel().get(index);
+	}
 	
 	public default Object getContentAt(int x, int y) {
 		PModel model = getModel();
@@ -32,13 +83,19 @@ public interface PSelectionComponent {
 		}
 		PModel model = getModel();
 		if (indices.size() == 1) {
-			return Collections.singletonList(model.get(indices.get(0)));
+			PModelIndex index = indices.get(0);
+			Object element = model.get(index);
+			return Collections.singletonList(element);
 		}
 		List<Object> result = new ArrayList<>(indices.size());
 		for (PModelIndex index : indices) {
 			result.add(model.get(index));
 		}
 		return result;
+	}
+	
+	public default boolean isStrongFocusOwner() {
+		return true;
 	}
 	
 	public void addObs(PModelObs obs);

@@ -1,25 +1,26 @@
 package edu.udo.piq.tools;
 
+import edu.udo.piq.components.AbstractPSingleValueModel;
 import edu.udo.piq.components.PCheckBoxModel;
-import edu.udo.piq.components.PCheckBoxModelObs;
-import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PiqUtil;
 
-public abstract class AbstractPCheckBoxModel implements PCheckBoxModel {
+public abstract class AbstractPCheckBoxModel extends AbstractPSingleValueModel implements PCheckBoxModel {
 	
-	protected final ObserverList<PCheckBoxModelObs> obsList
-		= PiqUtil.createDefaultObserverList();
-	
-	public void addObs(PCheckBoxModelObs obs) {
-		obsList.add(obs);
+	@Override
+	protected void setValueInternal(Object newValue) {
+		if (Boolean.TRUE.equals(newValue)) {
+			if (!isChecked()) {
+				toggleChecked();
+			}
+		} else if (Boolean.FALSE.equals(newValue)) {
+			if (isChecked()) {
+				toggleChecked();
+			}
+		}
 	}
 	
-	public void removeObs(PCheckBoxModelObs obs) {
-		obsList.remove(obs);
-	}
-	
-	protected void fireChangeEvent() {
-		obsList.fireEvent((obs) -> obs.onChange(this));
+	@Override
+	public Object getValue() {
+		return Boolean.valueOf(isChecked());
 	}
 	
 }

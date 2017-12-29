@@ -1,5 +1,7 @@
 package edu.udo.piq;
 
+import edu.udo.piq.layouts.PComponentLayoutData;
+
 /**
  * An observer for {@link PComponent}s.<br>
  * These observers can be used to get a notification when
@@ -27,8 +29,27 @@ public interface PComponentObs {
 	 */
 	public default void onPreferredSizeChanged(PComponent component) {}
 	
+	/**
+	 * <p>This method is called after the {@link PReadOnlyLayout layout} of a component, 
+	 * as returned by {@link PComponent#getLayout()}, has changed. Both the previous 
+	 * layout as well as the new layout is passed as third and second argument respectively.</p>
+	 * @param component			the component for which the layout has changed. This is never null.
+	 * @param currentLayout		the current layout of the component as returned by {@link PComponent#getLayout()}. This can be null.
+	 * @param oldLayout			the previous layout of the component as returned by {@link PComponent#getLayout()}. This can be null.
+	 * @see PComponent#getLayout()
+	 * @see PComponent#getChildren()
+	 */
 	public default void onLayoutChanged(PComponent component, 
 			PReadOnlyLayout currentLayout, PReadOnlyLayout oldLayout) {}
+	
+	/**
+	 * <p>This method is called after this component has been laid out and its 
+	 * {@link PComponentLayoutData layout data} has changed.</p>
+	 * @param component			the component which was laid out. This is never null.
+	 * @param data				the current layout data of the component. This can be null.
+	 * @see PComponent#getLayoutData()
+	 */
+	public default void onLayoutDataChanged(PComponent component, PComponentLayoutData data) {}
 	
 	/**
 	 * This event is fired when the {@link PBounds} of a {@link PComponent} have changed.<br>

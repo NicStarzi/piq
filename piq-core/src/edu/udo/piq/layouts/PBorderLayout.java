@@ -7,21 +7,25 @@ import java.util.List;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
+import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PSize;
-import edu.udo.piq.layouts.PBorderLayout.Constraint;
-import edu.udo.piq.tools.AbstractEnumPLayout;
+import edu.udo.piq.layouts.PBorderLayout.BorderLayoutConstraint;
 import edu.udo.piq.util.ThrowException;
 
-public class PBorderLayout extends AbstractEnumPLayout<Constraint> {
+public class PBorderLayout extends AbstractEnumPLayout<BorderLayoutConstraint> {
 	
 	public static final PInsets DEFAULT_INSETS = PInsets.ZERO_INSETS;
+	public static final AlignmentX DEFAULT_ALIGN_X = AlignmentX.FILL;
+	public static final AlignmentY DEFAULT_ALIGN_Y = AlignmentY.FILL;
 	public static final int DEFAULT_GAP = 0;
 	
-	private PInsets insets = DEFAULT_INSETS;
-	private int gap = DEFAULT_GAP;
+	protected PInsets insets = PBorderLayout.DEFAULT_INSETS;
+	protected AlignmentX alignX = DEFAULT_ALIGN_X;
+	protected AlignmentY alignY = DEFAULT_ALIGN_Y;
+	protected int gap = PBorderLayout.DEFAULT_GAP;
 	
 	public PBorderLayout(PComponent owner) {
-		super(owner, Constraint.class);
+		super(owner, BorderLayoutConstraint.class);
 	}
 	
 	public void setInsets(PInsets value) {
@@ -33,7 +37,36 @@ public class PBorderLayout extends AbstractEnumPLayout<Constraint> {
 	}
 	
 	public PInsets getInsets() {
-		return getStyleAttribute(ATTRIBUTE_KEY_INSETS, insets);
+		return getStyleAttribute(PReadOnlyLayout.ATTRIBUTE_KEY_INSETS, insets);
+	}
+	
+	public void setAlignment(AlignmentX alignmentX, AlignmentY alignmentY) {
+		setAlignmentX(alignmentX);
+		setAlignmentY(alignmentY);
+	}
+	
+	public void setAlignmentX(AlignmentX value) {
+		ThrowException.ifNull(value, "value == null");
+		if (alignX != value) {
+			alignX = value;
+			invalidate();
+		}
+	}
+	
+	public AlignmentX getAlignmentX() {
+		return getStyleAttribute(PReadOnlyLayout.ATTRIBUTE_KEY_ALIGNMENT_X, alignX);
+	}
+	
+	public void setAlignmentY(AlignmentY value) {
+		ThrowException.ifNull(value, "value == null");
+		if (alignY != value) {
+			alignY = value;
+			invalidate();
+		}
+	}
+	
+	public AlignmentY getAlignmentY() {
+		return getStyleAttribute(PReadOnlyLayout.ATTRIBUTE_KEY_ALIGNMENT_Y, alignY);
 	}
 	
 	public void setGap(int value) {
@@ -45,7 +78,7 @@ public class PBorderLayout extends AbstractEnumPLayout<Constraint> {
 	}
 	
 	public int getGap() {
-		return getStyleAttribute(ATTRIBUTE_KEY_GAP, gap);
+		return getStyleAttribute(PReadOnlyLayout.ATTRIBUTE_KEY_GAP, gap);
 	}
 	
 	@Override
@@ -55,11 +88,11 @@ public class PBorderLayout extends AbstractEnumPLayout<Constraint> {
 	
 	@Override
 	protected void onInvalidated() {
-		PSize prefLft = getPreferredSizeOf(getChildForConstraint(Constraint.LEFT));
-		PSize prefRgt = getPreferredSizeOf(getChildForConstraint(Constraint.RIGHT));
-		PSize prefTop = getPreferredSizeOf(getChildForConstraint(Constraint.TOP));
-		PSize prefBtm = getPreferredSizeOf(getChildForConstraint(Constraint.BOTTOM));
-		PSize prefCnt = getPreferredSizeOf(getChildForConstraint(Constraint.CENTER));
+		PSize prefLft = getPreferredSizeOf(getChildForConstraint(BorderLayoutConstraint.LEFT));
+		PSize prefRgt = getPreferredSizeOf(getChildForConstraint(BorderLayoutConstraint.RIGHT));
+		PSize prefTop = getPreferredSizeOf(getChildForConstraint(BorderLayoutConstraint.TOP));
+		PSize prefBtm = getPreferredSizeOf(getChildForConstraint(BorderLayoutConstraint.BOTTOM));
+		PSize prefCnt = getPreferredSizeOf(getChildForConstraint(BorderLayoutConstraint.CENTER));
 		PInsets insets = getInsets();
 		int gap = getGap();
 		int prefW = prefLft.getWidth() + prefRgt.getWidth() + prefCnt.getWidth() + insets.getHorizontal();
@@ -90,55 +123,58 @@ public class PBorderLayout extends AbstractEnumPLayout<Constraint> {
 		int btm = ob.getFinalY() - insets.getFromBottom();
 		int gap = getGap();
 		
-		PComponent cmpTop = getChildForConstraint(Constraint.TOP);
-		PComponent cmpRgt = getChildForConstraint(Constraint.RIGHT);
-		PComponent cmpLft = getChildForConstraint(Constraint.LEFT);
-		PComponent cmpBtm = getChildForConstraint(Constraint.BOTTOM);
-		PComponent cmpCtr = getChildForConstraint(Constraint.CENTER);
+		PComponent cmpTop = getChildForConstraint(BorderLayoutConstraint.TOP);
+		PComponent cmpRgt = getChildForConstraint(BorderLayoutConstraint.RIGHT);
+		PComponent cmpLft = getChildForConstraint(BorderLayoutConstraint.LEFT);
+		PComponent cmpBtm = getChildForConstraint(BorderLayoutConstraint.BOTTOM);
+		PComponent cmpCtr = getChildForConstraint(BorderLayoutConstraint.CENTER);
+		
+		AlignmentX alignX = getAlignmentX();
+		AlignmentY alignY = getAlignmentY();
 		
 		if (cmpTop != null) {
 			int cmpPrefH = getPreferredSizeOf(cmpTop).getHeight();
-			setChildBounds(cmpTop, lft, top, (rgt - lft), cmpPrefH);
+			setChildCell(cmpTop, lft, top, (rgt - lft), cmpPrefH, alignX, alignY);
 			top += cmpPrefH + gap;
 		}
 		if (cmpBtm != null) {
 			int cmpPrefH = getPreferredSizeOf(cmpBtm).getHeight();
-			setChildBounds(cmpBtm, lft, (btm - cmpPrefH), (rgt - lft), cmpPrefH);
+			setChildCell(cmpBtm, lft, (btm - cmpPrefH), (rgt - lft), cmpPrefH, alignX, alignY);
 			btm -= (cmpPrefH + gap);
 		}
 		if (cmpRgt != null) {
 			int cmpPrefW = getPreferredSizeOf(cmpRgt).getWidth();
-			setChildBounds(cmpRgt, (rgt - cmpPrefW), top, cmpPrefW, (btm - top));
+			setChildCell(cmpRgt, (rgt - cmpPrefW), top, cmpPrefW, (btm - top), alignX, alignY);
 			rgt -= (cmpPrefW + gap);
 		}
 		if (cmpLft != null) {
 			int cmpPrefW = getPreferredSizeOf(cmpLft).getWidth();
-			setChildBounds(cmpLft, lft, top, cmpPrefW, (btm - top));
+			setChildCell(cmpLft, lft, top, cmpPrefW, (btm - top), alignX, alignY);
 			lft += cmpPrefW + gap;
 		}
 		if (cmpCtr != null) {
-			setChildBounds(cmpCtr, lft, top, (rgt - lft), (btm - top));
+			setChildCell(cmpCtr, lft, top, (rgt - lft), (btm - top), alignX, alignY);
 		}
 	}
 	
 	@Override
 	protected void onChildPrefSizeChanged(PComponent child) {
 		ThrowException.ifFalse(containsChild(child), "containsChild(child) == false");
-		if (child != getChildForConstraint(Constraint.CENTER)) {
+		if (child != getChildForConstraint(BorderLayoutConstraint.CENTER)) {
 			invalidate();
 		}
 	}
 	
-	public static enum Constraint {
+	public static enum BorderLayoutConstraint {
 		TOP,
 		RIGHT,
 		LEFT,
 		BOTTOM,
 		CENTER,
 		;
-		public static final List<Constraint> ALL =
-				Collections.unmodifiableList(Arrays.asList(Constraint.values()));
-		public static final int COUNT = ALL.size();
+		public static final List<BorderLayoutConstraint> ALL =
+				Collections.unmodifiableList(Arrays.asList(BorderLayoutConstraint.values()));
+		public static final int COUNT = BorderLayoutConstraint.ALL.size();
 	}
 	
 }

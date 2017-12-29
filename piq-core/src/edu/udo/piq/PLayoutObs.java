@@ -1,5 +1,7 @@
 package edu.udo.piq;
 
+import edu.udo.piq.layouts.PComponentLayoutData;
+
 /**
  * An observer for {@link PReadOnlyLayout}s.<br>
  * These observers can be used to get a notification when 
@@ -11,32 +13,62 @@ package edu.udo.piq;
 public interface PLayoutObs {
 	
 	/**
-	 * This even is fired when a {@link PComponent} was added to a {@link PReadOnlyLayout}.<br>
+	 * <p>This method is called after a {@link PComponent} was added to a {@link PReadOnlyLayout layout}.
+	 * The first argument passed to this method is the layout which the component was added to. The 
+	 * second argument is a {@link PComponentLayoutData data object} which contains the component that was 
+	 * added, as well as the constraint with which the component was added.</p>
 	 * 
-	 * @param layout the layout that the component was added to
-	 * @param child the component that was added
-	 * @param constraint the constraint the component was added with
+	 * <p>This method should only be called from within layout to notify its observers of a change.</p>
+	 * 
+	 * @param layout		the layout that the component was added to. This is never null.
+	 * @param data			the data of the change. This is never null.
+	 * @see PComponentLayoutData#getComponent()
+	 * @see PComponentLayoutData#getConstraint()
+	 * @see PReadOnlyLayout#getDataFor(PComponent)
+	 * @see PComponent#getLayoutData()
 	 */
-	public default void onChildAdded(PReadOnlyLayout layout, PComponent child, Object constraint) {}
+	public default void onChildAdded(PReadOnlyLayout layout, PComponentLayoutData data) {}
 	
 	/**
-	 * This even is fired when a {@link PComponent} was removed from a 
-	 * {@link PReadOnlyLayout}.<br>
+	 * <p>This method is called after a {@link PComponent} was removed from a {@link PReadOnlyLayout layout}.
+	 * The first argument passed to this method is the layout which the component was removed from. The 
+	 * second argument is a {@link PComponentLayoutData data object} which contains the component that was 
+	 * removed, as well as the constraint to which the component was previously bound.</p>
 	 * 
-	 * @param layout		the layout that the component was removed from
-	 * @param child			the component that was removed
-	 * @param constraint	the constraint used for the removed component
+	 * <p>This method should only be called from within layout to notify its observers of a change.</p>
+	 * 
+	 * @param layout		the layout that the component was removed from. This is never null.
+	 * @param data			the previous data for the component. This is never null.
+	 * @see PComponentLayoutData#getComponent()
+	 * @see PComponentLayoutData#getConstraint()
+	 * @see PReadOnlyLayout#getDataFor(PComponent)
+	 * @see PComponent#getLayoutData()
 	 */
-	public default void onChildRemoved(PReadOnlyLayout layout, PComponent child, Object constraint) {}
+	public default void onChildRemoved(PReadOnlyLayout layout, PComponentLayoutData data) {}
 	
 	/**
 	 * This event is fired when a {@link PComponent} was laid out by this {@link PReadOnlyLayout}.<br>
 	 * 
-	 * @param layout		the layout that laid out the component
-	 * @param child			the component that was laid out
-	 * @param constraint	the constraint of the laid out component
+	 * @param layout		the layout that laid out the component. This is never null.
+	 * @param child			the component that was laid out. This is never null.
+	 * @param data			the layout data of the laid out component. This is never null.
 	 */
-	public default void onChildLaidOut(PReadOnlyLayout layout, PComponent child, Object constraint) {}
+	/**
+	 * <p>This method is called after a {@link PComponent} was laid out by a {@link PReadOnlyLayout layout}.
+	 * The first argument passed to this method is the layout of the parent of the component. The 
+	 * second argument is the {@link PComponentLayoutData data object} which contains the component that was 
+	 * laid out, as well as the constraint to which the component is currently bound.</p>
+	 * 
+	 * <p>This method should only be called from within layout to notify its observers of a change.</p>
+	 * 
+	 * @param layout		the layout which laid out the component. This is never null.
+	 * @param data			the current data for the component. This is never null.
+	 * @see PComponentLayoutData#getComponent()
+	 * @see PComponentLayoutData#getConstraint()
+	 * @see PReadOnlyLayout#getDataFor(PComponent)
+	 * @see PComponent#getLayoutData()
+	 */
+	public default void onChildLaidOut(PReadOnlyLayout layout, PComponentLayoutData data) {}
 	
 	/**
 	 * This event is fired when the {@link PReadOnlyLayout} has been invalidated and needs to 

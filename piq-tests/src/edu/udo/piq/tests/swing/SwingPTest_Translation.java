@@ -44,7 +44,7 @@ public class SwingPTest_Translation extends AbstractSwingPTest {
 		PModelFactory.getGlobalModelFactory().setDefaultModelFactoryFor(PLabel.class, TranslationTextModel::new);
 		
 		germanLanguageDictionary = new EnumMap<>(Term.class);
-		germanLanguageDictionary.put(Term.CONFIRM, "Best�tigen");
+		germanLanguageDictionary.put(Term.CONFIRM, "Bestätigen");
 		germanLanguageDictionary.put(Term.CANCEL, "Abbrechen");
 		germanLanguageDictionary.put(Term.ENGLISH, "Englisch");
 		germanLanguageDictionary.put(Term.GERMAN, "Deutsch");
@@ -84,7 +84,7 @@ public class SwingPTest_Translation extends AbstractSwingPTest {
 		
 		PPanel selectPnl = new PPanel();
 		selectPnl.setLayout(new PListLayout(selectPnl, ListAlignment.LEFT_TO_RIGHT, 16));
-		bodyPnl.addChild(selectPnl, PBorderLayout.Constraint.TOP);
+		bodyPnl.addChild(selectPnl, PBorderLayout.BorderLayoutConstraint.TOP);
 		
 		PLabel lblGreetings = new PLabel(Term.GREETINGS);
 		selectPnl.addChild(lblGreetings, null);
@@ -100,7 +100,7 @@ public class SwingPTest_Translation extends AbstractSwingPTest {
 		
 		PPanel btnPnl = new PPanel();
 		btnPnl.setLayout(new PListLayout(btnPnl, ListAlignment.CENTERED_LEFT_TO_RIGHT));
-		bodyPnl.addChild(btnPnl, PBorderLayout.Constraint.BOTTOM);
+		bodyPnl.addChild(btnPnl, PBorderLayout.BorderLayoutConstraint.BOTTOM);
 		
 		PButton btnConfirm = new PButton();
 		btnConfirm.addObs((PClickObs) (cmp) -> changeTranslation());
@@ -130,7 +130,7 @@ public class SwingPTest_Translation extends AbstractSwingPTest {
 			if (dictionary != newDictionary) {
 				dictionary = newDictionary;
 				for (TranslationTextModel model : instances) {
-					model.fireTextChangeEvent();
+					model.fireChangeEvent(null);
 				}
 			}
 		}
@@ -142,14 +142,16 @@ public class SwingPTest_Translation extends AbstractSwingPTest {
 		}
 		
 		@Override
+		protected void setValueInternal(Object newValue) {
+			term = (Term) newValue;
+		}
+		
+		@Override
 		public void setValue(Object value) {
 			if (value != null && !(value instanceof Term)) {
 				throw new IllegalArgumentException("value=" + value);
 			}
-			if (value != term) {
-				term = (Term) value;
-				fireTextChangeEvent();
-			}
+			super.setValue(value);
 		}
 		
 		@Override

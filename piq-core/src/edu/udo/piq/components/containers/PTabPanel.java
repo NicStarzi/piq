@@ -26,18 +26,23 @@ public class PTabPanel extends AbstractPLayoutOwner {
 		addObs(new PMouseObs() {
 			@Override
 			public void onButtonTriggered(PMouse mouse, MouseButton btn, int clickCount) {
-				if (btn == MouseButton.LEFT && isMouseOverThisOrChild()) {
-					int mx = mouse.getX();
-					int my = mouse.getY();
-					int tabIndex = getLayoutInternal().getTabIndexAt(mx, my);
-					if (tabIndex != -1) {
-						selectTab(tabIndex);
-					}
-				}
+				PTabPanel.this.onMouseButtonTriggered(mouse, btn, clickCount);
 			}
 		});
 	}
 	
+	protected void onMouseButtonTriggered(PMouse mouse, MouseButton btn, int clickCount) {
+		if (btn == MouseButton.LEFT && isMouseOverThisOrChild()) {
+			int mx = mouse.getX();
+			int my = mouse.getY();
+			int tabIndex = getLayoutInternal().getTabIndexAt(mx, my);
+			if (tabIndex != -1) {
+				selectTab(tabIndex);
+			}
+		}
+	}
+	
+	@Override
 	protected PTabPanelLayout getLayoutInternal() {
 		return (PTabPanelLayout) super.getLayout();
 	}

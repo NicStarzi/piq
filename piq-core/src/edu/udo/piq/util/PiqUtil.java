@@ -1,7 +1,6 @@
 package edu.udo.piq.util;
 
 import java.util.ArrayDeque;
-import java.util.Collection;
 import java.util.Deque;
 import java.util.function.Consumer;
 
@@ -20,11 +19,11 @@ public class PiqUtil {
 	private static Consumer<Throwable> excHndlr;
 	
 	public static void setStaticExceptionHandler(Consumer<Throwable> exceptionHandler) {
-		excHndlr = exceptionHandler;
+		PiqUtil.excHndlr = exceptionHandler;
 	}
 	
 	public static Consumer<Throwable> getStaticExceptionHandler() {
-		return excHndlr;
+		return PiqUtil.excHndlr;
 	}
 	
 	/**
@@ -196,7 +195,7 @@ public class PiqUtil {
 		while (!stack.isEmpty()) {
 			PrintInfo current = stack.pop();
 			
-			Collection<PComponent> children = current.comp.getChildren();
+			Iterable<PComponent> children = current.comp.getChildren();
 			for (PComponent comp : children) {
 				stack.addFirst(new PrintInfo(comp, current.level + 1));
 			}

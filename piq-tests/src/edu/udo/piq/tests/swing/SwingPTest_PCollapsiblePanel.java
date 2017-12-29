@@ -40,9 +40,9 @@ public class SwingPTest_PCollapsiblePanel extends AbstractSwingPTest {
 		blu.getLayout().setHeaderAlignY(AlignmentY.C);
 		grn.getLayout().setHeaderAlignY(AlignmentY.BOTTOM);
 		
-		red.getLayout().setButtonLabelGap(4);
+		red.getLayout().setButtonLabelGap(32);
 		blu.getLayout().setButtonLabelGap(16);
-		grn.getLayout().setButtonLabelGap(48);
+		grn.getLayout().setButtonLabelGap(4);
 		
 		red.getLayout().setHeaderBodyGap(4);
 		blu.getLayout().setHeaderBodyGap(16);

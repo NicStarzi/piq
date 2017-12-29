@@ -1,14 +1,12 @@
 package edu.udo.piq.layouts;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PSize;
-import edu.udo.piq.tools.AbstractMapPLayout;
 import edu.udo.piq.util.ThrowException;
 
 public class PFreeLayout extends AbstractMapPLayout {
@@ -26,13 +24,13 @@ public class PFreeLayout extends AbstractMapPLayout {
 	}
 	
 	@Override
-	protected void onChildAdded(PComponent child, Object constraint) {
-		addChildSorted(child, (FreeConstraint) constraint);
+	protected void onChildAdded(PComponentLayoutData data) {
+		addChildSorted(data.getComponent(), (FreeConstraint) data.getConstraint());
 	}
 	
 	@Override
-	protected void onChildRemoved(PCompInfo removedCompInfo) {
-		sortedChildren.remove(removedCompInfo.getComponent());
+	protected void onChildRemoved(PComponentLayoutData data) {
+		sortedChildren.remove(data.getComponent());
 	}
 	
 	@Override
@@ -61,8 +59,9 @@ public class PFreeLayout extends AbstractMapPLayout {
 					h = prefSize.getHeight();
 				}
 			}
-			
-			setChildBounds(cmp, x, y, w, h);
+			AlignmentX alignX = con.getAlignmentX();
+			AlignmentY alignY = con.getAlignmentY();
+			setChildCell(cmp, x, y, w, h, alignX, alignY);
 		}
 	}
 	
@@ -135,7 +134,7 @@ public class PFreeLayout extends AbstractMapPLayout {
 	}
 	
 	@Override
-	public Collection<PComponent> getChildren() {
+	public Iterable<PComponent> getChildren() {
 		return Collections.unmodifiableList(sortedChildren);
 	}
 	
@@ -184,17 +183,21 @@ public class PFreeLayout extends AbstractMapPLayout {
 		}
 	}
 	
+	public void updateConstraint(PComponent child, AlignmentX alignX, AlignmentY alignY) {
+		ThrowException.ifNull(alignX, "alignX == null");
+		ThrowException.ifNull(alignY, "alignY == null");
+		FreeConstraint con = getChildConstraint(child);
+		con.alignX = alignX;
+		con.alignY = alignY;
+		invalidate();
+	}
+	
 	public void updateConstraint(PComponent child, FreeConstraint newConstraint) {
 		FreeConstraint con = getChildConstraint(child);
 		updateConstraint(child, con,
 				newConstraint.getX(), newConstraint.getY(),
 				newConstraint.getWidth(), newConstraint.getHeight(),
 				newConstraint.getZ());
-	}
-	
-	@Override
-	protected void onOwnerBoundsChanged() {
-		// We do not have to invalidate when the owners bounds change
 	}
 	
 	@Override
@@ -208,6 +211,8 @@ public class PFreeLayout extends AbstractMapPLayout {
 	public static class FreeConstraint {
 		
 		protected int x, y, w, h, z;
+		protected AlignmentX alignX;
+		protected AlignmentY alignY;
 		
 		public FreeConstraint() {
 			this(0, 0, -1, -1, 0);
@@ -215,6 +220,10 @@ public class PFreeLayout extends AbstractMapPLayout {
 		
 		public FreeConstraint(int x, int y) {
 			this(x, y, -1, -1, 0);
+		}
+		
+		public FreeConstraint(int x, int y, AlignmentX alignX, AlignmentY alignY) {
+			this(x, y, -1, -1, -1, alignX, alignY);
 		}
 		
 		public FreeConstraint(int z) {
@@ -225,18 +234,32 @@ public class PFreeLayout extends AbstractMapPLayout {
 			this(x, y, -1, -1, z);
 		}
 		
+		public FreeConstraint(int x, int y, int z, AlignmentX alignX, AlignmentY alignY) {
+			this(x, y, -1, -1, z, alignX, alignY);
+		}
+		
 		public FreeConstraint(int x, int y, int w, int h) {
 			this(x, y, w, h, 0);
 		}
 		
+		public FreeConstraint(int x, int y, int w, int h, AlignmentX alignX, AlignmentY alignY) {
+			this(x, y, w, h, -1, alignX, alignY);
+		}
+		
 		public FreeConstraint(int x, int y, int w, int h, int z) {
-			ThrowException.ifLess(-1, w, "width < 1");
-			ThrowException.ifLess(-1, h, "height < 1");
+			this(x, y, w, h, z, AlignmentX.FILL, AlignmentY.FILL);
+		}
+		
+		public FreeConstraint(int x, int y, int w, int h, int z, AlignmentX alignX, AlignmentY alignY) {
+			ThrowException.ifLess(-1, w, "width < 0");
+			ThrowException.ifLess(-1, h, "height < 0");
 			this.x = x;
 			this.y = y;
 			this.w = w;
 			this.h = h;
 			this.z = z;
+			this.alignX = alignX;
+			this.alignY = alignY;
 		}
 		
 		public int getX() {
@@ -265,6 +288,14 @@ public class PFreeLayout extends AbstractMapPLayout {
 		
 		public int getFinalY() {
 			return y + h;
+		}
+		
+		public AlignmentX getAlignmentX() {
+			return alignX;
+		}
+		
+		public AlignmentY getAlignmentY() {
+			return alignY;
 		}
 	}
 	

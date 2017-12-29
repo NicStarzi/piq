@@ -3,15 +3,15 @@ package edu.udo.piq.layouts;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
+import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PSize;
-import edu.udo.piq.tools.AbstractArrayPLayout;
 import edu.udo.piq.util.ThrowException;
 
 public class PAnchorLayout extends AbstractArrayPLayout {
 	
 	public static final PInsets DEFAULT_INSETS = PInsets.ZERO_INSETS;
-	public static final AlignmentX DEFAULT_ALIGN_X = AlignmentX.CENTER;
-	public static final AlignmentY DEFAULT_ALIGN_Y = AlignmentY.CENTER;
+	public static final AlignmentX DEFAULT_ALIGN_X = AlignmentX.PREFERRED_OR_CENTER;
+	public static final AlignmentY DEFAULT_ALIGN_Y = AlignmentY.PREFERRED_OR_CENTER;
 	
 	protected PInsets insets = DEFAULT_INSETS;
 	protected AlignmentX alignX = DEFAULT_ALIGN_X;
@@ -36,7 +36,12 @@ public class PAnchorLayout extends AbstractArrayPLayout {
 	}
 	
 	public PInsets getInsets() {
-		return getStyleAttribute(ATTRIBUTE_KEY_INSETS, insets);
+		return getStyleAttribute(PReadOnlyLayout.ATTRIBUTE_KEY_INSETS, insets);
+	}
+	
+	public void setAlignment(AlignmentX alignmentX, AlignmentY alignmentY) {
+		setAlignmentX(alignmentX);
+		setAlignmentY(alignmentY);
 	}
 	
 	public void setAlignmentX(AlignmentX value) {
@@ -48,7 +53,7 @@ public class PAnchorLayout extends AbstractArrayPLayout {
 	}
 	
 	public AlignmentX getAlignmentX() {
-		return getStyleAttribute(ATTRIBUTE_KEY_ALIGNMENT_X, alignX);
+		return getStyleAttribute(PReadOnlyLayout.ATTRIBUTE_KEY_ALIGNMENT_X, alignX);
 	}
 	
 	public void setAlignmentY(AlignmentY value) {
@@ -60,7 +65,7 @@ public class PAnchorLayout extends AbstractArrayPLayout {
 	}
 	
 	public AlignmentY getAlignmentY() {
-		return getStyleAttribute(ATTRIBUTE_KEY_ALIGNMENT_Y, alignY);
+		return getStyleAttribute(PReadOnlyLayout.ATTRIBUTE_KEY_ALIGNMENT_Y, alignY);
 	}
 	
 	public void setContent(PComponent component) {
@@ -71,7 +76,7 @@ public class PAnchorLayout extends AbstractArrayPLayout {
 	}
 	
 	public PComponent getContent() {
-		return getCompAt(0);
+		return getComponentForIndex(0);
 	}
 	
 	@Override
@@ -108,15 +113,10 @@ public class PAnchorLayout extends AbstractArrayPLayout {
 		int w = bounds.getWidth() - insets.getHorizontal();
 		int h = bounds.getHeight() - insets.getVertical();
 		
-		PSize contentSize = getPreferredSizeOf(child);
-		int childPrefW = contentSize.getWidth();
-		int childPrefH = contentSize.getHeight();
+		AlignmentX alignX = getAlignmentX();
+		AlignmentY alignY = getAlignmentY();
 		
-		int childX = getAlignmentX().getLeftX(x, w, childPrefW);
-		int childY = getAlignmentY().getTopY(y, h, childPrefH);
-		int childW = getAlignmentX().getWidth(x, w, childPrefW);
-		int childH = getAlignmentY().getHeight(y, h, childPrefH);
-		setChildBounds(child, childX, childY, childW, childH);
+		setChildCell(child, x, y, w, h, alignX, alignY);
 	}
 	
 	@Override

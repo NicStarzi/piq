@@ -10,7 +10,7 @@ import edu.udo.piq.tools.AbstractPKeyboard;
 
 public class SwingPKeyboard extends AbstractPKeyboard implements PKeyboard {
 	
-	protected final boolean[] nowPressed = new boolean[Key.COUNT];
+	protected final boolean[] nowPressed = new boolean[ActualKey.COUNT];
 	protected final boolean[] prevPressed = new boolean[nowPressed.length];
 	protected final boolean[] modState = new boolean[Modifier.COUNT];
 	protected boolean capsLockDown;
@@ -18,7 +18,6 @@ public class SwingPKeyboard extends AbstractPKeyboard implements PKeyboard {
 	public SwingPKeyboard(Component base) {
 		base.setFocusTraversalKeysEnabled(false);
 		base.addKeyListener(new KeyListener() {
-			
 			@Override
 			public void keyTyped(KeyEvent e) {
 				char c = e.getKeyChar();
@@ -27,12 +26,10 @@ public class SwingPKeyboard extends AbstractPKeyboard implements PKeyboard {
 					fireStringTypedEvent(typedString);
 				}
 			}
-			
 			@Override
 			public void keyReleased(KeyEvent e) {
 				updateKey(e, false);
 			}
-			
 			@Override
 			public void keyPressed(KeyEvent e) {
 				updateKey(e, true);
@@ -56,10 +53,11 @@ public class SwingPKeyboard extends AbstractPKeyboard implements PKeyboard {
 		setModifierState(Modifier.ALT_GRAPH, e.isAltGraphDown());
 		setModifierState(Modifier.CTRL, e.isControlDown());
 		setModifierState(Modifier.META, e.isMetaDown());
+		setModifierState(Modifier.COMMAND, e.isControlDown());
 		
 		int keyCode = e.getKeyCode();
-		Key key = SwingPKeyboard.keyCodeToKey(keyCode);
-		if (key == Key.CAPSLOCK && newPressedValue) {
+		ActualKey key = SwingPKeyboard.keyCodeToKey(keyCode);
+		if (key == ActualKey.CAPSLOCK && newPressedValue) {
 			capsLockDown = !capsLockDown;
 		}
 		setModifierState(Modifier.CAPS, e.isShiftDown() || capsLockDown);
@@ -87,17 +85,17 @@ public class SwingPKeyboard extends AbstractPKeyboard implements PKeyboard {
 	}
 	
 	@Override
-	public boolean isPressed(Key key) {
+	public boolean isPressed(ActualKey key) {
 		return nowPressed[key.ID];
 	}
 	
 	@Override
-	public boolean isTriggered(Key key) {
+	public boolean isTriggered(ActualKey key) {
 		return nowPressed[key.ID] && !prevPressed[key.ID];
 	}
 	
 	@Override
-	public boolean isReleased(Key key) {
+	public boolean isReleased(ActualKey key) {
 		return !nowPressed[key.ID] && prevPressed[key.ID];
 	}
 	
@@ -106,118 +104,118 @@ public class SwingPKeyboard extends AbstractPKeyboard implements PKeyboard {
 		return modState[modifier.ID];
 	}
 	
-	public static Key keyCodeToKey(int keyCode) {
+	public static ActualKey keyCodeToKey(int keyCode) {
 		switch (keyCode) {
 		case KeyEvent.VK_0:
-			return Key.NUM_0;
+			return ActualKey.NUM_0;
 		case KeyEvent.VK_1:
-			return Key.NUM_1;
+			return ActualKey.NUM_1;
 		case KeyEvent.VK_2:
-			return Key.NUM_2;
+			return ActualKey.NUM_2;
 		case KeyEvent.VK_3:
-			return Key.NUM_3;
+			return ActualKey.NUM_3;
 		case KeyEvent.VK_4:
-			return Key.NUM_4;
+			return ActualKey.NUM_4;
 		case KeyEvent.VK_5:
-			return Key.NUM_5;
+			return ActualKey.NUM_5;
 		case KeyEvent.VK_6:
-			return Key.NUM_6;
+			return ActualKey.NUM_6;
 		case KeyEvent.VK_7:
-			return Key.NUM_7;
+			return ActualKey.NUM_7;
 		case KeyEvent.VK_8:
-			return Key.NUM_8;
+			return ActualKey.NUM_8;
 		case KeyEvent.VK_9:
-			return Key.NUM_9;
+			return ActualKey.NUM_9;
 		case KeyEvent.VK_A:
-			return Key.A;
+			return ActualKey.A;
 		case KeyEvent.VK_B:
-			return Key.B;
+			return ActualKey.B;
 		case KeyEvent.VK_C:
-			return Key.C;
+			return ActualKey.C;
 		case KeyEvent.VK_D:
-			return Key.D;
+			return ActualKey.D;
 		case KeyEvent.VK_E:
-			return Key.E;
+			return ActualKey.E;
 		case KeyEvent.VK_F:
-			return Key.F;
+			return ActualKey.F;
 		case KeyEvent.VK_G:
-			return Key.G;
+			return ActualKey.G;
 		case KeyEvent.VK_H:
-			return Key.H;
+			return ActualKey.H;
 		case KeyEvent.VK_I:
-			return Key.I;
+			return ActualKey.I;
 		case KeyEvent.VK_J:
-			return Key.J;
+			return ActualKey.J;
 		case KeyEvent.VK_K:
-			return Key.K;
+			return ActualKey.K;
 		case KeyEvent.VK_L:
-			return Key.L;
+			return ActualKey.L;
 		case KeyEvent.VK_M:
-			return Key.M;
+			return ActualKey.M;
 		case KeyEvent.VK_N:
-			return Key.N;
+			return ActualKey.N;
 		case KeyEvent.VK_O:
-			return Key.O;
+			return ActualKey.O;
 		case KeyEvent.VK_P:
-			return Key.P;
+			return ActualKey.P;
 		case KeyEvent.VK_Q:
-			return Key.Q;
+			return ActualKey.Q;
 		case KeyEvent.VK_R:
-			return Key.R;
+			return ActualKey.R;
 		case KeyEvent.VK_S:
-			return Key.S;
+			return ActualKey.S;
 		case KeyEvent.VK_T:
-			return Key.T;
+			return ActualKey.T;
 		case KeyEvent.VK_U:
-			return Key.U;
+			return ActualKey.U;
 		case KeyEvent.VK_V:
-			return Key.V;
+			return ActualKey.V;
 		case KeyEvent.VK_W:
-			return Key.W;
+			return ActualKey.W;
 		case KeyEvent.VK_X:
-			return Key.X;
+			return ActualKey.X;
 		case KeyEvent.VK_Y:
-			return Key.Y;
+			return ActualKey.Y;
 		case KeyEvent.VK_Z:
-			return Key.Z;
+			return ActualKey.Z;
 		case KeyEvent.VK_UP:
-			return Key.UP;
+			return ActualKey.UP;
 		case KeyEvent.VK_DOWN:
-			return Key.DOWN;
+			return ActualKey.DOWN;
 		case KeyEvent.VK_LEFT:
-			return Key.LEFT;
+			return ActualKey.LEFT;
 		case KeyEvent.VK_RIGHT:
-			return Key.RIGHT;
+			return ActualKey.RIGHT;
 		case KeyEvent.VK_CONTROL:
-			return Key.CTRL;
+			return ActualKey.CTRL;
 		case KeyEvent.VK_ALT:
-			return Key.ALT;
+			return ActualKey.ALT;
 		case KeyEvent.VK_ALT_GRAPH:
-			return Key.ALT_GR;
+			return ActualKey.ALT_GRAPH;
 		case KeyEvent.VK_SHIFT:
-			return Key.SHIFT;
+			return ActualKey.SHIFT;
 		case KeyEvent.VK_SPACE:
-			return Key.SPACE;
+			return ActualKey.SPACE;
 		case KeyEvent.VK_ENTER:
-			return Key.ENTER;
+			return ActualKey.ENTER;
 		case KeyEvent.VK_ESCAPE:
-			return Key.ESC;
+			return ActualKey.ESCAPE;
 		case KeyEvent.VK_DELETE:
-			return Key.DEL;
+			return ActualKey.DELETE;
 		case KeyEvent.VK_BACK_SPACE:
-			return Key.BACKSPACE;
+			return ActualKey.BACKSPACE;
 		case KeyEvent.VK_CAPS_LOCK:
-			return Key.CAPSLOCK;
+			return ActualKey.CAPSLOCK;
 		case KeyEvent.VK_TAB:
-			return Key.TAB;
+			return ActualKey.TAB;
 		case KeyEvent.VK_HOME:
-			return Key.HOME;
+			return ActualKey.HOME;
 		case KeyEvent.VK_PAGE_UP:
-			return Key.PAGE_UP;
+			return ActualKey.PAGE_UP;
 		case KeyEvent.VK_PAGE_DOWN:
-			return Key.PAGE_DOWN;
+			return ActualKey.PAGE_DOWN;
 		case KeyEvent.VK_END:
-			return Key.END;
+			return ActualKey.END;
 		default:
 			return null;
 		}

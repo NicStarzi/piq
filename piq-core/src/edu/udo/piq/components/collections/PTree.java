@@ -13,7 +13,7 @@ import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PDnDSupport;
 import edu.udo.piq.PKeyboard;
-import edu.udo.piq.PKeyboard.Key;
+import edu.udo.piq.PKeyboard.ActualKey;
 import edu.udo.piq.PKeyboard.Modifier;
 import edu.udo.piq.PLayout;
 import edu.udo.piq.PModelFactory;
@@ -26,8 +26,8 @@ import edu.udo.piq.components.defaults.DefaultPTreeModel;
 import edu.udo.piq.components.defaults.PTreePCellFactory;
 import edu.udo.piq.components.defaults.PTreePDnDSupport;
 import edu.udo.piq.components.defaults.ReRenderPFocusObs;
-import edu.udo.piq.components.util.DefaultPKeyInput;
-import edu.udo.piq.components.util.PKeyInput;
+import edu.udo.piq.components.util.DefaultPAccelerator;
+import edu.udo.piq.components.util.PAccelerator;
 import edu.udo.piq.layouts.PTreeLayout;
 import edu.udo.piq.layouts.PTreeLayout.PTreeLayoutObs;
 import edu.udo.piq.tools.AbstractPInputLayoutOwner;
@@ -45,23 +45,23 @@ public class PTree extends AbstractPInputLayoutOwner
 	protected static final PColor DROP_HIGHLIGHT_COLOR = PColor.RED;
 	protected static final int DRAG_AND_DROP_DISTANCE = 20;
 	
-	public static final PKeyInput<PTree> INPUT_MOVE_UP =
-			new DefaultPKeyInput<>(Key.UP, PTree::isKeyTriggerEnabled);
+	public static final PAccelerator<PTree> INPUT_MOVE_UP =
+			new DefaultPAccelerator<>(ActualKey.UP, PTree::isKeyTriggerEnabled);
 	public static final Consumer<PTree> REACTION_MOVE_UP = PTree::onKeyTriggerUp;
 	public static final String INPUT_ID_MOVE_UP = "moveUp";
 	
-	public static final PKeyInput<PTree> INPUT_MOVE_DOWN =
-			new DefaultPKeyInput<>(Key.DOWN, PTree::isKeyTriggerEnabled);
+	public static final PAccelerator<PTree> INPUT_MOVE_DOWN =
+			new DefaultPAccelerator<>(ActualKey.DOWN, PTree::isKeyTriggerEnabled);
 	public static final Consumer<PTree> REACTION_MOVE_DOWN = PTree::onKeyTriggerDown;
 	public static final String INPUT_ID_MOVE_DOWN = "moveDown";
 	
-	public static final PKeyInput<PTree> INPUT_MOVE_RIGHT =
-			new DefaultPKeyInput<>(Key.RIGHT, PTree::isKeyTriggerEnabled);
+	public static final PAccelerator<PTree> INPUT_MOVE_RIGHT =
+			new DefaultPAccelerator<>(ActualKey.RIGHT, PTree::isKeyTriggerEnabled);
 	public static final Consumer<PTree> REACTION_MOVE_RIGHT = PTree::onKeyTriggerRight;
 	public static final String INPUT_ID_MOVE_RIGHT = "moveRight";
 	
-	public static final PKeyInput<PTree> INPUT_MOVE_LEFT =
-			new DefaultPKeyInput<>(Key.LEFT, PTree::isKeyTriggerEnabled);
+	public static final PAccelerator<PTree> INPUT_MOVE_LEFT =
+			new DefaultPAccelerator<>(ActualKey.LEFT, PTree::isKeyTriggerEnabled);
 	public static final Consumer<PTree> REACTION_MOVE_LEFT = PTree::onKeyTriggerLeft;
 	public static final String INPUT_ID_MOVE_LEFT = "moveLeft";
 	
@@ -116,12 +116,12 @@ public class PTree extends AbstractPInputLayoutOwner
 	
 	public PTree() {
 		super();
-		setModel(PModelFactory.createModelFor(this, DefaultPTreeModel::new, PTreeModel.class));
 		
 		setLayout(new PTreeLayout(this));
 		setDragAndDropSupport(new PTreePDnDSupport());
 		setSelection(new PTreeSingleSelection());
 		setCellFactory(new PTreePCellFactory());
+		setModel(PModelFactory.createModelFor(this, DefaultPTreeModel::new, PTreeModel.class));
 		
 		addObs(new PMouseObs() {
 			@Override
@@ -162,6 +162,7 @@ public class PTree extends AbstractPInputLayoutOwner
 		}
 	}
 	
+	@Override
 	protected PTreeLayout getLayoutInternal() {
 		return (PTreeLayout) super.getLayout();
 	}
@@ -508,6 +509,11 @@ public class PTree extends AbstractPInputLayoutOwner
 	
 	@Override
 	public boolean isFocusable() {
+		return true;
+	}
+	
+	@Override
+	public boolean isStrongFocusOwner() {
 		return true;
 	}
 	

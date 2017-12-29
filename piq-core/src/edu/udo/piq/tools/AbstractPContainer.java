@@ -1,7 +1,5 @@
 package edu.udo.piq.tools;
 
-import java.util.Collection;
-
 import edu.udo.piq.PBorder;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
@@ -59,7 +57,7 @@ public abstract class AbstractPContainer<CONSTRAINT_CLASS> extends AbstractPLayo
 	 * public to give access to the user.<br>
 	 */
 	@Override
-	public Collection<PComponent> getChildren() {
+	public Iterable<PComponent> getChildren() {
 		return super.getChildren();
 	}
 	
@@ -88,7 +86,7 @@ public abstract class AbstractPContainer<CONSTRAINT_CLASS> extends AbstractPLayo
 	
 	@Override
 	protected PSize getConstantDefaultPreferredSize() {
-		return DEFAULT_PREFERRED_SIZE;
+		return AbstractPContainer.DEFAULT_PREFERRED_SIZE;
 	}
 	
 }

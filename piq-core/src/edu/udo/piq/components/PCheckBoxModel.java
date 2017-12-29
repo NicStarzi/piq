@@ -1,9 +1,8 @@
 package edu.udo.piq.components;
 
-import edu.udo.piq.components.util.PModelHistory;
-
-public interface PCheckBoxModel {
+public interface PCheckBoxModel extends PSingleValueModel {
 	
+	@Override
 	public default void setValue(Object obj) {
 		if (Boolean.TRUE.equals(obj)) {
 			if (!isChecked()) {
@@ -16,6 +15,7 @@ public interface PCheckBoxModel {
 		}
 	}
 	
+	@Override
 	public default Object getValue() {
 		return Boolean.valueOf(isChecked());
 	}
@@ -23,20 +23,5 @@ public interface PCheckBoxModel {
 	public void toggleChecked();
 	
 	public boolean isChecked();
-	
-	/**
-	 * Returns an instance of of {@link PModelHistory} if this model 
-	 * supports undo and redo operations or returns null if undo and 
-	 * redo is not supported.<br>
-	 * 
-	 * @return an instance of {@link PModelHistory} or null
-	 */
-	public default PModelHistory getHistory() {
-		return null;
-	}
-	
-	public void addObs(PCheckBoxModelObs obs);
-	
-	public void removeObs(PCheckBoxModelObs obs);
 	
 }

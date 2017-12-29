@@ -43,7 +43,7 @@ public class SwingPTest_PList extends AbstractSwingPTest {
 		root.setBody(bodyPnl);
 		
 		PSplitPanel splitPnl = new PSplitPanel();
-		bodyPnl.addChild(splitPnl, PBorderLayout.Constraint.CENTER);
+		bodyPnl.addChild(splitPnl, PBorderLayout.BorderLayoutConstraint.CENTER);
 		
 		Person[] males = new Person[] {
 			new Person("Anton"),
@@ -137,7 +137,7 @@ public class SwingPTest_PList extends AbstractSwingPTest {
 		
 		PPanel btnPnl = new PPanel();
 		btnPnl.setLayout(new PWrapLayout(btnPnl, ListAlignment.CENTERED_LEFT_TO_RIGHT));
-		bodyPnl.addChild(btnPnl, PBorderLayout.Constraint.BOTTOM);
+		bodyPnl.addChild(btnPnl, PBorderLayout.BorderLayoutConstraint.BOTTOM);
 		
 		PButton btnAdd = new PButton();
 		btnAdd.setContent(new PLabel("Add"));

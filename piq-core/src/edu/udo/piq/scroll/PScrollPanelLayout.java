@@ -4,7 +4,7 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PLayout;
 import edu.udo.piq.PSize;
-import edu.udo.piq.tools.AbstractMapPLayout;
+import edu.udo.piq.layouts.AbstractMapPLayout;
 
 public class PScrollPanelLayout extends AbstractMapPLayout implements PLayout {
 	
@@ -62,8 +62,8 @@ public class PScrollPanelLayout extends AbstractMapPLayout implements PLayout {
 			PScrollBar barV = getVerticalScrollBar();
 			int barPrefW = getPreferredSizeOf(barV).getWidth();
 			int barPrefH = getPreferredSizeOf(barH).getHeight();
-			setChildBounds(barH, x, fy - barPrefH, w - barPrefW, barPrefH);
-			setChildBounds(barV, fx - barPrefW, y, barPrefW, h - barPrefH);
+			setChildCellFilled(barH, x, fy - barPrefH, w - barPrefW, barPrefH);
+			setChildCellFilled(barV, fx - barPrefW, y, barPrefW, h - barPrefH);
 			w -= barPrefW;
 			h -= barPrefH;
 			
@@ -87,7 +87,7 @@ public class PScrollPanelLayout extends AbstractMapPLayout implements PLayout {
 			y -= offsetY;
 			w += offsetX;
 			h += offsetY;
-			setChildBounds(body, x, y, w, h);
+			setChildCellFilled(body, x, y, w, h);
 		}
 	}
 	

@@ -1,12 +1,12 @@
 package edu.udo.piq.scroll2;
 
-import edu.udo.piq.Axis;
 import edu.udo.piq.PBorder;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
+import edu.udo.piq.layouts.Axis;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
 
 public class PScrollPanel extends AbstractPLayoutOwner {

@@ -2,7 +2,7 @@ package edu.udo.piq.components.containers;
 
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PKeyboard;
-import edu.udo.piq.PKeyboard.Key;
+import edu.udo.piq.PKeyboard.ActualKey;
 import edu.udo.piq.PKeyboardObs;
 import edu.udo.piq.components.collections.PList;
 import edu.udo.piq.components.collections.PListIndex;
@@ -61,8 +61,8 @@ public class PDropDownList extends PDropDown {
 	};
 	protected final PKeyboardObs keyObs = new PKeyboardObs() {
 		@Override
-		public void onKeyTriggered(PKeyboard keyboard, Key key) {
-			if (isBodyVisible() && (key == Key.ENTER || key == Key.ESC)) {
+		public void onKeyTriggered(PKeyboard keyboard, ActualKey key) {
+			if (isBodyVisible() && (key == ActualKey.ENTER || key == ActualKey.ESCAPE)) {
 				hideDropDown();
 			}
 		}

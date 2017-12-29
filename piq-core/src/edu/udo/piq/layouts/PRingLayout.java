@@ -7,7 +7,6 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PPoint;
 import edu.udo.piq.PSize;
-import edu.udo.piq.tools.AbstractMapPLayout;
 import edu.udo.piq.tools.MutablePPoint;
 import edu.udo.piq.util.ThrowException;
 
@@ -28,13 +27,13 @@ public class PRingLayout extends AbstractMapPLayout {
 	}
 	
 	@Override
-	protected void onChildAdded(PComponent child, Object constraint) {
-		if (constraint == null) {
-			compList.add(child);
+	protected void onChildAdded(PComponentLayoutData data) {
+		if (data.getConstraint() == null) {
+			compList.add(data.getComponent());
 		} else {
-			compList.add((Integer) constraint, child);
+			compList.add((Integer) data.getConstraint(), data.getComponent());
 		}
-		int index = compList.indexOf(child);
+		int index = compList.indexOf(data.getComponent());
 		for (int i = index; i < compList.size(); i++) {
 			Integer con = Integer.valueOf(i);
 			setChildConstraint(compList.get(i), con);
@@ -44,9 +43,9 @@ public class PRingLayout extends AbstractMapPLayout {
 	}
 	
 	@Override
-	protected void onChildRemoved(PCompInfo removedCompInfo) {
-		int index = (Integer) removedCompInfo.getConstraint();
-		ThrowException.ifNotEqual(removedCompInfo.getComponent(), compList.get(index),
+	protected void onChildRemoved(PComponentLayoutData data) {
+		int index = (Integer) data.getConstraint();
+		ThrowException.ifNotEqual(data.getComponent(), compList.get(index),
 				"compList.get(index) != removedComponent");
 		compList.remove(index);
 		for (int i = index; i < compList.size(); i++) {
@@ -58,14 +57,14 @@ public class PRingLayout extends AbstractMapPLayout {
 	}
 	
 	@Override
-	protected void clearAllInfosInternal() {
-		super.clearAllInfosInternal();
+	protected void clearAllDataInternal() {
+		super.clearAllDataInternal();
 		setPrefRadiusInvalid(true);
 		compList.clear();
 	}
 	
 	@Override
-	protected void onChildCleared(PComponent child, Object constraint) {
+	protected void onChildCleared(PComponentLayoutData data) {
 		setPrefRadiusInvalid(true);
 	}
 	
@@ -346,13 +345,13 @@ public class PRingLayout extends AbstractMapPLayout {
 		for (int i = 0; i < compCount; i++) {
 			PComponent comp = compList.get(i);
 			PPoint point = compOrigins[i];
-			PSize size = compPrefSizes[i];
-			int compW = size.getWidth();
-			int compH = size.getHeight();
+			PSize prefSize = compPrefSizes[i];
+			int compW = prefSize.getWidth();
+			int compH = prefSize.getHeight();
 			int compX = (int) point.getX() - compW / 2;
 			int compY = (int) point.getY() - compH / 2;
 			
-			setChildBounds(comp, centerX + compX, centerY + compY, compW, compH);
+			setChildCellFilled(comp, centerX + compX, centerY + compY, compW, compH);
 		}
 	}
 	

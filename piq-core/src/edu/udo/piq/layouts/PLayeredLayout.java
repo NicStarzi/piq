@@ -4,15 +4,14 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PSize;
-import edu.udo.piq.tools.AbstractMapPLayout;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.util.ThrowException;
 
 public class PLayeredLayout extends AbstractMapPLayout {
 	
 	public static final PInsets DEFAULT_INSETS = new ImmutablePInsets(4);
-	public static final AlignmentX DEFAULT_ALIGNMENT_X = AlignmentX.CENTER;
-	public static final AlignmentY DEFAULT_ALIGNMENT_Y = AlignmentY.CENTER;
+	public static final AlignmentX DEFAULT_ALIGNMENT_X = AlignmentX.PREFERRED_OR_CENTER;
+	public static final AlignmentY DEFAULT_ALIGNMENT_Y = AlignmentY.PREFERRED_OR_CENTER;
 	
 	protected PInsets insets = DEFAULT_INSETS;
 	protected AlignmentX alignX = DEFAULT_ALIGNMENT_X;
@@ -24,9 +23,9 @@ public class PLayeredLayout extends AbstractMapPLayout {
 	}
 	
 	@Override
-	protected void onChildAdded(PComponent component, Object constraint) {
+	protected void onChildAdded(PComponentLayoutData data) {
 		if (shownLayerKey == null) {
-			shownLayerKey = constraint;
+			shownLayerKey = data.getConstraint();
 		}
 	}
 	
@@ -124,18 +123,18 @@ public class PLayeredLayout extends AbstractMapPLayout {
 		int w = ob.getWidth() - insets.getWidth();
 		int h = ob.getHeight() - insets.getHeight();
 		
-		PSize prefSize = getPreferredSizeOf(content);
-		int prefW = prefSize.getWidth();
-		int prefH = prefSize.getHeight();
+//		PSize prefSize = getPreferredSizeOf(content);
+//		int prefW = prefSize.getWidth();
+//		int prefH = prefSize.getHeight();
 		
 		AlignmentX alignX = getAlignmentX();
 		AlignmentY alignY = getAlignmentY();
-		int childX = alignX.getLeftX(x, w, prefW);
-		int childW = alignX.getWidth(x, w, prefW);
-		int childY = alignY.getTopY(y, h, prefH);
-		int childH = alignY.getHeight(y, h, prefH);
+//		int childX = alignX.getLeftX(x, w, prefW);
+//		int childW = alignX.getWidth(x, w, prefW);
+//		int childY = alignY.getTopY(y, h, prefH);
+//		int childH = alignY.getHeight(y, h, prefH);
 		
-		setChildBounds(content, childX, childY, childW, childH);
+		setChildCell(content, x, y, w, h, alignX, alignY);
 	}
 	
 }

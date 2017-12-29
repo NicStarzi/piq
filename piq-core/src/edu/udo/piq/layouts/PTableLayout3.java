@@ -6,7 +6,6 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.collections.PTableCellIndex;
-import edu.udo.piq.tools.AbstractMapPLayout;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.util.ThrowException;
 
@@ -29,27 +28,27 @@ public class PTableLayout3 extends AbstractMapPLayout {
 	}
 	
 	@Override
-	protected void onChildAdded(PComponent child, Object constraint) {
+	protected void onChildAdded(PComponentLayoutData data) {
 //		DefaultPCellComponent cell = (DefaultPCellComponent) child;
 //		System.out.println("PTableLayout3.childAdded cnstr="+constraint+", child="+cell.getElement());
-		PTableCellIndex index = (PTableCellIndex) constraint;
+		PTableCellIndex index = (PTableCellIndex) data.getConstraint();
 		int col = index.getColumn();
 		if (!colWidthSet[col]) {
-			int childW = getPreferredSizeOf(child).getWidth();
+			int childW = getPreferredSizeOf(data.getComponent()).getWidth();
 //			System.out.println("check col width="+childW);
 			if (colWidths[col] < childW) {
 //				System.out.println("set col width="+childW);
 				colWidths[col] = childW;
 			}
 		}
-		table.set(col, index.getRow(), child);
+		table.set(col, index.getRow(), data.getComponent());
 		invalidate();
 	}
 	
 	@Override
-	protected void onChildRemoved(PCompInfo removedCompInfo) {
+	protected void onChildRemoved(PComponentLayoutData data) {
 //		System.out.println("PTableLayout3.childRemoved cnstr="+constraint+", child="+child);
-		PTableCellIndex index = (PTableCellIndex) removedCompInfo.getConstraint();
+		PTableCellIndex index = (PTableCellIndex) data.getConstraint();
 		table.set(index.getColumn(), index.getRow(), null);
 		// We do not need to invalidate here because the size of the table
 		// is not changed by a removed component
@@ -336,7 +335,7 @@ public class PTableLayout3 extends AbstractMapPLayout {
 				PComponent child = table.get(c, r);
 				int childW = colWidths[c];
 				
-				setChildBounds(child, compX, compY, childW, rowHeight);
+				setChildCellFilled(child, compX, compY, childW, rowHeight);
 				compX += childW + gapX;
 			}
 			compX = x;

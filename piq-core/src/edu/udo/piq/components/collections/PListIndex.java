@@ -2,7 +2,7 @@ package edu.udo.piq.components.collections;
 
 import edu.udo.piq.util.ThrowException;
 
-public class PListIndex implements PModelIndex {
+public class PListIndex implements PModelIndex, Comparable<PListIndex> {
 	
 	private final int index;
 	
@@ -17,6 +17,7 @@ public class PListIndex implements PModelIndex {
 		return index;
 	}
 	
+	@Override
 	public PListIndex withOffset(PModelIndex offset) {
 		PListIndex offsetList = ThrowException.ifTypeCastFails(offset, 
 				PListIndex.class, "(offset instanceof PListIndex) == false");
@@ -24,6 +25,7 @@ public class PListIndex implements PModelIndex {
 		return new PListIndex(indexValue);
 	}
 	
+	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(getClass().getSimpleName());
@@ -33,17 +35,25 @@ public class PListIndex implements PModelIndex {
 		return sb.toString();
 	}
 	
+	@Override
 	public int hashCode() {
-		return index;
+		return getIndexValue();
 	}
 	
+	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
+		}
 		if (obj != null && obj instanceof PListIndex) {
-			return index == ((PListIndex) obj).index;
+			return getIndexValue() == ((PListIndex) obj).getIndexValue();
 		}
 		return false;
+	}
+	
+	@Override
+	public int compareTo(PListIndex other) {
+		return Integer.compare(getIndexValue(), other.getIndexValue());
 	}
 	
 }

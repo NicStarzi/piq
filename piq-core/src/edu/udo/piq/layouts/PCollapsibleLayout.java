@@ -3,16 +3,16 @@ package edu.udo.piq.layouts;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
+import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PSize;
-import edu.udo.piq.tools.AbstractEnumPLayout;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.util.ThrowException;
 
 public class PCollapsibleLayout extends AbstractEnumPLayout<PCollapsibleLayout.Constraint> {
 	
 	public static final PInsets DEFAULT_INSETS = new ImmutablePInsets(4);
-	public static final AlignmentX DEFAULT_HEADER_ALIGNMENT_X = AlignmentX.LEFT;
-	public static final AlignmentY DEFAULT_HEADER_ALIGNMENT_Y = AlignmentY.CENTER;
+	public static final AlignmentX DEFAULT_HEADER_ALIGNMENT_X = AlignmentX.PREFERRED_OR_CENTER;
+	public static final AlignmentY DEFAULT_HEADER_ALIGNMENT_Y = AlignmentY.PREFERRED_OR_CENTER;
 	public static final int DEFAULT_BUTTON_HEADER_GAP = 2;
 	public static final int DEFAULT_HEADER_BODY_GAP = 2;
 	
@@ -72,7 +72,7 @@ public class PCollapsibleLayout extends AbstractEnumPLayout<PCollapsibleLayout.C
 	}
 	
 	public PInsets getInsets() {
-		return getStyleAttribute(ATTRIBUTE_KEY_INSETS, insets);
+		return getStyleAttribute(PReadOnlyLayout.ATTRIBUTE_KEY_INSETS, insets);
 	}
 	
 	public void setHeaderBodyGap(int value) {
@@ -157,8 +157,9 @@ public class PCollapsibleLayout extends AbstractEnumPLayout<PCollapsibleLayout.C
 		int lblX, lblW = lblPrefW;
 		int gapX = getButtonLabelGap();
 		switch (headerAlignX) {
+		case PREFERRED_OR_CENTER:
 		case CENTER:
-			btnX = ((w - gapX) - (btnPrefW + lblPrefW)) / 2;
+			btnX = x + ((w - gapX) - (btnPrefW + lblPrefW)) / 2;
 			lblX = btnX + btnW + gapX;
 			break;
 		case FILL:
@@ -184,8 +185,8 @@ public class PCollapsibleLayout extends AbstractEnumPLayout<PCollapsibleLayout.C
 		int btnH = headerAlignY.getHeight(y, headerPrefH, btnPrefH);
 		int lblY = headerAlignY.getTopY(y, headerPrefH, lblPrefH);
 		int lblH = headerAlignY.getHeight(y, headerPrefH, lblPrefH);
-		setChildBounds(btn, btnX, btnY, btnW, btnH);
-		setChildBounds(lbl, lblX, lblY, lblW, lblH);
+		setChildCellFilled(btn, btnX, btnY, btnW, btnH);
+		setChildCellFilled(lbl, lblX, lblY, lblW, lblH);
 		
 		if (isExpanded()) {
 			int headerFy = y + headerPrefH;
@@ -194,9 +195,9 @@ public class PCollapsibleLayout extends AbstractEnumPLayout<PCollapsibleLayout.C
 			int bdyY = headerFy + getHeaderBodyGap();
 			int bdyW = w;
 			int bdyH = h - (bdyY - y);
-			setChildBounds(bdy, bdyX, bdyY, bdyW, bdyH);
+			setChildCellFilled(bdy, bdyX, bdyY, bdyW, bdyH);
 		} else {
-			setChildBounds(bdy, x, y, 0, 0);
+			setChildCellFilled(bdy, x, y, 0, 0);
 		}
 	}
 	

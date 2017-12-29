@@ -3,12 +3,13 @@ package edu.udo.piq.components.util;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PKeyboard.Modifier;
 
-public interface PKeyInput<COMP_TYPE extends PComponent> {
+public interface PAccelerator<COMP_TYPE extends PComponent> {
 	
 	public Key getKey();
 	
@@ -16,7 +17,7 @@ public interface PKeyInput<COMP_TYPE extends PComponent> {
 	
 	public Modifier getModifier(int index);
 	
-	public default Condition<COMP_TYPE> getCondition() {
+	public default Predicate<COMP_TYPE> getCondition() {
 		return null;
 	}
 	
@@ -36,13 +37,8 @@ public interface PKeyInput<COMP_TYPE extends PComponent> {
 			sb.append(getModifier(i).name());
 			sb.append('+');
 		}
-		sb.append(getKey().name());
+		sb.append(getKey().getName());
 		return sb.toString();
-	}
-	
-	@FunctionalInterface
-	public static interface Condition<COMP_TYPE> {
-		public boolean canTrigger(COMP_TYPE comp);
 	}
 	
 	public static enum KeyInputType {

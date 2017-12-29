@@ -22,6 +22,11 @@ public enum AlignmentX {
 			return maxWidth;
 		}
 	},
+	PREFERRED_OR_CENTER {
+		public int getLeftX(int minX, int maxWidth, int prefWidth) {
+			return CENTER.getLeftX(minX, maxWidth, prefWidth);
+		}
+	},
 	;
 	public static final AlignmentX L = LEFT;
 	public static final AlignmentX R = RIGHT;

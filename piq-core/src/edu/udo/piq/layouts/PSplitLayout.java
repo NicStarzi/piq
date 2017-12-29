@@ -3,7 +3,6 @@ package edu.udo.piq.layouts;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PSize;
-import edu.udo.piq.tools.AbstractEnumPLayout;
 import edu.udo.piq.util.ThrowException;
 
 public class PSplitLayout extends AbstractEnumPLayout<PSplitLayout.Constraint> {
@@ -69,18 +68,18 @@ public class PSplitLayout extends AbstractEnumPLayout<PSplitLayout.Constraint> {
 			int firstW = (int) Math.round(compW * splitPos);
 			int secondW = compW - firstW;
 			
-			setChildBounds(first, x, y, firstW, h);
-			setChildBounds(second, x + firstW + dividerW, y, secondW, h);
-			setChildBounds(divider, x + firstW, y, dividerW, h);
+			setChildCellFilled(first, x, y, firstW, h);
+			setChildCellFilled(second, x + firstW + dividerW, y, secondW, h);
+			setChildCellFilled(divider, x + firstW, y, dividerW, h);
 		} else {
 			int dividerH = getPreferredSizeOf(divider).getHeight();
 			int compH = h - dividerH;
 			int firstH = (int) Math.round(compH * splitPos);
 			int secondH = compH - firstH;
 			
-			setChildBounds(first, x, y, w, firstH);
-			setChildBounds(second, x, y + firstH + dividerH, w, secondH);
-			setChildBounds(divider, x, y + firstH, w, dividerH);
+			setChildCellFilled(first, x, y, w, firstH);
+			setChildCellFilled(second, x, y + firstH + dividerH, w, secondH);
+			setChildCellFilled(divider, x, y + firstH, w, dividerH);
 		}
 	}
 	

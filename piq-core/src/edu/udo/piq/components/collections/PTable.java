@@ -309,6 +309,16 @@ public class PTable extends AbstractPInputLayoutOwner
 	}
 	
 	@Override
+	public boolean isFocusable() {
+		return true;
+	}
+	
+	@Override
+	public boolean isStrongFocusOwner() {
+		return true;
+	}
+	
+	@Override
 	public PTableCellIndex getIndexAt(int x, int y) {
 		return getLayoutInternal().getIndexAt(x, y);
 	}

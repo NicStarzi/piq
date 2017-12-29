@@ -5,6 +5,10 @@ public class PTableCellIndex extends PTableIndex implements PModelIndex {
 	private final int column;
 	private final int row;
 	
+	public PTableCellIndex(PColumnIndex columnIndex, PRowIndex rowIndex) {
+		this(columnIndex.getColumn(), rowIndex.getRow());
+	}
+	
 	public PTableCellIndex(int columnIndex, int rowIndex) {
 		if (columnIndex < 0) {
 			throw new IllegalArgumentException("columnIndex="+columnIndex);

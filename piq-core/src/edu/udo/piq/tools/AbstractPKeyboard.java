@@ -20,15 +20,15 @@ public abstract class AbstractPKeyboard implements PKeyboard {
 		obsList.remove(obs);
 	}
 	
-	protected void firePressEvent(Key key) {
+	protected void firePressEvent(ActualKey key) {
 		obsList.fireEvent(obs -> obs.onKeyPressed(this, key));
 	}
 	
-	protected void fireTriggerEvent(Key key) {
+	protected void fireTriggerEvent(ActualKey key) {
 		obsList.fireEvent(obs -> obs.onKeyTriggered(this, key));
 	}
 	
-	protected void fireReleaseEvent(Key key) {
+	protected void fireReleaseEvent(ActualKey key) {
 		obsList.fireEvent(obs -> obs.onKeyReleased(this, key));
 	}
 	

@@ -5,6 +5,8 @@ import edu.udo.piq.PColor;
 import edu.udo.piq.PFontResource;
 import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PRoot;
+import edu.udo.piq.components.PSingleValueModel;
+import edu.udo.piq.components.PSingleValueModelObs;
 import edu.udo.piq.components.collections.PListIndex;
 import edu.udo.piq.components.collections.PModelIndex;
 import edu.udo.piq.components.collections.PSelection;
@@ -15,7 +17,6 @@ import edu.udo.piq.components.textbased.PCaretRenderTimer;
 import edu.udo.piq.components.textbased.PTextComponent;
 import edu.udo.piq.components.textbased.PTextInput;
 import edu.udo.piq.components.textbased.PTextModel;
-import edu.udo.piq.components.textbased.PTextModelObs;
 import edu.udo.piq.components.textbased.PTextSelection;
 import edu.udo.piq.components.textbased.PTextSelector;
 import edu.udo.piq.components.util.SymbolicFontKey;
@@ -28,15 +29,15 @@ public abstract class AbstractPTextComponent
 {
 	
 	public static final Object FONT_ID = new SymbolicFontKey(AbstractPTextComponent.class);
-	protected static final PColor DEFAULT_TEXT_UNSELECTED_COLOR = PColor.BLACK;
-	protected static final PColor DEFAULT_TEXT_SELECTED_COLOR = PColor.WHITE;
-	protected static final PColor DEFAULT_SELECTION_BACKGROUND_COLOR = PColor.BLUE;
+	public static final PColor DEFAULT_TEXT_UNSELECTED_COLOR = PColor.BLACK;
+	public static final PColor DEFAULT_TEXT_SELECTED_COLOR = PColor.WHITE;
+	public static final PColor DEFAULT_SELECTION_BACKGROUND_COLOR = PColor.BLUE;
 	
-	protected final ObserverList<PTextModelObs> modelObsList
+	protected final ObserverList<PSingleValueModelObs> modelObsList
 		= PiqUtil.createDefaultObserverList();
 	protected final ObserverList<PSelectionObs> selectionObsList
 		= PiqUtil.createDefaultObserverList();
-	protected final PTextModelObs modelObs = (mdl) -> AbstractPTextComponent.this.onTextChanged();
+	protected final PSingleValueModelObs modelObs = this::onTextChanged;
 	protected final PSelectionObs selectionObs = new PSelectionObs() {
 		@Override
 		public void onLastSelectedChanged(PSelection selection, PModelIndex prevLastSelected, PModelIndex newLastSelected) {
@@ -61,7 +62,7 @@ public abstract class AbstractPTextComponent
 		setCaretRenderTimer(new PCaretRenderTimer(this));
 	}
 	
-	protected void onTextChanged() {
+	protected void onTextChanged(PSingleValueModel model, Object oldValue, Object newValue) {
 		if (getSelection() != null) {
 			getSelection().clearSelection();
 		}
@@ -152,6 +153,11 @@ public abstract class AbstractPTextComponent
 		return true;
 	}
 	
+	@Override
+	public boolean isStrongFocusOwner() {
+		return true;
+	}
+	
 	protected void setSelection(PTextSelection selection) {
 		if (getSelection() != null) {
 			if (getCaretRenderTimer() != null) {
@@ -209,14 +215,14 @@ public abstract class AbstractPTextComponent
 		return text.toString();
 	}
 	
-	public void addObs(PTextModelObs obs) {
+	public void addObs(PSingleValueModelObs obs) {
 		modelObsList.add(obs);
 		if (getModel() != null) {
 			getModel().addObs(obs);
 		}
 	}
 	
-	public void removeObs(PTextModelObs obs) {
+	public void removeObs(PSingleValueModelObs obs) {
 		modelObsList.remove(obs);
 		if (getModel() != null) {
 			getModel().removeObs(obs);

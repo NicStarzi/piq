@@ -6,7 +6,7 @@ import java.util.function.Function;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PKeyboard;
-import edu.udo.piq.PKeyboard.Key;
+import edu.udo.piq.PKeyboard.ActualKey;
 import edu.udo.piq.PKeyboardObs;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
@@ -22,10 +22,10 @@ import edu.udo.piq.components.collections.PSelection;
 import edu.udo.piq.components.collections.PSelectionObs;
 import edu.udo.piq.components.textbased.PTextField;
 import edu.udo.piq.components.textbased.PTextFieldObs;
-import edu.udo.piq.components.util.DefaultPKeyInput;
-import edu.udo.piq.components.util.PKeyInput;
-import edu.udo.piq.components.util.PKeyInput.FocusPolicy;
-import edu.udo.piq.components.util.PKeyInput.KeyInputType;
+import edu.udo.piq.components.util.DefaultPAccelerator;
+import edu.udo.piq.components.util.PAccelerator;
+import edu.udo.piq.components.util.PAccelerator.FocusPolicy;
+import edu.udo.piq.components.util.PAccelerator.KeyInputType;
 import edu.udo.piq.util.AncestorIterator;
 import edu.udo.piq.util.ThrowException;
 
@@ -62,8 +62,8 @@ public class PComboBox extends PDropDown {
 	 * @see #getComboBox(PComponent)
 	 * @see #showDropDown()
 	 */
-	public static final PKeyInput<PComboBox> INPUT_PRESS_DOWN = new DefaultPKeyInput<>(
-			FocusPolicy.THIS_OR_CHILD_HAS_FOCUS, KeyInputType.TRIGGER, Key.DOWN,
+	public static final PAccelerator<PComboBox> INPUT_PRESS_DOWN = new DefaultPAccelerator<>(
+			FocusPolicy.THIS_OR_CHILD_HAS_FOCUS, KeyInputType.TRIGGER, ActualKey.DOWN,
 		(self) -> self.isEnabled() && !self.isBodyVisible());
 	/**
 	 * Shows the drop down body of the combo box.
@@ -127,7 +127,7 @@ public class PComboBox extends PDropDown {
 		});
 		addObs(new PKeyboardObs() {
 			@Override
-			public void onKeyTriggered(PKeyboard keyboard, Key key) {
+			public void onKeyTriggered(PKeyboard keyboard, ActualKey key) {
 				PComboBox.this.onKeyTriggered(keyboard, key);
 			}
 		});
@@ -296,11 +296,11 @@ public class PComboBox extends PDropDown {
 	protected void onMouseButtonReleased(PMouse mouse, MouseButton btn) {
 	}
 	
-	public void onKeyTriggered(PKeyboard keyboard, Key key) {
+	public void onKeyTriggered(PKeyboard keyboard, ActualKey key) {
 		if (isBodyVisible()) {
-			if (key == Key.ESC) {
+			if (key == ActualKey.ESCAPE) {
 				hideDropDownAndReset();
-			} else if (key == Key.ENTER) {
+			} else if (key == ActualKey.ENTER) {
 				hideDropDown();
 			}
 		}

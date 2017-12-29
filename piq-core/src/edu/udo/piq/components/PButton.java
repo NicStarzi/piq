@@ -8,7 +8,7 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PGlobalEventGenerator;
 import edu.udo.piq.PGlobalEventProvider;
 import edu.udo.piq.PInsets;
-import edu.udo.piq.PKeyboard.Key;
+import edu.udo.piq.PKeyboard.ActualKey;
 import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
@@ -18,9 +18,11 @@ import edu.udo.piq.PTimer;
 import edu.udo.piq.borders.PButtonBorder;
 import edu.udo.piq.components.defaults.DefaultPButtonModel;
 import edu.udo.piq.components.defaults.ReRenderPFocusObs;
-import edu.udo.piq.components.util.DefaultPKeyInput;
-import edu.udo.piq.components.util.PKeyInput;
-import edu.udo.piq.components.util.PKeyInput.KeyInputType;
+import edu.udo.piq.components.textbased.PLabel;
+import edu.udo.piq.components.textbased.PTextModel;
+import edu.udo.piq.components.util.DefaultPAccelerator;
+import edu.udo.piq.components.util.PAccelerator;
+import edu.udo.piq.components.util.PAccelerator.KeyInputType;
 import edu.udo.piq.layouts.PAnchorLayout;
 import edu.udo.piq.tools.AbstractPInputLayoutOwner;
 import edu.udo.piq.tools.ImmutablePInsets;
@@ -36,8 +38,8 @@ public class PButton extends AbstractPInputLayoutOwner implements PClickable, PG
 	 */
 	
 	public static final String INPUT_IDENTIFIER_PRESS_ENTER = "pressEnter";
-	public static final PKeyInput<PButton> INPUT_PRESS_ENTER =
-			new DefaultPKeyInput<>(KeyInputType.TRIGGER, Key.ENTER, PButton::canTriggerEnter);
+	public static final PAccelerator<PButton> INPUT_PRESS_ENTER =
+			new DefaultPAccelerator<>(KeyInputType.TRIGGER, ActualKey.ENTER, PButton::canTriggerEnter);
 	public static final Consumer<PButton> REACTION_PRESS_ENTER = PButton::onTriggerEnter;
 	
 	/*
@@ -47,8 +49,8 @@ public class PButton extends AbstractPInputLayoutOwner implements PClickable, PG
 	 */
 	
 	public static final String INPUT_IDENTIFIER_RELEASE_ENTER = "releaseEnter";
-	public static final PKeyInput<PButton> INPUT_RELEASE_ENTER =
-			new DefaultPKeyInput<>(KeyInputType.RELEASE, Key.ENTER, PButton::canTriggerEnter);
+	public static final PAccelerator<PButton> INPUT_RELEASE_ENTER =
+			new DefaultPAccelerator<>(KeyInputType.RELEASE, ActualKey.ENTER, PButton::canTriggerEnter);
 	public static final Consumer<PButton> REACTION_RELEASE_ENTER = PButton::onReleaseEnter;
 	
 	protected static boolean canTriggerEnter(PButton self) {
@@ -77,6 +79,14 @@ public class PButton extends AbstractPInputLayoutOwner implements PClickable, PG
 	protected boolean ignoreClickOnChildren = false;
 	protected double repeatTimerInitialDelay;
 	protected double repeatTimerDelay;
+	
+	public PButton(Object initialLabelValue) {
+		this(new PLabel(initialLabelValue));
+	}
+	
+	public PButton(PTextModel initialLabelModel) {
+		this(new PLabel(initialLabelModel));
+	}
 	
 	public PButton(PComponent content) {
 		this();
@@ -128,6 +138,7 @@ public class PButton extends AbstractPInputLayoutOwner implements PClickable, PG
 		return globEvProv;
 	}
 	
+	@Override
 	protected PAnchorLayout getLayoutInternal() {
 		return (PAnchorLayout) super.getLayout();
 	}

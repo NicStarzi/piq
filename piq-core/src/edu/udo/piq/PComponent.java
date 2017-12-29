@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
+import java.util.function.Predicate;
 
+import edu.udo.piq.actions.PComponentAction;
 import edu.udo.piq.components.containers.PGlassPanel;
+import edu.udo.piq.layouts.PComponentLayoutData;
 import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.MutablePBounds;
 import edu.udo.piq.util.AncestorIterator;
@@ -49,16 +52,6 @@ import edu.udo.piq.util.ThrowException;
  */
 public interface PComponent extends PStyleable<PStyleComponent> {
 	
-	public void setCustomStyle(PStyleComponent style);
-	
-	public PStyleComponent getCustomStyle();
-	
-	@Override
-	public void setStyle(PStyleComponent style);
-	
-	@Override
-	public PStyleComponent getStyle();
-	
 	/**
 	 * This method is supposed to be used internally by a {@link PReadOnlyLayout} to set
 	 * the newly added or removed child's parent.<br>
@@ -87,6 +80,71 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 	 * @see #setParent(PComponent)
 	 */
 	public PComponent getParent();
+	
+	/**
+	 * This method returns the default preferred size for this component
+	 * used by the default rendering mechanism.<br>
+	 * This method should return a size as small as possible for rendering
+	 * itself with the {@link #defaultRender(PRenderer)} method.<br>
+	 * {@link PReadOnlyLayout}s and {@link PDesign}s might use this value or ignore
+	 * it completely.<br>
+	 * This method never returns null.<br>
+	 * 
+	 * @return the preferred size for the default render
+	 * @see #defaultRender(PRenderer)
+	 * @see PSize
+	 * @see PDesign
+	 * @see PDesign#getPreferredSize(PComponent)
+	 * @see PReadOnlyLayout
+	 * @see PReadOnlyLayout#getChildBounds(PComponent)
+	 */
+	public default PSize getDefaultPreferredSize() {
+		PReadOnlyLayout layout = getLayout();
+		if (layout != null) {
+			return layout.getPreferredSize();
+		}
+		return PSize.ZERO_SIZE;
+	}
+	
+	public default PSize getPreferredSize() {
+		PStyleComponent style = getStyle();
+		if (style == null) {
+			return getDefaultPreferredSize();
+		}
+		return style.getPreferredSize(this);
+	}
+	
+	public PComponentLayoutData getLayoutData();
+	
+	/**
+	 * Returns true if this {@link PComponent} may become the focus owner of a GUI.<br>
+	 * If this method returns false this method will be ignored when the user is
+	 * traversing the focus through the GUI.<br>
+	 * A component that is not focusable may still get the focus programmatically
+	 * through the use of the {@link PRoot#setFocusOwner(PComponent)} or
+	 * {@link #takeFocus()} method.<br>
+	 * 
+	 * @return true if this component should be included in focus traversal
+	 * @see PRoot#setFocusOwner(PComponent)
+	 * @see PRoot#getFocusOwner()
+	 * @see #takeFocus()
+	 * @see #hasFocus()
+	 */
+	public boolean isFocusable();
+	
+	public default boolean isStrongFocusOwner() {
+		return false;
+	}
+	
+	public void setCustomStyle(PStyleComponent style);
+	
+	public PStyleComponent getCustomStyle();
+	
+	@Override
+	public void setStyle(PStyleComponent style);
+	
+	@Override
+	public PStyleComponent getStyle();
 	
 	public PBorder getBorder();
 	
@@ -177,54 +235,23 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 	 */
 	public void setMouseOverCursor(PCursor cursor);
 	
-	/**
-	 * This method returns the default preferred size for this component
-	 * used by the default rendering mechanism.<br>
-	 * This method should return a size as small as possible for rendering
-	 * itself with the {@link #defaultRender(PRenderer)} method.<br>
-	 * {@link PReadOnlyLayout}s and {@link PDesign}s might use this value or ignore
-	 * it completely.<br>
-	 * This method never returns null.<br>
-	 * 
-	 * @return the preferred size for the default render
-	 * @see #defaultRender(PRenderer)
-	 * @see PSize
-	 * @see PDesign
-	 * @see PDesign#getPreferredSize(PComponent)
-	 * @see PReadOnlyLayout
-	 * @see PReadOnlyLayout#getChildBounds(PComponent)
-	 */
-	public default PSize getDefaultPreferredSize() {
-		PReadOnlyLayout layout = getLayout();
-		if (layout != null) {
-			return layout.getPreferredSize();
-		}
-		return PSize.ZERO_SIZE;
+	public void addActionMapping(Object actionKey, PComponentAction action);
+	
+	public default void removeActionMapping(Object actionKey) {
+		addActionMapping(actionKey, null);
 	}
 	
-	public default PSize getPreferredSize() {
-		PStyleComponent style = getStyle();
-		if (style == null) {
-			return getDefaultPreferredSize();
-		}
-		return style.getPreferredSize(this);
+	public void clearActionMap();
+	
+	public PComponentAction getAction(Object actionKey);
+	
+	public Collection<PComponentAction> getAllActions();
+	
+	public default boolean hasActionForKey(Object actionKey) {
+		return getAction(actionKey) != null;
 	}
 	
-	/**
-	 * Returns true if this {@link PComponent} may become the focus owner of a GUI.<br>
-	 * If this method returns false this method will be ignored when the user is
-	 * traversing the focus through the GUI.<br>
-	 * A component that is not focusable may still get the focus programmatically
-	 * through the use of the {@link PRoot#setFocusOwner(PComponent)} or
-	 * {@link #takeFocus()} method.<br>
-	 * 
-	 * @return true if this component should be included in focus traversal
-	 * @see PRoot#setFocusOwner(PComponent)
-	 * @see PRoot#getFocusOwner()
-	 * @see #takeFocus()
-	 * @see #hasFocus()
-	 */
-	public boolean isFocusable();
+	public boolean hasAction(PComponentAction action);
 	
 	/**
 	 * Returns the {@link PFocusTraversal} for this component or null if this
@@ -481,6 +508,10 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 		return getBounds().createCopyAndSubtract(border.getInsets(this));
 	}
 	
+	public default PLayoutPreference getLayoutPreference() {
+		return PLayoutPreference.DEFAULT_LAYOUT_PREFERENCE;
+	}
+	
 	public default Object getConstraintAtParent() {
 		ThrowException.ifNull(getParent(), "getParent() == null");
 		return getParent().getLayout().getChildConstraint(this);
@@ -500,7 +531,7 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 	 * @return a Collection of {@link PComponent PComponents} that are children of this component
 	 * @see PReadOnlyLayout#getChildren()
 	 */
-	public default Collection<PComponent> getChildren() {
+	public default Iterable<PComponent> getChildren() {
 		if (getLayout() != null) {
 			return getLayout().getChildren();
 		}
@@ -552,25 +583,81 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 		return null;
 	}
 	
+	public default PComponent getFirstDescendantMatchingCondition(Predicate<PComponent> condition) {
+		ThrowException.ifNull(condition, "condition == null");
+		for (PComponent current : new DepthFirstDescendantIterator(this)) {
+			if (condition.test(current)) {
+				return current;
+			}
+		}
+		return null;
+	}
+	
+	public default Collection<PComponent> getAllDescendantsMatchingCondition(Predicate<PComponent> condition) {
+		ThrowException.ifNull(condition, "condition == null");
+		Collection<PComponent> result = null;
+		PComponent first = null;
+		for (PComponent current : new DepthFirstDescendantIterator(this)) {
+			if (condition.test(current)) {
+				if (first == null) {
+					first = current;
+				} else if (result == null) {
+					result = new ArrayList<>();
+					result.add(current);
+				} else {
+					result.add(current);
+				}
+			}
+		}
+		if (result == null) {
+			if (first == null) {
+				return Collections.emptyList();
+			}
+			return Collections.singleton(first);
+		}
+		return result;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public default <T> Collection<T> getAllDescendantsOfType(Class<T> descendantType) {
 		ThrowException.ifNull(descendantType, "descendantType == null");
 		Collection<T> result = null;
+		T first = null;
 		for (PComponent current : new DepthFirstDescendantIterator(this)) {
 			if (descendantType.isInstance(current)) {
-				if (result == null) {
+				if (first == null) {
+					first = (T) current;
+				} else if (result == null) {
 					result = new ArrayList<>();
+					result.add((T) current);
+				} else {
+					result.add((T) current);
 				}
-				result.add((T) current);
 			}
+		}
+		if (result == null) {
+			if (first == null) {
+				return Collections.emptyList();
+			}
+			return Collections.singleton(first);
 		}
 		return result;
 	}
 	
 	public default PComponent getFirstAncestorWithID(String id) {
 		ThrowException.ifNull(id, "id == null");
-		for (PComponent current : new AncestorIterator(this, false)) {
+		for (PComponent current : new AncestorIterator(this, true)) {
 			if (id.equals(current.getID())) {
+				return current;
+			}
+		}
+		return null;
+	}
+	
+	public default PComponent getFirstAncestorMatchingCondition(Predicate<PComponent> condition) {
+		ThrowException.ifNull(condition, "condition == null");
+		for (PComponent current : new AncestorIterator(this, true)) {
+			if (condition.test(current)) {
 				return current;
 			}
 		}
@@ -580,7 +667,7 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 	@SuppressWarnings("unchecked")
 	public default <T> T getFirstAncestorOfType(Class<T> ancestorType) {
 		ThrowException.ifNull(ancestorType, "ancestorType == null");
-		for (PComponent current : new AncestorIterator(this, false)) {
+		for (PComponent current : new AncestorIterator(this, true)) {
 			if (ancestorType.isInstance(current)) {
 				return (T) current;
 			}
@@ -833,6 +920,14 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 		if (root != null) {
 			root.setFocusOwner(this);
 		}
+	}
+	
+	public default PComponent getFirstFocusableAncestor() {
+		PComponent current = this;
+		while (current != null && !current.isFocusable()) {
+			current = current.getParent();
+		}
+		return current;
 	}
 	
 	public default void takeFocusNotFromDescendants() {

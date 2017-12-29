@@ -7,6 +7,8 @@ import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
+import edu.udo.piq.components.PSingleValueModel;
+import edu.udo.piq.components.PSingleValueModelObs;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.components.util.SymbolicFontKey;
 import edu.udo.piq.tools.AbstractPComponent;
@@ -18,9 +20,9 @@ public class PLabel extends AbstractPComponent {
 	public static final Object FONT_ID = new SymbolicFontKey(PLabel.class);
 	protected static final PColor DEFAULT_TEXT_COLOR = PColor.BLACK;
 	
-	protected final ObserverList<PTextModelObs> modelObsList
+	protected final ObserverList<PSingleValueModelObs> modelObsList
 		= PiqUtil.createDefaultObserverList();
-	protected final PTextModelObs modelObs = this::onModelValueChanged;
+	protected final PSingleValueModelObs modelObs = this::onModelValueChanged;
 	protected PFontResource cachedFont;
 	protected PTextModel model;
 	
@@ -58,7 +60,7 @@ public class PLabel extends AbstractPComponent {
 		return model;
 	}
 	
-	protected void onModelValueChanged(PTextModel model) {
+	protected void onModelValueChanged(PSingleValueModel model, Object oldValue, Object newValue) {
 		firePreferredSizeChangedEvent();
 		fireReRenderEvent();
 	}

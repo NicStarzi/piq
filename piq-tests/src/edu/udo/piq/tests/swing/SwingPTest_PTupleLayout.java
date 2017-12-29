@@ -4,8 +4,9 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PSize;
 import edu.udo.piq.borders.PLineBorder;
 import edu.udo.piq.components.PButton;
-import edu.udo.piq.components.PCheckBoxModelObs;
+import edu.udo.piq.components.PCheckBoxModel;
 import edu.udo.piq.components.PCheckBoxTuple;
+import edu.udo.piq.components.PSingleValueModelObs;
 import edu.udo.piq.components.PSlider;
 import edu.udo.piq.components.PSliderModel;
 import edu.udo.piq.components.PSliderModelObs;
@@ -93,8 +94,8 @@ public class SwingPTest_PTupleLayout extends AbstractSwingPTest {
 				tuple.getLayout().setGap(model.getValue());
 			}
 		});
-		selectOri.addObs((PCheckBoxModelObs) (mdl) -> {
-			if (mdl.isChecked()) {
+		selectOri.addObs((PSingleValueModelObs) (mdl, oldVal, newVal) -> {
+			if (((PCheckBoxModel) mdl).isChecked()) {
 				tuple.getLayout().setOrientation(Orientation.TOP_TO_BOTTOM);
 			} else {
 				tuple.getLayout().setOrientation(Orientation.LEFT_TO_RIGHT);

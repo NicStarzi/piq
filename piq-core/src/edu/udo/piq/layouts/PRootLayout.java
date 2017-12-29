@@ -6,7 +6,6 @@ import edu.udo.piq.PRoot;
 import edu.udo.piq.PRootOverlay;
 import edu.udo.piq.PSize;
 import edu.udo.piq.layouts.PRootLayout.Constraint;
-import edu.udo.piq.tools.AbstractEnumPLayout;
 import edu.udo.piq.util.ThrowException;
 
 public class PRootLayout extends AbstractEnumPLayout<Constraint> {
@@ -41,14 +40,19 @@ public class PRootLayout extends AbstractEnumPLayout<Constraint> {
 			}
 		}
 		PComponent body = getBody();
-		if (body != null && getChildBounds(body).contains(x, y)) {
+		if (body != null && body.getBounds().contains(x, y)) {
 			return body;
+		}
+		PComponent menuBar = getMenuBar();
+		if (menuBar != null && menuBar.getBounds().contains(x, y)) {
+			return menuBar;
 		}
 		return null;
 	}
 	
 	@Override
 	protected void layOutInternal() {
+//		System.out.println("PRootLayout.layOutInternal()");
 		PBounds ob = getOwner().getBounds();
 		int x = ob.getX();
 		int y = ob.getY();
@@ -56,15 +60,17 @@ public class PRootLayout extends AbstractEnumPLayout<Constraint> {
 		int h = ob.getHeight();
 		
 		PComponent overlay = getChildForConstraint(Constraint.OVERLAY);
-		setChildBounds(overlay, x, y, w, h);
+		setChildCellFilled(overlay, x, y, w, h);
+//		System.out.println("overlay: "+overlay.getDebugInfo());
 		
 		PComponent menuBar = getMenuBar();
 		PSize prefSizeMenuBar = getPreferredSizeOf(menuBar);
 		int menuBarH = prefSizeMenuBar.getHeight();
 		
 		PComponent body = getBody();
-		setChildBounds(menuBar, x, y, w, menuBarH);
-		setChildBounds(body, x, y + menuBarH, w, h - menuBarH);
+		setChildCellFilled(menuBar, x, y, w, menuBarH);
+		setChildCellFilled(body, x, y + menuBarH, w, h - menuBarH);
+//		System.out.println("body: "+body.getDebugInfo());
 	}
 	
 	@Override

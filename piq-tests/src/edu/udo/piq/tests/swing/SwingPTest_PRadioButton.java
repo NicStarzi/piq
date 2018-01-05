@@ -26,24 +26,24 @@ public class SwingPTest_PRadioButton extends AbstractSwingPTest {
 		
 		PRadioButton radBtn1 = new PRadioButton();
 		bodyPnl.getLayout().addChild(radBtn1, new PFreeLayout.FreeConstraint(36, 53));
-		
+
 		PRadioButtonTuple radBtn2 = new PRadioButtonTuple();
 		radBtn2.setSecondComponent(new PLabel(new DefaultPTextModel("Click me!")));
 		bodyPnl.getLayout().addChild(radBtn2, new PFreeLayout.FreeConstraint(89, 12));
-		
+
 		new PRadioButtonGroup(radBtn1, radBtn2.getRadioButton());
-		
+
 		PRadioButton radBtn3 = new PRadioButton();
 		bodyPnl.getLayout().addChild(radBtn3, new PFreeLayout.FreeConstraint(241, 41));
-		
+
 		PRadioButtonTuple radBtn4 = new PRadioButtonTuple();
 		radBtn4.setSecondComponent(new PLabel(new DefaultPTextModel("Here!")));
 		bodyPnl.getLayout().addChild(radBtn4, new PFreeLayout.FreeConstraint(173, 109));
-		
+
 		PRadioButtonTuple radBtn5 = new PRadioButtonTuple();
 		radBtn5.setSecondComponent(new PLabel(new DefaultPTextModel("Come on!")));
 		bodyPnl.getLayout().addChild(radBtn5, new PFreeLayout.FreeConstraint(201, 78));
-		
+
 		new PRadioButtonGroup(radBtn3, radBtn4.getRadioButton(), radBtn5.getRadioButton());
 	}
 	

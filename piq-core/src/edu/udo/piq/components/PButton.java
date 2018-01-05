@@ -1,7 +1,5 @@
 package edu.udo.piq.components;
 
-import java.util.function.Consumer;
-
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
@@ -15,64 +13,52 @@ import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PTimer;
+import edu.udo.piq.actions.FocusOwnerAction;
+import edu.udo.piq.actions.PAccelerator;
+import edu.udo.piq.actions.PAccelerator.FocusPolicy;
+import edu.udo.piq.actions.PAccelerator.KeyInputType;
+import edu.udo.piq.actions.PActionKey;
+import edu.udo.piq.actions.PComponentAction;
+import edu.udo.piq.actions.StandardComponentActionKey;
 import edu.udo.piq.borders.PButtonBorder;
 import edu.udo.piq.components.defaults.DefaultPButtonModel;
 import edu.udo.piq.components.defaults.ReRenderPFocusObs;
 import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.components.textbased.PTextModel;
-import edu.udo.piq.components.util.DefaultPAccelerator;
-import edu.udo.piq.components.util.PAccelerator;
-import edu.udo.piq.components.util.PAccelerator.KeyInputType;
 import edu.udo.piq.layouts.PAnchorLayout;
-import edu.udo.piq.tools.AbstractPInputLayoutOwner;
+import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PiqUtil;
 
-public class PButton extends AbstractPInputLayoutOwner implements PClickable, PGlobalEventGenerator {
+public class PButton extends AbstractPLayoutOwner implements PClickable, PGlobalEventGenerator {
 	
-	/*
-	 * Input: Press Enter
-	 * If the ENTER key is pressed while the button has focus, a model and
-	 * is enabled, the button will become pressed.
-	 */
+	public static final PActionKey KEY_PRESS_ENTER = StandardComponentActionKey.INTERACT;
+	public static final PAccelerator ACCELERATOR_PRESS_ENTER = new PAccelerator(
+			ActualKey.ENTER, FocusPolicy.THIS_HAS_FOCUS, KeyInputType.PRESS);
+	public static final PComponentAction ACTION_PRESS_ENTER = new FocusOwnerAction<>(
+			PButton.class, false,
+			ACCELERATOR_PRESS_ENTER,
+			self -> !self.isPressed() && self.isEnabled(),
+			self -> self.getModel().setPressed(true));
 	
-	public static final String INPUT_IDENTIFIER_PRESS_ENTER = "pressEnter";
-	public static final PAccelerator<PButton> INPUT_PRESS_ENTER =
-			new DefaultPAccelerator<>(KeyInputType.TRIGGER, ActualKey.ENTER, PButton::canTriggerEnter);
-	public static final Consumer<PButton> REACTION_PRESS_ENTER = PButton::onTriggerEnter;
+	public static final PActionKey KEY_RELEASE_ENTER = new PActionKey("RELEASE_ENTER");
+	public static final PAccelerator ACCELERATOR_RELEASE_ENTER = new PAccelerator(
+			ActualKey.ENTER, FocusPolicy.THIS_HAS_FOCUS, KeyInputType.RELEASE);
+	public static final PComponentAction ACTION_RELEASE_ENTER = new FocusOwnerAction<>(
+			PButton.class, false,
+			ACCELERATOR_PRESS_ENTER,
+			self -> self.isPressed() && self.isEnabled(),
+			self -> {
+				self.getModel().setPressed(false);
+				self.fireClickEvent();
+			});
 	
-	/*
-	 * Input: Release Enter
-	 * When ENTER is released while button has focus, is enabled and pressed,
-	 * the button will become unpressed.
-	 */
-	
-	public static final String INPUT_IDENTIFIER_RELEASE_ENTER = "releaseEnter";
-	public static final PAccelerator<PButton> INPUT_RELEASE_ENTER =
-			new DefaultPAccelerator<>(KeyInputType.RELEASE, ActualKey.ENTER, PButton::canTriggerEnter);
-	public static final Consumer<PButton> REACTION_RELEASE_ENTER = PButton::onReleaseEnter;
-	
-	protected static boolean canTriggerEnter(PButton self) {
-		return self.isEnabled() && self.getModel() != null;
-	}
-	
-	protected static void onTriggerEnter(PButton self) {
-		self.getModel().setPressed(true);
-	}
-	
-	protected static void onReleaseEnter(PButton self) {
-		if (self.isPressed()) {
-			self.getModel().setPressed(false);
-			self.fireClickEvent();
-		}
-	}
-	
-	protected final ObserverList<PButtonModelObs> modelObsList
+	protected final ObserverList<PSingleValueModelObs> modelObsList
 		= PiqUtil.createDefaultObserverList();
 	protected final ObserverList<PClickObs> obsList
 		= PiqUtil.createDefaultObserverList();
-	protected final PButtonModelObs modelObs = (mdl) -> onModelChange();
+	protected final PSingleValueModelObs modelObs = this::onModelChange;
 	protected PTimer repeatTimer;
 	protected PButtonModel model;
 	protected PGlobalEventProvider globEvProv;
@@ -124,8 +110,8 @@ public class PButton extends AbstractPInputLayoutOwner implements PClickable, PG
 		});
 		addObs(new ReRenderPFocusObs());
 		
-		defineInput(INPUT_IDENTIFIER_PRESS_ENTER, INPUT_PRESS_ENTER, REACTION_PRESS_ENTER);
-		defineInput(INPUT_IDENTIFIER_RELEASE_ENTER, INPUT_RELEASE_ENTER, REACTION_RELEASE_ENTER);
+		addActionMapping(KEY_PRESS_ENTER, ACTION_PRESS_ENTER);
+		addActionMapping(KEY_RELEASE_ENTER, ACTION_RELEASE_ENTER);
 	}
 	
 	@Override
@@ -203,11 +189,36 @@ public class PButton extends AbstractPInputLayoutOwner implements PClickable, PG
 		return model;
 	}
 	
+	public void setEnabled(boolean isEnabled) {
+		PButtonModel model = getModel();
+		if (model != null) {
+			model.setEnabled(isEnabled);
+		}
+	}
+	
+	public boolean isEnabled() {
+		PButtonModel model = getModel();
+		if (model == null) {
+			return false;
+		}
+		return model.isEnabled();
+	}
+	
+	@Override
+	public boolean isFocusable() {
+		return isEnabled();
+	}
+	
+	@Override
+	public boolean isStrongFocusOwner() {
+		return false;
+	}
+	
 	public void simulateClick() {
 		if (isEnabled() && getModel() != null) {
+			takeFocus();
 			getModel().setPressed(true);
 			getModel().setPressed(false);
-			takeFocus();
 			fireClickEvent();
 		}
 	}
@@ -247,7 +258,7 @@ public class PButton extends AbstractPInputLayoutOwner implements PClickable, PG
 		return true;
 	}
 	
-	protected void onModelChange() {
+	protected void onModelChange(PSingleValueModel model, Object oldVal, Object newVal) {
 		if (repeatTimer != null) {
 			repeatTimer.setDelay(repeatTimerInitialDelay);
 			repeatTimer.setStarted(getModel().isPressed());
@@ -263,7 +274,7 @@ public class PButton extends AbstractPInputLayoutOwner implements PClickable, PG
 	
 	protected void onMouseButtonTriggered(PMouse mouse, MouseButton btn) {
 		if (isEnabled() && btn == MouseButton.LEFT && getModel() != null
-				&& isMouseOverThisOrChild())
+				&& isMouseOverThisOrChild(mouse))
 		{
 			getModel().setPressed(true);
 		}
@@ -274,7 +285,7 @@ public class PButton extends AbstractPInputLayoutOwner implements PClickable, PG
 		if (btn == MouseButton.LEFT && oldPressed) {
 			getModel().setPressed(false);
 			if (isEnabled() && isIgnoreClickOnChildren() ?
-					isMouseOver() : isMouseOverThisOrChild())
+					isMouseOver(mouse) : isMouseOverThisOrChild(mouse))
 			{
 				takeFocus();
 				fireClickEvent();
@@ -290,14 +301,14 @@ public class PButton extends AbstractPInputLayoutOwner implements PClickable, PG
 		obsList.remove(obs);
 	}
 	
-	public void addObs(PButtonModelObs obs) {
+	public void addObs(PSingleValueModelObs obs) {
 		modelObsList.add(obs);
 		if (getModel() != null) {
 			getModel().addObs(obs);
 		}
 	}
 	
-	public void removeObs(PButtonModelObs obs) {
+	public void removeObs(PSingleValueModelObs obs) {
 		modelObsList.remove(obs);
 		if (getModel() != null) {
 			getModel().removeObs(obs);

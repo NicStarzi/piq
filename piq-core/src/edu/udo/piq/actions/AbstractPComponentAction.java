@@ -12,6 +12,12 @@ public abstract class AbstractPComponentAction implements PComponentAction {
 	protected final ObserverList<PComponentActionObs> obsList = PiqUtil.createDefaultObserverList();
 	protected PAccelerator accelerator;
 	
+	public AbstractPComponentAction() {}
+	
+	public AbstractPComponentAction(PAccelerator initialAccelerator) {
+		setAccelerator(initialAccelerator);
+	}
+	
 	public void setAccelerator(Key key) {
 		setAccelerator(new PAccelerator(key));
 	}
@@ -28,14 +34,14 @@ public abstract class AbstractPComponentAction implements PComponentAction {
 		setAccelerator(new PAccelerator(key, mod));
 	}
 	
-	public void setAccelerator(Key key, Modifier mod, 
-			FocusPolicy focusPolicy) 
+	public void setAccelerator(Key key, Modifier mod,
+			FocusPolicy focusPolicy)
 	{
 		setAccelerator(new PAccelerator(key, mod, focusPolicy));
 	}
 	
-	public void setAccelerator(Key key, Modifier mod, 
-			FocusPolicy focusPolicy, KeyInputType inputType) 
+	public void setAccelerator(Key key, Modifier mod,
+			FocusPolicy focusPolicy, KeyInputType inputType)
 	{
 		setAccelerator(new PAccelerator(key, mod, focusPolicy, inputType));
 	}

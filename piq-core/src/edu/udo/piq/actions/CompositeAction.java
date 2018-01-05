@@ -8,27 +8,31 @@ import java.util.List;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PRoot;
 
-public class CompositePComponentAction extends AbstractPComponentAction implements PComponentAction {
+public class CompositeAction extends AbstractPComponentAction implements PComponentAction {
 	
 	protected final PComponentActionObs actionObs = action -> fireChangeEvent();
-	protected final List<Object> delegateKeys = new ArrayList<>();
+	protected final List<PActionKey> delegateKeys = new ArrayList<>();
 	
-	public CompositePComponentAction(Object firstKey, Object secondKey) {
+	public CompositeAction(PAccelerator accelerator, PActionKey firstKey, PActionKey secondKey) {
+		super(accelerator);
 		delegateKeys.add(firstKey);
 		delegateKeys.add(secondKey);
 	}
 	
-	public CompositePComponentAction(Iterable<Object> actionKeys) {
-		for (Object action : actionKeys) {
+	public CompositeAction(PAccelerator accelerator, Iterable<PActionKey> actionKeys) {
+		super(accelerator);
+		for (PActionKey action : actionKeys) {
 			delegateKeys.add(action);
 		}
 	}
 	
-	public CompositePComponentAction(Collection<Object> actionKeys) {
+	public CompositeAction(PAccelerator accelerator, Collection<PActionKey> actionKeys) {
+		super(accelerator);
 		delegateKeys.addAll(actionKeys);
 	}
 	
-	public CompositePComponentAction(Object ... actionKeys) {
+	public CompositeAction(PAccelerator accelerator, PActionKey ... actionKeys) {
+		super(accelerator);
 		delegateKeys.addAll(Arrays.asList(actionKeys));
 	}
 	
@@ -41,7 +45,7 @@ public class CompositePComponentAction extends AbstractPComponentAction implemen
 		if (!focusOwner.hasAction(this)) {
 			return false;
 		}
-		for (Object key : delegateKeys) {
+		for (PActionKey key : delegateKeys) {
 			PComponentAction delegate = focusOwner.getAction(key);
 			if (delegate == null || !delegate.isEnabled(root)) {
 				return false;
@@ -53,7 +57,7 @@ public class CompositePComponentAction extends AbstractPComponentAction implemen
 	@Override
 	public void tryToPerform(PRoot root) {
 		PComponent focusOwner = root.getLastStrongFocusOwner();
-		for (Object key : delegateKeys) {
+		for (PActionKey key : delegateKeys) {
 			PComponentAction delegate = focusOwner.getAction(key);
 			delegate.tryToPerform(root);
 		}

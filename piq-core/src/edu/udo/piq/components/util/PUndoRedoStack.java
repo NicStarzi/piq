@@ -5,22 +5,19 @@ import java.util.List;
 
 import edu.udo.piq.util.ThrowException;
 
-public class PModelHistory {
+public class PUndoRedoStack {
 	
-	private final List<PModelEdit> editStack = new ArrayList<>();
+	private final List<PEdit> editStack = new ArrayList<>();
 	private int redoPos = 0;
 	
-	protected PModelEdit getMergeEdit() {
-		if (redoPos == 0) {
-			return null;
-		}
-		return editStack.get(redoPos - 1);
+	protected PEdit getMergeEdit() {
+		return getNextUndoEdit();
 	}
 	
-	protected void afterEditWasMerged(PModelEdit combine, PModelEdit merged) {
+	protected void afterEditWasMerged(PEdit combine, PEdit merged) {
 	}
 	
-	protected void afterEditWasDone(PModelEdit edit) {
+	protected void afterEditWasDone(PEdit edit) {
 		for (int i = editStack.size() - 1; i > redoPos; i--) {
 			editStack.remove(i);
 		}
@@ -32,7 +29,7 @@ public class PModelHistory {
 		redoPos = editStack.size();
 	}
 	
-	public PModelEdit getNextUndoEdit() {
+	public PEdit getNextUndoEdit() {
 		if (redoPos == 0) {
 			return null;
 		}
@@ -40,7 +37,7 @@ public class PModelHistory {
 	}
 	
 	public boolean canUndo() {
-		return getNextUndoEdit() != null;
+		return redoPos > 0;
 	}
 	
 	public void undo() {
@@ -48,11 +45,11 @@ public class PModelHistory {
 		getNextUndoEdit().undoThis();
 	}
 	
-	protected void afterEditWasUndone(PModelEdit edit) {
+	protected void afterEditWasUndone(PEdit edit) {
 		redoPos--;
 	}
 	
-	public PModelEdit getNextRedoEdit() {
+	public PEdit getNextRedoEdit() {
 		if (redoPos == editStack.size()) {
 			return null;
 		}
@@ -60,7 +57,7 @@ public class PModelHistory {
 	}
 	
 	public boolean canRedo() {
-		return getNextRedoEdit() != null;
+		return redoPos < editStack.size();
 	}
 	
 	public void redo() {
@@ -68,7 +65,7 @@ public class PModelHistory {
 		getNextRedoEdit().redoThis();
 	}
 	
-	protected void afterEditWasRedone(PModelEdit edit) {
+	protected void afterEditWasRedone(PEdit edit) {
 		redoPos++;
 	}
 	

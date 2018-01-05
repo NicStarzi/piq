@@ -15,10 +15,12 @@ public class DefaultPTextSelection extends AbstractPSelection implements PTextSe
 	private PListIndex from = null;
 	private PListIndex to = null;
 	
+	@Override
 	public PListIndex getLastSelected() {
 		return (PListIndex) super.getLastSelected();
 	}
 	
+	@Override
 	public PListIndex getLowestSelectedIndex() {
 		if (!hasSelection()) {
 			return null;
@@ -29,6 +31,7 @@ public class DefaultPTextSelection extends AbstractPSelection implements PTextSe
 		return to;
 	}
 	
+	@Override
 	public PListIndex getHighestSelectedIndex() {
 		if (!hasSelection()) {
 			return null;
@@ -39,6 +42,7 @@ public class DefaultPTextSelection extends AbstractPSelection implements PTextSe
 		return from;
 	}
 	
+	@Override
 	public void addSelection(PModelIndex index) {
 		PListIndex listIndex = ThrowException.ifTypeCastFails(index, PListIndex.class, "Bad index type");
 		
@@ -56,6 +60,7 @@ public class DefaultPTextSelection extends AbstractPSelection implements PTextSe
 		setLastSelected(to);
 	}
 	
+	@Override
 	public void removeSelection(PModelIndex index) {
 		PListIndex listIndex = ThrowException.ifTypeCastFails(index, PListIndex.class, "Illegal index type");
 		if (!hasSelection()) {
@@ -82,6 +87,7 @@ public class DefaultPTextSelection extends AbstractPSelection implements PTextSe
 		setLastSelected(to);
 	}
 	
+	@Override
 	public void clearSelection() {
 		if (!hasSelection()) {
 			return;
@@ -95,6 +101,7 @@ public class DefaultPTextSelection extends AbstractPSelection implements PTextSe
 		setLastSelected(null);
 	}
 	
+	@Override
 	public List<PModelIndex> getAllSelected() {
 		if (!hasSelection()) {
 			return Collections.emptyList();
@@ -109,6 +116,7 @@ public class DefaultPTextSelection extends AbstractPSelection implements PTextSe
 		return result;
 	}
 	
+	@Override
 	public boolean isSelected(PModelIndex index) {
 		PListIndex listIndex = ThrowException.ifTypeCastFails(index, PListIndex.class, "Illegal index type");
 		if (!hasSelection()) {
@@ -120,6 +128,7 @@ public class DefaultPTextSelection extends AbstractPSelection implements PTextSe
 		return isSelected(indexCheck, indexFrom, indexTo);
 	}
 	
+	@Override
 	public boolean hasSelection() {
 		return from != null;
 	}
@@ -163,6 +172,18 @@ public class DefaultPTextSelection extends AbstractPSelection implements PTextSe
 		for (int i = maxNew; i <= maxOld; i++) {
 			fireSelectionRemoved(new PListIndex(i));
 		}
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(getClass().getSimpleName());
+		sb.append("[");
+		sb.append(from == null ? "null" : from.getIndexValue());
+		sb.append(" => ");
+		sb.append(to == null ? "null" : to.getIndexValue());
+		sb.append("]");
+		return sb.toString();
 	}
 	
 }

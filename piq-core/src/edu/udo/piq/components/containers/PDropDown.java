@@ -14,8 +14,9 @@ import edu.udo.piq.PRootOverlay;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PButtonModel;
-import edu.udo.piq.components.PButtonModelObs;
 import edu.udo.piq.components.PClickObs;
+import edu.udo.piq.components.PSingleValueModel;
+import edu.udo.piq.components.PSingleValueModelObs;
 import edu.udo.piq.components.defaults.DefaultPButtonModel;
 import edu.udo.piq.layouts.PAnchorLayout;
 import edu.udo.piq.layouts.PFreeLayout;
@@ -24,7 +25,6 @@ import edu.udo.piq.layouts.PTupleLayout;
 import edu.udo.piq.layouts.PTupleLayout.Constraint;
 import edu.udo.piq.layouts.PTupleLayout.Distribution;
 import edu.udo.piq.layouts.PTupleLayout.Orientation;
-import edu.udo.piq.tools.AbstractPInputLayoutOwner;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.tools.ImmutablePSize;
@@ -32,7 +32,7 @@ import edu.udo.piq.tools.MutablePSize;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PiqUtil;
 
-public class PDropDown extends AbstractPInputLayoutOwner {
+public class PDropDown extends AbstractPLayoutOwner {
 	
 	protected final ObserverList<PDropDownObs> obsList = PiqUtil.createDefaultObserverList();
 	protected final PMouseObs mouseObs = new PMouseObs() {
@@ -51,7 +51,7 @@ public class PDropDown extends AbstractPInputLayoutOwner {
 			PDropDown.this.onPreferredSizeChanged();
 		}
 	};
-	protected final PButtonModelObs modelObs = (mdl) -> PDropDown.this.onModelChange();
+	protected final PSingleValueModelObs modelObs = this::onModelChange;
 	protected final PClickObs btnObs = (btn) -> onButtonClick();
 	protected final PDropDownContainer dropDownContainer;
 	protected PButtonModel model;
@@ -74,6 +74,7 @@ public class PDropDown extends AbstractPInputLayoutOwner {
 		addObs(mouseObs);
 	}
 	
+	@Override
 	protected PTupleLayout getLayoutInternal() {
 		return (PTupleLayout) super.getLayout();
 	}
@@ -132,6 +133,31 @@ public class PDropDown extends AbstractPInputLayoutOwner {
 	
 	public PButtonModel getModel() {
 		return model;
+	}
+	
+	public void setEnabled(boolean isEnabled) {
+		PButtonModel model = getModel();
+		if (model != null) {
+			model.setEnabled(isEnabled);
+		}
+	}
+	
+	public boolean isEnabled() {
+		PButtonModel model = getModel();
+		if (model == null) {
+			return false;
+		}
+		return model.isEnabled();
+	}
+	
+	@Override
+	public boolean isFocusable() {
+		return isEnabled();
+	}
+	
+	@Override
+	public boolean isStrongFocusOwner() {
+		return false;
 	}
 	
 	public boolean isPressed() {
@@ -218,7 +244,7 @@ public class PDropDown extends AbstractPInputLayoutOwner {
 	
 	protected void onMouseButtonTriggered(PMouse mouse, MouseButton btn) {
 		PButtonModel model = getModel();
-		if (btn == MouseButton.LEFT && model != null && !model.isPressed() && isMouseOverThisOrChild()) {
+		if (btn == MouseButton.LEFT && model != null && !model.isPressed() && isMouseOverThisOrChild(mouse)) {
 			model.setPressed(true);
 		}
 	}
@@ -231,7 +257,7 @@ public class PDropDown extends AbstractPInputLayoutOwner {
 		}
 	}
 	
-	protected void onModelChange() {
+	protected void onModelChange(PSingleValueModel model, Object oldValue, Object newValue) {
 		if (!getModel().isPressed() && isMouseOverThisOrChild()) {
 			if (isBodyVisible()) {
 				hideDropDown();
@@ -272,7 +298,7 @@ public class PDropDown extends AbstractPInputLayoutOwner {
 			addObs(new PMouseObs() {
 				@Override
 				public void onButtonTriggered(PMouse mouse, MouseButton btn, int clickCount) {
-					if (!dropDown.isMouseOverThisOrChild() && !isMouseOverThisOrChild()) {
+					if (!dropDown.isMouseOverThisOrChild(mouse) && !isMouseOverThisOrChild(mouse)) {
 						dropDown.hideDropDown();
 					}
 				}

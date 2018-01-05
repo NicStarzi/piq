@@ -4,16 +4,52 @@ import java.awt.Component;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.lang.Character.UnicodeBlock;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Map;
 
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.tools.AbstractPKeyboard;
 
 public class SwingPKeyboard extends AbstractPKeyboard implements PKeyboard {
 	
+	public static final Map<Modifier, String> MODIFIER_NAME_MAP = new EnumMap<>(Modifier.class);
+	public static final Map<Key, String> KEY_NAME_MAP = new HashMap<>();
+	static {
+		MODIFIER_NAME_MAP.put(Modifier.ALT, "Alt");
+		MODIFIER_NAME_MAP.put(Modifier.ALT_GRAPH, "AltGr");
+		MODIFIER_NAME_MAP.put(Modifier.CAPS, "Shift");
+		MODIFIER_NAME_MAP.put(Modifier.COMMAND, "Cmd");
+		MODIFIER_NAME_MAP.put(Modifier.CTRL, "Ctrl");
+		MODIFIER_NAME_MAP.put(Modifier.SHIFT, "Shift");
+		MODIFIER_NAME_MAP.put(Modifier.META, "Meta");
+		
+		KEY_NAME_MAP.put(ActualKey.DELETE, "Del");
+		KEY_NAME_MAP.put(ActualKey.BACKSPACE, "Backspace");
+		KEY_NAME_MAP.put(ActualKey.UP, "Up");
+		KEY_NAME_MAP.put(ActualKey.DOWN, "Down");
+		KEY_NAME_MAP.put(ActualKey.LEFT, "Left");
+		KEY_NAME_MAP.put(ActualKey.RIGHT, "Right");
+		KEY_NAME_MAP.put(ActualKey.ENTER, "Enter");
+		KEY_NAME_MAP.put(ActualKey.ESCAPE, "Escape");
+		KEY_NAME_MAP.put(ActualKey.HOME, "Home");
+		KEY_NAME_MAP.put(ActualKey.SPACE, "Space");
+		KEY_NAME_MAP.put(ActualKey.TAB, "Tab");
+		KEY_NAME_MAP.put(VirtualKey.COPY, "Ctrl+C");
+		KEY_NAME_MAP.put(VirtualKey.CUT, "Ctrl+X");
+		KEY_NAME_MAP.put(VirtualKey.PASTE, "Ctrl+P");
+		KEY_NAME_MAP.put(VirtualKey.UNDO, "Ctrl+Z");
+		KEY_NAME_MAP.put(VirtualKey.REDO, "Ctrl+Y");
+		KEY_NAME_MAP.put(VirtualKey.COMMAND, "Ctrl");
+	}
+	
 	protected final boolean[] nowPressed = new boolean[ActualKey.COUNT];
 	protected final boolean[] prevPressed = new boolean[nowPressed.length];
 	protected final boolean[] modState = new boolean[Modifier.COUNT];
+	protected Map<ActualKey, Key> customKeyBindings = null; // lazily initialized
+	protected Map<Key, ActualKey> customKeyBindingsReversed = null; // lazily initialized
 	protected boolean capsLockDown;
+	protected boolean altGraphFix = true;
 	
 	public SwingPKeyboard(Component base) {
 		base.setFocusTraversalKeysEnabled(false);
@@ -49,11 +85,19 @@ public class SwingPKeyboard extends AbstractPKeyboard implements PKeyboard {
 	}
 	
 	protected void updateKey(KeyEvent e, boolean newPressedValue) {
-		setModifierState(Modifier.ALT, e.isAltDown());
-		setModifierState(Modifier.ALT_GRAPH, e.isAltGraphDown());
-		setModifierState(Modifier.CTRL, e.isControlDown());
+		boolean ctrl = e.isControlDown();
+		boolean alt = e.isAltDown();
+		if (altGraphFix) {
+			setModifierState(Modifier.ALT_GRAPH, ctrl && alt);
+			setModifierState(Modifier.ALT, !ctrl && alt);
+			setModifierState(Modifier.CTRL, ctrl && !alt);
+		} else {
+			setModifierState(Modifier.ALT, e.isAltDown());
+			setModifierState(Modifier.ALT_GRAPH, e.isAltGraphDown());
+			setModifierState(Modifier.CTRL, e.isControlDown());
+		}
+		setModifierState(Modifier.COMMAND, isModifierToggled(Modifier.CTRL));
 		setModifierState(Modifier.META, e.isMetaDown());
-		setModifierState(Modifier.COMMAND, e.isControlDown());
 		
 		int keyCode = e.getKeyCode();
 		ActualKey key = SwingPKeyboard.keyCodeToKey(keyCode);
@@ -100,8 +144,70 @@ public class SwingPKeyboard extends AbstractPKeyboard implements PKeyboard {
 	}
 	
 	@Override
+	public String getKeyName(Key key) {
+		return KEY_NAME_MAP.getOrDefault(key, key.getSymbolicName());
+	}
+	
+	@Override
+	public String getModifierName(Modifier mod) {
+		return MODIFIER_NAME_MAP.getOrDefault(mod, mod.name());
+	}
+	
+	@Override
 	public boolean isModifierToggled(Modifier modifier) {
 		return modState[modifier.ID];
+	}
+	
+	public void setCustomKeyBinding(Key customKey, ActualKey actualKey) {
+		if (customKeyBindings == null) {
+			customKeyBindings = new EnumMap<>(ActualKey.class);
+			customKeyBindingsReversed = new HashMap<>();
+		}
+		customKeyBindings.put(actualKey, customKey);
+		customKeyBindingsReversed.put(customKey, actualKey);
+	}
+	
+	@Override
+	public boolean isEqualKey(ActualKey actualKey, Key unknownKey) {
+		return super.isEqualKey(actualKey, unknownKey)
+				|| (customKeyBindings != null
+					&& unknownKey.equals(customKeyBindings.get(actualKey)));
+	}
+	
+	@Override
+	public boolean isPressed(Key key) {
+		if (super.isPressed(key)) {
+			return true;
+		}
+		if (customKeyBindingsReversed != null) {
+			ActualKey actualKey = customKeyBindingsReversed.get(key);
+			return actualKey != null && isPressed(actualKey);
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean isReleased(Key key) {
+		if (super.isReleased(key)) {
+			return true;
+		}
+		if (customKeyBindingsReversed != null) {
+			ActualKey actualKey = customKeyBindingsReversed.get(key);
+			return actualKey != null && isReleased(actualKey);
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean isTriggered(Key key) {
+		if (super.isTriggered(key)) {
+			return true;
+		}
+		if (customKeyBindingsReversed != null) {
+			ActualKey actualKey = customKeyBindingsReversed.get(key);
+			return actualKey != null && isTriggered(actualKey);
+		}
+		return false;
 	}
 	
 	public static ActualKey keyCodeToKey(int keyCode) {

@@ -20,6 +20,10 @@ public interface PSpinnerModel {
 	
 	public Object getValue();
 	
+	public void setEnabled(boolean value);
+	
+	public boolean isEnabled();
+	
 	public void addObs(PSpinnerModelObs obs);
 	
 	public void removeObs(PSpinnerModelObs obs);

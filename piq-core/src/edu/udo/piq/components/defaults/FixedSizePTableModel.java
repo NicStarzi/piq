@@ -10,11 +10,11 @@ import edu.udo.piq.util.ThrowException;
 
 public class FixedSizePTableModel extends AbstractPTableModel implements PTableModel {
 	
-	private final Object[] cells;
-	private final int cols;
-	private final int rows;
-	private Object[] header;
-	private boolean headerActive;
+	protected final Object[] cells;
+	protected final int cols;
+	protected final int rows;
+	protected Object[] header;
+	protected boolean headerActive;
 	
 	public FixedSizePTableModel(int columnCount, int rowCount) {
 		cols = columnCount;
@@ -22,6 +22,12 @@ public class FixedSizePTableModel extends AbstractPTableModel implements PTableM
 		cells = new Object[cols * rows];
 	}
 	
+	@Override
+	public int getSize() {
+		return cols * rows;
+	}
+	
+	@Override
 	public void setHeaderEnabled(boolean value) {
 		if (headerActive != value) {
 			headerActive = value;
@@ -29,24 +35,27 @@ public class FixedSizePTableModel extends AbstractPTableModel implements PTableM
 		}
 	}
 	
+	@Override
 	public boolean isHeaderEnabled() {
 		return headerActive;
 	}
 	
+	@Override
 	public void setHeader(int column, Object element) {
 		ThrowException.ifNotWithin(header, column, "column < 0 || column >= getColumnCount()");
 		if (header == null) {
 			header = new Object[getColumnCount()];
 		}
 		Object oldElement = header[column];
-		if (oldElement != element || (oldElement != null 
-				&& oldElement.equals(element))) 
+		if (oldElement != element || (oldElement != null
+				&& oldElement.equals(element)))
 		{
 			header[column] = element;
 			fireHeaderElementChangedEvent(column, oldElement);
 		}
 	}
 	
+	@Override
 	public Object getHeader(int column) {
 		if (!isHeaderEnabled()) {
 			throw new IllegalStateException("hasHeader() == false");
@@ -54,18 +63,22 @@ public class FixedSizePTableModel extends AbstractPTableModel implements PTableM
 		return header[column];
 	}
 	
+	@Override
 	public int getColumnCount() {
 		return cols;
 	}
 	
+	@Override
 	public int getRowCount() {
 		return rows;
 	}
 	
+	@Override
 	public boolean canSet(PModelIndex index, Object content) {
 		return index instanceof PTableCellIndex && contains(index);
 	}
 	
+	@Override
 	public boolean canAdd(PModelIndex index, Object content) {
 		return false;
 	}
@@ -74,6 +87,7 @@ public class FixedSizePTableModel extends AbstractPTableModel implements PTableM
 		return false;
 	}
 	
+	@Override
 	public boolean canRemove(PModelIndex index) {
 		return false;
 	}
@@ -82,14 +96,17 @@ public class FixedSizePTableModel extends AbstractPTableModel implements PTableM
 		return false;
 	}
 	
+	@Override
 	public void add(PModelIndex index, Object content) {
 		throw new AddImpossible(this, index, content);
 	}
 	
+	@Override
 	public void remove(PModelIndex index) {
 		throw new RemoveImpossible(this, index);
 	}
 	
+	@Override
 	public void set(int column, int row, Object content) {
 		int id = id(column, row);
 		Object old = cells[id];
@@ -99,6 +116,7 @@ public class FixedSizePTableModel extends AbstractPTableModel implements PTableM
 		}
 	}
 	
+	@Override
 	public Object get(int column, int row) {
 		return cells[id(column, row)];
 	}

@@ -21,12 +21,15 @@ import edu.udo.piq.tools.AbstractPLayoutOwner;
 public class PTreePCellComponent extends AbstractPLayoutOwner implements PCellComponent {
 	
 	protected final PModelObs modelObs = new PModelObs() {
+		@Override
 		public void onContentAdded(PReadOnlyModel model, PModelIndex index, Object newContent) {
 			PTreePCellComponent.this.onContentAdded(model, index, newContent);
 		}
+		@Override
 		public void onContentRemoved(PReadOnlyModel model, PModelIndex index, Object oldContent) {
 			PTreePCellComponent.this.onContentRemoved(model, index, oldContent);
 		}
+		@Override
 		public void onContentChanged(PReadOnlyModel model, PModelIndex index, Object oldContent) {
 			PTreePCellComponent.this.onContentChanged(model, index, oldContent);
 		}
@@ -37,6 +40,7 @@ public class PTreePCellComponent extends AbstractPLayoutOwner implements PCellCo
 		setLayout(new PTupleLayout(this));
 	}
 	
+	@Override
 	protected PTupleLayout getLayoutInternal() {
 		return (PTupleLayout) super.getLayout();
 	}
@@ -71,22 +75,27 @@ public class PTreePCellComponent extends AbstractPLayoutOwner implements PCellCo
 		return chkBx.isChecked();
 	}
 	
+	@Override
 	public void setSelected(boolean value) {
 		getSecondComponent().setSelected(value);
 	}
 	
+	@Override
 	public boolean isSelected() {
 		return getSecondComponent().isSelected();
 	}
 	
+	@Override
 	public void setDropHighlighted(boolean value) {
 		getSecondComponent().setDropHighlighted(value);
 	}
 	
+	@Override
 	public boolean isDropHighlighted() {
 		return getSecondComponent().isDropHighlighted();
 	}
 	
+	@Override
 	public void setElement(PModel model, PModelIndex index) {
 		if (getElementModel() != null) {
 			getElementModel().removeObs(modelObs);
@@ -98,18 +107,22 @@ public class PTreePCellComponent extends AbstractPLayoutOwner implements PCellCo
 		setCheckBoxShown(canBeExpanded());
 	}
 	
+	@Override
 	public PTreeModel getElementModel() {
 		return (PTreeModel) getSecondComponent().getElementModel();
 	}
 	
+	@Override
 	public Object getElement() {
 		return getSecondComponent().getElement();
 	}
 	
+	@Override
 	public PTreeIndex getElementIndex() {
 		return (PTreeIndex) getSecondComponent().getElementIndex();
 	}
 	
+	@Override
 	public boolean defaultFillsAllPixels() {
 		return false;
 	}
@@ -169,6 +182,7 @@ public class PTreePCellComponent extends AbstractPLayoutOwner implements PCellCo
 			setModel(model);
 		}
 		
+		@Override
 		public void defaultRender(PRenderer renderer) {
 			PBounds bnds = getBounds();
 			int x = bnds.getX();
@@ -198,6 +212,7 @@ public class PTreePCellComponent extends AbstractPLayoutOwner implements PCellCo
 			}
 		}
 		
+		@Override
 		public boolean isFocusable() {
 			return false;
 		}
@@ -206,19 +221,36 @@ public class PTreePCellComponent extends AbstractPLayoutOwner implements PCellCo
 	public static class NodeExpandedPCheckBoxModel extends AbstractPCheckBoxModel {
 		
 		protected final PTreePCellComponent owner;
+		protected boolean enabled = PCheckBoxModel.DEFAULT_ENABLED_VALUE;
 		
 		public NodeExpandedPCheckBoxModel(PTreePCellComponent cellComp) {
 			owner = cellComp;
 		}
 		
+		@Override
 		public void toggleChecked() {
 			PTree tree = (PTree) owner.getParent();
 			tree.setIndexExpanded(owner.getElementIndex(), isChecked());
 		}
 		
+		@Override
 		public boolean isChecked() {
 			PTree tree = (PTree) owner.getParent();
 			return !tree.isIndexExpanded(owner.getElementIndex());
+		}
+		
+		@Override
+		public void setEnabled(boolean trueIfEnabled) {
+			if (enabled != trueIfEnabled) {
+				Object oldValue = getValue();
+				enabled = trueIfEnabled;
+				fireChangeEvent(oldValue);
+			}
+		}
+		
+		@Override
+		public boolean isEnabled() {
+			return enabled;
 		}
 		
 	}

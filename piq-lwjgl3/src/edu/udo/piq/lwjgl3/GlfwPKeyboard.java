@@ -28,8 +28,8 @@ public class GlfwPKeyboard extends AbstractPKeyboard implements PKeyboard {
 		}
 	};
 	protected final GlfwPRoot root;
-	protected final boolean[] nowPressed = new boolean[Key.COUNT];
-	protected final boolean[] prevPressed = new boolean[Key.COUNT];
+	protected final boolean[] nowPressed = new boolean[ActualKey.COUNT];
+	protected final boolean[] prevPressed = new boolean[ActualKey.COUNT];
 	protected final boolean[] modState = new boolean[Modifier.COUNT];
 	protected final char[] codePointToCharArray = new char[2];
 	protected boolean capsLockDown;
@@ -49,18 +49,21 @@ public class GlfwPKeyboard extends AbstractPKeyboard implements PKeyboard {
 	}
 	
 	@Override
-	public boolean isPressed(Key key) {
-		return nowPressed[key.ordinal()];
+	public boolean isPressed(ActualKey key) {
+		int idx = key.ordinal();
+		return nowPressed[idx];
 	}
 	
 	@Override
-	public boolean isTriggered(Key key) {
-		return nowPressed[key.ordinal()] && !prevPressed[key.ordinal()];
+	public boolean isTriggered(ActualKey key) {
+		int idx = key.ordinal();
+		return nowPressed[idx] && !prevPressed[idx];
 	}
 	
 	@Override
-	public boolean isReleased(Key key) {
-		return !nowPressed[key.ordinal()] && prevPressed[key.ordinal()];
+	public boolean isReleased(ActualKey key) {
+		int idx = key.ordinal();
+		return !nowPressed[idx] && prevPressed[idx];
 	}
 	
 	@Override
@@ -72,8 +75,8 @@ public class GlfwPKeyboard extends AbstractPKeyboard implements PKeyboard {
 		boolean newPressedValue = glfwAct == GLFW.GLFW_PRESS;
 		updateMetaModifiers(glfwMods);
 		
-		Key key = glfWKeyToPKey(gflwKey);
-		if (key == Key.CAPSLOCK && newPressedValue) {
+		ActualKey key = glfWKeyToPKey(gflwKey);
+		if (key == ActualKey.CAPSLOCK && newPressedValue) {
 			capsLockDown = !capsLockDown;
 		}
 		boolean shift = (glfwMods & GLFW.GLFW_MOD_SHIFT) != 0;
@@ -84,7 +87,7 @@ public class GlfwPKeyboard extends AbstractPKeyboard implements PKeyboard {
 		}
 	}
 	
-	protected void setKeyPressedState(Key key, boolean newPressedValue) {
+	protected void setKeyPressedState(ActualKey key, boolean newPressedValue) {
 		int index = key.ordinal();
 		prevPressed[index] = nowPressed[index];
 		nowPressed[index] = newPressedValue;
@@ -133,121 +136,121 @@ public class GlfwPKeyboard extends AbstractPKeyboard implements PKeyboard {
 		return block != null && block != UnicodeBlock.SPECIALS;
 	}
 	
-	protected Key glfWKeyToPKey(int glfwKey) {
+	protected ActualKey glfWKeyToPKey(int glfwKey) {
 		switch (glfwKey) {
 		case GLFW.GLFW_KEY_0:
-			return Key.NUM_0;
+			return ActualKey.NUM_0;
 		case GLFW.GLFW_KEY_1:
-			return Key.NUM_1;
+			return ActualKey.NUM_1;
 		case GLFW.GLFW_KEY_2:
-			return Key.NUM_2;
+			return ActualKey.NUM_2;
 		case GLFW.GLFW_KEY_3:
-			return Key.NUM_3;
+			return ActualKey.NUM_3;
 		case GLFW.GLFW_KEY_4:
-			return Key.NUM_4;
+			return ActualKey.NUM_4;
 		case GLFW.GLFW_KEY_5:
-			return Key.NUM_5;
+			return ActualKey.NUM_5;
 		case GLFW.GLFW_KEY_6:
-			return Key.NUM_6;
+			return ActualKey.NUM_6;
 		case GLFW.GLFW_KEY_7:
-			return Key.NUM_7;
+			return ActualKey.NUM_7;
 		case GLFW.GLFW_KEY_8:
-			return Key.NUM_8;
+			return ActualKey.NUM_8;
 		case GLFW.GLFW_KEY_9:
-			return Key.NUM_9;
+			return ActualKey.NUM_9;
 		case GLFW.GLFW_KEY_A:
-			return Key.A;
+			return ActualKey.A;
 		case GLFW.GLFW_KEY_B:
-			return Key.B;
+			return ActualKey.B;
 		case GLFW.GLFW_KEY_C:
-			return Key.C;
+			return ActualKey.C;
 		case GLFW.GLFW_KEY_D:
-			return Key.D;
+			return ActualKey.D;
 		case GLFW.GLFW_KEY_E:
-			return Key.E;
+			return ActualKey.E;
 		case GLFW.GLFW_KEY_F:
-			return Key.F;
+			return ActualKey.F;
 		case GLFW.GLFW_KEY_G:
-			return Key.G;
+			return ActualKey.G;
 		case GLFW.GLFW_KEY_H:
-			return Key.H;
+			return ActualKey.H;
 		case GLFW.GLFW_KEY_I:
-			return Key.I;
+			return ActualKey.I;
 		case GLFW.GLFW_KEY_J:
-			return Key.J;
+			return ActualKey.J;
 		case GLFW.GLFW_KEY_K:
-			return Key.K;
+			return ActualKey.K;
 		case GLFW.GLFW_KEY_L:
-			return Key.L;
+			return ActualKey.L;
 		case GLFW.GLFW_KEY_M:
-			return Key.M;
+			return ActualKey.M;
 		case GLFW.GLFW_KEY_N:
-			return Key.N;
+			return ActualKey.N;
 		case GLFW.GLFW_KEY_O:
-			return Key.O;
+			return ActualKey.O;
 		case GLFW.GLFW_KEY_P:
-			return Key.P;
+			return ActualKey.P;
 		case GLFW.GLFW_KEY_Q:
-			return Key.Q;
+			return ActualKey.Q;
 		case GLFW.GLFW_KEY_R:
-			return Key.R;
+			return ActualKey.R;
 		case GLFW.GLFW_KEY_S:
-			return Key.S;
+			return ActualKey.S;
 		case GLFW.GLFW_KEY_T:
-			return Key.T;
+			return ActualKey.T;
 		case GLFW.GLFW_KEY_U:
-			return Key.U;
+			return ActualKey.U;
 		case GLFW.GLFW_KEY_V:
-			return Key.V;
+			return ActualKey.V;
 		case GLFW.GLFW_KEY_W:
-			return Key.W;
+			return ActualKey.W;
 		case GLFW.GLFW_KEY_X:
-			return Key.X;
+			return ActualKey.X;
 		case GLFW.GLFW_KEY_Y:
-			return Key.Y;
+			return ActualKey.Y;
 		case GLFW.GLFW_KEY_Z:
-			return Key.Z;
+			return ActualKey.Z;
 		case GLFW.GLFW_KEY_UP:
-			return Key.UP;
+			return ActualKey.UP;
 		case GLFW.GLFW_KEY_DOWN:
-			return Key.DOWN;
+			return ActualKey.DOWN;
 		case GLFW.GLFW_KEY_LEFT:
-			return Key.LEFT;
+			return ActualKey.LEFT;
 		case GLFW.GLFW_KEY_RIGHT:
-			return Key.RIGHT;
+			return ActualKey.RIGHT;
 		case GLFW.GLFW_KEY_RIGHT_CONTROL:
 		case GLFW.GLFW_KEY_LEFT_CONTROL:
-			return Key.CTRL;
+			return ActualKey.CTRL;
 		case GLFW.GLFW_KEY_RIGHT_ALT:
-			return Key.ALT_GR;
+			return ActualKey.ALT_GRAPH;
 		case GLFW.GLFW_KEY_LEFT_ALT:
-			return Key.ALT;
+			return ActualKey.ALT;
 		case GLFW.GLFW_KEY_LEFT_SHIFT:
-			return Key.SHIFT;
+			return ActualKey.SHIFT;
 		case GLFW.GLFW_KEY_SPACE:
-			return Key.SPACE;
+			return ActualKey.SPACE;
 		case GLFW.GLFW_KEY_ENTER:
-			return Key.ENTER;
+			return ActualKey.ENTER;
 		case GLFW.GLFW_KEY_ESCAPE:
-			return Key.ESC;
+			return ActualKey.ESCAPE;
 		case GLFW.GLFW_KEY_DELETE:
-			return Key.DEL;
+			return ActualKey.DELETE;
 		case GLFW.GLFW_KEY_BACKSPACE:
-			return Key.BACKSPACE;
+			return ActualKey.BACKSPACE;
 		case GLFW.GLFW_KEY_CAPS_LOCK:
-			return Key.CAPSLOCK;
+			return ActualKey.CAPSLOCK;
 		case GLFW.GLFW_KEY_TAB:
-			return Key.TAB;
+			return ActualKey.TAB;
 		case GLFW.GLFW_KEY_HOME:
-			return Key.HOME;
+			return ActualKey.HOME;
 		case GLFW.GLFW_KEY_PAGE_UP:
-			return Key.PAGE_UP;
+			return ActualKey.PAGE_UP;
 		case GLFW.GLFW_KEY_PAGE_DOWN:
-			return Key.PAGE_DOWN;
+			return ActualKey.PAGE_DOWN;
 		case GLFW.GLFW_KEY_END:
-			return Key.END;
+			return ActualKey.END;
 		default:
-			return Key.ENTER;
+			return ActualKey.ENTER;
 		}
 	}
 	

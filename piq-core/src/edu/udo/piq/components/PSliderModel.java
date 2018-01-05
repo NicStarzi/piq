@@ -1,7 +1,5 @@
 package edu.udo.piq.components;
 
-import edu.udo.piq.components.util.PModelHistory;
-
 public interface PSliderModel {
 	
 	public void setValue(int value);
@@ -38,10 +36,6 @@ public interface PSliderModel {
 	public void setPressed(boolean isPressed);
 	
 	public boolean isPressed();
-	
-	public default PModelHistory getHistory() {
-		return null;
-	}
 	
 	public void addObs(PSliderModelObs obs);
 	

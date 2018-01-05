@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.udo.piq.components.charts.PLineChartModel;
-import edu.udo.piq.components.util.PModelHistory;
+import edu.udo.piq.components.util.PUndoRedoStack;
 import edu.udo.piq.tools.AbstractPLineChartModel;
 
 public class DefaultPLineChartModel extends AbstractPLineChartModel implements PLineChartModel {
@@ -49,7 +49,7 @@ public class DefaultPLineChartModel extends AbstractPLineChartModel implements P
 		}
 	}
 	
-	public PModelHistory getHistory() {
+	public PUndoRedoStack getHistory() {
 		return null;
 	}
 	

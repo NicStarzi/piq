@@ -77,7 +77,7 @@ public class PTextSelector {
 	}
 	
 	protected void onMouseButtonPressed(PMouse mouse, MouseButton btn, int clickCount) {
-		if (btn == MouseButton.LEFT && owner.isMouseOver()) {
+		if (btn == MouseButton.LEFT && owner.isMouseOver(mouse)) {
 			int mx = mouse.getX();
 			int my = mouse.getY();
 			PListIndex index = owner.getTextIndexAt(mx, my);

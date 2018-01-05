@@ -32,7 +32,7 @@ public class PTabPanel extends AbstractPLayoutOwner {
 	}
 	
 	protected void onMouseButtonTriggered(PMouse mouse, MouseButton btn, int clickCount) {
-		if (btn == MouseButton.LEFT && isMouseOverThisOrChild()) {
+		if (btn == MouseButton.LEFT && isMouseOverThisOrChild(mouse)) {
 			int mx = mouse.getX();
 			int my = mouse.getY();
 			int tabIndex = getLayoutInternal().getTabIndexAt(mx, my);

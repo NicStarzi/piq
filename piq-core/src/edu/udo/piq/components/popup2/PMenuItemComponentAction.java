@@ -1,45 +1,22 @@
 package edu.udo.piq.components.popup2;
 
-import java.util.function.Consumer;
-
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PKeyboard.ActualKey;
-import edu.udo.piq.PMouse;
-import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PRoot;
-import edu.udo.piq.actions.AbstractPComponentAction;
 import edu.udo.piq.actions.PAccelerator;
-import edu.udo.piq.actions.PAccelerator.FocusPolicy;
 import edu.udo.piq.actions.PComponentAction;
 import edu.udo.piq.actions.PComponentActionObs;
+import edu.udo.piq.util.Throw;
 import edu.udo.piq.util.ThrowException;
 
-public class PMenuItem extends AbstractPMenuItem {
-	
-	public static final Object DEFAULT_ACTION_KEY_ENTER = new Object();
+public class PMenuItemComponentAction extends AbstractPMenuItem {
 	
 	protected final PComponentActionObs actionObs = this::refreshComponents;
 	protected PComponentActionIndicator indicator;
 	protected PComponentAction cachedAction;
-	protected Consumer<PRoot> additionalAction;
 	
-	{
-		addActionMapping(DEFAULT_ACTION_KEY_ENTER, new ActionTriggerOnEnter());
-	}
-	
-	public PMenuItem(Object labelValue, Object iconValue, Consumer<PRoot> additionalAction) {
-		this(null, additionalAction);
-		setIconValue(iconValue);
-		setLabelValue(labelValue);
-	}
-	
-	public PMenuItem(PComponentActionIndicator actionIndicator) {
-		this(actionIndicator, null);
-	}
-	
-	public PMenuItem(PComponentActionIndicator actionIndicator, Consumer<PRoot> additionalAction) {
+	public PMenuItemComponentAction(PComponentActionIndicator actionIndicator) {
+		Throw.ifNull(actionIndicator, "actionIndicator == null");
 		indicator = actionIndicator;
-		this.additionalAction = additionalAction;
 	}
 	
 	@Override
@@ -61,11 +38,8 @@ public class PMenuItem extends AbstractPMenuItem {
 	}
 	
 	protected void refreshComponents(PComponentAction action) {
-		if (indicator == null) {
-			return;
-		}
 		PRoot root = getRoot();
-		boolean enabled = action != null && action.isEnabled(root);
+		boolean enabled = isEnabled(root, action);
 		
 		compIcon.setModelValue(indicator.getIconValue(root, action));
 		compIcon.setEnabled(enabled);
@@ -73,17 +47,17 @@ public class PMenuItem extends AbstractPMenuItem {
 		compLabel.setEnabled(enabled);
 		
 		PAccelerator accel;
-		if (action != null) {
-			accel = action.getAccelerator();
-		} else {
+		if (action == null) {
 			accel = indicator.getDefaultAccelerator();
+		} else {
+			accel = action.getAccelerator();
 		}
 		compAccelerator.setModelValue(accel);
 		compAccelerator.setEnabled(enabled);
 	}
 	
 	public PComponentAction getAction(PRoot root) {
-		if (indicator == null || root == null) {
+		if (root == null) {
 			return null;
 		}
 		PComponent focusOwner = root.getLastStrongFocusOwner();
@@ -93,46 +67,22 @@ public class PMenuItem extends AbstractPMenuItem {
 		return focusOwner.getAction(indicator.getActionKey());
 	}
 	
+	protected boolean isEnabled(PRoot root, PComponentAction action) {
+		return action != null && action.isEnabled(root);
+	}
+	
 	@Override
 	public boolean isEnabled() {
 		PRoot root = getRoot();
 		PComponentAction action = getAction(root);
-		if (action != null) {
-			return action.isEnabled(root);
-		}
-		return true;
+		return isEnabled(root, action);
 	}
 	
 	@Override
-	protected void onMouseClick(PMouse mouse, MouseButton btn, int clickCount) {
-		if (isEnabled()) {
-			performAction();
-		}
-	}
-	
 	public void performAction() {
 		PRoot root = getRoot();
-		PComponentAction action = getAction(root);
-		if (action != null) {
-			action.tryToPerform(root);
-		}
-		if (additionalAction != null) {
-			additionalAction.accept(root);
-		}
+		getAction(root).tryToPerform(root);
 		fireActionEvent();
-	}
-	
-	public class ActionTriggerOnEnter extends AbstractPComponentAction implements PComponentAction {
-		
-		{
-			setAccelerator(ActualKey.ENTER, FocusPolicy.THIS_OR_CHILD_HAS_FOCUS);
-		}
-		
-		@Override
-		public void tryToPerform(PRoot root) {
-			performAction();
-		}
-		
 	}
 	
 }

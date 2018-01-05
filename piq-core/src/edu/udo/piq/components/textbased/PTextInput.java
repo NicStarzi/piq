@@ -1,9 +1,6 @@
 package edu.udo.piq.components.textbased;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
+import java.util.function.Predicate;
 
 import edu.udo.piq.PClipboard;
 import edu.udo.piq.PKeyboard;
@@ -12,14 +9,16 @@ import edu.udo.piq.PKeyboard.Modifier;
 import edu.udo.piq.PKeyboard.VirtualKey;
 import edu.udo.piq.PKeyboardObs;
 import edu.udo.piq.PRoot;
+import edu.udo.piq.actions.CompositeAction;
+import edu.udo.piq.actions.FocusOwnerAction;
+import edu.udo.piq.actions.PAccelerator;
+import edu.udo.piq.actions.PAccelerator.KeyInputType;
+import edu.udo.piq.actions.PActionKey;
+import edu.udo.piq.actions.PComponentAction;
+import edu.udo.piq.actions.StandardComponentActionKey;
 import edu.udo.piq.components.collections.PListIndex;
 
 public class PTextInput {
-	
-	protected static final int PAGE_UP_OR_DOWN_ROW_COUNT = 20;
-	
-	protected static final Map<ActualKey, KeyResponse> KEY_RESPONSE_MAP = new EnumMap<>(ActualKey.class);
-	protected static final List<VirtualKeyResponse> VIRTUAL_KEY_RESPONSE_LIST = new ArrayList<>();
 	
 	protected final PKeyboardObs keyObs = new PKeyboardObs() {
 		@Override
@@ -31,8 +30,16 @@ public class PTextInput {
 			PTextInput.this.onKeyPressed(keyboard, key);
 		}
 		@Override
+		public void onKeyReleased(PKeyboard keyboard, ActualKey key) {
+			PTextInput.this.onKeyReleased(keyboard, key);
+		}
+		@Override
 		public void onKeyTriggered(PKeyboard keyboard, ActualKey key) {
 			PTextInput.this.onKeyTriggered(keyboard, key);
+		}
+		@Override
+		public void onModifierToggled(PKeyboard keyboard, Modifier modifier) {
+			PTextInput.this.onModifierToggled(keyboard, modifier);
 		}
 	};
 	protected final PTextComponent owner;
@@ -57,18 +64,11 @@ public class PTextInput {
 		return owner.getIndexTable();
 	}
 	
-	protected boolean skipInput(PKeyboard keyboard, ActualKey key) {
-		return !owner.hasFocus()
-				|| owner.getSelection() == null
-				|| !owner.getSelection().hasSelection()
-				|| owner.getModel() == null;
-	}
-	
 	protected void onStringTyped(PKeyboard keyboard, String typedString) {
-		if (skipInput(keyboard, null)) {
+		if (!owner.hasFocus()) {
 			return;
 		}
-		if (!owner.isEditable()) {
+		if (!EDIT_TEXT_CONDITION.test(owner)) {
 			return;
 		}
 		if (typedString.equals("\n")) {
@@ -89,32 +89,19 @@ public class PTextInput {
 		selection.addSelection(new PListIndex(newFrom));
 	}
 	
-	protected void onKeyPressed(PKeyboard keyboard, ActualKey key) {
-		if (skipInput(keyboard, key)) {
-			return;
-		}
-		KeyResponse response = KEY_RESPONSE_MAP.get(key);
-		if (response != null) {
-			response.reactTo(keyboard, this);
-		}
-	}
+	protected void onKeyPressed(PKeyboard keyboard, ActualKey key) {}
 	
-	protected void onKeyTriggered(PKeyboard keyboard, ActualKey key) {
-		if (skipInput(keyboard, key)) {
-			return;
-		}
-		for (VirtualKeyResponse hotkey : VIRTUAL_KEY_RESPONSE_LIST) {
-			if (hotkey.reactTo(keyboard, this)) {
-				break;
-			}
-		}
-	}
+	protected void onKeyReleased(PKeyboard keyboard, ActualKey key) {}
+	
+	protected void onKeyTriggered(PKeyboard keyboard, ActualKey key) {}
+	
+	protected void onModifierToggled(PKeyboard keyboard, Modifier modifier) {}
 	
 	protected void keyNewLine(PKeyboard kb) {
 		PTextSelection selection = getSelection();
 		int from = selection.getLowestSelectedIndex().getIndexValue();
 		int to = selection.getHighestSelectedIndex().getIndexValue();
-		
+
 		PTextModel model = getModel();
 		String oldText = model.getText();
 		String newText = oldText.substring(0, from) + "\n" + oldText.substring(to);
@@ -123,278 +110,47 @@ public class PTextInput {
 		selection.addSelection(new PListIndex(from + 1));
 	}
 	
-	protected void keyBackspace(PKeyboard kb) {
-		if (!owner.isEditable()) {
-			return;
-		}
-		PTextSelection sel = owner.getSelection();
-		PTextModel mdl = owner.getModel();
-		if (sel == null || mdl == null) {
-			return;
-		}
+//	protected void keyCut(PKeyboard kb) {
+//		PTextSelection sel = owner.getSelection();
+//		int from = sel.getLowestSelectedIndex().getIndexValue();
+//		int to = sel.getHighestSelectedIndex().getIndexValue();
+//		if (to - from > 0) {
+//			PRoot root = owner.getRoot();
+//			if (root != null) {
+//				PClipboard clipBoard = root.getClipboard();
+//				if (clipBoard != null) {
+//					String text = owner.getModel().getText();
+//					String copyText = text.substring(from, to);
+//					clipBoard.put(copyText);
+//					if (!owner.isEditable()) {
+//						return;
+//					}
+//					String newText = text.substring(0, from) + text.substring(to);
+//					owner.getModel().setValue(newText);
+//					setSelection(sel, from, from);
+//				}
+//			}
+//		}
+//	}
+	
+	protected static int getFirstSelectedIndex(PTextSelection sel, int lastSelected) {
 		int from = sel.getLowestSelectedIndex().getIndexValue();
 		int to = sel.getHighestSelectedIndex().getIndexValue();
-		String oldText = mdl.getText();
-		String newText;
-		if (from != to) {
-			newText = oldText.substring(0, from) + oldText.substring(to);
-		} else if (from > 0) {
-			newText = oldText.substring(0, from - 1) + oldText.substring(to);
-			from--;
-		} else {
-			return;
-		}
-		mdl.setValue(newText);
-		setSelection(sel, from, from);
-	}
-	
-	protected void keyDelete(PKeyboard kb) {
-		if (!owner.isEditable()) {
-			return;
-		}
-		PTextSelection sel = owner.getSelection();
-		PTextModel mdl = owner.getModel();
-		if (sel == null || mdl == null) {
-			return;
-		}
-		int from = sel.getLowestSelectedIndex().getIndexValue();
-		int to = sel.getHighestSelectedIndex().getIndexValue();
-		String oldText = mdl.getText();
-		String newText;
-		if (from != to) {
-			newText = oldText.substring(0, from) + oldText.substring(to);
-		} else if (from < oldText.length()) {
-			newText = oldText.substring(0, from) + oldText.substring(to + 1);
-		} else {
-			return;
-		}
-		mdl.setValue(newText);
-		setSelection(sel, from, from);
-	}
-	
-	protected void keyHome(PKeyboard kb) {
-		PTextSelection sel = owner.getSelection();
-		PTextIndexTable idxTab = owner.getIndexTable();
-		if (sel == null || idxTab == null) {
-			return;
-		}
-		int second = sel.getLastSelected().getIndexValue();
-		int first = getFirst(sel, second);
-		first = idxTab.getIndex(0, idxTab.getRow(first));
-		if (kb.isModifierToggled(Modifier.SHIFT)) {
-			setSelection(sel, first, second);
-		} else {
-			setSelection(sel, first, first);
-		}
-	}
-	
-	protected void keyEnd(PKeyboard kb) {
-		PTextSelection sel = owner.getSelection();
-		PTextIndexTable idxTab = owner.getIndexTable();
-		if (sel == null || idxTab == null) {
-			return;
-		}
-		int second = sel.getLastSelected().getIndexValue();
-		int first = getFirst(sel, second);
-		int row = idxTab.getRow(first);
-		int last = idxTab.getIndex(idxTab.getColumnCount(row) - 1, row);
-		if (kb.isModifierToggled(Modifier.SHIFT)) {
-			setSelection(sel, last, second);
-		} else {
-			setSelection(sel, last, last);
-		}
-	}
-	
-	protected void keyLeft(PKeyboard kb) {
-		PTextSelection sel = owner.getSelection();
-		PTextModel mdl = owner.getModel();
-		if (sel == null) {
-			return;
-		}
-		int second = sel.getLastSelected().getIndexValue();
-		int first = getFirst(sel, second);
-		boolean shift = kb.isModifierToggled(Modifier.SHIFT);
-		if (!shift && first != second) {
-			PListIndex from = sel.getLowestSelectedIndex();
-			setSelection(sel, from, from);
-		} else {
-			if (first > 0) {
-				if (kb.isModifierToggled(Modifier.CTRL)) {
-					String text = mdl.getText();
-					int firstType = Character.getType(text.charAt(--first));
-					while (first > 0) {
-						int nowType = Character.getType(text.charAt(first));
-						if (firstType != nowType) {
-							first++;
-							break;
-						}
-						first--;
-					}
-				} else {
-					first--;
-				}
-			}
-			if (!shift) {
-				second = first;
-			}
-			setSelection(sel, first, second);
-		}
-	}
-	
-	protected void keyRight(PKeyboard kb) {
-		PTextSelection sel = owner.getSelection();
-		PTextModel mdl = owner.getModel();
-		if (sel == null) {
-			return;
-		}
-		int second = sel.getLastSelected().getIndexValue();
-		int first = getFirst(sel, second);
-		boolean shift = kb.isModifierToggled(Modifier.SHIFT);
-		if (!shift && first != second) {
-			PListIndex to = sel.getHighestSelectedIndex();
-			setSelection(sel, to, to);
-		} else {
-			String text = mdl.getText();
-			if (first < text.length()) {
-				if (kb.isModifierToggled(Modifier.CTRL)) {
-					int firstType = Character.getType(text.charAt(first++));
-					while (first < text.length()) {
-						int nowType = Character.getType(text.charAt(first));
-						if (firstType != nowType) {
-							break;
-						}
-						first++;
-					}
-				} else {
-					first++;
-				}
-			}
-			if (!shift) {
-				second = first;
-			}
-			setSelection(sel, first, second);
-		}
-	}
-	
-	protected void keyUp(PKeyboard kb) {
-		moveSelectionBy(owner, -1, kb.isModifierToggled(Modifier.SHIFT));
-	}
-	
-	protected void keyDown(PKeyboard kb) {
-		moveSelectionBy(owner, 1, kb.isModifierToggled(Modifier.SHIFT));
-	}
-	
-	protected void keyPageUp(PKeyboard kb) {
-		moveSelectionBy(owner, -PAGE_UP_OR_DOWN_ROW_COUNT,
-				kb.isModifierToggled(Modifier.SHIFT));
-	}
-	
-	protected void keyPageDown(PKeyboard kb) {
-		moveSelectionBy(owner, PAGE_UP_OR_DOWN_ROW_COUNT,
-				kb.isModifierToggled(Modifier.SHIFT));
-	}
-	
-	protected void keySelectAll(PKeyboard kb) {
-		if (kb.isModifierToggled(Modifier.CTRL)) {
-			PTextSelection sel = owner.getSelection();
-			PTextModel mdl = owner.getModel();
-			setSelection(sel, 0, mdl.getText().length());
-		}
-	}
-	
-	protected void keyCopy(PKeyboard kb) {
-		PTextSelection sel = owner.getSelection();
-		int from = sel.getLowestSelectedIndex().getIndexValue();
-		int to = sel.getHighestSelectedIndex().getIndexValue();
-		if (to - from > 0) {
-			PRoot root = owner.getRoot();
-			if (root != null) {
-				PClipboard clipBoard = root.getClipboard();
-				if (clipBoard != null) {
-					String text = owner.getModel().getText();
-					String copyText = text.substring(from, to);
-					clipBoard.put(copyText);
-				}
-			}
-		}
-	}
-	
-	protected void keyCut(PKeyboard kb) {
-		PTextSelection sel = owner.getSelection();
-		int from = sel.getLowestSelectedIndex().getIndexValue();
-		int to = sel.getHighestSelectedIndex().getIndexValue();
-		if (to - from > 0) {
-			PRoot root = owner.getRoot();
-			if (root != null) {
-				PClipboard clipBoard = root.getClipboard();
-				if (clipBoard != null) {
-					String text = owner.getModel().getText();
-					String copyText = text.substring(from, to);
-					clipBoard.put(copyText);
-					if (!owner.isEditable()) {
-						return;
-					}
-					String newText = text.substring(0, from) + text.substring(to);
-					owner.getModel().setValue(newText);
-					setSelection(sel, from, from);
-				}
-			}
-		}
-	}
-	
-	protected void keyPaste(PKeyboard kb) {
-		if (!owner.isEditable()) {
-			return;
-		}
-		PRoot root = owner.getRoot();
-		if (root != null) {
-			PClipboard clipBoard = root.getClipboard();
-			if (clipBoard != null) {
-				Object obj = clipBoard.get();
-				if (obj instanceof CharSequence) {
-					CharSequence pasteText = (CharSequence) obj;
-					PTextSelection sel = owner.getSelection();
-					int from = sel.getLowestSelectedIndex().getIndexValue();
-					int to = sel.getHighestSelectedIndex().getIndexValue();
-					PTextModel mdl = owner.getModel();
-					String text = mdl.getText();
-					String newText = text.substring(0, from) + pasteText
-							+ text.substring(to);
-					mdl.setValue(newText);
-					setSelection(sel, from, from + pasteText.length());
-				}
-			}
-		}
-	}
-	
-	protected void setSelection(PTextSelection sel, int idx1, int idx2) {
-		setSelection(sel, new PListIndex(idx1), new PListIndex(idx2));
-	}
-	
-	protected void setSelection(PTextSelection sel, PListIndex idx1, PListIndex idx2) {
-		sel.clearSelection();
-		sel.addSelection(idx1);
-		sel.addSelection(idx2);
-	}
-	
-	protected int getFirst(PTextSelection sel, int second) {
-		int from = sel.getLowestSelectedIndex().getIndexValue();
-		int to = sel.getHighestSelectedIndex().getIndexValue();
-		if (second == from) {
+		if (lastSelected == from) {
 			return to;
 		} else {
 			return from;
 		}
 	}
 	
-	protected void moveSelectionBy(PTextComponent comp, int rowOffset, boolean shift) {
+	protected static void moveSelectionBy(PTextComponent comp, int rowOffset) {
 		PTextSelection sel = comp.getSelection();
 		PTextIndexTable idxTab = comp.getIndexTable();
 		if (sel == null || idxTab == null) {
 			return;
 		}
-		int second = sel.getLastSelected().getIndexValue();
-		int first = getFirst(sel, second);
+		int lastSelected = sel.getLastSelected().getIndexValue();
+		int first = PTextInput.getFirstSelectedIndex(sel, lastSelected);
 		int row = idxTab.getRow(first);
 		int col = idxTab.getColumn(first, row);
 		row = row + rowOffset;
@@ -408,55 +164,308 @@ public class PTextInput {
 			col = maxCol;
 		}
 		first = idxTab.getIndex(col, row);
+		PKeyboard kb = comp.getKeyboard();
+		boolean shift = kb != null && kb.isModifierToggled(Modifier.SHIFT);
 		if (shift) {
-			setSelection(sel, first, second);
+			sel.setSelectionToRange(first, lastSelected);
 		} else {
-			setSelection(sel, first, first);
+			sel.setSelectionToRange(first, first);
 		}
 	}
 	
-	public static interface KeyResponse {
-		public void reactTo(PKeyboard keyboard, PTextInput self);
-	}
+	public static final int PAGE_UP_OR_DOWN_ROW_COUNT = 20;
 	
-	public static interface VirtualKeyResponse {
-		public boolean reactTo(PKeyboard keyboard, PTextInput self);
-	}
+	public static final PActionKey KEY_BACKSPACE = new PActionKey("KEY_BACKSPACE");
+	public static final PActionKey KEY_DELETE = StandardComponentActionKey.DELETE;
+	public static final PActionKey KEY_HOME = new PActionKey("KEY_HOME");
+	public static final PActionKey KEY_END = new PActionKey("KEY_END");
+	public static final PActionKey KEY_MOVE_LEFT = StandardComponentActionKey.MOVE_PREV;
+	public static final PActionKey KEY_MOVE_RIGHT = StandardComponentActionKey.MOVE_NEXT;
+	public static final PActionKey KEY_MOVE_UP = new PActionKey("KEY_MOVE_UP");
+	public static final PActionKey KEY_MOVE_DOWN = new PActionKey("KEY_MOVE_DOWN");
+	public static final PActionKey KEY_PAGE_UP = new PActionKey("KEY_PAGE_UP");
+	public static final PActionKey KEY_PAGE_DOWN = new PActionKey("KEY_PAGE_DOWN");
+	public static final PActionKey KEY_SELECT_ALL = new PActionKey("KEY_SELECT_ALL");
+	public static final PActionKey KEY_COPY = StandardComponentActionKey.COPY;
+	public static final PActionKey KEY_CUT = StandardComponentActionKey.CUT;
+	public static final PActionKey KEY_PASTE = StandardComponentActionKey.PASTE;
 	
-	static {
-		KEY_RESPONSE_MAP.put(ActualKey.BACKSPACE, (kb, self) -> self.keyBackspace(kb));
-		KEY_RESPONSE_MAP.put(ActualKey.DELETE, (kb, self) -> self.keyDelete(kb));
-		KEY_RESPONSE_MAP.put(ActualKey.HOME, (kb, self) -> self.keyHome(kb));
-		KEY_RESPONSE_MAP.put(ActualKey.END, (kb, self) -> self.keyEnd(kb));
-		KEY_RESPONSE_MAP.put(ActualKey.LEFT, (kb, self) -> self.keyLeft(kb));
-		KEY_RESPONSE_MAP.put(ActualKey.RIGHT, (kb, self) -> self.keyRight(kb));
-		KEY_RESPONSE_MAP.put(ActualKey.UP, (kb, self) -> self.keyUp(kb));
-		KEY_RESPONSE_MAP.put(ActualKey.DOWN, (kb, self) -> self.keyDown(kb));
-		KEY_RESPONSE_MAP.put(ActualKey.PAGE_UP, (kb, self) -> self.keyPageUp(kb));
-		KEY_RESPONSE_MAP.put(ActualKey.PAGE_DOWN, (kb, self) -> self.keyPageDown(kb));
-		KEY_RESPONSE_MAP.put(ActualKey.A, (kb, self) -> self.keySelectAll(kb));
-		
-		VIRTUAL_KEY_RESPONSE_LIST.add((kb, self) -> {
-			if (kb.isTriggered(VirtualKey.COPY)) {
-				self.keyCopy(kb);
-				return true;
-			}
-			return false;
-		});
-		VIRTUAL_KEY_RESPONSE_LIST.add((kb, self) -> {
-			if (kb.isTriggered(VirtualKey.CUT)) {
-				self.keyCut(kb);
-				return true;
-			}
-			return false;
-		});
-		VIRTUAL_KEY_RESPONSE_LIST.add((kb, self) -> {
-			if (kb.isTriggered(VirtualKey.PASTE)) {
-				self.keyPaste(kb);
-				return true;
-			}
-			return false;
-		});
-	}
+	public static final Predicate<PTextComponent> CHANGE_SELECTION_CONDITION =
+			self -> self.isEnabled()
+					&& self.getSelection() != null
+					&& self.getSelection().hasSelection()
+					&& self.getModel() != null;
+	public static final Predicate<PTextComponent> EDIT_TEXT_CONDITION =
+			self -> self.isEditable()
+					&& CHANGE_SELECTION_CONDITION.test(self);
 	
+	public static final PAccelerator ACCELERATOR_BACKSPACE = new PAccelerator(ActualKey.BACKSPACE, KeyInputType.PRESS);
+	public static final PAccelerator ACCELERATOR_DELETE = new PAccelerator(ActualKey.DELETE, KeyInputType.PRESS);
+	public static final PAccelerator ACCELERATOR_HOME = new PAccelerator(ActualKey.HOME);
+	public static final PAccelerator ACCELERATOR_END = new PAccelerator(ActualKey.END);
+	public static final PAccelerator ACCELERATOR_LEFT = new PAccelerator(ActualKey.LEFT, KeyInputType.PRESS);
+	public static final PAccelerator ACCELERATOR_RIGHT = new PAccelerator(ActualKey.RIGHT, KeyInputType.PRESS);
+	public static final PAccelerator ACCELERATOR_UP = new PAccelerator(ActualKey.UP, KeyInputType.PRESS);
+	public static final PAccelerator ACCELERATOR_DOWN = new PAccelerator(ActualKey.DOWN, KeyInputType.PRESS);
+	public static final PAccelerator ACCELERATOR_PAGE_UP = new PAccelerator(ActualKey.PAGE_UP, KeyInputType.PRESS);
+	public static final PAccelerator ACCELERATOR_PAGE_DOWN = new PAccelerator(ActualKey.PAGE_DOWN, KeyInputType.PRESS);
+	public static final PAccelerator ACCELERATOR_CTRL_A = new PAccelerator(ActualKey.A, Modifier.COMMAND);
+	public static final PAccelerator ACCELERATOR_COPY = new PAccelerator(VirtualKey.COPY);
+	public static final PAccelerator ACCELERATOR_CUT = new PAccelerator(VirtualKey.CUT);
+	public static final PAccelerator ACCELERATOR_PASTE = new PAccelerator(VirtualKey.PASTE);
+	
+	public static final PComponentAction ACTION_BACKSPACE = new FocusOwnerAction<>(
+			PTextComponent.class, true,
+			ACCELERATOR_BACKSPACE,
+			EDIT_TEXT_CONDITION,
+			self -> {
+				PTextSelection sel = self.getSelection();
+				PTextModel mdl = self.getModel();
+				if (sel == null || mdl == null) {
+					return;
+				}
+				int from = sel.getLowestSelectedIndex().getIndexValue();
+				int to = sel.getHighestSelectedIndex().getIndexValue();
+				String oldText = mdl.getText();
+				String newText;
+				if (from != to) {
+					newText = oldText.substring(0, from) + oldText.substring(to);
+				} else if (from > 0) {
+					newText = oldText.substring(0, from - 1) + oldText.substring(to);
+					from--;
+				} else {
+					return;
+				}
+				mdl.setValue(newText);
+				sel.setSelectionToRange(from, from);
+			});
+	public static final PComponentAction ACTION_DELETE = new FocusOwnerAction<>(
+			PTextComponent.class, true,
+			ACCELERATOR_DELETE,
+			EDIT_TEXT_CONDITION,
+			self -> {
+				PTextSelection sel = self.getSelection();
+				PTextModel mdl = self.getModel();
+				if (sel == null || mdl == null) {
+					return;
+				}
+				int from = sel.getLowestSelectedIndex().getIndexValue();
+				int to = sel.getHighestSelectedIndex().getIndexValue();
+				String oldText = mdl.getText();
+				String newText;
+				if (from != to) {
+					newText = oldText.substring(0, from) + oldText.substring(to);
+				} else if (from < oldText.length()) {
+					newText = oldText.substring(0, from) + oldText.substring(to + 1);
+				} else {
+					return;
+				}
+				mdl.setValue(newText);
+				sel.setSelectionToRange(from, from);
+			});
+	public static final PComponentAction ACTION_HOME = new FocusOwnerAction<>(
+			PTextComponent.class, true,
+			ACCELERATOR_HOME,
+			CHANGE_SELECTION_CONDITION,
+			self -> {
+				PTextSelection sel = self.getSelection();
+				PTextIndexTable idxTab = self.getIndexTable();
+				if (sel == null || idxTab == null) {
+					return;
+				}
+				int lastSelected = sel.getLastSelected().getIndexValue();
+				int first = PTextInput.getFirstSelectedIndex(sel, lastSelected);
+				first = idxTab.getIndex(0, idxTab.getRow(first));
+				if (self.getKeyboard().isModifierToggled(Modifier.SHIFT)) {
+					sel.setSelectionToRange(first, lastSelected);
+				} else {
+					sel.setSelectionToRange(first, first);
+				}
+			});
+	public static final PComponentAction ACTION_END = new FocusOwnerAction<>(
+			PTextComponent.class, true,
+			ACCELERATOR_END,
+			CHANGE_SELECTION_CONDITION,
+			self -> {
+				PTextSelection sel = self.getSelection();
+				PTextIndexTable idxTab = self.getIndexTable();
+				if (sel == null || idxTab == null) {
+					return;
+				}
+				int second = sel.getLastSelected().getIndexValue();
+				int first = PTextInput.getFirstSelectedIndex(sel, second);
+				int row = idxTab.getRow(first);
+				int last = idxTab.getIndex(idxTab.getColumnCount(row) - 1, row);
+				if (self.getKeyboard().isModifierToggled(Modifier.SHIFT)) {
+					sel.setSelectionToRange(last, second);
+				} else {
+					sel.setSelectionToRange(last, last);
+				}
+			});
+	public static final PComponentAction ACTION_MOVE_LEFT = new FocusOwnerAction<>(
+			PTextComponent.class, true,
+			ACCELERATOR_LEFT,
+			CHANGE_SELECTION_CONDITION,
+			self -> {
+				PTextSelection sel = self.getSelection();
+				PTextModel mdl = self.getModel();
+				if (sel == null) {
+					return;
+				}
+				int lastSelected = sel.getLastSelected().getIndexValue();
+				int firstSelected = PTextInput.getFirstSelectedIndex(sel, lastSelected);
+				PKeyboard kb = self.getKeyboard();
+				boolean shift = kb.isModifierToggled(Modifier.SHIFT);
+				if (!shift && firstSelected != lastSelected) {
+					PListIndex from = sel.getLowestSelectedIndex();
+					sel.setSelectionToRange(from, from);
+				} else {
+					if (firstSelected > 0) {
+						if (kb.isModifierToggled(Modifier.CTRL)) {
+							String text = mdl.getText();
+							int firstType = Character.getType(text.charAt(--firstSelected));
+							while (firstSelected > 0) {
+								int nowType = Character.getType(text.charAt(firstSelected));
+								if (firstType != nowType) {
+									firstSelected++;
+									break;
+								}
+								firstSelected--;
+							}
+						} else {
+							firstSelected--;
+						}
+					}
+					if (!shift) {
+						lastSelected = firstSelected;
+					}
+					sel.setSelectionToRange(firstSelected, lastSelected);
+				}
+			});
+	public static final PComponentAction ACTION_MOVE_RIGHT = new FocusOwnerAction<>(
+			PTextComponent.class, true,
+			ACCELERATOR_RIGHT,
+			CHANGE_SELECTION_CONDITION,
+			self -> {
+				PTextSelection sel = self.getSelection();
+				PTextModel mdl = self.getModel();
+				if (sel == null) {
+					return;
+				}
+				int lastSelected = sel.getLastSelected().getIndexValue();
+				int firstSelected = PTextInput.getFirstSelectedIndex(sel, lastSelected);
+				PKeyboard kb = self.getKeyboard();
+				boolean shift = kb.isModifierToggled(Modifier.SHIFT);
+				if (!shift && firstSelected != lastSelected) {
+					PListIndex to = sel.getHighestSelectedIndex();
+					sel.setSelectionToRange(to, to);
+				} else {
+					String text = mdl.getText();
+					if (firstSelected < text.length()) {
+						if (kb.isModifierToggled(Modifier.CTRL)) {
+							int firstType = Character.getType(text.charAt(firstSelected++));
+							while (firstSelected < text.length()) {
+								int nowType = Character.getType(text.charAt(firstSelected));
+								if (firstType != nowType) {
+									break;
+								}
+								firstSelected++;
+							}
+						} else {
+							firstSelected++;
+						}
+					}
+					if (!shift) {
+						lastSelected = firstSelected;
+					}
+					sel.setSelectionToRange(firstSelected, lastSelected);
+				}
+			});
+	public static final PComponentAction ACTION_MOVE_UP = new FocusOwnerAction<>(
+			PTextComponent.class, true,
+			ACCELERATOR_UP,
+			CHANGE_SELECTION_CONDITION,
+			self -> PTextInput.moveSelectionBy(self, -1));
+	public static final PComponentAction ACTION_MOVE_DOWN = new FocusOwnerAction<>(
+			PTextComponent.class, true,
+			ACCELERATOR_DOWN,
+			CHANGE_SELECTION_CONDITION,
+			self -> PTextInput.moveSelectionBy(self, +1));
+	public static final PComponentAction ACTION_PAGE_UP = new FocusOwnerAction<>(
+			PTextComponent.class, true,
+			ACCELERATOR_PAGE_UP,
+			CHANGE_SELECTION_CONDITION,
+			self -> PTextInput.moveSelectionBy(self, -PAGE_UP_OR_DOWN_ROW_COUNT));
+	public static final PComponentAction ACTION_PAGE_DOWN = new FocusOwnerAction<>(
+			PTextComponent.class, true,
+			ACCELERATOR_PAGE_DOWN,
+			CHANGE_SELECTION_CONDITION,
+			self -> PTextInput.moveSelectionBy(self, +PAGE_UP_OR_DOWN_ROW_COUNT));
+	public static final PComponentAction ACTION_SELECT_ALL = new FocusOwnerAction<>(
+			PTextComponent.class, true,
+			ACCELERATOR_CTRL_A,
+			CHANGE_SELECTION_CONDITION,
+			self -> self.getSelection().selectAll(self.getModel()));
+	public static final PComponentAction ACTION_COPY = new FocusOwnerAction<>(
+			PTextComponent.class, true,
+			ACCELERATOR_COPY,
+			self -> {
+				PRoot root = self.getRoot();
+				if (root == null) {
+					return false;
+				}
+				if (root.getClipboard() == null) {
+					return false;
+				}
+				PTextSelection sel = self.getSelection();
+				return sel != null
+						&& sel.hasSelection()
+						&& self.getModel() != null
+						&& sel.getLowestSelectedIndex().getIndexValue() < sel.getHighestSelectedIndex().getIndexValue();
+			},
+			self -> {
+				PTextSelection sel = self.getSelection();
+				int from = sel.getLowestSelectedIndex().getIndexValue();
+				int to = sel.getHighestSelectedIndex().getIndexValue();
+				PClipboard clipBoard = self.getRoot().getClipboard();
+				String text = self.getModel().getText();
+				String copyText = text.substring(from, to);
+				clipBoard.put(copyText);
+			});
+	public static final PComponentAction ACTION_PASTE = new FocusOwnerAction<>(
+			PTextComponent.class, true,
+			ACCELERATOR_PASTE,
+			self -> {
+				PRoot root = self.getRoot();
+				if (root == null) {
+					return false;
+				}
+				PClipboard clipBoard = root.getClipboard();
+				if (clipBoard == null) {
+					return false;
+				}
+				if (clipBoard.get() == null) {
+					return false;
+				}
+				PTextSelection sel = self.getSelection();
+				return sel != null
+						&& sel.hasSelection()
+						&& self.getModel() != null;
+			},
+			self -> {
+				PClipboard clipBoard = self.getRoot().getClipboard();
+				Object content = clipBoard.get();
+				String pasteText = content.toString();
+				
+				PTextSelection sel = self.getSelection();
+				int from = sel.getLowestSelectedIndex().getIndexValue();
+				int to = sel.getHighestSelectedIndex().getIndexValue();
+				PTextModel mdl = self.getModel();
+				String text = mdl.getText();
+				String newText = text.substring(0, from) + pasteText
+						+ text.substring(to);
+				mdl.setValue(newText);
+				sel.setSelectionToRange(from, from + pasteText.length());
+			});
+	public static final PComponentAction ACTION_CUT = new CompositeAction(ACCELERATOR_CUT, KEY_COPY, KEY_DELETE);
 }

@@ -5,7 +5,7 @@ import java.util.function.Predicate;
 
 import edu.udo.piq.PRoot;
 
-public class BasicPComponentAction extends AbstractPComponentAction {
+public class MutableAction extends AbstractPComponentAction {
 	
 	protected Predicate<PRoot> enabledFunc;
 	protected Consumer<PRoot> performAct;
@@ -21,10 +21,7 @@ public class BasicPComponentAction extends AbstractPComponentAction {
 	
 	@Override
 	public boolean isEnabled(PRoot root) {
-		if (enabledFunc == null) {
-			return true;
-		}
-		return enabledFunc.test(root);
+		return enabledFunc == null || enabledFunc.test(root);
 	}
 	
 	public void setPerformAction(Runnable action) {

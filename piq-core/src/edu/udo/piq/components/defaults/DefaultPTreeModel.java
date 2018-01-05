@@ -20,6 +20,12 @@ import edu.udo.piq.util.ThrowException;
 public class DefaultPTreeModel extends AbstractPModel implements PTreeModel {
 	
 	protected DefaultPTreeNode rootNode;
+	protected int size;
+	
+	@Override
+	public int getSize() {
+		return size;
+	}
 	
 	@Override
 	public Object getRoot() {
@@ -111,6 +117,7 @@ public class DefaultPTreeModel extends AbstractPModel implements PTreeModel {
 		int childIndex = treeIndex.getChildIndex(treeIndex.getDepth() - 1);
 		DefaultPTreeNode parentNode = getNode(index, treeIndex.getDepth() - 1);
 		parentNode.addChild(childIndex, childNode);
+		size++;
 		fireAddEvent(index, content);
 	}
 	
@@ -139,12 +146,14 @@ public class DefaultPTreeModel extends AbstractPModel implements PTreeModel {
 		DefaultPTreeNode parentNode = childNode.getParent();
 		removeChildrenOf(childNode, (PTreeIndex) index);
 		parentNode.removeChild(childNode);
+		size--;
 		fireRemoveEvent(index, childNode.getContent());
 	}
 	
 	protected final void removeChildrenOf(DefaultPTreeNode parentNode, PTreeIndex parentIndex) {
 		for (DefaultPTreeNode childNode : parentNode.children) {
 			childNode.parent = null;
+			size--;
 			fireRemoveEvent(parentIndex.append(0), childNode.getContent());
 		}
 		parentNode.children.clear();

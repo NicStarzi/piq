@@ -70,6 +70,7 @@ public class PScrollBar extends AbstractPLayoutOwner {
 		btnIncr.addObs(this::onScrollButtonClick);
 	}
 	
+	@Override
 	protected PScrollBarLayout getLayoutInternal() {
 		return (PScrollBarLayout) super.getLayout();
 	}
@@ -106,7 +107,7 @@ public class PScrollBar extends AbstractPLayoutOwner {
 	}
 	
 	protected void onMousePress(PMouse mouse, MouseButton btn) {
-		if (!isDrag && btn == MouseButton.LEFT && knob.isMouseOver()) {
+		if (!isDrag && btn == MouseButton.LEFT && knob.isMouseOver(mouse)) {
 			isDrag = true;
 			dragOffset = mouse.getOffsetToComponent(knob, getAxis());
 		}
@@ -121,7 +122,7 @@ public class PScrollBar extends AbstractPLayoutOwner {
 	
 	protected void onMouseTrigger(PMouse mouse, MouseButton btn, int clickCount) {
 		if (!isDrag && btn == MouseButton.LEFT && clickCount == 2
-				&& background.isMouseOver() && !knob.isMouseOver()) {
+				&& background.isMouseOver(mouse) && !knob.isMouseOver(mouse)) {
 			double scrollPercent = getMousePosPercent(mouse);
 			setScrollPercent(scrollPercent);
 		}
@@ -151,7 +152,7 @@ public class PScrollBar extends AbstractPLayoutOwner {
 	}
 	
 	protected double getMousePosPercent(PMouse mouse) {
-		ThrowException.ifFalse(background.isMouseOver(), "background.isMouseOver() == false");
+		ThrowException.ifFalse(background.isMouseOver(mouse), "background.isMouseOver() == false");
 		PBounds scrollBounds = background.getBounds();
 		PBounds knobBounds = knob.getBounds();
 		Axis axis = getAxis();
@@ -296,7 +297,7 @@ public class PScrollBar extends AbstractPLayoutOwner {
 		}
 		
 		protected void onMouseButtonTriggered(PMouse mouse, MouseButton btn) {
-			if (btn == MouseButton.LEFT && isMouseOver()) {
+			if (btn == MouseButton.LEFT && isMouseOver(mouse)) {
 				setPressed(true);
 				fireClickEvent();
 			}

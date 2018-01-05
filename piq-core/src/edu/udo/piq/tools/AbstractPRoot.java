@@ -40,6 +40,7 @@ import edu.udo.piq.layouts.PRootLayout;
 import edu.udo.piq.layouts.PRootLayout.Constraint;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PiqUtil;
+import edu.udo.piq.util.Throw;
 import edu.udo.piq.util.ThrowException;
 
 public abstract class AbstractPRoot implements PRoot {
@@ -240,8 +241,14 @@ public abstract class AbstractPRoot implements PRoot {
 		 * If the root is to be rendered we will re-render everything.
 		 */
 		if (reRenderSet.containsRoot()) {
-			stack.addLast(new RenderStackInfo(root.getBody(), rootClipX, rootClipY, rootClipFx, rootClipFy));
-			stack.addLast(new RenderStackInfo(root.getMenuBar(), rootClipX, rootClipY, rootClipFx, rootClipFy));
+			PComponent body = root.getBody();
+			if (body != null) {
+				stack.addLast(new RenderStackInfo(body, rootClipX, rootClipY, rootClipFx, rootClipFy));
+			}
+			PComponent menuBar = root.getMenuBar();
+			if (menuBar != null) {
+				stack.addLast(new RenderStackInfo(menuBar, rootClipX, rootClipY, rootClipFx, rootClipFy));
+			}
 		} else {
 			/*
 			 * Performance Improvement:
@@ -316,6 +323,7 @@ public abstract class AbstractPRoot implements PRoot {
 		public final int clipFy;
 		
 		public RenderStackInfo(PComponent child, int clipX, int clipY, int clipFx, int clipFy) {
+			Throw.ifNull(child, "child == null");
 			this.child = child;
 			this.clipX = clipX;
 			this.clipY = clipY;
@@ -363,6 +371,9 @@ public abstract class AbstractPRoot implements PRoot {
 		if (component == oldOwner) {
 			return;
 		}
+		if (component != null && component.getRoot() != this) {
+			return;
+		}
 		while (component != null && !component.isFocusable()) {
 			component = component.getParent();
 		}
@@ -373,13 +384,28 @@ public abstract class AbstractPRoot implements PRoot {
 		if (oldOwner != null) {
 			fireFocusLostEvent(oldOwner);
 		}
-		if (getFocusOwner() != null) {
-			if (getFocusOwner().isStrongFocusOwner()) {
-				strongFocusOwner = focusOwner;
+		PComponent newOwner = getFocusOwner();
+		if (newOwner == null) {
+			if (getLastStrongFocusOwner() != null) {
+				focusOwner = getLastStrongFocusOwner();
+				fireFocusGainedEvent(focusOwner);
 			}
-			fireFocusGainedEvent(oldOwner);
+		} else {
+			if (newOwner.isStrongFocusOwner()) {
+				strongFocusOwner = newOwner;
+			}
+			fireFocusGainedEvent(newOwner);
 		}
 		onFocusOwnerChanged();
+	}
+	
+	protected void onComponentRemovedFromRoot(PComponent parent, PComponent removedComponent) {
+		if (getLastStrongFocusOwner() == removedComponent) {
+			strongFocusOwner = null;
+		}
+		if (getFocusOwner() == removedComponent) {
+			setFocusOwner(null);
+		}
 	}
 	
 	protected void onFocusOwnerChanged() {
@@ -608,6 +634,7 @@ public abstract class AbstractPRoot implements PRoot {
 	
 	@Override
 	public void fireComponentRemovedFromGui(PComponent parent, PComponent removedComponent) {
+		onComponentRemovedFromRoot(parent, removedComponent);
 		rootObsList.fireEvent(obs -> obs.onComponentRemovedFromGui(parent, removedComponent));
 	}
 	

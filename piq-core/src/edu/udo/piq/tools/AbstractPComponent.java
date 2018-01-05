@@ -29,6 +29,7 @@ import edu.udo.piq.PSize;
 import edu.udo.piq.PStyleBorder;
 import edu.udo.piq.PStyleComponent;
 import edu.udo.piq.PStyleLayout;
+import edu.udo.piq.actions.PActionKey;
 import edu.udo.piq.actions.PComponentAction;
 import edu.udo.piq.actions.PComponentActionMap;
 import edu.udo.piq.layouts.PComponentLayoutData;
@@ -463,7 +464,7 @@ public class AbstractPComponent implements PComponent {
 			return null;
 		}
 		/*
-		 * layoutData is null if parent was changed but this component has not been laid out yet. 
+		 * layoutData is null if parent was changed but this component has not been laid out yet.
 		 * In this case fetch layout data from the parent layout directly.
 		 */
 		if (layoutData == null) {
@@ -561,7 +562,7 @@ public class AbstractPComponent implements PComponent {
 	}
 	
 	@Override
-	public void addActionMapping(Object actionKey, PComponentAction action) {
+	public void addActionMapping(PActionKey actionKey, PComponentAction action) {
 		if (actionMap == null) {
 			if (action == null) {
 				return;
@@ -572,7 +573,7 @@ public class AbstractPComponent implements PComponent {
 	}
 	
 	@Override
-	public void removeActionMapping(Object actionKey) {
+	public void removeActionMapping(PActionKey actionKey) {
 		if (actionMap == null) {
 			return;
 		}
@@ -589,7 +590,7 @@ public class AbstractPComponent implements PComponent {
 	}
 	
 	@Override
-	public PComponentAction getAction(Object actionKey) {
+	public PComponentAction getAction(PActionKey actionKey) {
 		if (actionMap == null) {
 			return null;
 		}

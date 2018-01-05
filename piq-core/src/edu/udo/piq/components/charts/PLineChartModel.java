@@ -1,6 +1,6 @@
 package edu.udo.piq.components.charts;
 
-import edu.udo.piq.components.util.PModelHistory;
+import edu.udo.piq.components.util.PUndoRedoStack;
 
 public interface PLineChartModel {
 	
@@ -20,7 +20,7 @@ public interface PLineChartModel {
 	
 	public void setDataPoint(int index, Object value);
 	
-	public PModelHistory getHistory();
+	public PUndoRedoStack getHistory();
 	
 	public void addObs(PLineChartModelObs obs);
 	

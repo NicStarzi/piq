@@ -88,6 +88,21 @@ public class PCheckBox extends AbstractPComponent implements PClickable, PGlobal
 		}
 	}
 	
+	public void setEnabled(boolean isEnabled) {
+		PCheckBoxModel model = getModel();
+		if (model != null) {
+			model.setEnabled(isEnabled);
+		}
+	}
+	
+	public boolean isEnabled() {
+		PCheckBoxModel model = getModel();
+		if (model == null) {
+			return false;
+		}
+		return model.isEnabled();
+	}
+	
 	@Override
 	public void defaultRender(PRenderer renderer) {
 		PBounds bnds = getBounds();
@@ -149,7 +164,7 @@ public class PCheckBox extends AbstractPComponent implements PClickable, PGlobal
 	}
 	
 	protected void onMouseButtonTriggered(PMouse mouse, MouseButton btn) {
-		if (btn == MouseButton.LEFT && isMouseOver()) {
+		if (btn == MouseButton.LEFT && isMouseOver(mouse)) {
 			toggleChecked();
 			fireClickEvent();
 		}

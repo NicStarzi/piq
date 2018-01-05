@@ -1,43 +1,39 @@
 package edu.udo.piq.components.defaults;
 
 import edu.udo.piq.components.PRadioButtonModel;
-import edu.udo.piq.components.PRadioButtonModelObs;
-import edu.udo.piq.components.util.PModelHistory;
-import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PiqUtil;
+import edu.udo.piq.tools.AbstractPRadioButtonModel;
 
-public class DefaultPRadioButtonModel implements PRadioButtonModel {
+public class DefaultPRadioButtonModel extends AbstractPRadioButtonModel implements PRadioButtonModel {
 	
-	protected final ObserverList<PRadioButtonModelObs> obsList
-		= PiqUtil.createDefaultObserverList();
-	protected boolean selected;
+	protected boolean selected = PRadioButtonModel.DEFAULT_SELECTED_VALUE;
+	protected boolean enabled = PRadioButtonModel.DEFAULT_ENABLED_VALUE;
 	
-	public void setSelected(final boolean isSelected) {
-		final boolean oldIsSelected = selected;
-		if (oldIsSelected != isSelected) {
-			selected = isSelected;
-			fireChangeEvent();
+	@Override
+	public void setSelected(boolean value) {
+		if (selected != value) {
+			Object oldValue = getValue();
+			selected = value;
+			fireChangeEvent(oldValue);
 		}
 	}
 	
+	@Override
 	public boolean isSelected() {
 		return selected;
 	}
 	
-	public PModelHistory getHistory() {
-		return null;
+	@Override
+	public void setEnabled(boolean trueIfEnabled) {
+		if (enabled != trueIfEnabled) {
+			Object oldValue = getValue();
+			enabled = trueIfEnabled;
+			fireChangeEvent(oldValue);
+		}
 	}
 	
-	public void addObs(PRadioButtonModelObs obs) {
-		obsList.add(obs);
-	}
-	
-	public void removeObs(PRadioButtonModelObs obs) {
-		obsList.remove(obs);
-	}
-	
-	protected void fireChangeEvent() {
-		obsList.fireEvent((obs) -> obs.onChange(this));
+	@Override
+	public boolean isEnabled() {
+		return enabled;
 	}
 	
 }

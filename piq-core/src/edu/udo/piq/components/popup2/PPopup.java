@@ -2,6 +2,7 @@ package edu.udo.piq.components.popup2;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
@@ -92,8 +93,16 @@ public class PPopup {
 		return popupClickY;
 	}
 	
-	public void addItem(PComponentActionIndicator actionIndicator) {
-		addItem(new PMenuItem(actionIndicator));
+	public PComponent addItem(Object labelValue, Object iconValue, Consumer<PRoot> additionalAction) {
+		PComponent item = new PMenuItemCustom(labelValue, iconValue, additionalAction);
+		addItem(item);
+		return item;
+	}
+	
+	public PComponent addItem(PComponentActionIndicator actionIndicator) {
+		PComponent item = new PMenuItemComponentAction(actionIndicator);
+		addItem(item);
+		return item;
 	}
 	
 	public void addItem(PComponent item) {
@@ -102,7 +111,11 @@ public class PPopup {
 		items.add(item);
 	}
 	
-	public void removeItem(AbstractPMenuItem item) {
+	public void addDivider() {
+		addItem(new PMenuDivider());
+	}
+	
+	public void removeItem(PComponent item) {
 		ThrowException.ifNull(item, "item == null");
 		ThrowException.ifExcluded(items, item, "items.contains(item) == false");
 		items.remove(item);
@@ -134,11 +147,11 @@ public class PPopup {
 		if (!isEnabled()) {
 			return;
 		}
-		if (isShown() && getPopupBodyComponent().isMouseOverThisOrChild()) {
+		if (isShown() && getPopupBodyComponent().isMouseOverThisOrChild(mouse)) {
 			return;
 		}
 		if (mouse.isTriggered(VirtualMouseButton.POPUP_TRIGGER)
-				&& getOwner().isMouseOverThisOrChild())
+				&& getOwner().isMouseOverThisOrChild(mouse))
 		{
 			hidePopup();
 			showPopup(mouse.getX(), mouse.getY());
@@ -179,7 +192,7 @@ public class PPopup {
 			/*
 			 * This should not be possible since the showPopup method
 			 * is called from a mouse event.
-			 * If we reach this line of code, a virtual mouse event must 
+			 * If we reach this line of code, a virtual mouse event must
 			 * have been created by the user.
 			 * We do nothing in this case because there is nothing to do.
 			 */

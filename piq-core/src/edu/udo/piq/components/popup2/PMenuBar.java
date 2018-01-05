@@ -84,11 +84,11 @@ public class PMenuBar extends AbstractPLayoutOwner {
 		if (btn != MouseButton.LEFT) {
 			return;
 		}
-		if (isMenuShown() && getMenuBodyComponent().isMouseOverThisOrChild()) {
+		if (isMenuShown() && getMenuBodyComponent().isMouseOverThisOrChild(mouse)) {
 			return;
 		}
 		PMenuBarItem item = getActiveItem();
-		if (item != null && item.isMouseOverThisOrChild()) {
+		if (item != null && item.isMouseOverThisOrChild(mouse)) {
 			fireItemClickEvent(item);
 			setArmed(!isArmed());
 		} else {

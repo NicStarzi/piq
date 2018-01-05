@@ -8,6 +8,7 @@ import java.util.List;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PKeyboard.Modifier;
+import edu.udo.piq.util.Throw;
 import edu.udo.piq.util.ThrowException;
 
 public class PAccelerator {
@@ -17,15 +18,23 @@ public class PAccelerator {
 	
 	protected final List<Key> keys = new ArrayList<>();
 	protected final List<Modifier> mods = new ArrayList<>();
-	protected FocusPolicy focusPolicy = DEFAULT_FOCUS_POLICY;
-	protected KeyInputType inputType = DEFAULT_INPUT_TYPE;
+	protected final FocusPolicy focusPolicy;
+	protected final KeyInputType inputType;
 	
 	public PAccelerator(Key key) {
 		this(key, null, DEFAULT_FOCUS_POLICY, DEFAULT_INPUT_TYPE);
 	}
 	
+	public PAccelerator(Key key, KeyInputType inputType) {
+		this(key, null, DEFAULT_FOCUS_POLICY, inputType);
+	}
+	
 	public PAccelerator(Key key, FocusPolicy focusPolicy) {
 		this(key, null, focusPolicy, DEFAULT_INPUT_TYPE);
+	}
+	
+	public PAccelerator(Key key, FocusPolicy focusPolicy, KeyInputType inputType) {
+		this(key, null, focusPolicy, inputType);
 	}
 	
 	public PAccelerator(Key key, Modifier mod1, Modifier mod2) {
@@ -39,6 +48,10 @@ public class PAccelerator {
 		this(key, mod, DEFAULT_FOCUS_POLICY, DEFAULT_INPUT_TYPE);
 	}
 	
+	public PAccelerator(Key key, Modifier mod, KeyInputType inputType) {
+		this(key, mod, DEFAULT_FOCUS_POLICY, inputType);
+	}
+	
 	public PAccelerator(Key key, Modifier mod, FocusPolicy focusPolicy) {
 		this(key, mod, focusPolicy, DEFAULT_INPUT_TYPE);
 	}
@@ -50,8 +63,12 @@ public class PAccelerator {
 		if (mod != null) {
 			mods.add(mod);
 		}
-		setFocusPolicy(focusPolicy);
-		setKeyInputType(inputType);
+		Throw.ifNull(focusPolicy, "focusPolicy == null");
+		Throw.ifNull(inputType, "inputType == null");
+		this.focusPolicy = focusPolicy;
+		this.inputType = inputType;
+//		setFocusPolicy(focusPolicy);
+//		setKeyInputType(inputType);
 	}
 	
 	public PAccelerator setKeys(Key ... values) {
@@ -94,21 +111,21 @@ public class PAccelerator {
 		return Collections.unmodifiableList(mods);
 	}
 	
-	public PAccelerator setFocusPolicy(FocusPolicy value) {
-		ThrowException.ifNull(value, "value == null");
-		focusPolicy = value;
-		return this;
-	}
+//	public PAccelerator setFocusPolicy(FocusPolicy value) {
+//		ThrowException.ifNull(value, "value == null");
+//		focusPolicy = value;
+//		return this;
+//	}
 	
 	public FocusPolicy getFocusPolicy() {
 		return focusPolicy;
 	}
 	
-	public PAccelerator setKeyInputType(KeyInputType value) {
-		ThrowException.ifNull(value, "value == null");
-		inputType = value;
-		return this;
-	}
+//	public PAccelerator setKeyInputType(KeyInputType value) {
+//		ThrowException.ifNull(value, "value == null");
+//		inputType = value;
+//		return this;
+//	}
 	
 	public KeyInputType getKeyInputType() {
 		return inputType;
@@ -121,14 +138,18 @@ public class PAccelerator {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
+		sb.append(getClass().getSimpleName());
+		sb.append("{focusPolicy=");
+		sb.append(getFocusPolicy().name());
+		sb.append("; inputType=");
 		sb.append(getKeyInputType().name());
-		sb.append("::");
+		sb.append("; keyCombination=");
 		for (int i = 0; i < getModifierCount(); i++) {
 			sb.append(getModifier(i).name());
 			sb.append('+');
 		}
 		for (int i = 0; i < getKeyCount(); i++) {
-			sb.append(getKey(i).getName());
+			sb.append(getKey(i).getSymbolicName());
 			sb.append('+');
 		}
 		sb.delete(sb.length()-1, sb.length());
@@ -138,7 +159,7 @@ public class PAccelerator {
 	public static enum KeyInputType {
 		PRESS,
 		RELEASE,
-		TRIGGER, 
+		TRIGGER,
 		;
 	}
 	
@@ -168,7 +189,7 @@ public class PAccelerator {
 			}
 		},
 		;
-		public static final List<FocusPolicy> ALL = 
+		public static final List<FocusPolicy> ALL =
 				Collections.unmodifiableList(Arrays.asList(FocusPolicy.values()));
 		
 		public abstract boolean canTriggerFor(PComponent component);

@@ -1,7 +1,5 @@
 package edu.udo.piq.components;
 
-import java.util.function.Consumer;
-
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
@@ -12,32 +10,31 @@ import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
+import edu.udo.piq.actions.FocusOwnerAction;
+import edu.udo.piq.actions.PAccelerator;
+import edu.udo.piq.actions.PAccelerator.FocusPolicy;
+import edu.udo.piq.actions.PAccelerator.KeyInputType;
+import edu.udo.piq.actions.PActionKey;
+import edu.udo.piq.actions.PComponentAction;
+import edu.udo.piq.actions.StandardComponentActionKey;
 import edu.udo.piq.components.defaults.ReRenderPFocusObs;
-import edu.udo.piq.components.util.DefaultPAccelerator;
-import edu.udo.piq.components.util.PAccelerator;
-import edu.udo.piq.components.util.PAccelerator.KeyInputType;
 import edu.udo.piq.layouts.PComponentLayoutData;
 import edu.udo.piq.layouts.PTupleLayout;
 import edu.udo.piq.layouts.PTupleLayout.Constraint;
-import edu.udo.piq.tools.AbstractPInputLayoutOwner;
+import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PiqUtil;
 
-public class PRadioButtonTuple extends AbstractPInputLayoutOwner implements PClickable, PGlobalEventGenerator {
+public class PRadioButtonTuple extends AbstractPLayoutOwner implements PClickable, PGlobalEventGenerator {
 	
-	public static final PAccelerator<PRadioButtonTuple> INPUT_TRIGGER_ENTER =
-			new DefaultPAccelerator<>(KeyInputType.TRIGGER, ActualKey.ENTER, PRadioButtonTuple::canTriggerEnter);
-	public static final Consumer<PRadioButtonTuple> REACTION_TRIGGER_ENTER = PRadioButtonTuple::onTriggerEnter;
-	public static final String INPUT_IDENTIFIER_TRIGGER_ENTER = "triggerEnter";
-	
-	protected static boolean canTriggerEnter(PRadioButtonTuple self) {
-		return self.isEnabled() && self.getRadioButton() != null
-				&& self.getRadioButton().getModel() != null;
-	}
-	
-	protected static void onTriggerEnter(PRadioButtonTuple self) {
-		self.getRadioButton().setSelected();
-	}
+	public static final PActionKey KEY_TRIGGER_ENTER = StandardComponentActionKey.INTERACT;
+	public static final PAccelerator ACCELERATOR_TRIGGER_ENTER = new PAccelerator(
+			ActualKey.ENTER, FocusPolicy.THIS_OR_CHILD_HAS_FOCUS, KeyInputType.TRIGGER);
+	public static final PComponentAction ACTION_TRIGGER_ENTER = new FocusOwnerAction<>(
+			PRadioButtonTuple.class, false,
+			ACCELERATOR_TRIGGER_ENTER,
+			self -> self.isEnabled(),
+			self -> self.getRadioButton().setSelected());
 	
 	protected final ObserverList<PClickObs> obsList
 		= PiqUtil.createDefaultObserverList();
@@ -68,7 +65,7 @@ public class PRadioButtonTuple extends AbstractPInputLayoutOwner implements PCli
 		});
 		addObs(new ReRenderPFocusObs());
 		
-		defineInput(PRadioButtonTuple.INPUT_IDENTIFIER_TRIGGER_ENTER, PRadioButtonTuple.INPUT_TRIGGER_ENTER, PRadioButtonTuple.REACTION_TRIGGER_ENTER);
+		addActionMapping(KEY_TRIGGER_ENTER, ACTION_TRIGGER_ENTER);
 	}
 	
 	public PRadioButtonTuple(PComponent secondComponent) {
@@ -107,6 +104,39 @@ public class PRadioButtonTuple extends AbstractPInputLayoutOwner implements PCli
 		return (PRadioButton) getLayoutInternal().getFirst();
 	}
 	
+	public void setEnabled(boolean isEnabled) {
+		PRadioButton radBtn = getRadioButton();
+		if (radBtn == null) {
+			return;
+		}
+		PRadioButtonModel model = radBtn.getModel();
+		if (model != null) {
+			model.setEnabled(isEnabled);
+		}
+	}
+	
+	public boolean isEnabled() {
+		PRadioButton radBtn = getRadioButton();
+		if (radBtn == null) {
+			return false;
+		}
+		PRadioButtonModel model = radBtn.getModel();
+		if (model == null) {
+			return false;
+		}
+		return model.isEnabled();
+	}
+	
+	@Override
+	public boolean isFocusable() {
+		return isEnabled();
+	}
+	
+	@Override
+	public boolean isStrongFocusOwner() {
+		return false;
+	}
+	
 	public boolean isSelected() {
 		PRadioButton radBtn = getRadioButton();
 		if (radBtn == null) {
@@ -143,11 +173,11 @@ public class PRadioButtonTuple extends AbstractPInputLayoutOwner implements PCli
 		obsList.remove(obs);
 	}
 	
-	public void addObs(PRadioButtonModelObs obs) {
+	public void addObs(PSingleValueModelObs obs) {
 		getRadioButton().addObs(obs);
 	}
 	
-	public void removeObs(PRadioButtonModelObs obs) {
+	public void removeObs(PSingleValueModelObs obs) {
 		getRadioButton().removeObs(obs);
 	}
 	
@@ -165,12 +195,12 @@ public class PRadioButtonTuple extends AbstractPInputLayoutOwner implements PCli
 	
 	protected void onMouseButtonTriggered(PMouse mouse, MouseButton btn) {
 		PComponent scndCmp = getSecondComponent();
-		if (scndCmp != null && scndCmp.isMouseOver()) {
+		if (scndCmp != null && scndCmp.isMouseOver(mouse)) {
 			if (!scndCmp.isFocusable()) {
 				getRadioButton().setSelected();
 				takeFocus();
 			}
-		} else if (isMouseOver()) {
+		} else if (isMouseOver(mouse)) {
 			getRadioButton().setSelected();
 			takeFocus();
 		}

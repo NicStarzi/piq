@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 
+import edu.udo.piq.actions.PActionKey;
 import edu.udo.piq.actions.PComponentAction;
 import edu.udo.piq.borders.PTitleBorder;
 import edu.udo.piq.components.PProgressBar;
@@ -47,7 +48,7 @@ public interface PRoot extends PComponent {
 	}
 	
 	/**
-	 * <p>Returns the {@link PReadOnlyLayout layout} of this {@link PRoot} which 
+	 * <p>Returns the {@link PReadOnlyLayout layout} of this {@link PRoot} which
 	 * is always an instance of {@link PRootLayout}.</p>
 	 * <p>The root layout supports a body, an {@link PRootOverlay overlay} and a {@link PMenuBar menu bar}.</p>
 	 * 
@@ -106,7 +107,7 @@ public interface PRoot extends PComponent {
 	}
 	
 	/**
-	 * <p>A root can not be styled. 
+	 * <p>A root can not be styled.
 	 * Always throws an exception.</p>
 	 * @param style ignored
 	 * @throws UnsupportedOperationException
@@ -130,7 +131,7 @@ public interface PRoot extends PComponent {
 	}
 	
 	/**
-	 * <p>A root can not be styled. 
+	 * <p>A root can not be styled.
 	 * Always throws an exception.</p>
 	 * @param style ignored
 	 * @throws UnsupportedOperationException
@@ -164,12 +165,12 @@ public interface PRoot extends PComponent {
 	}
 	
 	@Override
-	public default void addActionMapping(Object featureKey, PComponentAction feature) {
+	public default void addActionMapping(PActionKey featureKey, PComponentAction feature) {
 		throw new UnsupportedOperationException("this instanceof PRoot");
 	}
 	
 	@Override
-	public default void removeActionMapping(Object actionKey) {
+	public default void removeActionMapping(PActionKey actionKey) {
 		throw new UnsupportedOperationException("this instanceof PRoot");
 	}
 	
@@ -179,7 +180,7 @@ public interface PRoot extends PComponent {
 	}
 	
 	@Override
-	public default PComponentAction getAction(Object actionKey) {
+	public default PComponentAction getAction(PActionKey actionKey) {
 		return null;
 	}
 	
@@ -189,7 +190,7 @@ public interface PRoot extends PComponent {
 	}
 	
 	@Override
-	public default boolean hasActionForKey(Object actionKey) {
+	public default boolean hasActionForKey(PActionKey actionKey) {
 		return false;
 	}
 	
@@ -209,7 +210,7 @@ public interface PRoot extends PComponent {
 	}
 	
 	/**
-	 * <p>A root is never rendered. 
+	 * <p>A root is never rendered.
 	 * Always throws an exception.</p>
 	 * @param renderer ignored
 	 * @throws UnsupportedOperationException
@@ -253,7 +254,7 @@ public interface PRoot extends PComponent {
 	}
 	
 	/**
-	 * <p>A root can not be {@link #isIgnoredByPicking() picked}. 
+	 * <p>A root can not be {@link #isIgnoredByPicking() picked}.
 	 * Always throws an exception.</p>
 	 * @param cursor ignored
 	 * @throws UnsupportedOperationException
@@ -265,8 +266,8 @@ public interface PRoot extends PComponent {
 	}
 	
 	/**
-	 * <p>Returns the current {@link PBounds} of this root. The bounds of a 
-	 * root should always have an X- and Y-coordinate of 0. Since a root 
+	 * <p>Returns the current {@link PBounds} of this root. The bounds of a
+	 * root should always have an X- and Y-coordinate of 0. Since a root
 	 * does not have a parent, its size is not defined by a layout.</p>
 	 * 
 	 * @return a non-null instance of {@link PBounds}.
@@ -276,11 +277,11 @@ public interface PRoot extends PComponent {
 	public PBounds getBounds();
 	
 	/**
-	 * <p>Returns the current style sheet for the GUI of this root. A 
-	 * {@link PStyleSheet} is used to quickly change the style of all 
+	 * <p>Returns the current style sheet for the GUI of this root. A
+	 * {@link PStyleSheet} is used to quickly change the style of all
 	 * components within a GUI.</p>
 	 * 
-	 * <p>How the style sheet is set is not defined within this interface. 
+	 * <p>How the style sheet is set is not defined within this interface.
 	 * A root implementation may not support the use of style sheets.</p>
 	 * 
 	 * @return an instance of {@link PStyleSheet} or null
@@ -294,12 +295,12 @@ public interface PRoot extends PComponent {
 	public PStyleSheet getStyleSheet();
 	
 	/**
-	 * <p>This method is called by a {@link PComponent component} when 
-	 * it needs to be re-rendered. After this method has been called 
-	 * the root will schedule a re-rendering of the GUI tree in parts 
+	 * <p>This method is called by a {@link PComponent component} when
+	 * it needs to be re-rendered. After this method has been called
+	 * the root will schedule a re-rendering of the GUI tree in parts
 	 * or completely at some time in the near future.</p>
 	 * 
-	 * <p>User code does not need to ever call this method. It is intended 
+	 * <p>User code does not need to ever call this method. It is intended
 	 * for internal use only.</p>
 	 * 
 	 * @param component		the component that needs re-rendering
@@ -310,13 +311,13 @@ public interface PRoot extends PComponent {
 	public void scheduleReRender(PComponent component);
 	
 	/**
-	 * <p>This method is called by a {@link PComponent component} when 
-	 * its mouse-over {@link PCursor cursor} has changed. It may be needed 
+	 * <p>This method is called by a {@link PComponent component} when
+	 * its mouse-over {@link PCursor cursor} has changed. It may be needed
 	 * by a root to correctly update the displayed mouse cursor.</p>
 	 * 
-	 * <p>User code does not need to ever call this method. It is intended 
+	 * <p>User code does not need to ever call this method. It is intended
 	 * for internal use only.</p>
-	 *  
+	 * 
 	 * @param component		the component for which the cursor has changed
 	 * @author Nic
 	 * @see PCursor
@@ -334,12 +335,12 @@ public interface PRoot extends PComponent {
 	public void onMouseOverCursorChanged(PComponent component);
 	
 	/**
-	 * <p>This method is called by a {@link PComponent component} which needs 
-	 * to have its {@link PLayout layout} done again. After this method has 
-	 * been called the root will schedule a layout operation for all layouts 
+	 * <p>This method is called by a {@link PComponent component} which needs
+	 * to have its {@link PLayout layout} done again. After this method has
+	 * been called the root will schedule a layout operation for all layouts
 	 * of the GUI tree in parts or completely at some time in the near future.</p>
 	 * 
-	 * <p>User code does not need to ever call this method. It is intended 
+	 * <p>User code does not need to ever call this method. It is intended
 	 * for internal use only.</p>
 	 * 
 	 * @param component					the component that requested the layouting
@@ -356,8 +357,8 @@ public interface PRoot extends PComponent {
 	public void scheduleLayout(PComponent component);
 	
 	/**
-	 * <p>Causes an immediate {@link PLayout#layOut() layout} of all {@link PLayout layouts} 
-	 * within the GUI of this root. This is a costly operation and should only ever be used 
+	 * <p>Causes an immediate {@link PLayout#layOut() layout} of all {@link PLayout layouts}
+	 * within the GUI of this root. This is a costly operation and should only ever be used
 	 * in cases of incorrectly laid out layouts.</p>
 	 * 
 	 * @author Nic
@@ -382,13 +383,13 @@ public interface PRoot extends PComponent {
 	
 	/**
 	 * <p>Creates an instance of a {@link PDialog} and returns it.
-	 * The created dialog will use the same {@link PStyleSheet} as this 
+	 * The created dialog will use the same {@link PStyleSheet} as this
 	 * root. The dialog is not disposed and not shown initially.</p>
 	 * 
-	 * <p>An implementation may decide to recycle dialog objects in 
-	 * which case the returned dialog may not be a newly created 
-	 * instance. References to dialogs should not be kept after they 
-	 * are disposed. No assumptions should be made about whether a 
+	 * <p>An implementation may decide to recycle dialog objects in
+	 * which case the returned dialog may not be a newly created
+	 * instance. References to dialogs should not be kept after they
+	 * are disposed. No assumptions should be made about whether a
 	 * created dialog is a new instance or not.</p>
 	 * 
 	 * @return an instance of {@link PDialog}
@@ -401,12 +402,12 @@ public interface PRoot extends PComponent {
 	public PDialog createDialog();
 	
 	/**
-	 * <p>Returns an instance of {@link PFontResource} for the given 
-	 * font identifier. This method should always return the same 
-	 * resource for the same identifier. All font resource objects 
-	 * returned by this method are safe to be used for rendering 
-	 * within the GUI of this root. The validity of a font resource 
-	 * object can be checked with the {@link #isFontSupported(PFontResource)} 
+	 * <p>Returns an instance of {@link PFontResource} for the given
+	 * font identifier. This method should always return the same
+	 * resource for the same identifier. All font resource objects
+	 * returned by this method are safe to be used for rendering
+	 * within the GUI of this root. The validity of a font resource
+	 * object can be checked with the {@link #isFontSupported(PFontResource)}
 	 * method.</p>
 	 * 
 	 * <p>Common types of font identifiers include:<pre>
@@ -414,14 +415,14 @@ public interface PRoot extends PComponent {
 	 * * {@link StandardFontKey} which defines a font by name, size and style
 	 * * {@link File} which should refer to a true type font file or similar font file
 	 * * {@link String} which can be interpreted as the path to a file
-	 * </pre>An implementation is not limited to only the above types of identifiers, 
+	 * </pre>An implementation is not limited to only the above types of identifiers,
 	 * nor is it required to support all of these.</p>
 	 * 
-	 * <p>The implementation of this method should try to not return 
-	 * {@code null}. A standard font resource should be provided for 
+	 * <p>The implementation of this method should try to not return
+	 * {@code null}. A standard font resource should be provided for
 	 * any unknown font identifiers. </p>
 	 * 
-	 * <p>Any implementation is supposed to support the preset font 
+	 * <p>Any implementation is supposed to support the preset font
 	 * resources from the core library. These are:<pre>
 	 * * {@link AbstractPTextComponent#FONT_ID}
 	 * * {@link PLabel#FONT_ID}
@@ -431,12 +432,12 @@ public interface PRoot extends PComponent {
 	 * </pre>All of the above font identifiers are instances of {@link SymbolicFontKey}.
 	 * </p>
 	 * 
-	 * <p>If {@link PDisposable#dispose() disposing} of font resources is necessary 
-	 * then either the root or the PFontResource implementation should take care of 
-	 * the disposal. Once disposed, a font resource should no longer be considered 
-	 * valid as defined by {@link #isFontSupported(PFontResource)}. The font identifier 
-	 * of the disposed font should still be able to fetch a valid font resource after 
-	 * disposal.</p> 
+	 * <p>If {@link PDisposable#dispose() disposing} of font resources is necessary
+	 * then either the root or the PFontResource implementation should take care of
+	 * the disposal. Once disposed, a font resource should no longer be considered
+	 * valid as defined by {@link #isFontSupported(PFontResource)}. The font identifier
+	 * of the disposed font should still be able to fetch a valid font resource after
+	 * disposal.</p>
 	 * 
 	 * @param fontID		an identifier for the font resource
 	 * @return an instance of {@link PFontResource}
@@ -448,13 +449,13 @@ public interface PRoot extends PComponent {
 	public PFontResource fetchFontResource(Object fontID);
 	
 	/**
-	 * <p>Checks if the given {@link PFontResource} can be used for 
-	 * {@link PRenderer#drawString(PFontResource, String, float, float) rendering} 
+	 * <p>Checks if the given {@link PFontResource} can be used for
+	 * {@link PRenderer#drawString(PFontResource, String, float, float) rendering}
 	 * within the GUI of this root. Any font resource returned by the method
-	 * {@link #fetchFontResource(Object)} of this root should be supported unless 
-	 * it has been {@link PDisposable#dispose() disposed}. If a font resource is 
-	 * not supported it must not be used for size calculations or rendering within 
-	 * the GUI of this root. A new font resource must be fetched via the 
+	 * {@link #fetchFontResource(Object)} of this root should be supported unless
+	 * it has been {@link PDisposable#dispose() disposed}. If a font resource is
+	 * not supported it must not be used for size calculations or rendering within
+	 * the GUI of this root. A new font resource must be fetched via the
 	 * {@link #fetchFontResource(Object)} method.</p>
 	 * 
 	 * @param font		a non-null instance of PFontResource
@@ -468,38 +469,38 @@ public interface PRoot extends PComponent {
 	public boolean isFontSupported(PFontResource font);
 	
 	/**
-	 * <p>Returns an instance of {@link PImageResource} for the given 
-	 * image identifier. This method should always return the same 
-	 * resource for the same identifier. All image resource objects 
-	 * returned by this method are safe to be used for rendering 
-	 * within the GUI of this root. The validity of an image resource 
-	 * object can be checked with the {@link #isImageSupported(PImageResource)} 
+	 * <p>Returns an instance of {@link PImageResource} for the given
+	 * image identifier. This method should always return the same
+	 * resource for the same identifier. All image resource objects
+	 * returned by this method are safe to be used for rendering
+	 * within the GUI of this root. The validity of an image resource
+	 * object can be checked with the {@link #isImageSupported(PImageResource)}
 	 * method.</p>
 	 * 
 	 * <p>Common types of image identifiers include:<pre>
 	 * * {@link SymbolicImageKey} which defines a unique constant
 	 * * {@link File} which should refer to an image file
 	 * * {@link String} which can be interpreted as the path to a file
-	 * </pre>An implementation is not limited to only the above types of identifiers, 
+	 * </pre>An implementation is not limited to only the above types of identifiers,
 	 * nor is it required to support all of these.</p>
 	 * 
-	 * <p>The implementation of this method should try to not return 
-	 * {@code null}. An empty standard image resource should be provided for 
+	 * <p>The implementation of this method should try to not return
+	 * {@code null}. An empty standard image resource should be provided for
 	 * any unknown image identifiers. </p>
 	 * 
-	 * <p>Any implementation is supposed to support the preset image 
+	 * <p>Any implementation is supposed to support the preset image
 	 * resources from the core library. These are:<pre>
 	 * * {@link DefaultPDnDSupport#IMAGE_ID_DND_POSSIBLE}
 	 * * {@link DefaultPDnDSupport#IMAGE_ID_DND_IMPOSSIBLE}
 	 * </pre>All of the above image identifiers are instances of {@link SymbolicImageKey}.
 	 * </p>
 	 * 
-	 * <p>If {@link PDisposable#dispose() disposing} of image resources is necessary 
-	 * then either the root or the PImageResource implementation should take care of 
-	 * the disposal. Once disposed, an image resource should no longer be considered 
-	 * valid as defined by {@link #isImageSupported(PImageResource)}. The image identifier 
-	 * of the disposed image should still be able to fetch a valid image resource after 
-	 * disposal.</p> 
+	 * <p>If {@link PDisposable#dispose() disposing} of image resources is necessary
+	 * then either the root or the PImageResource implementation should take care of
+	 * the disposal. Once disposed, an image resource should no longer be considered
+	 * valid as defined by {@link #isImageSupported(PImageResource)}. The image identifier
+	 * of the disposed image should still be able to fetch a valid image resource after
+	 * disposal.</p>
 	 * 
 	 * @param imageID		an identifier for the image resource
 	 * @return an instance of {@link PImageResource}
@@ -513,13 +514,13 @@ public interface PRoot extends PComponent {
 	public PImageResource fetchImageResource(Object imageID);
 	
 	/**
-	 * <p>Checks if the given {@link PImageResource} can be used for 
-	 * {@link PRenderer#drawImage(PImageResource, float, float, float, float) rendering} 
+	 * <p>Checks if the given {@link PImageResource} can be used for
+	 * {@link PRenderer#drawImage(PImageResource, float, float, float, float) rendering}
 	 * within the GUI of this root. Any image resource returned by the method
-	 * {@link #fetchImageResource(Object)} of this root should be supported unless 
-	 * it has been {@link PDisposable#dispose() disposed}. If an image resource is 
-	 * not supported it must not be used for size calculations or rendering within 
-	 * the GUI of this root. A new image resource must be fetched via the 
+	 * {@link #fetchImageResource(Object)} of this root should be supported unless
+	 * it has been {@link PDisposable#dispose() disposed}. If an image resource is
+	 * not supported it must not be used for size calculations or rendering within
+	 * the GUI of this root. A new image resource must be fetched via the
 	 * {@link #fetchImageResource(Object)} method.</p>
 	 * 
 	 * @param image		a non-null instance of {@link PImageResource}

@@ -20,7 +20,7 @@ public class PRadioButton extends AbstractPComponent implements PClickable, PGlo
 	
 	private static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(12, 12);
 	
-	protected final ObserverList<PRadioButtonModelObs> modelObsList
+	protected final ObserverList<PSingleValueModelObs> modelObsList
 		= PiqUtil.createDefaultObserverList();
 	protected final ObserverList<PClickObs> obsList
 		= PiqUtil.createDefaultObserverList();
@@ -30,7 +30,7 @@ public class PRadioButton extends AbstractPComponent implements PClickable, PGlo
 			PRadioButton.this.onMouseButtonTriggered(mouse, btn);
 		}
 	};
-	protected final PRadioButtonModelObs modelObs = (mdl) -> onModelChange();
+	protected final PSingleValueModelObs modelObs = this::onModelChange;
 	protected PRadioButtonModel model;
 	private PGlobalEventProvider globEvProv;
 	
@@ -81,6 +81,21 @@ public class PRadioButton extends AbstractPComponent implements PClickable, PGlo
 		return getModel().isSelected();
 	}
 	
+	public void setEnabled(boolean isEnabled) {
+		PRadioButtonModel model = getModel();
+		if (model != null) {
+			model.setEnabled(isEnabled);
+		}
+	}
+	
+	public boolean isEnabled() {
+		PRadioButtonModel model = getModel();
+		if (model == null) {
+			return false;
+		}
+		return model.isEnabled();
+	}
+	
 	@Override
 	public void defaultRender(PRenderer renderer) {
 		PBounds bnds = getBounds();
@@ -116,14 +131,14 @@ public class PRadioButton extends AbstractPComponent implements PClickable, PGlo
 		obsList.remove(obs);
 	}
 	
-	public void addObs(PRadioButtonModelObs obs) {
+	public void addObs(PSingleValueModelObs obs) {
 		modelObsList.add(obs);
 		if (getModel() != null) {
 			getModel().addObs(obs);
 		}
 	}
 	
-	public void removeObs(PRadioButtonModelObs obs) {
+	public void removeObs(PSingleValueModelObs obs) {
 		modelObsList.remove(obs);
 		if (getModel() != null) {
 			getModel().removeObs(obs);
@@ -136,13 +151,13 @@ public class PRadioButton extends AbstractPComponent implements PClickable, PGlo
 	}
 	
 	protected void onMouseButtonTriggered(PMouse mouse, MouseButton btn) {
-		if (btn == MouseButton.LEFT && isMouseOver()) {
+		if (btn == MouseButton.LEFT && isMouseOver(mouse)) {
 			setSelected();
 			fireClickEvent();
 		}
 	}
 	
-	protected void onModelChange() {
+	protected void onModelChange(PSingleValueModel model, Object oldValue, Object newValue) {
 		firePreferredSizeChangedEvent();
 		fireReRenderEvent();
 	}

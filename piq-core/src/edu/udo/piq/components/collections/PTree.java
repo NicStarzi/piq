@@ -6,7 +6,7 @@ import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
@@ -22,20 +22,25 @@ import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouse.VirtualMouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
+import edu.udo.piq.actions.FocusOwnerAction;
+import edu.udo.piq.actions.PAccelerator;
+import edu.udo.piq.actions.PAccelerator.FocusPolicy;
+import edu.udo.piq.actions.PAccelerator.KeyInputType;
+import edu.udo.piq.actions.PActionKey;
+import edu.udo.piq.actions.PComponentAction;
+import edu.udo.piq.actions.StandardComponentActionKey;
 import edu.udo.piq.components.defaults.DefaultPTreeModel;
 import edu.udo.piq.components.defaults.PTreePCellFactory;
 import edu.udo.piq.components.defaults.PTreePDnDSupport;
 import edu.udo.piq.components.defaults.ReRenderPFocusObs;
-import edu.udo.piq.components.util.DefaultPAccelerator;
-import edu.udo.piq.components.util.PAccelerator;
 import edu.udo.piq.layouts.PTreeLayout;
 import edu.udo.piq.layouts.PTreeLayout.PTreeLayoutObs;
-import edu.udo.piq.tools.AbstractPInputLayoutOwner;
+import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PiqUtil;
 import edu.udo.piq.util.ThrowException;
 
-public class PTree extends AbstractPInputLayoutOwner
+public class PTree extends AbstractPLayoutOwner
 	implements PDropComponent
 {
 	
@@ -45,25 +50,58 @@ public class PTree extends AbstractPInputLayoutOwner
 	protected static final PColor DROP_HIGHLIGHT_COLOR = PColor.RED;
 	protected static final int DRAG_AND_DROP_DISTANCE = 20;
 	
-	public static final PAccelerator<PTree> INPUT_MOVE_UP =
-			new DefaultPAccelerator<>(ActualKey.UP, PTree::isKeyTriggerEnabled);
-	public static final Consumer<PTree> REACTION_MOVE_UP = PTree::onKeyTriggerUp;
-	public static final String INPUT_ID_MOVE_UP = "moveUp";
+	public static final Predicate<PTree> CONDITION_MOVE_SELECTION =
+			self -> self.isEnabled()
+					&& self.getModel() != null
+					&& self.getSelection() != null
+					&& self.getSelection().getLastSelected() != null;
+	public static final PActionKey KEY_DOWN = StandardComponentActionKey.MOVE_NEXT;
+	public static final PAccelerator ACCELERATOR_DOWN = new PAccelerator(
+			ActualKey.DOWN, FocusPolicy.THIS_OR_CHILD_HAS_FOCUS, KeyInputType.PRESS);
+	public static final PComponentAction ACTION_DOWN = new FocusOwnerAction<>(
+			PTree.class, true,
+			ACCELERATOR_DOWN,
+			CONDITION_MOVE_SELECTION,
+			self -> {
+				if (!self.moveSelectedIndex(1, true)) {
+					if (self.moveSelectedIndex(-1, false)) {
+						self.moveSelectedIndex(1, true);
+					} else {
+						self.moveSelectedIndex(1, false);
+					}
+				}
+			});
 	
-	public static final PAccelerator<PTree> INPUT_MOVE_DOWN =
-			new DefaultPAccelerator<>(ActualKey.DOWN, PTree::isKeyTriggerEnabled);
-	public static final Consumer<PTree> REACTION_MOVE_DOWN = PTree::onKeyTriggerDown;
-	public static final String INPUT_ID_MOVE_DOWN = "moveDown";
+	public static final PActionKey KEY_UP = StandardComponentActionKey.MOVE_PREV;
+	public static final PAccelerator ACCELERATOR_UP = new PAccelerator(
+			ActualKey.UP, FocusPolicy.THIS_OR_CHILD_HAS_FOCUS, KeyInputType.PRESS);
+	public static final PComponentAction ACTION_UP = new FocusOwnerAction<>(
+			PTree.class, true,
+			ACCELERATOR_UP,
+			CONDITION_MOVE_SELECTION,
+			self -> {
+				if (!self.moveSelectedIndex(-1, true)) {
+					self.moveSelectedIndex(-1, false);
+				}
+			});
 	
-	public static final PAccelerator<PTree> INPUT_MOVE_RIGHT =
-			new DefaultPAccelerator<>(ActualKey.RIGHT, PTree::isKeyTriggerEnabled);
-	public static final Consumer<PTree> REACTION_MOVE_RIGHT = PTree::onKeyTriggerRight;
-	public static final String INPUT_ID_MOVE_RIGHT = "moveRight";
+	public static final PActionKey KEY_RIGHT = StandardComponentActionKey.MOVE_IN;
+	public static final PAccelerator ACCELERATOR_RIGHT = new PAccelerator(
+			ActualKey.RIGHT, FocusPolicy.THIS_OR_CHILD_HAS_FOCUS, KeyInputType.PRESS);
+	public static final PComponentAction ACTION_RIGHT = new FocusOwnerAction<>(
+			PTree.class, true,
+			ACCELERATOR_RIGHT,
+			CONDITION_MOVE_SELECTION,
+			self -> self.moveSelectedIndex(1, false));
 	
-	public static final PAccelerator<PTree> INPUT_MOVE_LEFT =
-			new DefaultPAccelerator<>(ActualKey.LEFT, PTree::isKeyTriggerEnabled);
-	public static final Consumer<PTree> REACTION_MOVE_LEFT = PTree::onKeyTriggerLeft;
-	public static final String INPUT_ID_MOVE_LEFT = "moveLeft";
+	public static final PActionKey KEY_LEFT = StandardComponentActionKey.MOVE_OUT;
+	public static final PAccelerator ACCELERATOR_LEFT = new PAccelerator(
+			ActualKey.LEFT, FocusPolicy.THIS_OR_CHILD_HAS_FOCUS, KeyInputType.PRESS);
+	public static final PComponentAction ACTION_LEFT = new FocusOwnerAction<>(
+			PTree.class, true,
+			ACCELERATOR_LEFT,
+			CONDITION_MOVE_SELECTION,
+			self -> self.moveSelectedIndex(-1, false));
 	
 	protected final ObserverList<PModelObs> obsListModel
 		= PiqUtil.createDefaultObserverList();
@@ -108,6 +146,7 @@ public class PTree extends AbstractPInputLayoutOwner
 	protected int				lastDragX = -1;
 	protected int				lastDragY = -1;
 	protected boolean			isDragTagged = false;
+	protected boolean			enabled = true;
 	
 	public PTree(PTreeModel model) {
 		this();
@@ -143,10 +182,18 @@ public class PTree extends AbstractPInputLayoutOwner
 		});
 		addObs(new ReRenderPFocusObs());
 		
-		defineInput(INPUT_ID_MOVE_UP, INPUT_MOVE_UP, REACTION_MOVE_UP);
-		defineInput(INPUT_ID_MOVE_DOWN, INPUT_MOVE_DOWN, REACTION_MOVE_DOWN);
-		defineInput(INPUT_ID_MOVE_LEFT, INPUT_MOVE_LEFT, REACTION_MOVE_LEFT);
-		defineInput(INPUT_ID_MOVE_RIGHT, INPUT_MOVE_RIGHT, REACTION_MOVE_RIGHT);
+		addActionMapping(KEY_UP, ACTION_UP);
+		addActionMapping(KEY_DOWN, ACTION_DOWN);
+		addActionMapping(KEY_LEFT, ACTION_LEFT);
+		addActionMapping(KEY_RIGHT, ACTION_RIGHT);
+		addActionMapping(KEY_COPY, ACTION_COPY);
+		addActionMapping(KEY_CUT, ACTION_CUT);
+		addActionMapping(KEY_PASTE, ACTION_PASTE);
+		addActionMapping(KEY_DELETE, ACTION_DELETE);
+//		defineInput(INPUT_ID_MOVE_UP, INPUT_MOVE_UP, REACTION_MOVE_UP);
+//		defineInput(INPUT_ID_MOVE_DOWN, INPUT_MOVE_DOWN, REACTION_MOVE_DOWN);
+//		defineInput(INPUT_ID_MOVE_LEFT, INPUT_MOVE_LEFT, REACTION_MOVE_LEFT);
+//		defineInput(INPUT_ID_MOVE_RIGHT, INPUT_MOVE_RIGHT, REACTION_MOVE_RIGHT);
 	}
 	
 	@Override
@@ -255,6 +302,19 @@ public class PTree extends AbstractPInputLayoutOwner
 	@Override
 	public PDnDSupport getDragAndDropSupport() {
 		return dndSup;
+	}
+	
+	@Override
+	public void setEnabled(boolean value) {
+		if (enabled != value) {
+			enabled = value;
+			fireReRenderEvent();
+		}
+	}
+	
+	@Override
+	public boolean isEnabled() {
+		return enabled;
 	}
 	
 	@Override
@@ -631,36 +691,6 @@ public class PTree extends AbstractPInputLayoutOwner
 		}
 	}
 	
-	protected static void onKeyTriggerUp(PTree self) {
-		if (!self.moveSelectedIndex(-1, true)) {
-			self.moveSelectedIndex(-1, false);
-		}
-	}
-	
-	protected static void onKeyTriggerDown(PTree self) {
-		if (!self.moveSelectedIndex(1, true)) {
-			if (self.moveSelectedIndex(-1, false)) {
-				self.moveSelectedIndex(1, true);
-			} else {
-				self.moveSelectedIndex(1, false);
-			}
-		}
-	}
-	
-	protected static void onKeyTriggerLeft(PTree self) {
-		self.moveSelectedIndex(-1, false);
-	}
-	
-	protected static void onKeyTriggerRight(PTree self) {
-		self.moveSelectedIndex(1, false);
-	}
-	
-	protected static boolean isKeyTriggerEnabled(PTree self) {
-		return self.isEnabled() && self.getModel() != null
-				&& self.getSelection() != null
-				&& self.getSelection().getLastSelected() != null;
-	}
-	
 	protected boolean moveSelectedIndex(int offset, boolean isSibbling) {
 		PTreeIndex lastSelected = getSelection().getLastSelected();
 		
@@ -696,7 +726,7 @@ public class PTree extends AbstractPInputLayoutOwner
 	}
 	
 	protected void onMouseButtonTriggred(PMouse mouse, MouseButton btn) {
-		if (btn == MouseButton.LEFT && isMouseOverThisOrChild()) {
+		if (btn == MouseButton.LEFT && isMouseOverThisOrChild(mouse)) {
 			PTreeIndex index = getIndexAt(mouse.getX(), mouse.getY());
 			if (index != null) {
 				if (mouse.isPressed(VirtualMouseButton.DRAG_AND_DROP)) {

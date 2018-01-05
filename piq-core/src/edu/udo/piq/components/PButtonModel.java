@@ -1,7 +1,11 @@
 package edu.udo.piq.components;
 
-public interface PButtonModel {
+public interface PButtonModel extends PSingleValueModel {
 	
+	public static final boolean DEFAULT_PRESSED_VALUE = false;
+	public static final boolean DEFAULT_ENABLED_VALUE = true;
+	
+	@Override
 	public default void setValue(Object obj) {
 		if (Boolean.TRUE.equals(obj)) {
 			setPressed(true);
@@ -10,16 +14,17 @@ public interface PButtonModel {
 		}
 	}
 	
+	@Override
 	public default Object getValue() {
 		return Boolean.valueOf(isPressed());
 	}
 	
-	public void setPressed(boolean isPressed);
+	public void setPressed(boolean trueIfPressed);
 	
 	public boolean isPressed();
 	
-	public void addObs(PButtonModelObs obs);
+	public void setEnabled(boolean trueIfEnabled);
 	
-	public void removeObs(PButtonModelObs obs);
+	public boolean isEnabled();
 	
 }

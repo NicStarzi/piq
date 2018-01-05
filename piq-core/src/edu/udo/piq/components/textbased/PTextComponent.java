@@ -15,6 +15,8 @@ public interface PTextComponent extends PComponent {
 	
 	public PTextIndexTable getIndexTable();
 	
+	public boolean isEnabled();
+	
 	public boolean isEditable();
 	
 	public PListIndex getTextIndexAt(int x, int y);

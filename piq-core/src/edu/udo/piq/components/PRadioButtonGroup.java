@@ -8,7 +8,7 @@ import edu.udo.piq.util.ThrowException;
 public class PRadioButtonGroup {
 	
 	private final List<PRadioButton> btnList = new ArrayList<>();
-	private final PRadioButtonModelObs modelObs = this::onModelChange;
+	private final PSingleValueModelObs modelObs = this::onModelChange;
 	private PRadioButtonModel selectedModel = null;
 	
 	public PRadioButtonGroup() {
@@ -55,9 +55,10 @@ public class PRadioButtonGroup {
 		setSelected(button.getModel());
 	}
 	
-	protected void onModelChange(PRadioButtonModel model) {
-		if (model.isSelected()) {
-			setSelected(model);
+	protected void onModelChange(PSingleValueModel model, Object oldValue, Object newValue) {
+		PRadioButtonModel radBtnMdl = (PRadioButtonModel) model;
+		if (radBtnMdl.isSelected()) {
+			setSelected(radBtnMdl);
 		}
 	}
 	

@@ -47,7 +47,7 @@ public class PMenuBarItem extends AbstractPLayoutOwner implements PClickable {
 	}
 	
 	public void addMenuItem(PComponentActionIndicator actionIndicator) {
-		addMenuItem(new PMenuItem(actionIndicator));
+		addMenuItem(new PMenuItemComponentAction(actionIndicator));
 	}
 	
 	public void addMenuItem(PComponent item) {

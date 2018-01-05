@@ -1,7 +1,5 @@
 package edu.udo.piq.components;
 
-import java.util.function.Consumer;
-
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
@@ -12,34 +10,33 @@ import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
+import edu.udo.piq.actions.FocusOwnerAction;
+import edu.udo.piq.actions.PAccelerator;
+import edu.udo.piq.actions.PAccelerator.FocusPolicy;
+import edu.udo.piq.actions.PAccelerator.KeyInputType;
+import edu.udo.piq.actions.PActionKey;
+import edu.udo.piq.actions.PComponentAction;
+import edu.udo.piq.actions.StandardComponentActionKey;
 import edu.udo.piq.components.defaults.ReRenderPFocusObs;
 import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.components.textbased.PTextModel;
-import edu.udo.piq.components.util.DefaultPAccelerator;
-import edu.udo.piq.components.util.PAccelerator;
-import edu.udo.piq.components.util.PAccelerator.KeyInputType;
 import edu.udo.piq.layouts.PComponentLayoutData;
 import edu.udo.piq.layouts.PTupleLayout;
 import edu.udo.piq.layouts.PTupleLayout.Constraint;
-import edu.udo.piq.tools.AbstractPInputLayoutOwner;
+import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PiqUtil;
 
-public class PCheckBoxTuple extends AbstractPInputLayoutOwner implements PClickable, PGlobalEventGenerator {
+public class PCheckBoxTuple extends AbstractPLayoutOwner implements PClickable, PGlobalEventGenerator {
 	
-	public static final PAccelerator<PCheckBoxTuple> INPUT_TRIGGER_ENTER =
-			new DefaultPAccelerator<>(KeyInputType.TRIGGER, ActualKey.ENTER, PCheckBoxTuple::canTriggerEnter);
-	public static final Consumer<PCheckBoxTuple> REACTION_TRIGGER_ENTER = PCheckBoxTuple::onTriggerEnter;
-	public static final String INPUT_IDENTIFIER_TRIGGER_ENTER = "triggerEnter";
-	
-	protected static boolean canTriggerEnter(PCheckBoxTuple self) {
-		return self.isEnabled() && self.getCheckBox() != null
-				&& self.getCheckBox().getModel() != null;
-	}
-	
-	protected static void onTriggerEnter(PCheckBoxTuple self) {
-		self.getCheckBox().toggleChecked();
-	}
+	public static final PActionKey KEY_TRIGGER_ENTER = StandardComponentActionKey.INTERACT;
+	public static final PAccelerator ACCELERATOR_TRIGGER_ENTER = new PAccelerator(
+			ActualKey.ENTER, FocusPolicy.THIS_OR_CHILD_HAS_FOCUS, KeyInputType.TRIGGER);
+	public static final PComponentAction ACTION_TRIGGER_ENTER = new FocusOwnerAction<>(
+			PCheckBoxTuple.class, false,
+			ACCELERATOR_TRIGGER_ENTER,
+			self -> self.isEnabled(),
+			self -> self.getCheckBox().toggleChecked());
 	
 	protected final ObserverList<PClickObs> obsList
 		= PiqUtil.createDefaultObserverList();
@@ -70,7 +67,7 @@ public class PCheckBoxTuple extends AbstractPInputLayoutOwner implements PClicka
 		});
 		addObs(new ReRenderPFocusObs());
 		
-		defineInput(PCheckBoxTuple.INPUT_IDENTIFIER_TRIGGER_ENTER, PCheckBoxTuple.INPUT_TRIGGER_ENTER, PCheckBoxTuple.REACTION_TRIGGER_ENTER);
+		addActionMapping(KEY_TRIGGER_ENTER, ACTION_TRIGGER_ENTER);
 	}
 	
 	public PCheckBoxTuple(PComponent secondComponent) {
@@ -127,6 +124,39 @@ public class PCheckBoxTuple extends AbstractPInputLayoutOwner implements PClicka
 		return getLayoutInternal().getSecond();
 	}
 	
+	public void setEnabled(boolean isEnabled) {
+		PCheckBox chkBx = getCheckBox();
+		if (chkBx == null) {
+			return;
+		}
+		PCheckBoxModel model = chkBx.getModel();
+		if (model != null) {
+			model.setEnabled(isEnabled);
+		}
+	}
+	
+	public boolean isEnabled() {
+		PCheckBox chkBx = getCheckBox();
+		if (chkBx == null) {
+			return false;
+		}
+		PCheckBoxModel model = chkBx.getModel();
+		if (model == null) {
+			return false;
+		}
+		return model.isEnabled();
+	}
+	
+	@Override
+	public boolean isFocusable() {
+		return isEnabled();
+	}
+	
+	@Override
+	public boolean isStrongFocusOwner() {
+		return false;
+	}
+	
 	public boolean isChecked() {
 		PCheckBox chkBx = getCheckBox();
 		if (chkBx == null) {
@@ -179,12 +209,12 @@ public class PCheckBoxTuple extends AbstractPInputLayoutOwner implements PClicka
 	
 	protected void onMouseButtonTriggered(PMouse mouse, MouseButton btn) {
 		PComponent scndCmp = getSecondComponent();
-		if (scndCmp != null && scndCmp.isMouseOver()) {
+		if (scndCmp != null && scndCmp.isMouseOver(mouse)) {
 			if (!scndCmp.isFocusable()) {
 				getCheckBox().toggleChecked();
 				onCheckBoxClick();
 			}
-		} else if (isMouseOver()) {
+		} else if (isMouseOver(mouse)) {
 			getCheckBox().toggleChecked();
 			onCheckBoxClick();
 		}

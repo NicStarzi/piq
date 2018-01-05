@@ -1,24 +1,26 @@
 package edu.udo.piq.components;
 
-import edu.udo.piq.components.util.PModelHistory;
-
-public interface PRadioButtonModel {
+public interface PRadioButtonModel extends PSingleValueModel {
+	
+	public static final boolean DEFAULT_SELECTED_VALUE = false;
+	public static final boolean DEFAULT_ENABLED_VALUE = true;
+	
+	@Override
+	public default void setValue(Object obj) {
+		setSelected(Boolean.TRUE == obj || Boolean.TRUE.equals(obj));
+	}
+	
+	@Override
+	public default Object getValue() {
+		return Boolean.valueOf(isSelected());
+	}
 	
 	public void setSelected(boolean value);
 	
 	public boolean isSelected();
 	
-	/**
-	 * Returns an instance of of {@link PModelHistory} if this model 
-	 * supports undo and redo operations or returns null if undo and 
-	 * redo is not supported.<br>
-	 * 
-	 * @return an instance of {@link PModelHistory} or null
-	 */
-	public PModelHistory getHistory();
+	public void setEnabled(boolean trueIfEnabled);
 	
-	public void addObs(PRadioButtonModelObs obs);
-	
-	public void removeObs(PRadioButtonModelObs obs);
+	public boolean isEnabled();
 	
 }

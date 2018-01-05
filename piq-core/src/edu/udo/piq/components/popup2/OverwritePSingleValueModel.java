@@ -107,7 +107,7 @@ public class OverwritePSingleValueModel extends AbstractPSingleValueModel {
 		
 		@Override
 		public void setDelegateModel(PSingleValueModel delegateModel) {
-			ThrowException.ifTypeCastFails(delegateModel, PTextModel.class, 
+			ThrowException.ifTypeCastFails(delegateModel, PTextModel.class,
 					"(delegateModel instanceof PTextModel) == false");
 			super.setDelegateModel(delegateModel);
 		}
@@ -138,7 +138,7 @@ public class OverwritePSingleValueModel extends AbstractPSingleValueModel {
 		
 		@Override
 		public void setDelegateModel(PSingleValueModel delegateModel) {
-			ThrowException.ifTypeCastFails(delegateModel, PPictureModel.class, 
+			ThrowException.ifTypeCastFails(delegateModel, PPictureModel.class,
 					"(delegateModel instanceof PPictureModel) == false");
 			super.setDelegateModel(delegateModel);
 		}
@@ -152,13 +152,15 @@ public class OverwritePSingleValueModel extends AbstractPSingleValueModel {
 	
 	public static class OverwritePCheckBoxModel extends OverwritePSingleValueModel implements PCheckBoxModel {
 		
+		protected boolean enabled = PCheckBoxModel.DEFAULT_ENABLED_VALUE;
+		
 		public OverwritePCheckBoxModel() {
 			super(new DefaultPCheckBoxModel());
 		}
 		
 		@Override
 		public void setDelegateModel(PSingleValueModel delegateModel) {
-			ThrowException.ifTypeCastFails(delegateModel, PCheckBoxModel.class, 
+			ThrowException.ifTypeCastFails(delegateModel, PCheckBoxModel.class,
 					"(delegateModel instanceof PCheckBoxModel) == false");
 			super.setDelegateModel(delegateModel);
 		}
@@ -181,6 +183,20 @@ public class OverwritePSingleValueModel extends AbstractPSingleValueModel {
 				return getDelegateModel().isChecked();
 			}
 			return Boolean.TRUE.equals(getValue());
+		}
+		
+		@Override
+		public void setEnabled(boolean trueIfEnabled) {
+			if (enabled != trueIfEnabled) {
+				Object oldValue = getValue();
+				enabled = trueIfEnabled;
+				fireChangeEvent(oldValue);
+			}
+		}
+		
+		@Override
+		public boolean isEnabled() {
+			return enabled;
 		}
 		
 	}

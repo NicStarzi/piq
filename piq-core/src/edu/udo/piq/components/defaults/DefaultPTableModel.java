@@ -12,9 +12,10 @@ import edu.udo.piq.util.ThrowException;
 
 public class DefaultPTableModel extends AbstractPTableModel implements PTableModel {
 	
-	private final ResizableTable<Object> table;
-	private Object[] header;
-	private boolean headerActive;
+	protected final ResizableTable<Object> table;
+	protected Object[] header;
+	protected boolean headerActive;
+	protected int size;
 	
 	public DefaultPTableModel() {
 		this(3, 3);
@@ -24,6 +25,12 @@ public class DefaultPTableModel extends AbstractPTableModel implements PTableMod
 		table = new ResizableTable<>(columnCount, rowCount);
 	}
 	
+	@Override
+	public int getSize() {
+		return size;
+	}
+	
+	@Override
 	public void setHeaderEnabled(boolean value) {
 		if (headerActive != value) {
 			headerActive = value;
@@ -31,37 +38,43 @@ public class DefaultPTableModel extends AbstractPTableModel implements PTableMod
 		}
 	}
 	
+	@Override
 	public boolean isHeaderEnabled() {
 		return headerActive;
 	}
 	
+	@Override
 	public void setHeader(int column, Object element) {
 		if (header == null) {
 			header = new Object[getColumnCount()];
 		}
 		ThrowException.ifNotWithin(header, column, "column < 0 || column >= getColumnCount()");
 		Object oldElement = header[column];
-		if (oldElement != element || (oldElement != null 
-				&& oldElement.equals(element))) 
+		if (oldElement != element || (oldElement != null
+				&& oldElement.equals(element)))
 		{
 			header[column] = element;
 			fireHeaderElementChangedEvent(column, oldElement);
 		}
 	}
 	
+	@Override
 	public Object getHeader(int column) {
 		ThrowException.ifFalse(isHeaderEnabled(), "isHeaderEnabled() == false");
 		return header[column];
 	}
 	
+	@Override
 	public int getColumnCount() {
 		return table.getColumnCount();
 	}
 	
+	@Override
 	public int getRowCount() {
 		return table.getRowCount();
 	}
 	
+	@Override
 	public void add(PModelIndex index, Object content) {
 		if (!canAdd(index, content)) {
 			throw new AddImpossible(this, index, content);
@@ -74,9 +87,11 @@ public class DefaultPTableModel extends AbstractPTableModel implements PTableMod
 			int col = tableIndex.getColumn();
 			table.addColumn(col);
 		}
+		size++;
 		fireAddEvent(index, content);
 	}
 	
+	@Override
 	public void remove(PModelIndex index) {
 		if (!canRemove(index)) {
 			throw new RemoveImpossible(this, index);
@@ -90,14 +105,17 @@ public class DefaultPTableModel extends AbstractPTableModel implements PTableMod
 			int col = tableIndex.getColumn();
 			table.removeColumn(col);
 		}
+		size--;
 		fireRemoveEvent(index, oldContent);
 	}
 	
+	@Override
 	public void set(int column, int row, Object content) {
 		table.set(column, row, content);
 		fireChangeEvent(new PTableCellIndex(column, row), content);
 	}
 	
+	@Override
 	public Object get(int column, int row) {
 		return table.get(column, row);
 	}

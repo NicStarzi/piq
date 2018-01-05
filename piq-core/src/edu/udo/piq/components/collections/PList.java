@@ -1,7 +1,7 @@
 package edu.udo.piq.components.collections;
 
-import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
@@ -17,79 +17,52 @@ import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouse.VirtualMouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
+import edu.udo.piq.actions.FocusOwnerAction;
+import edu.udo.piq.actions.PAccelerator;
+import edu.udo.piq.actions.PAccelerator.FocusPolicy;
+import edu.udo.piq.actions.PAccelerator.KeyInputType;
+import edu.udo.piq.actions.PActionKey;
+import edu.udo.piq.actions.PComponentAction;
+import edu.udo.piq.actions.StandardComponentActionKey;
 import edu.udo.piq.components.defaults.DefaultPCellComponent;
 import edu.udo.piq.components.defaults.DefaultPCellFactory;
 import edu.udo.piq.components.defaults.DefaultPDnDSupport;
 import edu.udo.piq.components.defaults.DefaultPListModel;
 import edu.udo.piq.components.defaults.ReRenderPFocusObs;
-import edu.udo.piq.components.util.DefaultPAccelerator;
-import edu.udo.piq.components.util.PAccelerator;
 import edu.udo.piq.layouts.PListLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
-import edu.udo.piq.tools.AbstractPInputLayoutOwner;
+import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PiqUtil;
 
-public class PList extends AbstractPInputLayoutOwner implements PDropComponent {
+public class PList extends AbstractPLayoutOwner implements PDropComponent {
 	
 	protected static final PColor BACKGROUND_COLOR = PColor.WHITE;
 	protected static final PColor FOCUS_COLOR = PColor.GREY25;
 	protected static final PColor DROP_HIGHLIGHT_COLOR = PColor.RED;
 	protected static final int DRAG_AND_DROP_DISTANCE = 20;
 	
-	/**
-	 * If the UP key is pressed while all the following conditions are met:
-	 * - the list has focus
-	 * - the list is enabled
-	 * - the model of the list is not null
-	 * - the selection of the list is not null
-	 * - the selection of the list has a previously selected index
-	 * then the selection will be moved up by one index.
-	 * 
-	 * @see #INPUT_ID_MOVE_UP
-	 * @see #REACTION_MOVE_UP
-	 */
-	public static final PAccelerator<PList> INPUT_MOVE_UP = new DefaultPAccelerator<>(ActualKey.UP, PList::isKeyTriggerEnabled);
-	public static final Consumer<PList> REACTION_MOVE_UP = PList::onKeyTriggerUp;
-	public static final String INPUT_ID_MOVE_UP = "moveUp";
+	public static final Predicate<PList> CONDITION_MOVE_SELECTION = self -> self.isEnabled()
+			&& self.getModel() != null
+			&& self.getSelection() != null
+			&& self.getSelection().getLastSelected() != null;
+	public static final PActionKey KEY_NEXT = StandardComponentActionKey.MOVE_NEXT;
+	public static final PAccelerator ACCELERATOR_PRESS_DOWN = new PAccelerator(
+			ActualKey.DOWN, FocusPolicy.THIS_OR_CHILD_HAS_FOCUS, KeyInputType.PRESS);
+	public static final PComponentAction ACTION_PRESS_DOWN = new FocusOwnerAction<>(
+			PList.class, true,
+			ACCELERATOR_PRESS_DOWN,
+			CONDITION_MOVE_SELECTION,
+			self -> self.moveSelectedIndex(1));
 	
-	/**
-	 * If the DOWN key is pressed while all the following conditions are met:
-	 * - the list has focus
-	 * - the list is enabled
-	 * - the model of the list is not null
-	 * - the selection of the list is not null
-	 * - the selection of the list has a previously selected index
-	 * then the selection will be moved down by one index.
-	 * 
-	 * @see #INPUT_ID_MOVE_DOWN
-	 * @see #REACTION_MOVE_DOWN
-	 */
-	public static final PAccelerator<PList> INPUT_MOVE_DOWN = new DefaultPAccelerator<>(ActualKey.DOWN, PList::isKeyTriggerEnabled);
-	public static final Consumer<PList> REACTION_MOVE_DOWN = PList::onKeyTriggerDown;
-	public static final String INPUT_ID_MOVE_DOWN = "moveDown";
-	
-	public static final PAccelerator<PList> INPUT_MOVE_LEFT = new DefaultPAccelerator<>(ActualKey.LEFT, PList::isKeyTriggerEnabled);
-	public static final Consumer<PList> REACTION_MOVE_LEFT = PList::onKeyTriggerUp;
-	public static final String INPUT_ID_MOVE_LEFT = "moveLeft";
-	
-	public static final PAccelerator<PList> INPUT_MOVE_RIGHT = new DefaultPAccelerator<>(ActualKey.RIGHT,
-			PList::isKeyTriggerEnabled);
-	public static final Consumer<PList> REACTION_MOVE_RIGHT = PList::onKeyTriggerDown;
-	public static final String INPUT_ID_MOVE_RIGHT = "moveRight";
-	
-	protected static void onKeyTriggerUp(PList self) {
-		self.moveSelectedIndex(-1);
-	}
-	
-	protected static void onKeyTriggerDown(PList self) {
-		self.moveSelectedIndex(1);
-	}
-	
-	protected static boolean isKeyTriggerEnabled(PList self) {
-		return self.isEnabled() && self.getModel() != null && self.getSelection() != null
-				&& self.getSelection().getLastSelected() != null;
-	}
+	public static final PActionKey KEY_PREV = StandardComponentActionKey.MOVE_PREV;
+	public static final PAccelerator ACCELERATOR_PRESS_UP = new PAccelerator(
+			ActualKey.UP, FocusPolicy.THIS_OR_CHILD_HAS_FOCUS, KeyInputType.PRESS);
+	public static final PComponentAction ACTION_PRESS_UP = new FocusOwnerAction<>(
+			PList.class, true,
+			ACCELERATOR_PRESS_UP,
+			CONDITION_MOVE_SELECTION,
+			self -> self.moveSelectedIndex(-1));
 	
 	protected final ObserverList<PModelObs> modelObsList = PiqUtil.createDefaultObserverList();
 	protected final ObserverList<PSelectionObs> selectionObsList = PiqUtil.createDefaultObserverList();
@@ -103,8 +76,8 @@ public class PList extends AbstractPInputLayoutOwner implements PDropComponent {
 			selectionRemoved((PListIndex) index);
 		}
 		@Override
-		public void onLastSelectedChanged(PSelection selection, 
-				PModelIndex prevLastSelected, PModelIndex newLastSelected) 
+		public void onLastSelectedChanged(PSelection selection,
+				PModelIndex prevLastSelected, PModelIndex newLastSelected)
 		{
 			if (hasFocus()) {
 				fireReRenderEvent();
@@ -137,6 +110,7 @@ public class PList extends AbstractPInputLayoutOwner implements PDropComponent {
 	protected int lastDragX = -1;
 	protected int lastDragY = -1;
 	protected boolean isDragTagged = false;
+	protected boolean enabled = true;
 	
 	public PList(PListModel model) {
 		this();
@@ -168,14 +142,16 @@ public class PList extends AbstractPInputLayoutOwner implements PDropComponent {
 		});
 		addObs(new ReRenderPFocusObs());
 		
-		defineInput(INPUT_ID_MOVE_UP, INPUT_MOVE_UP, REACTION_MOVE_UP);
-		defineInput(INPUT_ID_MOVE_DOWN, INPUT_MOVE_DOWN, REACTION_MOVE_DOWN);
-		defineInput(INPUT_ID_MOVE_LEFT, INPUT_MOVE_LEFT, REACTION_MOVE_LEFT);
-		defineInput(INPUT_ID_MOVE_RIGHT, INPUT_MOVE_RIGHT, REACTION_MOVE_RIGHT);
+		addActionMapping(KEY_NEXT, ACTION_PRESS_DOWN);
+		addActionMapping(KEY_PREV, ACTION_PRESS_UP);
+		addActionMapping(KEY_COPY, ACTION_COPY);
+		addActionMapping(KEY_CUT, ACTION_CUT);
+		addActionMapping(KEY_PASTE, ACTION_PASTE);
+		addActionMapping(KEY_DELETE, ACTION_DELETE);
 	}
 	
 	protected void onMouseButtonTriggred(PMouse mouse, MouseButton btn) {
-		if (btn == MouseButton.LEFT && isMouseOverThisOrChild()) {
+		if (btn == MouseButton.LEFT && isMouseOverThisOrChild(mouse)) {
 			PListIndex index = getIndexAt(mouse.getX(), mouse.getY());
 			if (index != null) {
 				if (mouse.isPressed(VirtualMouseButton.DRAG_AND_DROP)) {
@@ -231,6 +207,7 @@ public class PList extends AbstractPInputLayoutOwner implements PDropComponent {
 		}
 	}
 	
+	@Override
 	protected PListLayout getLayoutInternal() {
 		return (PListLayout) super.getLayout();
 	}
@@ -298,6 +275,19 @@ public class PList extends AbstractPInputLayoutOwner implements PDropComponent {
 	@Override
 	public PListModel getModel() {
 		return model;
+	}
+	
+	@Override
+	public void setEnabled(boolean value) {
+		if (enabled != value) {
+			enabled = value;
+			fireReRenderEvent();
+		}
+	}
+	
+	@Override
+	public boolean isEnabled() {
+		return enabled;
 	}
 	
 	public boolean isSynchronizedWithModel() {

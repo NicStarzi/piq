@@ -2,12 +2,12 @@ package edu.udo.piq.components.util;
 
 import edu.udo.piq.util.ThrowException;
 
-public abstract class PModelEdit {
+public abstract class PEdit {
 	
-	private final PModelHistory history;
+	private final PUndoRedoStack history;
 	private State state;
 	
-	public PModelEdit(PModelHistory history) {
+	public PEdit(PUndoRedoStack history) {
 		ThrowException.ifNull(history, "history == null");
 		this.history = history;
 		state = State.CAN_DO;
@@ -15,11 +15,11 @@ public abstract class PModelEdit {
 	
 	public final void doThis() {
 		ThrowException.ifNotEqual(State.CAN_DO, state, "getState() != CAN_DO");
-		PModelEdit mergeTarget = history.getMergeEdit();
+		PEdit mergeTarget = history.getMergeEdit();
 		if (mergeTarget != null && mergeTarget.tryToMerge(this)) {
 			wasMergedInternal(mergeTarget);
 			history.afterEditWasMerged(mergeTarget, this);
-			state = State.INVALID;
+			state = State.WAS_MERGED;
 		} else {
 			doThisInternal();
 			history.afterEditWasDone(this);
@@ -41,16 +41,16 @@ public abstract class PModelEdit {
 		state = State.CAN_UNDO;
 	}
 	
-	private final boolean tryToMerge(PModelEdit other) {
+	private final boolean tryToMerge(PEdit other) {
 		ThrowException.ifNull(other, "other == null");
 		ThrowException.ifNotEqual(State.CAN_DO, other.state, "other.getState() != CAN_DO");
 		ThrowException.ifTrue(
-				state != State.CAN_REDO && getState() != State.CAN_UNDO, 
+				state != State.CAN_REDO && getState() != State.CAN_UNDO,
 				"getState() != CAN_REDO && getState() != CAN_UNDO");
 		return tryToMergeInternal(other);
 	}
 	
-	protected boolean tryToMergeInternal(PModelEdit other) {
+	protected boolean tryToMergeInternal(PEdit other) {
 		return false;
 	}
 	
@@ -62,7 +62,7 @@ public abstract class PModelEdit {
 		doThisInternal();
 	}
 	
-	protected void wasMergedInternal(PModelEdit combined) {
+	protected void wasMergedInternal(PEdit combined) {
 	}
 	
 	public String getUndoString() {
@@ -81,7 +81,7 @@ public abstract class PModelEdit {
 		CAN_UNDO,
 		CAN_REDO,
 		CAN_DO,
-		INVALID,
+		WAS_MERGED,
 		;
 	}
 	

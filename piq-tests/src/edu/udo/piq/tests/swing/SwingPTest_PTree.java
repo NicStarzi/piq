@@ -4,6 +4,10 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PKeyboard.ActualKey;
+import edu.udo.piq.PMouse;
+import edu.udo.piq.PMouse.MouseButton;
+import edu.udo.piq.PMouseObs;
+import edu.udo.piq.actions.MutableAction;
 import edu.udo.piq.components.PCheckBoxModel;
 import edu.udo.piq.components.PCheckBoxTuple;
 import edu.udo.piq.components.PSingleValueModelObs;
@@ -26,10 +30,9 @@ import edu.udo.piq.components.defaults.PTreePCellComponent;
 import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.components.textbased.PTextField;
 import edu.udo.piq.components.textbased.PTextFieldObs;
-import edu.udo.piq.components.util.DefaultPAccelerator;
 import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PGridLayout;
-import edu.udo.piq.scroll.PScrollPanel;
+import edu.udo.piq.scroll2.PScrollPanel;
 
 public class SwingPTest_PTree extends AbstractSwingPTest {
 	
@@ -98,43 +101,54 @@ public class SwingPTest_PTree extends AbstractSwingPTest {
 	
 	public static class ComplicatedTreeCell extends PTreePCellComponent {
 		
-		private final DefaultPCellComponent labelCell;
-		private final PCellComponentWrapper inputCell;
-		private final PTextField inputText;
+		private final DefaultPCellComponent label;
+		private final PCellComponentWrapper labelWrapper;
+		private final PTextField editor;
 		
 		public ComplicatedTreeCell(PModel model, PModelIndex index) {
-			inputText = new PTextField();
-			labelCell = new DefaultPCellComponent() {
+			editor = new PTextField();
+			label = new DefaultPCellComponent() {
 				@Override
 				public String getText() {
 					return ComplicatedTreeCell.this.getText();
 				}
 			};
-			inputCell = new PCellComponentWrapper(inputText);
-			inputCell.getLayout().setInsets(PInsets.ZERO_INSETS);
-			
-			inputCell.setContentDelegator((comp, element, mdl, idx) -> {
-				inputText.getModel().setValue(element);
+			labelWrapper = new PCellComponentWrapper(editor);
+			labelWrapper.getLayout().setInsets(PInsets.ZERO_INSETS);
+			label.addObs(new PMouseObs() {
+				@Override
+				public void onButtonTriggered(PMouse mouse, MouseButton btn, int clickCount) {
+					if (btn == MouseButton.LEFT && clickCount == 2 && label.isMouseOver(mouse)) {
+						setEditorVisible(true);
+					}
+				}
 			});
-			inputText.addObs((PTextFieldObs) (textField) -> {
+			
+			labelWrapper.setContentDelegator((comp, element, mdl, idx) -> {
+				editor.getModel().setValue(element);
+			});
+			editor.addObs((PTextFieldObs) (textField) -> {
 				PTreeModel modelInner = getElementModel();
 				PTreeIndex indexInner = getElementIndex();
-				modelInner.set(indexInner, inputText.getText());
+				modelInner.set(indexInner, editor.getText());
 				setElement(modelInner, indexInner);
 				setEditorVisible(false);
 			});
-			inputText.addObs(new PFocusObs() {
+			editor.addObs(new PFocusObs() {
 				@Override
 				public void onFocusLost(PComponent oldOwner) {
 					setEditorVisible(false);
 				}
 			});
-			inputText.defineInput("escape", new DefaultPAccelerator<>(ActualKey.ESCAPE), (c) -> {
-				PTree tree = inputText.getFirstAncestorOfType(PTree.class);
+			MutableAction cancelEditAction = new MutableAction();
+			cancelEditAction.setAccelerator(ActualKey.ESCAPE);
+			cancelEditAction.setPerformAction(root -> {
+				PTree tree = editor.getFirstAncestorOfType(PTree.class);
 				setEditorVisible(false);
 				tree.takeFocus();
 			});
-			setSecondComponent(labelCell);
+			editor.addActionMapping("cancelEdit", cancelEditAction);
+			setSecondComponent(label);
 			setElement(model, index);
 		}
 		
@@ -143,9 +157,9 @@ public class SwingPTest_PTree extends AbstractSwingPTest {
 			
 			PCellComponent inner;
 			if (value) {
-				inner = inputCell;
+				inner = labelWrapper;
 			} else {
-				inner = labelCell;
+				inner = label;
 			}
 			if (inner != getSecondComponent()) {
 				PModel model = getElementModel();
@@ -153,16 +167,16 @@ public class SwingPTest_PTree extends AbstractSwingPTest {
 				
 				setSecondComponent(inner);
 				inner.setElement(model, index);
-				inputText.tryToTakeFocus();
-				inputText.getSelection().selectAll(inputText.getModel());
+				editor.tryToTakeFocus();
+				editor.getSelection().selectAll(editor.getModel());
 			}
 		}
 		
-		@Override
-		public void setSelected(boolean value) {
-			setEditorVisible(value);
-			super.setSelected(value);
-		}
+//		@Override
+//		public void setSelected(boolean value) {
+////			setEditorVisible(value);
+//			super.setSelected(value);
+//		}
 		
 		protected String getText() {
 			String txt = getElement() == null ? "null" : getElement().toString();

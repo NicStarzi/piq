@@ -20,11 +20,11 @@ import edu.udo.piq.components.defaults.FixedSizePTableModel;
 import edu.udo.piq.components.defaults.PTablePDnDSupport;
 import edu.udo.piq.components.defaults.ReRenderPFocusObs;
 import edu.udo.piq.layouts.PTableLayout3;
-import edu.udo.piq.tools.AbstractPInputLayoutOwner;
+import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PiqUtil;
 
-public class PTable extends AbstractPInputLayoutOwner
+public class PTable extends AbstractPLayoutOwner
 	implements PDropComponent
 {
 	
@@ -81,6 +81,7 @@ public class PTable extends AbstractPInputLayoutOwner
 	protected int lastDragX = -1;
 	protected int lastDragY = -1;
 	protected boolean isDragTagged = false;
+	protected boolean enabled = true;
 	
 	public PTable(PTableModel model) {
 		this();
@@ -114,7 +115,7 @@ public class PTable extends AbstractPInputLayoutOwner
 	}
 	
 	protected void onMouseButtonTriggred(PMouse mouse, MouseButton btn) {
-		if (btn == MouseButton.LEFT && isMouseOverThisOrChild()) {
+		if (btn == MouseButton.LEFT && isMouseOverThisOrChild(mouse)) {
 			PTableCellIndex index = getIndexAt(mouse.getX(), mouse.getY());
 			if (index != null) {
 				if (mouse.isPressed(VirtualMouseButton.DRAG_AND_DROP)) {
@@ -157,6 +158,7 @@ public class PTable extends AbstractPInputLayoutOwner
 		}
 	}
 	
+	@Override
 	protected PTableLayout3 getLayoutInternal() {
 		return (PTableLayout3) super.getLayout();
 	}
@@ -254,6 +256,19 @@ public class PTable extends AbstractPInputLayoutOwner
 	@Override
 	public PDnDSupport getDragAndDropSupport() {
 		return dndSup;
+	}
+	
+	@Override
+	public void setEnabled(boolean value) {
+		if (enabled != value) {
+			enabled = value;
+			fireReRenderEvent();
+		}
+	}
+	
+	@Override
+	public boolean isEnabled() {
+		return enabled;
 	}
 	
 	//TODO

@@ -6,9 +6,11 @@ import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.function.Predicate;
 
+import edu.udo.piq.actions.PActionKey;
 import edu.udo.piq.actions.PComponentAction;
 import edu.udo.piq.components.containers.PGlassPanel;
 import edu.udo.piq.layouts.PComponentLayoutData;
+import edu.udo.piq.scroll2.PScrollComponent;
 import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.MutablePBounds;
 import edu.udo.piq.util.AncestorIterator;
@@ -235,19 +237,19 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 	 */
 	public void setMouseOverCursor(PCursor cursor);
 	
-	public void addActionMapping(Object actionKey, PComponentAction action);
+	public void addActionMapping(PActionKey actionKey, PComponentAction action);
 	
-	public default void removeActionMapping(Object actionKey) {
+	public default void removeActionMapping(PActionKey actionKey) {
 		addActionMapping(actionKey, null);
 	}
 	
 	public void clearActionMap();
 	
-	public PComponentAction getAction(Object actionKey);
+	public PComponentAction getAction(PActionKey actionKey);
 	
 	public Collection<PComponentAction> getAllActions();
 	
-	public default boolean hasActionForKey(Object actionKey) {
+	public default boolean hasActionForKey(PActionKey actionKey) {
 		return getAction(actionKey) != null;
 	}
 	
@@ -837,6 +839,10 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 		if (mouse == null) {
 			return false;
 		}
+		return isMouseOver(mouse);
+	}
+	
+	public default boolean isMouseOver(PMouse mouse) {
 		PComponent compAtMouse = mouse.getComponentAtMouse();
 		return compAtMouse == this;
 	}
@@ -857,6 +863,10 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 		if (mouse == null) {
 			return false;
 		}
+		return isMouseOverThisOrChild(mouse);
+	}
+	
+	public default boolean isMouseOverThisOrChild(PMouse mouse) {
 		PComponent compAtMouse = mouse.getComponentAtMouse();
 		return compAtMouse != null && (compAtMouse == this
 				|| isAncestorOf(compAtMouse));
@@ -955,6 +965,15 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 		ThrowException.ifNull(root, "getRoot() == null");
 		ThrowException.ifFalse(root.getFocusOwner() == this, "hasFocus() == false");
 		root.setFocusOwner(null);
+	}
+	
+	public default void requestScrollToRect(int x, int y, int fx, int fy) {
+		for (PComponent ancestor : getAncestors()) {
+			if (ancestor instanceof PScrollComponent) {
+				PScrollComponent scrollArea = (PScrollComponent) ancestor;
+				scrollArea.onScrollRequest(x, y, fx, fy);
+			}
+		}
 	}
 	
 }

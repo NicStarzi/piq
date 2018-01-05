@@ -1,37 +1,43 @@
 package edu.udo.piq.components.defaults;
 
+import edu.udo.piq.components.AbstractPSingleValueModel;
 import edu.udo.piq.components.PButtonModel;
-import edu.udo.piq.components.PButtonModelObs;
-import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PiqUtil;
 
-public class DefaultPButtonModel implements PButtonModel {
+public class DefaultPButtonModel extends AbstractPSingleValueModel implements PButtonModel {
 	
-	protected final ObserverList<PButtonModelObs> obsList
-		= PiqUtil.createDefaultObserverList();
-	protected boolean pressed;
+	protected boolean pressed = PButtonModel.DEFAULT_PRESSED_VALUE;
+	protected boolean enabled = PButtonModel.DEFAULT_ENABLED_VALUE;
 	
-	public void setPressed(boolean isPressed) {
-		if (pressed != isPressed) {
-			pressed = isPressed;
-			fireChangeEvent();
+	@Override
+	public void setPressed(boolean trueIfPressed) {
+		if (pressed != trueIfPressed) {
+			Object oldValue = getValue();
+			pressed = trueIfPressed;
+			fireChangeEvent(oldValue);
 		}
 	}
 	
+	@Override
 	public boolean isPressed() {
 		return pressed;
 	}
 	
-	public void addObs(PButtonModelObs obs) {
-		obsList.add(obs);
+	@Override
+	public void setEnabled(boolean trueIfEnabled) {
+		if (enabled != trueIfEnabled) {
+			Object oldValue = getValue();
+			enabled = trueIfEnabled;
+			fireChangeEvent(oldValue);
+		}
 	}
 	
-	public void removeObs(PButtonModelObs obs) {
-		obsList.remove(obs);
+	@Override
+	public boolean isEnabled() {
+		return enabled;
 	}
 	
-	protected void fireChangeEvent() {
-		obsList.fireEvent((obs) -> obs.onChange(this));
+	@Override
+	protected void setValueInternal(Object newValue) {
+		setPressed(newValue == Boolean.TRUE || Boolean.TRUE.equals(newValue));
 	}
-	
 }

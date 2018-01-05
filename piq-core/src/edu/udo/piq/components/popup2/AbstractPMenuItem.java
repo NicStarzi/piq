@@ -3,12 +3,12 @@ package edu.udo.piq.components.popup2;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
+import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PKeyboard.ActualKey;
 import edu.udo.piq.PKeyboard.Key;
 import edu.udo.piq.PKeyboard.Modifier;
@@ -16,51 +16,54 @@ import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
+import edu.udo.piq.actions.AbstractPComponentAction;
 import edu.udo.piq.actions.PAccelerator;
+import edu.udo.piq.actions.PAccelerator.FocusPolicy;
+import edu.udo.piq.actions.PActionKey;
+import edu.udo.piq.actions.PComponentAction;
 import edu.udo.piq.components.PSingleValueModel;
 import edu.udo.piq.components.collections.PColumnIndex;
+import edu.udo.piq.components.textbased.PTextModel;
 import edu.udo.piq.layouts.AlignmentX;
 import edu.udo.piq.layouts.AlignmentY;
 import edu.udo.piq.layouts.PGridLayout.Growth;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
+import edu.udo.piq.tools.AbstractPTextModel;
+import edu.udo.piq.util.Throw;
 import edu.udo.piq.util.ThrowException;
 
 public abstract class AbstractPMenuItem extends AbstractPLayoutOwner {
 	
-	public static final Map<Modifier, String> MODIFIER_NAME_MAP;
-	public static final Map<Key, String> KEY_NAME_MAP;
-	static {
-		Map<Modifier, String> modifierNameMap = new EnumMap<>(Modifier.class);
-		modifierNameMap.put(Modifier.ALT, "Alt");
-		modifierNameMap.put(Modifier.ALT_GRAPH, "AltGr");
-		modifierNameMap.put(Modifier.CAPS, "Shift");
-		modifierNameMap.put(Modifier.COMMAND, "Cmd");
-		modifierNameMap.put(Modifier.CTRL, "Ctrl");
-		modifierNameMap.put(Modifier.SHIFT, "Shift");
-		modifierNameMap.put(Modifier.META, "Meta");
-		MODIFIER_NAME_MAP = Collections.unmodifiableMap(modifierNameMap);
-		
-		Map<Key, String> keyNameMap = new HashMap<>();
-		keyNameMap.put(ActualKey.DELETE, "Del");
-		keyNameMap.put(ActualKey.BACKSPACE, "Backspace");
-		keyNameMap.put(ActualKey.UP, "Up");
-		keyNameMap.put(ActualKey.DOWN, "Down");
-		keyNameMap.put(ActualKey.LEFT, "Left");
-		keyNameMap.put(ActualKey.RIGHT, "Right");
-		keyNameMap.put(ActualKey.ENTER, "Enter");
-		keyNameMap.put(ActualKey.ESCAPE, "Escape");
-		keyNameMap.put(ActualKey.HOME, "Home");
-		keyNameMap.put(ActualKey.SPACE, "Space");
-		keyNameMap.put(ActualKey.TAB, "Tab");
-		KEY_NAME_MAP = Collections.unmodifiableMap(keyNameMap);
-	}
+	public static final PActionKey DEFAULT_ACTION_KEY_ENTER = new PActionKey("PERFORM_ON_ENTER");
 	public static final PColor DEFAULT_HIGHLIGHT_COLOR = PColor.DARK_BLUE;
+	
+	public class ActionTriggerOnEnter extends AbstractPComponentAction implements PComponentAction {
+		
+		{
+			setAccelerator(ActualKey.ENTER, FocusPolicy.THIS_OR_CHILD_HAS_FOCUS);
+		}
+		
+		@Override
+		public boolean isEnabled(PRoot root) {
+			return AbstractPMenuItem.this.isEnabled() && thisOrChildHasFocus();
+		}
+		
+		@Override
+		public void tryToPerform(PRoot root) {
+			if (AbstractPMenuItem.this.isEnabled()) {
+				performAction();
+			}
+		}
+		
+	}
 	
 	protected final Map<MenuEntryPart, PComponent> partsMap = new EnumMap<>(MenuEntryPart.class);
 	protected PMenuIcon compIcon = new PMenuIcon();
 	protected PMenuLabel compLabel = new PMenuLabel();
 	protected PMenuLabel compAccelerator = new PMenuLabel();
 	{
+		addActionMapping(AbstractPMenuItem.DEFAULT_ACTION_KEY_ENTER, new ActionTriggerOnEnter());
+		
 		setLayout(new DelegatedPLayout(this));
 		
 		compIcon.setModel(new OverwritePSingleValueModel.OverwritePPictureModel());
@@ -74,9 +77,12 @@ public abstract class AbstractPMenuItem extends AbstractPLayoutOwner {
 	
 	public abstract boolean isEnabled();
 	
+	protected abstract void performAction();
+	
 	protected void onMouseClick(PMouse mouse, MouseButton btn, int clickCount) {
-		// intentionally left blank.
-		// overwritten by subclasses.
+		if (isEnabled()) {
+			performAction();
+		}
 	}
 	
 	protected void fireActionEvent() {
@@ -177,9 +183,81 @@ public abstract class AbstractPMenuItem extends AbstractPLayoutOwner {
 		PComponent focusOwner = root.getFocusOwner();
 		return focusOwner != null
 				&& focusOwner != container
-				&& (focusOwner == this 
-				|| isAncestorOf(focusOwner) 
+				&& (focusOwner == this
+				|| isAncestorOf(focusOwner)
 				|| isDescendantOf(focusOwner));
+	}
+	
+	public String getDefaultTextForAccelerator(PAccelerator accelerator) {
+		PKeyboard kb = getKeyboard();
+		if (kb == null) {
+			return accelerator.toString();
+		}
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < accelerator.getModifierCount(); i++) {
+			Modifier mod = accelerator.getModifier(i);
+			String modName = kb.getModifierName(mod);
+			sb.append(modName);
+			sb.append('+');
+		}
+		for (int i = 0; i < accelerator.getKeyCount(); i++) {
+			Key key = accelerator.getKey(i);
+			String keyName = kb.getKeyName(key);
+			sb.append(keyName);
+			sb.append('+');
+		}
+		sb.delete(sb.length()-1, sb.length());
+		return sb.toString();
+	}
+	
+	public static void setOverwriteValue(PSingleValueModel model, Object value) {
+		if (model instanceof OverwritePSingleValueModel) {
+			OverwritePSingleValueModel overwriteModel = (OverwritePSingleValueModel) model;
+			overwriteModel.setOverwrite(value);
+		} else {
+			model.setValue(value);
+		}
+	}
+	
+	public class AcceleratorTextModel extends AbstractPTextModel implements PTextModel {
+		
+		protected PAccelerator accelerator;
+		protected String cachedStr = null;
+		
+		@Override
+		public void setValue(Object value) {
+			if (value == null) {
+				super.setValue(null);
+			} else {
+				Throw.ifTypeCastFails(value, PAccelerator.class,
+						() -> "value.getClass()="+value.getClass().getName()+"; value="+value);
+				super.setValue(value);
+			}
+		}
+		
+		@Override
+		protected void setValueInternal(Object newValue) {
+			accelerator = (PAccelerator) newValue;
+			cachedStr = null;
+		}
+		
+		@Override
+		public Object getValue() {
+			return accelerator;
+		}
+		
+		@Override
+		public String getText() {
+			if (cachedStr == null) {
+				if (accelerator == null) {
+					cachedStr = "";
+				} else {
+					cachedStr = getDefaultTextForAccelerator(accelerator);
+				}
+			}
+			return cachedStr;
+		}
+		
 	}
 	
 	public static enum MenuEntryPart {
@@ -219,93 +297,6 @@ public abstract class AbstractPMenuItem extends AbstractPLayoutOwner {
 		
 		public Growth getDefaultColumnGrowth() {
 			return DEFAULT_COLUMN_GROWTH;
-		}
-		
-	}
-	
-	public static void setOverwriteValue(PSingleValueModel model, Object value) {
-		if (model instanceof OverwritePSingleValueModel) {
-			OverwritePSingleValueModel overwriteModel = (OverwritePSingleValueModel) model;
-			overwriteModel.setOverwrite(value);
-		} else {
-			model.setValue(value);
-		}
-	}
-	
-	public static String getDefaultTextForAccelerator(PAccelerator accelerator) {
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < accelerator.getModifierCount(); i++) {
-			Modifier mod = accelerator.getModifier(i);
-			String modName = MODIFIER_NAME_MAP.get(mod);
-			if (modName == null) {
-				modName = mod.toString();
-			}
-			sb.append(modName);
-			sb.append('+');
-		}
-		for (int i = 0; i < accelerator.getKeyCount(); i++) {
-			Key key = accelerator.getKey(i);
-			String keyName = KEY_NAME_MAP.get(key);
-			if (keyName == null) {
-				keyName = key.toString();
-			}
-			sb.append(keyName);
-			sb.append('+');
-		}
-		sb.delete(sb.length()-1, sb.length());
-		return sb.toString();
-	}
-	
-	public static class AcceleratorTextModel extends OverwritePSingleValueModel.OverwritePTextModel {
-		
-		protected PAccelerator accelerator;
-		
-//		@Override
-//		public void clearOverwrite() {
-//			overwriteValue = null;
-//			if (overwriteEnabled) {
-//				overwriteEnabled = false;
-//				cachedStr = null;
-//				fireTextChangeEvent();
-//			}
-//		}
-		
-//		@Override
-//		public void setOverwrite(Object value) {
-//			if (!overwriteEnabled || !Objects.equals(overwriteValue, value)) {
-//				overwriteEnabled = true;
-//				overwriteValue = value;
-//				cachedStr = null;
-//				fireTextChangeEvent();
-//			}
-//		}
-		
-		@Override
-		public void setValue(Object value) {
-			if (accelerator == value) {
-				return;
-			}
-			if (value instanceof PAccelerator) {
-				accelerator = (PAccelerator) value;
-//				cachedStr = null;
-//				fireTextChangeEvent();
-			} else {
-//				cachedStr = value.toString();
-//				fireTextChangeEvent();
-			}
-		}
-		
-//		@Override
-//		protected void refreshCachedStringValue() {
-//			cachedStr = AbstractPMenuItem.getDefaultTextForAccelerator(accelerator);
-//		}
-		
-		@Override
-		public Object getValue() {
-			if (overwriteEnabled) {
-				return overwriteValue;
-			}
-			return accelerator;
 		}
 		
 	}

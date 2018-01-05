@@ -16,22 +16,32 @@ public class HashMapPModel extends AbstractPModel {
 	
 	protected final Map<PHashIndex, Object> hashMap = new HashMap<>();
 	
+	@Override
+	public int getSize() {
+		return hashMap.size();
+	}
+	
+	@Override
 	public boolean canSet(PModelIndex index, Object content) {
 		return canAdd(index, content);
 	}
 	
+	@Override
 	public void set(PModelIndex index, Object content) {
 		add(index, content);
 	}
 	
+	@Override
 	public Object get(PModelIndex index) throws WrongIndexType, NullPointerException, IllegalIndex {
 		return hashMap.get(index);
 	}
 	
+	@Override
 	public boolean contains(PModelIndex index) throws WrongIndexType, NullPointerException {
 		return hashMap.containsKey(index);
 	}
 	
+	@Override
 	public PModelIndex getIndexOf(Object content) {
 		ThrowException.ifNull(content, "content == null");
 		for (Entry<PHashIndex, Object> e : hashMap.entrySet()) {
@@ -42,10 +52,12 @@ public class HashMapPModel extends AbstractPModel {
 		return null;
 	}
 	
+	@Override
 	public boolean canAdd(PModelIndex index, Object content) throws WrongIndexType, NullPointerException {
 		return index != null && index instanceof PHashIndex;
 	}
 	
+	@Override
 	public void add(PModelIndex index, Object content) throws WrongIndexType, NullPointerException, AddImpossible {
 		ThrowException.ifNull(index, "index == null");
 		ThrowException.ifNull(content, "content == null");
@@ -58,10 +70,12 @@ public class HashMapPModel extends AbstractPModel {
 		}
 	}
 	
+	@Override
 	public boolean canRemove(PModelIndex index) throws WrongIndexType, NullPointerException {
 		return index != null && index instanceof PHashIndex && contains(index);
 	}
 	
+	@Override
 	public void remove(PModelIndex index) throws WrongIndexType, NullPointerException, RemoveImpossible {
 		ThrowException.ifNull(index, "index == null");
 		ThrowException.ifFalse(canRemove(index), "canRemove(index) == false");
@@ -69,12 +83,15 @@ public class HashMapPModel extends AbstractPModel {
 		fireRemoveEvent(index, content);
 	}
 	
+	@Override
 	public Iterator<PModelIndex> iterator() {
 		Iterator<PHashIndex> hashIter = hashMap.keySet().iterator();
 		return new Iterator<PModelIndex>() {
+			@Override
 			public PModelIndex next() {
 				return hashIter.next();
 			}
+			@Override
 			public boolean hasNext() {
 				return hashIter.hasNext();
 			}
@@ -89,10 +106,12 @@ public class HashMapPModel extends AbstractPModel {
 			this.key = key;
 		}
 		
+		@Override
 		public int hashCode() {
 			return key.hashCode();
 		}
 		
+		@Override
 		public boolean equals(Object other) {
 			if (other == null || !(other instanceof PHashIndex)) {
 				return false;

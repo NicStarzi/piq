@@ -103,6 +103,7 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 		return false;
 	}
 
+	@Override
 	protected PSplitLayout getLayoutInternal() {
 		return (PSplitLayout) super.getLayout();
 	}
@@ -213,7 +214,7 @@ public class PSplitPanel extends AbstractPLayoutOwner {
 	}
 
 	protected void onMouseButtonTriggered(PMouse mouse, MouseButton btn) {
-		if (!pressed && btn == MouseButton.LEFT && divider.isMouseOver()) {
+		if (!pressed && btn == MouseButton.LEFT && divider.isMouseOver(mouse)) {
 			pressed = true;
 			fireDividerTouchedEvent();
 		}

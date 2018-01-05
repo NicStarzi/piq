@@ -2,35 +2,36 @@ package edu.udo.piq.components.popup2;
 
 import edu.udo.piq.PRoot;
 import edu.udo.piq.actions.PAccelerator;
+import edu.udo.piq.actions.PActionKey;
 import edu.udo.piq.actions.PComponentAction;
 
 public class ImmutablePActionIndicator implements PComponentActionIndicator {
 	
-	protected final Object actKey;
+	protected final PActionKey actKey;
 	protected final Object iconValEnabled;
 	protected final Object iconValDisabled;
 	protected final Object labelValEnabled;
 	protected final Object labelValDisabled;
 	protected final PAccelerator defaultAccel;
 	
-	public ImmutablePActionIndicator(Object actionKey, Object labelValue) {
+	public ImmutablePActionIndicator(PActionKey actionKey, Object labelValue) {
 		this(actionKey, labelValue, labelValue, null, null, null);
 	}
 	
-	public ImmutablePActionIndicator(Object actionKey, Object labelValue, Object iconValue) {
+	public ImmutablePActionIndicator(PActionKey actionKey, Object labelValue, Object iconValue) {
 		this(actionKey, labelValue, labelValue, iconValue, iconValue, null);
 	}
 	
-	public ImmutablePActionIndicator(Object actionKey, 
-			Object labelValue, Object iconValue, PAccelerator accelerator) 
+	public ImmutablePActionIndicator(PActionKey actionKey,
+			Object labelValue, Object iconValue, PAccelerator accelerator)
 	{
 		this(actionKey, labelValue, labelValue, iconValue, iconValue, accelerator);
 	}
 	
-	public ImmutablePActionIndicator(Object actionKey, 
-			Object labelValueEnabled, Object labelValueDisabled, 
-			Object iconValueEnabled, Object iconValueDisabled, 
-			PAccelerator accelerator) 
+	public ImmutablePActionIndicator(PActionKey actionKey,
+			Object labelValueEnabled, Object labelValueDisabled,
+			Object iconValueEnabled, Object iconValueDisabled,
+			PAccelerator accelerator)
 	{
 		actKey = actionKey;
 		iconValEnabled = iconValueEnabled;
@@ -41,7 +42,7 @@ public class ImmutablePActionIndicator implements PComponentActionIndicator {
 	}
 	
 	@Override
-	public Object getActionKey() {
+	public PActionKey getActionKey() {
 		return actKey;
 	}
 	

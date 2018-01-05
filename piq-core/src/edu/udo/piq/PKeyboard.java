@@ -71,6 +71,9 @@ public interface PKeyboard {
 	}
 	
 	public default boolean isPressed(Key key) {
+		if (key instanceof ActualKey) {
+			return isPressed((ActualKey) key);
+		}
 		if (!(key instanceof VirtualKey)) {
 			return false;
 		}
@@ -102,6 +105,9 @@ public interface PKeyboard {
 	}
 	
 	public default boolean isReleased(Key key) {
+		if (key instanceof ActualKey) {
+			return isReleased((ActualKey) key);
+		}
 		if (!(key instanceof VirtualKey)) {
 			return false;
 		}
@@ -133,6 +139,9 @@ public interface PKeyboard {
 	}
 	
 	public default boolean isTriggered(Key key) {
+		if (key instanceof ActualKey) {
+			return isTriggered((ActualKey) key);
+		}
 		if (!(key instanceof VirtualKey)) {
 			return false;
 		}
@@ -164,6 +173,14 @@ public interface PKeyboard {
 		}
 	}
 	
+	public default String getKeyName(Key key) {
+		return key.getSymbolicName();
+	}
+	
+	public default String getModifierName(Modifier mod) {
+		return mod.name();
+	}
+	
 	/**
 	 * Returns true if the given modifier is currently toggled.<br>
 	 * 
@@ -179,7 +196,7 @@ public interface PKeyboard {
 	public void removeObs(PKeyboardObs obs);
 	
 	public static interface Key {
-		public String getName();
+		public String getSymbolicName();
 	}
 	/**
 	 * An enumeration of all Keyboard keys that are supported by
@@ -209,7 +226,8 @@ public interface PKeyboard {
 		
 		public final int ID = ordinal();
 		
-		public String getName() {
+		@Override
+		public String getSymbolicName() {
 			return name();
 		}
 	}
@@ -266,7 +284,8 @@ public interface PKeyboard {
 		
 		public final int ID = ordinal();
 		
-		public String getName() {
+		@Override
+		public String getSymbolicName() {
 			return name();
 		}
 	}

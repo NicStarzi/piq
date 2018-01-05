@@ -24,7 +24,7 @@ import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PiqUtil;
 
 public abstract class AbstractPTextComponent
-	extends AbstractPInputComponent
+	extends AbstractPComponent
 	implements PTextComponent
 {
 	
@@ -32,6 +32,23 @@ public abstract class AbstractPTextComponent
 	public static final PColor DEFAULT_TEXT_UNSELECTED_COLOR = PColor.BLACK;
 	public static final PColor DEFAULT_TEXT_SELECTED_COLOR = PColor.WHITE;
 	public static final PColor DEFAULT_SELECTION_BACKGROUND_COLOR = PColor.BLUE;
+	
+	{
+		addActionMapping(PTextInput.KEY_COPY,		PTextInput.ACTION_COPY);
+		addActionMapping(PTextInput.KEY_CUT,		PTextInput.ACTION_CUT);
+		addActionMapping(PTextInput.KEY_PASTE,		PTextInput.ACTION_PASTE);
+		addActionMapping(PTextInput.KEY_DELETE,		PTextInput.ACTION_DELETE);
+		addActionMapping(PTextInput.KEY_BACKSPACE,	PTextInput.ACTION_BACKSPACE);
+		addActionMapping(PTextInput.KEY_HOME,		PTextInput.ACTION_HOME);
+		addActionMapping(PTextInput.KEY_END,		PTextInput.ACTION_END);
+		addActionMapping(PTextInput.KEY_MOVE_LEFT,	PTextInput.ACTION_MOVE_LEFT);
+		addActionMapping(PTextInput.KEY_MOVE_RIGHT,	PTextInput.ACTION_MOVE_RIGHT);
+		addActionMapping(PTextInput.KEY_MOVE_DOWN,	PTextInput.ACTION_MOVE_DOWN);
+		addActionMapping(PTextInput.KEY_MOVE_UP,	PTextInput.ACTION_MOVE_UP);
+		addActionMapping(PTextInput.KEY_PAGE_DOWN,	PTextInput.ACTION_PAGE_DOWN);
+		addActionMapping(PTextInput.KEY_PAGE_UP,	PTextInput.ACTION_PAGE_UP);
+		addActionMapping(PTextInput.KEY_SELECT_ALL,	PTextInput.ACTION_SELECT_ALL);
+	}
 	
 	protected final ObserverList<PSingleValueModelObs> modelObsList
 		= PiqUtil.createDefaultObserverList();
@@ -52,6 +69,7 @@ public abstract class AbstractPTextComponent
 	protected PTextModel model;
 	protected PTextSelection selection;
 	protected boolean editable = true;
+	protected boolean enabled = true;
 	
 	public AbstractPTextComponent() {
 		setModel(PModelFactory.createModelFor(this, DefaultPTextModel::new, PTextModel.class));
@@ -141,6 +159,18 @@ public abstract class AbstractPTextComponent
 	
 	protected void setEditable(boolean isEditable) {
 		editable = isEditable;
+	}
+	
+	public void setEnabled(boolean isEnabled) {
+		if (enabled != isEnabled) {
+			enabled = isEnabled;
+			fireReRenderEvent();
+		}
+	}
+	
+	@Override
+	public boolean isEnabled() {
+		return enabled;
 	}
 	
 	@Override

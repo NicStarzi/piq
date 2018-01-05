@@ -3,34 +3,34 @@ package edu.udo.piq.components;
 import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.layouts.PTupleLayout;
 import edu.udo.piq.layouts.PTupleLayout.Constraint;
-import edu.udo.piq.tools.AbstractPInputLayoutOwner;
+import edu.udo.piq.tools.AbstractPLayoutOwner;
 
-public class PIconLabel extends AbstractPInputLayoutOwner {
+public class PLabeledPicture extends AbstractPLayoutOwner {
 	
-	public PIconLabel() {
+	public PLabeledPicture() {
 		this(null, null);
 	}
 	
-	public PIconLabel(Object labelValue) {
+	public PLabeledPicture(Object labelValue) {
 		this(null, labelValue);
 	}
 	
-	public PIconLabel(Object iconID, Object labelValue) {
+	public PLabeledPicture(Object iconID, Object labelValue) {
 		super();
 		setLayout(new PTupleLayout(this));
 		getLayoutInternal().addChild(new PPicture(iconID), Constraint.FIRST);
 		getLayoutInternal().addChild(new PLabel(labelValue), Constraint.SECOND);
 	}
 	
-	public PIconLabel(PLabel label) {
+	public PLabeledPicture(PLabel label) {
 		this(new PPicture(), label);
 	}
 	
-	public PIconLabel(PPicture picture) {
+	public PLabeledPicture(PPicture picture) {
 		this(picture, new PLabel());
 	}
 	
-	public PIconLabel(PPicture picture, PLabel label) {
+	public PLabeledPicture(PPicture picture, PLabel label) {
 		super();
 		setLayout(new PTupleLayout(this));
 		getLayoutInternal().addChild(picture, Constraint.FIRST);
@@ -47,6 +47,7 @@ public class PIconLabel extends AbstractPInputLayoutOwner {
 		}
 	}
 	
+	@Override
 	protected PTupleLayout getLayoutInternal() {
 		return (PTupleLayout) super.getLayout();
 	}
@@ -59,6 +60,7 @@ public class PIconLabel extends AbstractPInputLayoutOwner {
 		return (PLabel) getLayoutInternal().getSecond();
 	}
 	
+	@Override
 	public boolean defaultFillsAllPixels() {
 		return false;
 	}

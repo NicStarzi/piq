@@ -1,6 +1,5 @@
 package edu.udo.piq.components.containers;
 
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import edu.udo.piq.PComponent;
@@ -11,6 +10,14 @@ import edu.udo.piq.PKeyboardObs;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PRenderer;
+import edu.udo.piq.actions.FocusOwnerAction;
+import edu.udo.piq.actions.PAccelerator;
+import edu.udo.piq.actions.PAccelerator.FocusPolicy;
+import edu.udo.piq.actions.PAccelerator.KeyInputType;
+import edu.udo.piq.actions.PActionKey;
+import edu.udo.piq.actions.PComponentAction;
+import edu.udo.piq.actions.StandardComponentActionKey;
+import edu.udo.piq.components.PSingleValueModel;
 import edu.udo.piq.components.collections.PList;
 import edu.udo.piq.components.collections.PListIndex;
 import edu.udo.piq.components.collections.PListModel;
@@ -22,10 +29,6 @@ import edu.udo.piq.components.collections.PSelection;
 import edu.udo.piq.components.collections.PSelectionObs;
 import edu.udo.piq.components.textbased.PTextField;
 import edu.udo.piq.components.textbased.PTextFieldObs;
-import edu.udo.piq.components.util.DefaultPAccelerator;
-import edu.udo.piq.components.util.PAccelerator;
-import edu.udo.piq.components.util.PAccelerator.FocusPolicy;
-import edu.udo.piq.components.util.PAccelerator.KeyInputType;
 import edu.udo.piq.util.AncestorIterator;
 import edu.udo.piq.util.ThrowException;
 
@@ -47,31 +50,14 @@ public class PComboBox extends PDropDown {
 				+PComboBox.class.getSimpleName());
 	}
 	
-	/**
-	 * Used for {@link #INPUT_PRESS_DOWN}.
-	 */
-	public static final String INPUT_IDENTIFIER_PRESS_DOWN = "pressDown";
-	/**
-	 * If the DOWN key is pressed while all the following conditions are met:
-	 *  - the combo box or a descendant of the combo box has focus
-	 *  - the combo box is enabled
-	 *  - the body of the combo box is not shown
-	 * then the body will become visible.
-	 * @see #INPUT_IDENTIFIER_PRESS_DOWN
-	 * @see #REACTION_PRESS_DOWN
-	 * @see #getComboBox(PComponent)
-	 * @see #showDropDown()
-	 */
-	public static final PAccelerator<PComboBox> INPUT_PRESS_DOWN = new DefaultPAccelerator<>(
-			FocusPolicy.THIS_OR_CHILD_HAS_FOCUS, KeyInputType.TRIGGER, ActualKey.DOWN,
-		(self) -> self.isEnabled() && !self.isBodyVisible());
-	/**
-	 * Shows the drop down body of the combo box.
-	 * @see #INPUT_PRESS_DOWN
-	 * @see #getComboBox(PComponent)
-	 * @see #showDropDown()
-	 */
-	public static final Consumer<PComboBox> REACTION_PRESS_DOWN = self -> self.showDropDown();
+	public static final PActionKey KEY_OPEN = StandardComponentActionKey.INTERACT;
+	public static final PAccelerator ACCELERATOR_OPEN = new PAccelerator(
+			ActualKey.DOWN, FocusPolicy.THIS_OR_CHILD_HAS_FOCUS, KeyInputType.TRIGGER);
+	public static final PComponentAction ACTION_OPEN = new FocusOwnerAction<>(
+			PComboBox.class, false,
+			ACCELERATOR_OPEN,
+			self -> self.isEnabled() && !self.isBodyVisible(),
+			self -> self.showDropDown());
 	
 	protected final PSelectionObs listSelectObs = new PSelectionObs() {
 		@Override
@@ -131,6 +117,8 @@ public class PComboBox extends PDropDown {
 				PComboBox.this.onKeyTriggered(keyboard, key);
 			}
 		});
+		
+		addActionMapping(KEY_OPEN, ACTION_OPEN);
 	}
 	
 	@Override
@@ -144,13 +132,13 @@ public class PComboBox extends PDropDown {
 		super.setPreview(textField);
 		if (getTextField() != null) {
 			getTextField().removeObs(txtFieldObs);
-			getTextField().undefine(INPUT_IDENTIFIER_PRESS_DOWN);
+//			getTextField().undefine(INPUT_IDENTIFIER_PRESS_DOWN);
 		}
 		txtField = textField;
 		if (getTextField() != null) {
 			getTextField().addObs(txtFieldObs);
-			getTextField().defineInput(INPUT_IDENTIFIER_PRESS_DOWN,
-					INPUT_PRESS_DOWN, REACTION_PRESS_DOWN);
+//			getTextField().defineInput(INPUT_IDENTIFIER_PRESS_DOWN,
+//					INPUT_PRESS_DOWN, REACTION_PRESS_DOWN);
 		}
 	}
 	
@@ -307,7 +295,7 @@ public class PComboBox extends PDropDown {
 	}
 	
 	@Override
-	protected void onModelChange() {
+	protected void onModelChange(PSingleValueModel model, Object oldValue, Object newValue) {
 	}
 	
 	@Override
@@ -325,10 +313,10 @@ public class PComboBox extends PDropDown {
 		super.showDropDown();
 	}
 	
-	@Override
-	protected void hideDropDown() {
-		super.hideDropDown();
-	}
+//	@Override
+//	protected void hideDropDown() {
+//		super.hideDropDown();
+//	}
 	
 	protected void hideDropDownAndReset() {
 		hideDropDown();

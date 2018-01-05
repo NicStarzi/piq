@@ -30,6 +30,7 @@ import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PStyleSheet;
 import edu.udo.piq.components.textbased.PTextArea;
+import edu.udo.piq.swing.util.SwingImageUtil;
 import edu.udo.piq.tools.AbstractPRoot;
 import edu.udo.piq.util.SoftReferenceCache;
 import edu.udo.piq.util.ThrowException;
@@ -193,7 +194,11 @@ public class SwingPRoot extends AbstractPRoot implements PRoot {
 			BufferedImage bufImg = null;
 			try {
 				bufImg = ImageIO.read(new File(imgPath));
+				// Might improve performance of painting. Profiling required!
+				bufImg = SwingImageUtil.createAcceleratedImgCopy(bufImg);
 			} catch (IOException e) {
+				System.err.print(e.getClass().getName());
+				System.err.print(": ");
 				System.err.println(e.getMessage());
 //				e.printStackTrace();
 			}

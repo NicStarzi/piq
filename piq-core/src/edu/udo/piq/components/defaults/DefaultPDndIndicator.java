@@ -2,8 +2,8 @@ package edu.udo.piq.components.defaults;
 
 import java.util.Objects;
 
-import edu.udo.piq.PDnDIndicator;
 import edu.udo.piq.components.PPicture;
+import edu.udo.piq.dnd.PDnDIndicator;
 import edu.udo.piq.layouts.AlignmentX;
 import edu.udo.piq.layouts.AlignmentY;
 

@@ -15,29 +15,28 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PClipboard;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PComponentObs;
-import edu.udo.piq.PDnDManager;
 import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PFocusTraversal;
 import edu.udo.piq.PFontResource.Style;
-import edu.udo.piq.PGlobalEventObs;
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PKeyboardObs;
-import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouseObs;
-import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PRootObs;
 import edu.udo.piq.PRootOverlay;
-import edu.udo.piq.PStyleSheet;
 import edu.udo.piq.PTimer;
 import edu.udo.piq.components.containers.DefaultPRootOverlay;
 import edu.udo.piq.components.containers.PPanel;
+import edu.udo.piq.dnd.PDnDManager;
 import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PComponentLayoutData;
+import edu.udo.piq.layouts.PLayoutObs;
+import edu.udo.piq.layouts.PReadOnlyLayout;
 import edu.udo.piq.layouts.PRootLayout;
 import edu.udo.piq.layouts.PRootLayout.Constraint;
+import edu.udo.piq.style.PStyleSheet;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PiqUtil;
 import edu.udo.piq.util.Throw;
@@ -58,7 +57,6 @@ public abstract class AbstractPRoot implements PRoot {
 		return depth1 - depth2;
 	};
 	
-	protected final ObserverList<PGlobalEventObs> globalObsList = PiqUtil.createDefaultObserverList();
 	protected final ObserverList<PRootObs> rootObsList = PiqUtil.createDefaultObserverList();
 	protected final PRootLayout layout;
 	protected PStyleSheet styleSheet = new AbstractPStyleSheet();
@@ -600,21 +598,6 @@ public abstract class AbstractPRoot implements PRoot {
 	
 	protected void fireFocusLostEvent(PComponent oldFocusOwner) {
 		focusObsList.fireEvent((obs) -> obs.onFocusLost(oldFocusOwner));
-	}
-	
-	@Override
-	public void fireGlobalEvent(PComponent source, Object eventData) throws NullPointerException {
-		globalObsList.fireEvent((obs) -> obs.onGlobalEvent(source, eventData));
-	}
-	
-	@Override
-	public void addObs(PGlobalEventObs obs) {
-		globalObsList.add(obs);
-	}
-	
-	@Override
-	public void removeObs(PGlobalEventObs obs) {
-		globalObsList.remove(obs);
 	}
 	
 	@Override

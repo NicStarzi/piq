@@ -5,7 +5,6 @@ import edu.udo.piq.PClipboard;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PCursor;
 import edu.udo.piq.PDialog;
-import edu.udo.piq.PDnDManager;
 import edu.udo.piq.PFontResource;
 import edu.udo.piq.PImageMeta;
 import edu.udo.piq.PImageResource;
@@ -13,7 +12,8 @@ import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
-import edu.udo.piq.PStyleSheet;
+import edu.udo.piq.dnd.PDnDManager;
+import edu.udo.piq.style.PStyleSheet;
 
 public class DelegatePRoot extends AbstractPRoot implements PRoot {
 	

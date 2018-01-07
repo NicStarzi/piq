@@ -1,5 +1,7 @@
 package edu.udo.piq;
 
+import edu.udo.piq.style.PStyleSheet;
+
 public interface PRootObs {
 	
 	public default void onComponentAddedToGui(PComponent addedComponent) {}

@@ -2,9 +2,6 @@ package edu.udo.piq.components;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
-import edu.udo.piq.PGlobalEventGenerator;
-import edu.udo.piq.PGlobalEventProvider;
-import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
@@ -14,9 +11,10 @@ import edu.udo.piq.components.defaults.DefaultPCheckBoxModel;
 import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.util.ObserverList;
+import edu.udo.piq.util.PModelFactory;
 import edu.udo.piq.util.PiqUtil;
 
-public class PCheckBox extends AbstractPComponent implements PClickable, PGlobalEventGenerator {
+public class PCheckBox extends AbstractPComponent implements PClickable {
 	
 	private static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(12, 12);
 	
@@ -32,22 +30,11 @@ public class PCheckBox extends AbstractPComponent implements PClickable, PGlobal
 	};
 	protected final PSingleValueModelObs modelObs = this::onModelChange;
 	protected PCheckBoxModel model;
-	protected PGlobalEventProvider globEvProv;
 	
 	public PCheckBox() {
 		super();
 		setModel(PModelFactory.createModelFor(this, DefaultPCheckBoxModel::new, PCheckBoxModel.class));
 		addObs(mouseObs);
-	}
-	
-	@Override
-	public void setGlobalEventProvider(PGlobalEventProvider provider) {
-		globEvProv = provider;
-	}
-	
-	@Override
-	public PGlobalEventProvider getGlobalEventProvider() {
-		return globEvProv;
 	}
 	
 	public void setModel(PCheckBoxModel model) {
@@ -130,10 +117,12 @@ public class PCheckBox extends AbstractPComponent implements PClickable, PGlobal
 		return DEFAULT_PREFERRED_SIZE;
 	}
 	
+	@Override
 	public void addObs(PClickObs obs) {
 		obsList.add(obs);
 	}
 	
+	@Override
 	public void removeObs(PClickObs obs) {
 		obsList.remove(obs);
 	}
@@ -154,11 +143,9 @@ public class PCheckBox extends AbstractPComponent implements PClickable, PGlobal
 	
 	protected void fireClickEvent() {
 		obsList.fireEvent((obs) -> obs.onClick(this));
-		fireGlobalEvent();
 	}
 	
 	protected void onModelChange(PSingleValueModel model, Object oldValue, Object newValue) {
-		fireGlobalEvent();
 		firePreferredSizeChangedEvent();
 		fireReRenderEvent();
 	}

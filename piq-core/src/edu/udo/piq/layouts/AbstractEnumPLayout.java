@@ -1,7 +1,6 @@
 package edu.udo.piq.layouts;
 
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PLayout;
 
 public abstract class AbstractEnumPLayout<K extends Enum<K>> extends AbstractArrayPLayout implements PLayout {
 	

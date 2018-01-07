@@ -7,12 +7,12 @@ import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
 
-import edu.udo.piq.PDnDSupport;
 import edu.udo.piq.components.collections.PDropComponent;
 import edu.udo.piq.components.collections.PModel;
 import edu.udo.piq.components.collections.PModelIndex;
 import edu.udo.piq.components.collections.PTreeIndex;
 import edu.udo.piq.components.collections.PTreeModel;
+import edu.udo.piq.dnd.PDnDSupport;
 
 public class PTreePDnDSupport extends DefaultPDnDSupport implements PDnDSupport {
 	

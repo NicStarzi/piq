@@ -5,7 +5,6 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-import edu.udo.piq.PModelFactory;
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PClickObs;
 import edu.udo.piq.components.collections.PList;
@@ -17,6 +16,7 @@ import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PListLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
 import edu.udo.piq.tools.AbstractPTextModel;
+import edu.udo.piq.util.PModelFactory;
 
 public class SwingPTest_Translation extends AbstractSwingPTest {
 	

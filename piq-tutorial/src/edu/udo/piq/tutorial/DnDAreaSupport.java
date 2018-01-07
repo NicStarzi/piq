@@ -2,12 +2,12 @@ package edu.udo.piq.tutorial;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PDnDIndicator;
-import edu.udo.piq.PDnDManager;
-import edu.udo.piq.PDnDSupport;
-import edu.udo.piq.PDnDTransfer;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.collections.PModel;
+import edu.udo.piq.dnd.PDnDIndicator;
+import edu.udo.piq.dnd.PDnDManager;
+import edu.udo.piq.dnd.PDnDSupport;
+import edu.udo.piq.dnd.PDnDTransfer;
 import edu.udo.piq.layouts.PFreeLayout.FreeConstraint;
 import edu.udo.piq.tools.ImmutablePDnDTransfer;
 import edu.udo.piq.tools.SingletonPModel;

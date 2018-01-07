@@ -5,7 +5,6 @@ import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PFontResource;
 import edu.udo.piq.PInsets;
-import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
@@ -16,6 +15,7 @@ import edu.udo.piq.components.textbased.PTextModel;
 import edu.udo.piq.components.util.SymbolicFontKey;
 import edu.udo.piq.tools.AbstractPBorder;
 import edu.udo.piq.tools.MutablePInsets;
+import edu.udo.piq.util.PModelFactory;
 
 public class PTitleBorder extends AbstractPBorder {
 	

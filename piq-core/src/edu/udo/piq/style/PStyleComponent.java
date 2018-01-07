@@ -1,8 +1,19 @@
-package edu.udo.piq;
+package edu.udo.piq.style;
+
+import edu.udo.piq.PBorder;
+import edu.udo.piq.PComponent;
+import edu.udo.piq.PRenderer;
+import edu.udo.piq.PSize;
+import edu.udo.piq.layouts.PReadOnlyLayout;
 
 public interface PStyleComponent {
 	
-	public static final PStyleComponent DEFAULT_COMPONENT_STYLE = new PStyleComponent() {};
+	public static final PStyleComponent DEFAULT_COMPONENT_STYLE = new PStyleComponent() {
+		@Override
+		public void addObs(PStyleObs obs) {}
+		@Override
+		public void removeObs(PStyleObs obs) {}
+	};
 	
 	public default boolean fillsAllPixels(PComponent component) {
 		return component.defaultFillsAllPixels();
@@ -23,5 +34,9 @@ public interface PStyleComponent {
 	public default PStyleLayout getLayoutStyle(PComponent component, PReadOnlyLayout layout) {
 		return PStyleLayout.DEFAULT_LAYOUT_STYLE;
 	}
+	
+	public void addObs(PStyleObs obs);
+	
+	public void removeObs(PStyleObs obs);
 	
 }

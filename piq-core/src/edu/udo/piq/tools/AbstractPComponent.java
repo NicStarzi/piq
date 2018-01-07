@@ -4,35 +4,35 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 
-import edu.udo.piq.DefaultPLayoutPreference;
 import edu.udo.piq.PBorder;
 import edu.udo.piq.PBorderObs;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PComponentObs;
 import edu.udo.piq.PCursor;
-import edu.udo.piq.PDnDSupport;
 import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PFocusTraversal;
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PKeyboard.ActualKey;
 import edu.udo.piq.PKeyboard.Modifier;
 import edu.udo.piq.PKeyboardObs;
-import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
-import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
-import edu.udo.piq.PStyleBorder;
-import edu.udo.piq.PStyleComponent;
-import edu.udo.piq.PStyleLayout;
 import edu.udo.piq.actions.PActionKey;
 import edu.udo.piq.actions.PComponentAction;
 import edu.udo.piq.actions.PComponentActionMap;
+import edu.udo.piq.dnd.PDnDSupport;
+import edu.udo.piq.layouts.DefaultPLayoutPreference;
 import edu.udo.piq.layouts.PComponentLayoutData;
+import edu.udo.piq.layouts.PLayoutObs;
+import edu.udo.piq.layouts.PReadOnlyLayout;
+import edu.udo.piq.style.PStyleBorder;
+import edu.udo.piq.style.PStyleComponent;
+import edu.udo.piq.style.PStyleLayout;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PiqUtil;
 import edu.udo.piq.util.ThrowException;
@@ -263,10 +263,10 @@ public class AbstractPComponent implements PComponent {
 	}
 	
 	@Override
-	public void setStyle(PStyleComponent style) {
+	public void setStyleFromSheet(PStyleComponent style) {
 		if (!Objects.equals(sheetStyle, style)) {
 			sheetStyle = style;
-			if (getStyle() == sheetStyle) {
+			if (getStyleFromSheet() == sheetStyle) {
 				firePreferredSizeChangedEvent();
 				fireReRenderEvent();
 				refreshBorderAndLayoutStyle();
@@ -275,7 +275,7 @@ public class AbstractPComponent implements PComponent {
 	}
 	
 	@Override
-	public PStyleComponent getStyle() {
+	public PStyleComponent getStyleFromSheet() {
 		if (customStyle != null) {
 			return customStyle;
 		}
@@ -283,24 +283,24 @@ public class AbstractPComponent implements PComponent {
 	}
 	
 	protected void refreshBorderAndLayoutStyle() {
-		PStyleComponent style = getStyle();
+		PStyleComponent style = getStyleFromSheet();
 		
 		PBorder border = getBorder();
 		if (border != null) {
 			if (style == null) {
-				border.setStyle(null);
+				border.setStyleFromSheet(null);
 			} else {
 				PStyleBorder borderStyle = style.getBorderStyle(this, border);
-				border.setStyle(borderStyle);
+				border.setStyleFromSheet(borderStyle);
 			}
 		}
 		PReadOnlyLayout layout = getLayout();
 		if (layout != null) {
 			if (style == null) {
-				layout.setStyle(null);
+				layout.setStyleFromSheet(null);
 			} else {
 				PStyleLayout layoutStyle = style.getLayoutStyle(this, layout);
-				layout.setStyle(layoutStyle);
+				layout.setStyleFromSheet(layoutStyle);
 			}
 		}
 	}

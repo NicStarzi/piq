@@ -2,7 +2,7 @@ package edu.udo.piq.components.collections;
 
 import java.util.List;
 
-import edu.udo.piq.PDnDTransfer;
+import edu.udo.piq.dnd.PDnDTransfer;
 
 public interface PModelExport {
 	

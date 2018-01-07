@@ -1,5 +1,6 @@
-package edu.udo.piq;
+package edu.udo.piq.dnd;
 
+import edu.udo.piq.PComponent;
 import edu.udo.piq.components.collections.PList;
 import edu.udo.piq.components.collections.PTable;
 import edu.udo.piq.components.collections.PTree;

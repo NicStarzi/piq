@@ -10,8 +10,8 @@ import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
-import edu.udo.piq.PStyleComponent;
 import edu.udo.piq.components.textbased.PLabel;
+import edu.udo.piq.style.PStyleComponent;
 import edu.udo.piq.tools.AbstractPRoot.FontInfo;
 import edu.udo.piq.util.ThrowException;
 

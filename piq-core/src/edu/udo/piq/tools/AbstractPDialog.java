@@ -1,16 +1,14 @@
 package edu.udo.piq.tools;
 
-import edu.udo.piq.PComponent;
 import edu.udo.piq.PCursor;
 import edu.udo.piq.PDialog;
 import edu.udo.piq.PFontResource;
-import edu.udo.piq.PGlobalEventObs;
 import edu.udo.piq.PImageMeta;
 import edu.udo.piq.PImageResource;
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PRoot;
-import edu.udo.piq.PStyleSheet;
+import edu.udo.piq.style.PStyleSheet;
 
 public abstract class AbstractPDialog extends AbstractPRoot implements PDialog {
 	
@@ -95,23 +93,6 @@ public abstract class AbstractPDialog extends AbstractPRoot implements PDialog {
 	public PKeyboard getKeyboard() {
 		throwExceptionIfDisposed();
 		return getSuperRoot().getKeyboard();
-	}
-	
-	@Override
-	public void fireGlobalEvent(PComponent source, Object eventData)
-			throws NullPointerException
-	{
-		getSuperRoot().fireGlobalEvent(source, eventData);
-	}
-	
-	@Override
-	public void addObs(PGlobalEventObs obs) throws NullPointerException {
-		getSuperRoot().addObs(obs);
-	}
-	
-	@Override
-	public void removeObs(PGlobalEventObs obs) throws NullPointerException {
-		getSuperRoot().removeObs(obs);
 	}
 	
 	protected void throwExceptionIfDisposed() {

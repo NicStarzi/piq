@@ -5,9 +5,9 @@ import java.util.Map;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PLayout;
 import edu.udo.piq.PSize;
 import edu.udo.piq.layouts.AbstractEnumPLayout;
+import edu.udo.piq.layouts.PLayout;
 
 public class PScrollBarLayout 
 	extends AbstractEnumPLayout<PScrollBarLayout.Constraint> 

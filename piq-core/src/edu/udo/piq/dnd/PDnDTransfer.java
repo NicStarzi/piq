@@ -1,5 +1,6 @@
-package edu.udo.piq;
+package edu.udo.piq.dnd;
 
+import edu.udo.piq.PComponent;
 import edu.udo.piq.components.collections.PModel;
 
 public interface PDnDTransfer {

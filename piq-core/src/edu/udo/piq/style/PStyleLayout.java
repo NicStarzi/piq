@@ -1,4 +1,6 @@
-package edu.udo.piq;
+package edu.udo.piq.style;
+
+import edu.udo.piq.layouts.PReadOnlyLayout;
 
 public interface PStyleLayout {
 	

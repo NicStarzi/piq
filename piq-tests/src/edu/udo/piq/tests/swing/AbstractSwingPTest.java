@@ -21,6 +21,7 @@ public abstract class AbstractSwingPTest {
 	protected final void buildSwing(int w, int h) {
 		EventQueue.invokeLater(() -> {
 			try {
+				frameRoot.setSizeUndecorated(w, h);
 				buildGUI();
 				frameRoot.setVisible(true);
 			} catch (Exception e1) {

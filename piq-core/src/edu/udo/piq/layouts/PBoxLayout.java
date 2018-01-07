@@ -3,7 +3,6 @@ package edu.udo.piq.layouts;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
-import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.tools.ImmutablePInsets;
 
 public class PBoxLayout extends AbstractMapPLayout {

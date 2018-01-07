@@ -1,11 +1,11 @@
 package edu.udo.piq.style.standard;
 
 import edu.udo.piq.PInsets;
-import edu.udo.piq.PReadOnlyLayout;
-import edu.udo.piq.PStyleLayout;
 import edu.udo.piq.layouts.AbstractPLayout;
 import edu.udo.piq.layouts.AlignmentX;
 import edu.udo.piq.layouts.AlignmentY;
+import edu.udo.piq.layouts.PReadOnlyLayout;
+import edu.udo.piq.style.PStyleLayout;
 import edu.udo.piq.tools.ImmutablePInsets;
 
 public class StandardButtonLayoutStyle implements PStyleLayout {

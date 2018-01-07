@@ -2,9 +2,9 @@ package edu.udo.piq.tutorial;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PDnDIndicator;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
+import edu.udo.piq.dnd.PDnDIndicator;
 import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.DelegatePRenderer;
 

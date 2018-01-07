@@ -2,7 +2,6 @@ package edu.udo.piq.layouts;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PLayout;
 import edu.udo.piq.util.LinkedArray;
 import edu.udo.piq.util.ThrowException;
 

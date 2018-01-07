@@ -8,6 +8,7 @@ import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.actions.MutableAction;
+import edu.udo.piq.actions.PActionKey;
 import edu.udo.piq.components.PCheckBoxModel;
 import edu.udo.piq.components.PCheckBoxTuple;
 import edu.udo.piq.components.PSingleValueModelObs;
@@ -147,7 +148,7 @@ public class SwingPTest_PTree extends AbstractSwingPTest {
 				setEditorVisible(false);
 				tree.takeFocus();
 			});
-			editor.addActionMapping("cancelEdit", cancelEditAction);
+			editor.addActionMapping(new PActionKey("CANCEL_EDIT"), cancelEditAction);
 			setSecondComponent(label);
 			setElement(model, index);
 		}

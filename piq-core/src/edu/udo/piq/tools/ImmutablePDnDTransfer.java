@@ -1,9 +1,9 @@
 package edu.udo.piq.tools;
 
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PDnDIndicator;
-import edu.udo.piq.PDnDTransfer;
 import edu.udo.piq.components.collections.PModel;
+import edu.udo.piq.dnd.PDnDIndicator;
+import edu.udo.piq.dnd.PDnDTransfer;
 
 public class ImmutablePDnDTransfer implements PDnDTransfer {
 	

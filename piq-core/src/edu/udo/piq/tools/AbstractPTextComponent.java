@@ -3,7 +3,6 @@ package edu.udo.piq.tools;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PFontResource;
-import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.components.PSingleValueModel;
 import edu.udo.piq.components.PSingleValueModelObs;
@@ -21,6 +20,7 @@ import edu.udo.piq.components.textbased.PTextSelection;
 import edu.udo.piq.components.textbased.PTextSelector;
 import edu.udo.piq.components.util.SymbolicFontKey;
 import edu.udo.piq.util.ObserverList;
+import edu.udo.piq.util.PModelFactory;
 import edu.udo.piq.util.PiqUtil;
 
 public abstract class AbstractPTextComponent

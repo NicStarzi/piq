@@ -1,11 +1,14 @@
 package edu.udo.piq;
 
+import edu.udo.piq.style.PStyleBorder;
+import edu.udo.piq.style.PStyleable;
+
 public interface PBorder extends PStyleable<PStyleBorder> {
 	
 	public PInsets getDefaultInsets(PComponent component);
 	
 	public default PInsets getInsets(PComponent component) {
-		PStyleBorder style = getStyle();
+		PStyleBorder style = getStyleFromSheet();
 		if (style == null) {
 			return getDefaultInsets(component);
 		} else {
@@ -16,7 +19,7 @@ public interface PBorder extends PStyleable<PStyleBorder> {
 	public void defaultRender(PRenderer renderer, PComponent component);
 	
 	public default void render(PRenderer renderer, PComponent component) {
-		PStyleBorder style = getStyle();
+		PStyleBorder style = getStyleFromSheet();
 		if (style == null) {
 			defaultRender(renderer, component);
 		} else {
@@ -27,7 +30,7 @@ public interface PBorder extends PStyleable<PStyleBorder> {
 	public boolean defaultFillsAllPixels(PComponent component);
 	
 	public default boolean fillsAllPixels(PComponent component) {
-		PStyleBorder style = getStyle();
+		PStyleBorder style = getStyleFromSheet();
 		if (style == null) {
 			return defaultFillsAllPixels(component);
 		} else {

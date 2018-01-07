@@ -1,11 +1,16 @@
-package edu.udo.piq;
+package edu.udo.piq.layouts;
 
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.Objects;
 
-import edu.udo.piq.layouts.AbstractMapPLayout;
-import edu.udo.piq.layouts.PComponentLayoutData;
+import edu.udo.piq.PBounds;
+import edu.udo.piq.PComponent;
+import edu.udo.piq.PDisposable;
+import edu.udo.piq.PSize;
+import edu.udo.piq.style.PStyleLayout;
+import edu.udo.piq.style.PStyleSheet;
+import edu.udo.piq.style.PStyleable;
 import edu.udo.piq.util.PiqUtil;
 import edu.udo.piq.util.ThrowException;
 
@@ -72,7 +77,7 @@ public interface PReadOnlyLayout extends PDisposable, PStyleable<PStyleLayout> {
 	 * @param style		the custom design for this layout or null to use the default design
 	 */
 	@Override
-	public void setStyle(PStyleLayout style);
+	public void setStyleFromSheet(PStyleLayout style);
 	
 	/**
 	 * Returns the {@link PStyleLayout} used to configure this layout.<br>
@@ -87,7 +92,7 @@ public interface PReadOnlyLayout extends PDisposable, PStyleable<PStyleLayout> {
 	 * @see PStyleSheet
 	 */
 	@Override
-	public PStyleLayout getStyle();
+	public PStyleLayout getStyleFromSheet();
 	
 	/**
 	 * Returns the owner of this layout.<br>
@@ -258,7 +263,7 @@ public interface PReadOnlyLayout extends PDisposable, PStyleable<PStyleLayout> {
 	}
 	
 	public default <E> E getStyleAttribute(Object attrKey, E defaultValue) {
-		PStyleLayout style = getStyle();
+		PStyleLayout style = getStyleFromSheet();
 		if (style == null) {
 			return defaultValue;
 		}

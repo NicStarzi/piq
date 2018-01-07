@@ -1,5 +1,6 @@
-package edu.udo.piq;
+package edu.udo.piq.layouts;
 
+import edu.udo.piq.PComponent;
 import edu.udo.piq.util.ThrowException;
 
 public interface PLayout extends PReadOnlyLayout {

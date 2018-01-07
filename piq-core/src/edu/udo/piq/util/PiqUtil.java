@@ -6,9 +6,9 @@ import java.util.function.Consumer;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PRootOverlay;
+import edu.udo.piq.layouts.PReadOnlyLayout;
 import edu.udo.piq.tools.ImmutablePBounds;
 import edu.udo.piq.tools.MutablePBounds;
 
@@ -99,7 +99,8 @@ public class PiqUtil {
 	 * @see ObserverList
 	 */
 	public static <T> ObserverList<T> createDefaultObserverList() {
-		return new ArrayObsList<>();
+//		return new ArrayObsList<>();
+		return new BufferedObsList<>();
 	}
 	
 	/**

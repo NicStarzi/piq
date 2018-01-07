@@ -2,9 +2,9 @@ package edu.udo.piq.scroll;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PLayout;
 import edu.udo.piq.PSize;
 import edu.udo.piq.layouts.AbstractMapPLayout;
+import edu.udo.piq.layouts.PLayout;
 
 public class PScrollPanelLayout extends AbstractMapPLayout implements PLayout {
 	

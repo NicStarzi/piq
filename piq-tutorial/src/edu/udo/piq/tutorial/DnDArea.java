@@ -2,11 +2,11 @@ package edu.udo.piq.tutorial;
 
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PDnDSupport;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PMouse.MouseButton;
+import edu.udo.piq.dnd.PDnDSupport;
 import edu.udo.piq.layouts.PFreeLayout;
 import edu.udo.piq.layouts.PFreeLayout.FreeConstraint;
 import edu.udo.piq.tools.AbstractPLayoutOwner;

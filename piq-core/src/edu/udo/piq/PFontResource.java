@@ -1,5 +1,6 @@
 package edu.udo.piq;
 
+import edu.udo.piq.layouts.PReadOnlyLayout;
 import edu.udo.piq.tools.MutablePSize;
 import edu.udo.piq.util.PiqUtil;
 

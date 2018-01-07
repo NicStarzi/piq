@@ -1,6 +1,6 @@
 package edu.udo.piq.components.containers;
 
-import edu.udo.piq.PLayout;
+import edu.udo.piq.layouts.PLayout;
 import edu.udo.piq.tools.AbstractPContainer;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
 

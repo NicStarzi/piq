@@ -5,10 +5,10 @@ import java.util.List;
 
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PLayout;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PTimer;
 import edu.udo.piq.PTimerCallback;
+import edu.udo.piq.layouts.PLayout;
 import edu.udo.piq.layouts.PRingLayout;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.util.ThrowException;

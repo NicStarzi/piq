@@ -1,5 +1,11 @@
-package edu.udo.piq;
+package edu.udo.piq.dnd;
 
+import edu.udo.piq.PComponent;
+import edu.udo.piq.PMouse;
+import edu.udo.piq.PMouseObs;
+import edu.udo.piq.PRoot;
+import edu.udo.piq.PRootOverlay;
+import edu.udo.piq.PSize;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.components.containers.PGlassPanel;
 import edu.udo.piq.layouts.PFreeLayout.FreeConstraint;

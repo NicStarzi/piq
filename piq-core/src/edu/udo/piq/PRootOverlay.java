@@ -1,7 +1,9 @@
 package edu.udo.piq;
 
 import edu.udo.piq.components.containers.PGlassPanel;
+import edu.udo.piq.dnd.PDnDManager;
 import edu.udo.piq.layouts.PFreeLayout;
+import edu.udo.piq.layouts.PReadOnlyLayout;
 
 /**
  * A {@link PRootOverlay} is part of a {@link PRoot} and is used to draw 

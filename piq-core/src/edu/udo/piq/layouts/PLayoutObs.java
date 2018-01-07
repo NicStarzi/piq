@@ -1,6 +1,6 @@
-package edu.udo.piq;
+package edu.udo.piq.layouts;
 
-import edu.udo.piq.layouts.PComponentLayoutData;
+import edu.udo.piq.PComponent;
 
 /**
  * An observer for {@link PReadOnlyLayout}s.<br>

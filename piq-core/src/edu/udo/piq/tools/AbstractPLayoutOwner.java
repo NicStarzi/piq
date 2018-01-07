@@ -2,11 +2,11 @@ package edu.udo.piq.tools;
 
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PComponentObs;
-import edu.udo.piq.PLayout;
-import edu.udo.piq.PLayoutObs;
-import edu.udo.piq.PReadOnlyLayout;
-import edu.udo.piq.PStyleComponent;
 import edu.udo.piq.layouts.PComponentLayoutData;
+import edu.udo.piq.layouts.PLayout;
+import edu.udo.piq.layouts.PLayoutObs;
+import edu.udo.piq.layouts.PReadOnlyLayout;
+import edu.udo.piq.style.PStyleComponent;
 import edu.udo.piq.util.ThrowException;
 
 public abstract class AbstractPLayoutOwner extends AbstractPComponent {
@@ -49,7 +49,7 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 		PLayout oldLayout = (PLayout) getLayout();
 		if (oldLayout != null) {
 			oldLayout.removeObs(layoutObs);
-			oldLayout.setStyle(null);
+			oldLayout.setStyleFromSheet(null);
 			oldLayout.clearChildren();
 			oldLayout.dispose();
 		}
@@ -57,9 +57,9 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 		if (getLayout() != null) {
 			ThrowException.ifNotEqual(this, getLayout().getOwner(),
 					"getLayout().getOwner() != this");
-			PStyleComponent style = getStyle();
+			PStyleComponent style = getStyleFromSheet();
 			if (style != null) {
-				getLayout().setStyle(style.getLayoutStyle(this, getLayout()));
+				getLayout().setStyleFromSheet(style.getLayoutStyle(this, getLayout()));
 			}
 			getLayout().addObs(layoutObs);
 			fireReLayOutEvent();
@@ -77,17 +77,17 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 	}
 	
 	@Override
-	public void setStyle(PStyleComponent style) {
-		super.setStyle(style);
+	public void setStyleFromSheet(PStyleComponent style) {
+		super.setStyleFromSheet(style);
 		PReadOnlyLayout layout = getLayout();
 		if (layout == null) {
 			return;
 		}
-		PStyleComponent newStyle = getStyle();
+		PStyleComponent newStyle = getStyleFromSheet();
 		if (newStyle == null) {
-			getLayout().setStyle(null);
+			getLayout().setStyleFromSheet(null);
 		} else {
-			getLayout().setStyle(newStyle.getLayoutStyle(this, getLayout()));
+			getLayout().setStyleFromSheet(newStyle.getLayoutStyle(this, getLayout()));
 		}
 	}
 	

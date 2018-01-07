@@ -4,14 +4,14 @@ import edu.udo.piq.PBorder;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PRenderer;
-import edu.udo.piq.PStyleBorder;
-import edu.udo.piq.PStyleComponent;
-import edu.udo.piq.PStyleLayout;
 import edu.udo.piq.borders.PButtonBorder;
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.layouts.PAnchorLayout;
+import edu.udo.piq.layouts.PReadOnlyLayout;
+import edu.udo.piq.style.PStyleBorder;
+import edu.udo.piq.style.PStyleComponent;
+import edu.udo.piq.style.PStyleLayout;
 import edu.udo.piq.tools.ImmutablePColor;
 import edu.udo.piq.util.ThrowException;
 

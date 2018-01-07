@@ -1,7 +1,6 @@
-package edu.udo.piq;
+package edu.udo.piq.layouts;
 
-import edu.udo.piq.layouts.AlignmentX;
-import edu.udo.piq.layouts.AlignmentY;
+import edu.udo.piq.PInsets;
 
 public interface PLayoutPreference {
 	

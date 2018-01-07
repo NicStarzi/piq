@@ -5,8 +5,8 @@ import java.util.Objects;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PRootObs;
-import edu.udo.piq.PStyleComponent;
-import edu.udo.piq.PStyleSheet;
+import edu.udo.piq.style.PStyleComponent;
+import edu.udo.piq.style.PStyleSheet;
 
 public class AbstractPStyleSheet implements PStyleSheet {
 	

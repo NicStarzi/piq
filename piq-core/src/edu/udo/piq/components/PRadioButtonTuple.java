@@ -3,8 +3,6 @@ package edu.udo.piq.components;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PGlobalEventGenerator;
-import edu.udo.piq.PGlobalEventProvider;
 import edu.udo.piq.PKeyboard.ActualKey;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
@@ -25,7 +23,7 @@ import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PiqUtil;
 
-public class PRadioButtonTuple extends AbstractPLayoutOwner implements PClickable, PGlobalEventGenerator {
+public class PRadioButtonTuple extends AbstractPLayoutOwner implements PClickable {
 	
 	public static final PActionKey KEY_TRIGGER_ENTER = StandardComponentActionKey.INTERACT;
 	public static final PAccelerator ACCELERATOR_TRIGGER_ENTER = new PAccelerator(
@@ -39,7 +37,6 @@ public class PRadioButtonTuple extends AbstractPLayoutOwner implements PClickabl
 	protected final ObserverList<PClickObs> obsList
 		= PiqUtil.createDefaultObserverList();
 	protected final PClickObs radBtnObs = (btn) -> onRadioBtnClick();
-	private PGlobalEventProvider globEvProv;
 	
 	public PRadioButtonTuple() {
 		super();
@@ -71,16 +68,6 @@ public class PRadioButtonTuple extends AbstractPLayoutOwner implements PClickabl
 	public PRadioButtonTuple(PComponent secondComponent) {
 		this();
 		setSecondComponent(secondComponent);
-	}
-	
-	@Override
-	public void setGlobalEventProvider(PGlobalEventProvider provider) {
-		globEvProv = provider;
-	}
-	
-	@Override
-	public PGlobalEventProvider getGlobalEventProvider() {
-		return globEvProv;
 	}
 	
 	@Override
@@ -165,10 +152,12 @@ public class PRadioButtonTuple extends AbstractPLayoutOwner implements PClickabl
 		return false;
 	}
 	
+	@Override
 	public void addObs(PClickObs obs) {
 		obsList.add(obs);
 	}
 	
+	@Override
 	public void removeObs(PClickObs obs) {
 		obsList.remove(obs);
 	}
@@ -184,7 +173,6 @@ public class PRadioButtonTuple extends AbstractPLayoutOwner implements PClickabl
 	protected void onRadioBtnClick() {
 		obsList.fireEvent((obs) -> obs.onClick(getRadioButton()));
 		takeFocus();
-		fireGlobalEvent();
 	}
 	
 	protected void onMouseMoved(PMouse mouse) {

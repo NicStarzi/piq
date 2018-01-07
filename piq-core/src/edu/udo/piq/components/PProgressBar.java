@@ -3,7 +3,6 @@ package edu.udo.piq.components;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PFontResource;
-import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
@@ -12,6 +11,7 @@ import edu.udo.piq.components.util.SymbolicFontKey;
 import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.util.ObserverList;
+import edu.udo.piq.util.PModelFactory;
 import edu.udo.piq.util.PiqUtil;
 
 public class PProgressBar extends AbstractPComponent {

@@ -4,7 +4,6 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PCursor;
-import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
@@ -18,6 +17,7 @@ import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.util.ObserverList;
+import edu.udo.piq.util.PModelFactory;
 import edu.udo.piq.util.PiqUtil;
 
 public class PSplitPanel extends AbstractPLayoutOwner {

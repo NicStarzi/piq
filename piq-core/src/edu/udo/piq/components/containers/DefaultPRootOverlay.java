@@ -1,9 +1,9 @@
 package edu.udo.piq.components.containers;
 
 import edu.udo.piq.PBounds;
-import edu.udo.piq.PLayout;
 import edu.udo.piq.PRootOverlay;
 import edu.udo.piq.layouts.PFreeLayout;
+import edu.udo.piq.layouts.PLayout;
 import edu.udo.piq.util.ThrowException;
 
 public class DefaultPRootOverlay extends PGlassPanel implements PRootOverlay {

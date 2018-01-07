@@ -3,11 +3,8 @@ package edu.udo.piq.components;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PGlobalEventGenerator;
-import edu.udo.piq.PGlobalEventProvider;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PKeyboard.ActualKey;
-import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
@@ -29,9 +26,10 @@ import edu.udo.piq.layouts.PAnchorLayout;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.util.ObserverList;
+import edu.udo.piq.util.PModelFactory;
 import edu.udo.piq.util.PiqUtil;
 
-public class PButton extends AbstractPLayoutOwner implements PClickable, PGlobalEventGenerator {
+public class PButton extends AbstractPLayoutOwner implements PClickable {
 	
 	public static final PActionKey KEY_PRESS_ENTER = StandardComponentActionKey.INTERACT;
 	public static final PAccelerator ACCELERATOR_PRESS_ENTER = new PAccelerator(
@@ -61,7 +59,6 @@ public class PButton extends AbstractPLayoutOwner implements PClickable, PGlobal
 	protected final PSingleValueModelObs modelObs = this::onModelChange;
 	protected PTimer repeatTimer;
 	protected PButtonModel model;
-	protected PGlobalEventProvider globEvProv;
 	protected boolean ignoreClickOnChildren = false;
 	protected double repeatTimerInitialDelay;
 	protected double repeatTimerDelay;
@@ -112,16 +109,6 @@ public class PButton extends AbstractPLayoutOwner implements PClickable, PGlobal
 		
 		addActionMapping(KEY_PRESS_ENTER, ACTION_PRESS_ENTER);
 		addActionMapping(KEY_RELEASE_ENTER, ACTION_RELEASE_ENTER);
-	}
-	
-	@Override
-	public void setGlobalEventProvider(PGlobalEventProvider provider) {
-		globEvProv = provider;
-	}
-	
-	@Override
-	public PGlobalEventProvider getGlobalEventProvider() {
-		return globEvProv;
 	}
 	
 	@Override
@@ -293,10 +280,12 @@ public class PButton extends AbstractPLayoutOwner implements PClickable, PGlobal
 		}
 	}
 	
+	@Override
 	public void addObs(PClickObs obs) {
 		obsList.add(obs);
 	}
 	
+	@Override
 	public void removeObs(PClickObs obs) {
 		obsList.remove(obs);
 	}
@@ -317,7 +306,6 @@ public class PButton extends AbstractPLayoutOwner implements PClickable, PGlobal
 	
 	protected void fireClickEvent() {
 		obsList.fireEvent((obs) -> obs.onClick(this));
-		fireGlobalEvent();
 	}
 	
 }

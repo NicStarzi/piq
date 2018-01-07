@@ -2,10 +2,8 @@ package edu.udo.piq.layouts;
 
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PComponentObs;
-import edu.udo.piq.PLayout;
-import edu.udo.piq.PLayoutObs;
 import edu.udo.piq.PSize;
-import edu.udo.piq.PStyleLayout;
+import edu.udo.piq.style.PStyleLayout;
 import edu.udo.piq.tools.MutablePSize;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PiqUtil;
@@ -154,13 +152,13 @@ public abstract class AbstractPLayout implements PLayout {
 	}
 	
 	@Override
-	public void setStyle(PStyleLayout value) {
+	public void setStyleFromSheet(PStyleLayout value) {
 		style = value;
 		invalidate();
 	}
 	
 	@Override
-	public PStyleLayout getStyle() {
+	public PStyleLayout getStyleFromSheet() {
 		return style;
 	}
 	

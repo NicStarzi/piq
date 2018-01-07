@@ -1,4 +1,4 @@
-package edu.udo.piq;
+package edu.udo.piq.util;
 
 import java.util.HashMap;
 import java.util.Map;

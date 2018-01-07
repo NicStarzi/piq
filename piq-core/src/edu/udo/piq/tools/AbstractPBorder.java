@@ -4,7 +4,7 @@ import java.util.Objects;
 
 import edu.udo.piq.PBorder;
 import edu.udo.piq.PBorderObs;
-import edu.udo.piq.PStyleBorder;
+import edu.udo.piq.style.PStyleBorder;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PiqUtil;
 
@@ -15,8 +15,8 @@ public abstract class AbstractPBorder implements PBorder {
 	private Object styleID = getClass();
 	
 	@Override
-	public void setStyle(PStyleBorder style) {
-		if (!Objects.equals(getStyle(), style)) {
+	public void setStyleFromSheet(PStyleBorder style) {
+		if (!Objects.equals(getStyleFromSheet(), style)) {
 			this.style = style;
 			fireInsetsChangedEvent();
 			fireReRenderEvent();
@@ -24,7 +24,7 @@ public abstract class AbstractPBorder implements PBorder {
 	}
 	
 	@Override
-	public PStyleBorder getStyle() {
+	public PStyleBorder getStyleFromSheet() {
 		return style;
 	}
 	

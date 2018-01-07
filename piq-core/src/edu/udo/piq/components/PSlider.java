@@ -5,11 +5,8 @@ import java.util.function.Predicate;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
-import edu.udo.piq.PGlobalEventGenerator;
-import edu.udo.piq.PGlobalEventProvider;
 import edu.udo.piq.PKeyboard.ActualKey;
 import edu.udo.piq.PKeyboard.Modifier;
-import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
@@ -26,9 +23,10 @@ import edu.udo.piq.components.defaults.ReRenderPFocusObs;
 import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.util.ObserverList;
+import edu.udo.piq.util.PModelFactory;
 import edu.udo.piq.util.PiqUtil;
 
-public class PSlider extends AbstractPComponent implements PGlobalEventGenerator {
+public class PSlider extends AbstractPComponent {
 	
 	protected static final int DEFAULT_SLIDER_KNOB_WIDTH = 8;
 	protected static final int DEFAULT_SLIDER_KNOB_HEIGHT = 12;
@@ -77,7 +75,6 @@ public class PSlider extends AbstractPComponent implements PGlobalEventGenerator
 		}
 	};
 	protected PSliderModel model;
-	protected PGlobalEventProvider globEvProv;
 	
 	public PSlider() {
 		super();
@@ -123,16 +120,6 @@ public class PSlider extends AbstractPComponent implements PGlobalEventGenerator
 		getModel().setMinValue(min);
 		getModel().setMaxValue(max);
 		getModel().setValue(value);
-	}
-	
-	@Override
-	public void setGlobalEventProvider(PGlobalEventProvider provider) {
-		globEvProv = provider;
-	}
-	
-	@Override
-	public PGlobalEventProvider getGlobalEventProvider() {
-		return globEvProv;
 	}
 	
 	public void setModel(PSliderModel model) {
@@ -255,7 +242,6 @@ public class PSlider extends AbstractPComponent implements PGlobalEventGenerator
 		PBounds bnds = getBounds();
 		double valuePercent = (mx - bnds.getX()) / (double) bnds.getWidth();
 		getModel().setValuePercent(valuePercent);
-		fireGlobalEvent();
 	}
 	
 	protected void onModelRangeChanged() {

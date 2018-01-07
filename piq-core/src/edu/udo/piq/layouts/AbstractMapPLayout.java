@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PLayout;
 
 public abstract class AbstractMapPLayout extends AbstractPLayout implements PLayout {
 	

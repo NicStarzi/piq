@@ -9,8 +9,6 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PComponentObs;
 import edu.udo.piq.PInsets;
-import edu.udo.piq.PLayoutObs;
-import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.components.collections.PColumnIndex;
 import edu.udo.piq.components.collections.PRowIndex;
 import edu.udo.piq.components.collections.PTableCellIndex;
@@ -18,6 +16,8 @@ import edu.udo.piq.layouts.AlignmentX;
 import edu.udo.piq.layouts.AlignmentY;
 import edu.udo.piq.layouts.PComponentLayoutData;
 import edu.udo.piq.layouts.PGridListLayout;
+import edu.udo.piq.layouts.PLayoutObs;
+import edu.udo.piq.layouts.PReadOnlyLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
 
 public class DelegationPGridListLayout extends PGridListLayout {

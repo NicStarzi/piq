@@ -1,5 +1,7 @@
 package edu.udo.piq;
 
+import edu.udo.piq.layouts.PReadOnlyLayout;
+
 /**
  * {@link PInsets} define a padding inside a bounding box
  * with individual distances to each side.<br>

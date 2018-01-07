@@ -9,7 +9,6 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
-import edu.udo.piq.components.PClickable;
 import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.components.textbased.PTextModel;
 import edu.udo.piq.layouts.AlignmentX;
@@ -19,7 +18,7 @@ import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.util.ThrowException;
 
-public class PMenuBarItem extends AbstractPLayoutOwner implements PClickable {
+public class PMenuBarItem extends AbstractPLayoutOwner {//implements PClickable {
 	
 	public static final PInsets DEFAULT_INSETS = new ImmutablePInsets(4);
 	public static final AlignmentX DEFAULT_ALIGNMENT_X = AlignmentX.PREFERRED_OR_CENTER;

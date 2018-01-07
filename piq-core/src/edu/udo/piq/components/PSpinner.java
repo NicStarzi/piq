@@ -4,8 +4,6 @@ import java.util.function.Function;
 
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PKeyboard.ActualKey;
-import edu.udo.piq.PLayout;
-import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.actions.FocusOwnerAction;
 import edu.udo.piq.actions.PAccelerator;
@@ -15,10 +13,12 @@ import edu.udo.piq.actions.PComponentAction;
 import edu.udo.piq.actions.StandardComponentActionKey;
 import edu.udo.piq.components.PSpinnerButton.PSpinnerBtnDir;
 import edu.udo.piq.components.defaults.PSpinnerModelInt;
+import edu.udo.piq.layouts.PLayout;
 import edu.udo.piq.layouts.PSpinnerLayout;
 import edu.udo.piq.layouts.PSpinnerLayout.Constraint;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.util.ObserverList;
+import edu.udo.piq.util.PModelFactory;
 import edu.udo.piq.util.PiqUtil;
 import edu.udo.piq.util.ThrowException;
 

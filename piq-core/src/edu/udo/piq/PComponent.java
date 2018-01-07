@@ -9,8 +9,16 @@ import java.util.function.Predicate;
 import edu.udo.piq.actions.PActionKey;
 import edu.udo.piq.actions.PComponentAction;
 import edu.udo.piq.components.containers.PGlassPanel;
+import edu.udo.piq.dnd.PDnDManager;
+import edu.udo.piq.dnd.PDnDSupport;
+import edu.udo.piq.dnd.PDnDTransfer;
 import edu.udo.piq.layouts.PComponentLayoutData;
+import edu.udo.piq.layouts.PLayout;
+import edu.udo.piq.layouts.PLayoutPreference;
+import edu.udo.piq.layouts.PReadOnlyLayout;
 import edu.udo.piq.scroll2.PScrollComponent;
+import edu.udo.piq.style.PStyleComponent;
+import edu.udo.piq.style.PStyleable;
 import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.MutablePBounds;
 import edu.udo.piq.util.AncestorIterator;
@@ -109,7 +117,7 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 	}
 	
 	public default PSize getPreferredSize() {
-		PStyleComponent style = getStyle();
+		PStyleComponent style = getStyleFromSheet();
 		if (style == null) {
 			return getDefaultPreferredSize();
 		}
@@ -143,10 +151,10 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 	public PStyleComponent getCustomStyle();
 	
 	@Override
-	public void setStyle(PStyleComponent style);
+	public void setStyleFromSheet(PStyleComponent style);
 	
 	@Override
-	public PStyleComponent getStyle();
+	public PStyleComponent getStyleFromSheet();
 	
 	public PBorder getBorder();
 	
@@ -175,7 +183,7 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 	public default void defaultRender(PRenderer renderer) {}
 	
 	public default void render(PRenderer renderer) {
-		PStyleComponent style = getStyle();
+		PStyleComponent style = getStyleFromSheet();
 		if (style == null) {
 			defaultRender(renderer);
 		} else {
@@ -208,7 +216,7 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 		if (border != null && !border.fillsAllPixels(this)) {
 			return false;
 		}
-		PStyleComponent style = getStyle();
+		PStyleComponent style = getStyleFromSheet();
 		if (style == null) {
 			return defaultFillsAllPixels();
 		}

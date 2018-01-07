@@ -12,7 +12,6 @@ import java.util.Map;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
-import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.collections.PTreeIndex;
 import edu.udo.piq.tools.ImmutablePInsets;

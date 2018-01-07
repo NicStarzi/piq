@@ -17,8 +17,8 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PDialog;
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PMouse;
-import edu.udo.piq.PReadOnlyLayout;
 import edu.udo.piq.PRoot;
+import edu.udo.piq.layouts.PReadOnlyLayout;
 import edu.udo.piq.tools.AbstractPDialog;
 
 public class SwingPDialog extends AbstractPDialog implements PDialog {

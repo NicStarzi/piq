@@ -4,9 +4,9 @@ import edu.udo.piq.PBorder;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PFocusTraversal;
-import edu.udo.piq.PLayout;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
+import edu.udo.piq.layouts.PLayout;
 
 public abstract class AbstractPContainer<CONSTRAINT_CLASS> extends AbstractPLayoutOwner {
 	

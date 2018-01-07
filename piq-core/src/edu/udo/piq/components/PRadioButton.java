@@ -2,9 +2,6 @@ package edu.udo.piq.components;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
-import edu.udo.piq.PGlobalEventGenerator;
-import edu.udo.piq.PGlobalEventProvider;
-import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
@@ -14,9 +11,10 @@ import edu.udo.piq.components.defaults.DefaultPRadioButtonModel;
 import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.util.ObserverList;
+import edu.udo.piq.util.PModelFactory;
 import edu.udo.piq.util.PiqUtil;
 
-public class PRadioButton extends AbstractPComponent implements PClickable, PGlobalEventGenerator {
+public class PRadioButton extends AbstractPComponent implements PClickable {
 	
 	private static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(12, 12);
 	
@@ -32,22 +30,11 @@ public class PRadioButton extends AbstractPComponent implements PClickable, PGlo
 	};
 	protected final PSingleValueModelObs modelObs = this::onModelChange;
 	protected PRadioButtonModel model;
-	private PGlobalEventProvider globEvProv;
 	
 	public PRadioButton() {
 		super();
 		setModel(PModelFactory.createModelFor(this, DefaultPRadioButtonModel::new, PRadioButtonModel.class));
 		addObs(mouseObs);
-	}
-	
-	@Override
-	public void setGlobalEventProvider(PGlobalEventProvider provider) {
-		globEvProv = provider;
-	}
-	
-	@Override
-	public PGlobalEventProvider getGlobalEventProvider() {
-		return globEvProv;
 	}
 	
 	public void setModel(PRadioButtonModel model) {
@@ -123,10 +110,12 @@ public class PRadioButton extends AbstractPComponent implements PClickable, PGlo
 		return DEFAULT_PREFERRED_SIZE;
 	}
 	
+	@Override
 	public void addObs(PClickObs obs) {
 		obsList.add(obs);
 	}
 	
+	@Override
 	public void removeObs(PClickObs obs) {
 		obsList.remove(obs);
 	}
@@ -147,7 +136,6 @@ public class PRadioButton extends AbstractPComponent implements PClickable, PGlo
 	
 	protected void fireClickEvent() {
 		obsList.fireEvent((obs) -> obs.onClick(this));
-		fireGlobalEvent();
 	}
 	
 	protected void onMouseButtonTriggered(PMouse mouse, MouseButton btn) {

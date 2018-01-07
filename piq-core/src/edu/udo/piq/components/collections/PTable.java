@@ -4,10 +4,8 @@ import java.util.function.Function;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
-import edu.udo.piq.PDnDSupport;
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PKeyboard.Modifier;
-import edu.udo.piq.PModelFactory;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouse.VirtualMouseButton;
@@ -19,9 +17,11 @@ import edu.udo.piq.components.defaults.DefaultPCellFactory;
 import edu.udo.piq.components.defaults.FixedSizePTableModel;
 import edu.udo.piq.components.defaults.PTablePDnDSupport;
 import edu.udo.piq.components.defaults.ReRenderPFocusObs;
+import edu.udo.piq.dnd.PDnDSupport;
 import edu.udo.piq.layouts.PTableLayout3;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.util.ObserverList;
+import edu.udo.piq.util.PModelFactory;
 import edu.udo.piq.util.PiqUtil;
 
 public class PTable extends AbstractPLayoutOwner

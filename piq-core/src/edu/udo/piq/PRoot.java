@@ -17,9 +17,20 @@ import edu.udo.piq.components.textbased.PTextArea;
 import edu.udo.piq.components.util.StandardFontKey;
 import edu.udo.piq.components.util.SymbolicFontKey;
 import edu.udo.piq.components.util.SymbolicImageKey;
+import edu.udo.piq.dnd.PDnDManager;
+import edu.udo.piq.dnd.PDnDSupport;
+import edu.udo.piq.dnd.PDnDTransfer;
 import edu.udo.piq.layouts.PComponentLayoutData;
+import edu.udo.piq.layouts.PLayout;
+import edu.udo.piq.layouts.PLayoutPreference;
+import edu.udo.piq.layouts.PReadOnlyLayout;
 import edu.udo.piq.layouts.PRootLayout;
 import edu.udo.piq.layouts.PRootLayout.Constraint;
+import edu.udo.piq.style.PStyleBorder;
+import edu.udo.piq.style.PStyleComponent;
+import edu.udo.piq.style.PStyleLayout;
+import edu.udo.piq.style.PStyleSheet;
+import edu.udo.piq.style.PStyleable;
 import edu.udo.piq.tools.AbstractPTextComponent;
 import edu.udo.piq.util.DepthFirstDescendantIterator;
 import edu.udo.piq.util.PiqUtil;
@@ -138,7 +149,7 @@ public interface PRoot extends PComponent {
 	 * @author Nic
 	 */
 	@Override
-	public default void setStyle(PStyleComponent style)
+	public default void setStyleFromSheet(PStyleComponent style)
 			throws UnsupportedOperationException
 	{
 		throw new UnsupportedOperationException("this instanceof PRoot");
@@ -150,7 +161,7 @@ public interface PRoot extends PComponent {
 	 * @author Nic
 	 */
 	@Override
-	public default PStyleComponent getStyle() {
+	public default PStyleComponent getStyleFromSheet() {
 		return null;
 	}
 	
@@ -769,25 +780,6 @@ public interface PRoot extends PComponent {
 	 */
 	@Override
 	public void removeObs(PFocusObs obs) throws NullPointerException;
-	
-	/**
-	 * Notifies all {@link PGlobalEventObs global event observers} registered at this
-	 * {@link PRoot} of the event by calling the
-	 * {@link PGlobalEventObs#onGlobalEvent(PComponent, Object)} method with the given
-	 * <code>source</code> and <code>eventData</code>.<br>
-	 * @param source					the component that generated the event
-	 * @param eventData					the event data
-	 * @throws NullPointerException		if either source or eventData is null
-	 * @see #addObs(PGlobalEventObs)
-	 * @see #removeObs(PGlobalEventObs)
-	 */
-	public void fireGlobalEvent(PComponent source, Object eventData) throws NullPointerException;
-	
-	//TODO:
-	public void addObs(PGlobalEventObs obs) throws NullPointerException;
-	
-	//TODO:
-	public void removeObs(PGlobalEventObs obs) throws NullPointerException;
 	
 	//TODO:
 	public void addObs(PRootObs obs) throws NullPointerException;

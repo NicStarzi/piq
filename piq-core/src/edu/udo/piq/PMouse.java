@@ -7,6 +7,7 @@ import java.util.List;
 import edu.udo.piq.components.collections.PSelectionComponent;
 import edu.udo.piq.components.popup.PPopup;
 import edu.udo.piq.layouts.Axis;
+import edu.udo.piq.layouts.PLayout;
 import edu.udo.piq.tools.ImmutablePPoint;
 import edu.udo.piq.util.PiqUtil;
 

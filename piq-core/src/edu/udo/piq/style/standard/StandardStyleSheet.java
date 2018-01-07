@@ -5,13 +5,13 @@ import java.util.Map;
 
 import edu.udo.piq.PBorder;
 import edu.udo.piq.PComponent;
-import edu.udo.piq.PReadOnlyLayout;
-import edu.udo.piq.PStyleBorder;
-import edu.udo.piq.PStyleComponent;
-import edu.udo.piq.PStyleLayout;
 import edu.udo.piq.borders.PButtonBorder;
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.textbased.PLabel;
+import edu.udo.piq.layouts.PReadOnlyLayout;
+import edu.udo.piq.style.PStyleBorder;
+import edu.udo.piq.style.PStyleComponent;
+import edu.udo.piq.style.PStyleLayout;
 import edu.udo.piq.tools.AbstractPStyleSheet;
 
 public class StandardStyleSheet extends AbstractPStyleSheet {
@@ -59,6 +59,6 @@ public class StandardStyleSheet extends AbstractPStyleSheet {
 	
 	@Override
 	protected void onComponentAdded(PComponent addedComponent) {
-		addedComponent.setStyle(getStyleFor(addedComponent));
+		addedComponent.setStyleFromSheet(getStyleFor(addedComponent));
 	}
 }

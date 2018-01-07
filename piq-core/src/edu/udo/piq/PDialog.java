@@ -1,5 +1,7 @@
 package edu.udo.piq;
 
+import edu.udo.piq.style.PStyleSheet;
+
 public interface PDialog extends PRoot, PDisposable {
 	
 	/**

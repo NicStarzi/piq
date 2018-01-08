@@ -1,4 +1,4 @@
-package edu.udo.piq.components.popup2;
+package edu.udo.piq.components.popup;
 
 public interface PMenuBodyObs {
 	

@@ -1,8 +1,9 @@
 package edu.udo.piq.components.popup;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
-import edu.udo.piq.PBorder;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PMouse;
@@ -12,81 +13,124 @@ import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PRootOverlay;
 import edu.udo.piq.PSize;
-import edu.udo.piq.borders.PBevelBorder;
-import edu.udo.piq.components.containers.PListPanel;
+import edu.udo.piq.components.collections.PSelectionComponent;
 import edu.udo.piq.layouts.PFreeLayout.FreeConstraint;
-import edu.udo.piq.layouts.PListLayout;
-import edu.udo.piq.layouts.PListLayout.ListAlignment;
-import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PiqUtil;
 import edu.udo.piq.util.ThrowException;
 
 public class PPopup {
 	
-	public static final PPopupBorderProvider DEFAULT_BORDER_PROVIDER
-		= (comp) -> new PBevelBorder();
+	public static final boolean DEFAULT_IS_ENABLED = true;
 	
-	public static final PPopupBodyProvider DEFAULT_BODY_PROVIDER
-		= (comp) -> new PListPanel();
-	
-	protected final ObserverList<PPopupObs> obsList
-		= PiqUtil.createDefaultObserverList();
 	protected final PMouseObs mouseObs = new PMouseObs() {
 		@Override
 		public void onButtonTriggered(PMouse mouse, MouseButton btn, int clickCount) {
-			PPopup.this.onMouseTrigger(mouse, btn);
+			PPopup.this.onMouseTrigger(mouse, btn, clickCount);
+		}
+		@Override
+		public void onButtonPressed(PMouse mouse, MouseButton btn, int clickCount) {
+			PPopup.this.onMousePress(mouse, btn, clickCount);
+		}
+		@Override
+		public void onButtonReleased(PMouse mouse, MouseButton btn, int clickCount) {
+			PPopup.this.onMouseRelease(mouse, btn, clickCount);
+		}
+		@Override
+		public void onMouseMoved(PMouse mouse) {
+			PPopup.this.onMouseMove(mouse);
 		}
 	};
-	protected final PPopupComponentObs compObs = (cmp) -> hidePopup();
+	protected final ObserverList<PPopupObs> obsList
+		= PiqUtil.createDefaultObserverList();
+	protected final PMenuBodyObs bodyObs = new PMenuBodyObs() {
+		@Override
+		public void onMenuItemAction(PMenuBody body, AbstractPMenuItem item, int itemIndex) {
+			PPopup.this.onMenuItemAction(body, item, itemIndex);
+		}
+		@Override
+		public void onCloseRequest(PMenuBody body) {
+			PPopup.this.onMenuCloseRequet(body);
+		}
+	};
+	protected final List<PComponent> items = new ArrayList<>();
 	protected final PComponent owner;
-	protected PPopupBodyProvider bodyProvider;
-	protected PPopupBorderProvider borderProvider;
-	protected PPopupOptionsProvider optionsProvider;
-	protected PListPanel popupComp;
-	protected boolean enabled;
+	protected PMenuBody curBody = null;
+	protected int popupClickX = Integer.MIN_VALUE;// no useful initial value
+	protected int popupClickY = Integer.MIN_VALUE;// no useful initial value
+	protected boolean enabled = false;
 	
 	public PPopup(PComponent component) {
 		owner = component;
-		setBodyProvider(DEFAULT_BODY_PROVIDER);
-		setBorderProvider(DEFAULT_BORDER_PROVIDER);
+		setEnabled(DEFAULT_IS_ENABLED);
 	}
 	
 	public PComponent getOwner() {
 		return owner;
 	}
 	
-	public void setBodyProvider(PPopupBodyProvider provider) {
-		bodyProvider = provider;
+	public Object getClickedOwnerContent() {
+		if (!isShown()) {
+			throw new IllegalStateException("This method can only be called while the popup is shown.");
+		}
+		PComponent owner = getOwner();
+		if (owner instanceof PSelectionComponent) {
+			PSelectionComponent collectionComp = (PSelectionComponent) owner;
+			return collectionComp.getContentAt(getLastPopupClickX(), getLastPopupClickY());
+		}
+		return null;
 	}
 	
-	public PPopupBodyProvider getBodyProvider() {
-		return bodyProvider;
+	public PMenuBody getPopupBodyComponent() {
+		return curBody;
 	}
 	
-	public void setBorderProvider(PPopupBorderProvider provider) {
-		borderProvider = provider;
+	public int getLastPopupClickX() {
+		return popupClickX;
 	}
 	
-	public PPopupBorderProvider getBorderProvider() {
-		return borderProvider;
+	public int getLastPopupClickY() {
+		return popupClickY;
 	}
 	
-	public void setOptionsProvider(PPopupOptionsProvider provider) {
-		optionsProvider = provider;
+	public PComponent addItem(Object labelValue, Object iconValue, Consumer<PRoot> additionalAction) {
+		PComponent item = new PMenuItemCustom(labelValue, iconValue, additionalAction);
+		addItem(item);
+		return item;
 	}
 	
-	public PPopupOptionsProvider getOptionsProvider() {
-		return optionsProvider;
+	public PComponent addItem(PComponentActionIndicator actionIndicator) {
+		PComponent item = new PMenuItemComponentAction(actionIndicator);
+		addItem(item);
+		return item;
+	}
+	
+	public void addItem(PComponent item) {
+		ThrowException.ifNull(item, "item == null");
+		ThrowException.ifIncluded(items, item, "items.contains(item) == true");
+		items.add(item);
+	}
+	
+	public void addDivider() {
+		addItem(new PMenuDivider());
+	}
+	
+	public void removeItem(PComponent item) {
+		ThrowException.ifNull(item, "item == null");
+		ThrowException.ifExcluded(items, item, "items.contains(item) == false");
+		items.remove(item);
 	}
 	
 	public void setEnabled(boolean isEnabled) {
 		if (enabled != isEnabled) {
 			enabled = isEnabled;
-			if (enabled) {
+			if (isEnabled()) {
 				getOwner().addObs(mouseObs);
 			} else {
 				getOwner().removeObs(mouseObs);
+				if (isShown()) {
+					hidePopup();
+				}
 			}
 		}
 	}
@@ -96,18 +140,18 @@ public class PPopup {
 	}
 	
 	public boolean isShown() {
-		return popupComp != null;
+		return getPopupBodyComponent() != null;
 	}
 	
-	protected void onMouseTrigger(PMouse mouse, MouseButton btn) {
+	protected void onMouseTrigger(PMouse mouse, MouseButton btn, int clickCount) {
 		if (!isEnabled()) {
 			return;
 		}
-		if (isShown() && popupComp.isMouseOverThisOrChild()) {
+		if (isShown() && getPopupBodyComponent().isMouseOverThisOrChild(mouse)) {
 			return;
 		}
-		if (mouse.isPressed(VirtualMouseButton.POPUP_TRIGGER)
-				&& getOwner().isMouseOverThisOrChild())
+		if (mouse.isTriggered(VirtualMouseButton.POPUP_TRIGGER)
+				&& getOwner().isMouseOverThisOrChild(mouse))
 		{
 			hidePopup();
 			showPopup(mouse.getX(), mouse.getY());
@@ -116,81 +160,81 @@ public class PPopup {
 		}
 	}
 	
+	protected void onMousePress(PMouse mouse, MouseButton btn, int clickCount) {
+		// intentionally left blank. Can be overwritten by subclasses as needed.
+	}
+	
+	protected void onMouseRelease(PMouse mouse, MouseButton btn, int clickCount) {
+		// intentionally left blank. Can be overwritten by subclasses as needed.
+	}
+	
+	protected void onMouseMove(PMouse mouse) {
+		// intentionally left blank. Can be overwritten by subclasses as needed.
+	}
+	
+	protected void onMenuItemAction(PMenuBody body, AbstractPMenuItem item, int itemIndex) {
+		hidePopup();
+	}
+	
+	protected void onMenuCloseRequet(PMenuBody body) {
+		hidePopup();
+	}
+	
 	protected void showPopup(int x, int y) {
 		if (isShown()) {
 			return;
 		}
+		popupClickX = x;
+		popupClickY = y;
 		PComponent owner = getOwner();
 		PRoot root = owner.getRoot();
 		if (root == null) {
 			/*
 			 * This should not be possible since the showPopup method
 			 * is called from a mouse event.
-			 * If we reach this line of code, a virtual mouse event must 
+			 * If we reach this line of code, a virtual mouse event must
 			 * have been created by the user.
+			 * We do nothing in this case because there is nothing to do.
 			 */
 			return;
 		}
-		ThrowException.ifNull(getBodyProvider(), "getBodyProvider() == null");
-		ThrowException.ifNull(getBorderProvider(), "getBorderProvider() == null");
-		ThrowException.ifNull(getOptionsProvider(), "getPopupProvider() == null");
-		
-		PListPanel body = getBodyProvider().apply(owner);
-		if (body == null) {
-			return;
-		}
-		List<PComponent> options = getOptionsProvider().apply(owner);
-		if (options.isEmpty()) {
-			return;
-		}
-		
-		PListLayout listLayout = body.getLayout();
-		listLayout.setAlignment(ListAlignment.TOP_TO_BOTTOM);
-		listLayout.setInsets(new ImmutablePInsets(1));
-		
-		for (int i = 0; i < options.size(); i++) {
-			PComponent optionsComp = options.get(i);
-			body.addChild(optionsComp, Integer.valueOf(i));
-			if (optionsComp instanceof PPopupComponent) {
-				((PPopupComponent) optionsComp).addObs(compObs);
-			}
-		}
-		PRootOverlay overlay = root.getOverlay();
-		
-		popupComp = body;
-		PBorder border = getBorderProvider().apply(owner);
-		if (border != null) {
-			popupComp.setBorder(border);
+		curBody = new PMenuBody();
+		curBody.addObs(bodyObs);
+		for (int i = 0; i < items.size(); i++) {
+			curBody.addMenuItem(i, items.get(i));
 		}
 		/*
 		 * We add the popup temporarily so that any components that need a
 		 * PRoot to correctly calculate their size (for example PLabels)
 		 * can do so. We need this to calculate the correct position for
-		 * the popup.
+		 * the popup body.
 		 */
-		overlay.getLayout().addChild(popupComp, new FreeConstraint(x, y));
+		PRootOverlay overlay = root.getOverlay();
+		overlay.getLayout().addChild(curBody, new FreeConstraint(x, y));
 		
-		PSize popupSize = popupComp.getPreferredSize();
+		PSize popupSize = curBody.getPreferredSize();
 		PBounds overlayBnds = overlay.getBounds();
 		
 		int popupX = Math.min(x, overlayBnds.getFinalX() - popupSize.getWidth());
 		int popupY = Math.min(y, overlayBnds.getFinalY() - popupSize.getHeight());
+		popupX = Math.max(0, popupX);
+		popupY = Math.max(0, popupY);
 		
-		overlay.getLayout().updateConstraint(popupComp, new FreeConstraint(popupX, popupY));
+		overlay.getLayout().updateConstraint(curBody, new FreeConstraint(popupX, popupY));
 		root.setFocusOwner(null);
 		fireShowEvent();
+		
+		curBody.tryToTakeFocus();
 	}
 	
 	protected void hidePopup() {
 		if (isShown()) {
-			for (PComponent optionsComp : popupComp.getChildren()) {
-				if (optionsComp instanceof PPopupComponent) {
-					((PPopupComponent) optionsComp).removeObs(compObs);
-				}
-			}
-			popupComp.getRoot().getOverlay().getLayout().removeChild(popupComp);
-			popupComp = null;
-			fireHideEvent();
+			PMenuBody popupBodyComp = getPopupBodyComponent();
+			popupBodyComp.getRoot().getOverlay().getLayout().removeChild(popupBodyComp);
+			popupBodyComp.removeAllItems();
+			curBody.removeObs(bodyObs);
+			curBody = null;
+			fireHideEvent(popupBodyComp);
 		}
 	}
 	
@@ -203,11 +247,16 @@ public class PPopup {
 	}
 	
 	protected void fireShowEvent() {
-		obsList.fireEvent((obs) -> obs.onPopupShown(this, popupComp));
+		PComponent popupBody = getPopupBodyComponent();
+		int clickX = getLastPopupClickX();
+		int clickY = getLastPopupClickY();
+		obsList.fireEvent((obs) -> obs.onPopupShown(this, clickX, clickY, popupBody));
 	}
 	
-	protected void fireHideEvent() {
-		obsList.fireEvent((obs) -> obs.onPopupHidden(this, popupComp));
+	protected void fireHideEvent(PComponent popupBody) {
+		int clickX = getLastPopupClickX();
+		int clickY = getLastPopupClickY();
+		obsList.fireEvent((obs) -> obs.onPopupHidden(this, clickX, clickY, popupBody));
 	}
 	
 }

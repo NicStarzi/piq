@@ -33,6 +33,7 @@ import edu.udo.piq.layouts.PReadOnlyLayout;
 import edu.udo.piq.style.PStyleBorder;
 import edu.udo.piq.style.PStyleComponent;
 import edu.udo.piq.style.PStyleLayout;
+import edu.udo.piq.style.PStyleObs;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PiqUtil;
 import edu.udo.piq.util.ThrowException;
@@ -51,12 +52,12 @@ public class AbstractPComponent implements PComponent {
 	 */
 	private PComponent parent;
 	private PBorder border;
-	private PStyleComponent customStyle;
-	private PStyleComponent sheetStyle;
+	protected PStyleComponent customStyle;
+	protected PStyleComponent sheetStyle;
+	protected PStyleObs styleObs = null;//lazy initialization
 	protected final DefaultPLayoutPreference layoutPref = new DefaultPLayoutPreference();
 	private PComponentLayoutData layoutData;
 	protected PComponentActionMap actionMap;
-//	protected Map<Object, PComponentAction> actionMap;
 	/**
 	 * Holds all {@link PComponentObs PComponentObservers} of this component.
 	 */
@@ -249,12 +250,7 @@ public class AbstractPComponent implements PComponent {
 	
 	@Override
 	public void setCustomStyle(PStyleComponent style) {
-		if (!Objects.equals(customStyle, style)) {
-			customStyle = style;
-			firePreferredSizeChangedEvent();
-			fireReRenderEvent();
-			refreshBorderAndLayoutStyle();
-		}
+		setStyles(style, getStyleFromSheet());
 	}
 	
 	@Override
@@ -264,26 +260,50 @@ public class AbstractPComponent implements PComponent {
 	
 	@Override
 	public void setStyleFromSheet(PStyleComponent style) {
-		if (!Objects.equals(sheetStyle, style)) {
-			sheetStyle = style;
-			if (getStyleFromSheet() == sheetStyle) {
-				firePreferredSizeChangedEvent();
-				fireReRenderEvent();
-				refreshBorderAndLayoutStyle();
-			}
-		}
+		setStyles(getCustomStyle(), style);
 	}
 	
 	@Override
 	public PStyleComponent getStyleFromSheet() {
-		if (customStyle != null) {
-			return customStyle;
-		}
 		return sheetStyle;
 	}
 	
+	protected void setStyles(PStyleComponent custom, PStyleComponent sheet) {
+		PStyleComponent oldActiveStyle = getStyle();
+		customStyle = custom;
+		sheetStyle = sheet;
+		PStyleComponent newActiveStyle = getStyle();
+		if (oldActiveStyle == newActiveStyle) {
+			return;
+		}
+		if (oldActiveStyle != null) {
+			oldActiveStyle.removeObs(styleObs);
+			if (newActiveStyle == null) {
+				styleObs = null;
+			}
+		}
+		if (newActiveStyle != null) {
+			if (styleObs == null) {
+				styleObs = new PStyleObs() {
+					@Override
+					public void onSizeChanged() {
+						AbstractPComponent.this.firePreferredSizeChangedEvent();
+					}
+					@Override
+					public void onReRenderEvent() {
+						AbstractPComponent.this.fireReRenderEvent();
+					}
+				};
+			}
+			newActiveStyle.addObs(styleObs);
+		}
+		refreshBorderAndLayoutStyle();
+		firePreferredSizeChangedEvent();
+		fireReRenderEvent();
+	}
+	
 	protected void refreshBorderAndLayoutStyle() {
-		PStyleComponent style = getStyleFromSheet();
+		PStyleComponent style = getStyle();
 		
 		PBorder border = getBorder();
 		if (border != null) {

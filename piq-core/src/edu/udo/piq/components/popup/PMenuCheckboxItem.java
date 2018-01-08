@@ -1,4 +1,4 @@
-package edu.udo.piq.components.popup2;
+package edu.udo.piq.components.popup;
 
 import java.util.function.Consumer;
 
@@ -8,7 +8,7 @@ import edu.udo.piq.PRoot;
 import edu.udo.piq.actions.PComponentAction;
 import edu.udo.piq.actions.PComponentActionObs;
 import edu.udo.piq.actions.PComponentBoolProperty;
-import edu.udo.piq.components.popup2.OverwritePSingleValueModel.OverwritePCheckBoxModel;
+import edu.udo.piq.components.popup.OverwritePSingleValueModel.OverwritePCheckBoxModel;
 
 public class PMenuCheckboxItem extends AbstractPMenuItem {
 	

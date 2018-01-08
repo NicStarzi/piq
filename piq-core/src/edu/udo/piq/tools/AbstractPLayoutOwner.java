@@ -57,7 +57,7 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 		if (getLayout() != null) {
 			ThrowException.ifNotEqual(this, getLayout().getOwner(),
 					"getLayout().getOwner() != this");
-			PStyleComponent style = getStyleFromSheet();
+			PStyleComponent style = getStyle();
 			if (style != null) {
 				getLayout().setStyleFromSheet(style.getLayoutStyle(this, getLayout()));
 			}
@@ -76,20 +76,21 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 		return layout;
 	}
 	
-	@Override
-	public void setStyleFromSheet(PStyleComponent style) {
-		super.setStyleFromSheet(style);
-		PReadOnlyLayout layout = getLayout();
-		if (layout == null) {
-			return;
-		}
-		PStyleComponent newStyle = getStyleFromSheet();
-		if (newStyle == null) {
-			getLayout().setStyleFromSheet(null);
-		} else {
-			getLayout().setStyleFromSheet(newStyle.getLayoutStyle(this, getLayout()));
-		}
-	}
+	//TODO
+//	@Override
+//	public void setStyleFromSheet(PStyleComponent style) {
+//		super.setStyleFromSheet(style);
+//		PReadOnlyLayout layout = getLayout();
+//		if (layout == null) {
+//			return;
+//		}
+//		PStyleComponent newStyle = getStyleFromSheet();
+//		if (newStyle == null) {
+//			getLayout().setStyleFromSheet(null);
+//		} else {
+//			getLayout().setStyleFromSheet(newStyle.getLayoutStyle(this, getLayout()));
+//		}
+//	}
 	
 	/**
 	 * Returns true if the {@link PReadOnlyLayout} of this container has at least

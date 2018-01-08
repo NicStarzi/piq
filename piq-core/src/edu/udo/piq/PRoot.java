@@ -11,7 +11,7 @@ import edu.udo.piq.components.PProgressBar;
 import edu.udo.piq.components.containers.PGlassPanel;
 import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.components.defaults.DefaultPDnDSupport;
-import edu.udo.piq.components.popup2.PMenuBar;
+import edu.udo.piq.components.popup.PMenuBar;
 import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.components.textbased.PTextArea;
 import edu.udo.piq.components.util.StandardFontKey;

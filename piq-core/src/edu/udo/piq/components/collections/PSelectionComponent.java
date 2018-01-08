@@ -14,11 +14,11 @@ import edu.udo.piq.actions.FocusOwnerAction;
 import edu.udo.piq.actions.PAccelerator;
 import edu.udo.piq.actions.PAccelerator.FocusPolicy;
 import edu.udo.piq.actions.PAccelerator.KeyInputType;
+import edu.udo.piq.components.popup.ImmutablePActionIndicator;
+import edu.udo.piq.components.popup.PComponentActionIndicator;
 import edu.udo.piq.actions.PActionKey;
 import edu.udo.piq.actions.PComponentAction;
 import edu.udo.piq.actions.StandardComponentActionKey;
-import edu.udo.piq.components.popup2.ImmutablePActionIndicator;
-import edu.udo.piq.components.popup2.PComponentActionIndicator;
 import edu.udo.piq.util.ThrowException;
 
 public interface PSelectionComponent extends PComponent {

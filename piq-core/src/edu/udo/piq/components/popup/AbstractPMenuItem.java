@@ -1,4 +1,4 @@
-package edu.udo.piq.components.popup2;
+package edu.udo.piq.components.popup;
 
 import java.util.Arrays;
 import java.util.Collections;

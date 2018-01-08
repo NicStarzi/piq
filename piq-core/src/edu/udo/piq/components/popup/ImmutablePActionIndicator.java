@@ -1,4 +1,4 @@
-package edu.udo.piq.components.popup2;
+package edu.udo.piq.components.popup;
 
 import edu.udo.piq.PRoot;
 import edu.udo.piq.actions.PAccelerator;

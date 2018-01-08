@@ -1,11 +1,11 @@
-package edu.udo.piq.components.popup2;
+package edu.udo.piq.components.popup;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.PSpacer;
-import edu.udo.piq.components.popup2.AbstractPMenuItem.MenuEntryPart;
+import edu.udo.piq.components.popup.AbstractPMenuItem.MenuEntryPart;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.tools.ImmutablePSize;
 

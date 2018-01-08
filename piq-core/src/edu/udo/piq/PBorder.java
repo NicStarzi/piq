@@ -8,7 +8,7 @@ public interface PBorder extends PStyleable<PStyleBorder> {
 	public PInsets getDefaultInsets(PComponent component);
 	
 	public default PInsets getInsets(PComponent component) {
-		PStyleBorder style = getStyleFromSheet();
+		PStyleBorder style = getStyle();
 		if (style == null) {
 			return getDefaultInsets(component);
 		} else {
@@ -19,7 +19,7 @@ public interface PBorder extends PStyleable<PStyleBorder> {
 	public void defaultRender(PRenderer renderer, PComponent component);
 	
 	public default void render(PRenderer renderer, PComponent component) {
-		PStyleBorder style = getStyleFromSheet();
+		PStyleBorder style = getStyle();
 		if (style == null) {
 			defaultRender(renderer, component);
 		} else {
@@ -30,7 +30,7 @@ public interface PBorder extends PStyleable<PStyleBorder> {
 	public boolean defaultFillsAllPixels(PComponent component);
 	
 	public default boolean fillsAllPixels(PComponent component) {
-		PStyleBorder style = getStyleFromSheet();
+		PStyleBorder style = getStyle();
 		if (style == null) {
 			return defaultFillsAllPixels(component);
 		} else {

@@ -1,4 +1,4 @@
-package edu.udo.piq.components.popup2;
+package edu.udo.piq.components.popup;
 
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PRoot;

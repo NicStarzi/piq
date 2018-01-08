@@ -117,7 +117,7 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 	}
 	
 	public default PSize getPreferredSize() {
-		PStyleComponent style = getStyleFromSheet();
+		PStyleComponent style = getStyle();
 		if (style == null) {
 			return getDefaultPreferredSize();
 		}
@@ -146,16 +146,6 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 		return false;
 	}
 	
-	public void setCustomStyle(PStyleComponent style);
-	
-	public PStyleComponent getCustomStyle();
-	
-	@Override
-	public void setStyleFromSheet(PStyleComponent style);
-	
-	@Override
-	public PStyleComponent getStyleFromSheet();
-	
 	public PBorder getBorder();
 	
 	/**
@@ -183,7 +173,7 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 	public default void defaultRender(PRenderer renderer) {}
 	
 	public default void render(PRenderer renderer) {
-		PStyleComponent style = getStyleFromSheet();
+		PStyleComponent style = getStyle();
 		if (style == null) {
 			defaultRender(renderer);
 		} else {
@@ -216,7 +206,7 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 		if (border != null && !border.fillsAllPixels(this)) {
 			return false;
 		}
-		PStyleComponent style = getStyleFromSheet();
+		PStyleComponent style = getStyle();
 		if (style == null) {
 			return defaultFillsAllPixels();
 		}

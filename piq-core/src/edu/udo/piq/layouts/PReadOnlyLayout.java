@@ -263,7 +263,7 @@ public interface PReadOnlyLayout extends PDisposable, PStyleable<PStyleLayout> {
 	}
 	
 	public default <E> E getStyleAttribute(Object attrKey, E defaultValue) {
-		PStyleLayout style = getStyleFromSheet();
+		PStyleLayout style = getStyle();
 		if (style == null) {
 			return defaultValue;
 		}

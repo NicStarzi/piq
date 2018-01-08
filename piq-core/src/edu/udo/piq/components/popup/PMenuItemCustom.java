@@ -1,4 +1,4 @@
-package edu.udo.piq.components.popup2;
+package edu.udo.piq.components.popup;
 
 import java.util.function.Consumer;
 import java.util.function.Function;

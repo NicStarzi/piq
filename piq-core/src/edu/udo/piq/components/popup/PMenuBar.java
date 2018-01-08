@@ -1,4 +1,4 @@
-package edu.udo.piq.components.popup2;
+package edu.udo.piq.components.popup;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;

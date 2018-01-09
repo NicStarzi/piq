@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 
+import edu.udo.piq.CallSuper;
 import edu.udo.piq.PBorder;
 import edu.udo.piq.PBorderObs;
 import edu.udo.piq.PBounds;
@@ -13,15 +14,16 @@ import edu.udo.piq.PCursor;
 import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PFocusTraversal;
 import edu.udo.piq.PKeyboard;
-import edu.udo.piq.PKeyboard.ActualKey;
-import edu.udo.piq.PKeyboard.Modifier;
 import edu.udo.piq.PKeyboardObs;
 import edu.udo.piq.PMouse;
-import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
+import edu.udo.piq.TemplateMethod;
+import edu.udo.piq.PKeyboard.ActualKey;
+import edu.udo.piq.PKeyboard.Modifier;
+import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.actions.PActionKey;
 import edu.udo.piq.actions.PComponentAction;
 import edu.udo.piq.actions.PComponentActionMap;
@@ -30,15 +32,14 @@ import edu.udo.piq.layouts.DefaultPLayoutPreference;
 import edu.udo.piq.layouts.PComponentLayoutData;
 import edu.udo.piq.layouts.PLayoutObs;
 import edu.udo.piq.layouts.PReadOnlyLayout;
+import edu.udo.piq.style.AbstractPStylable;
 import edu.udo.piq.style.PStyleBorder;
 import edu.udo.piq.style.PStyleComponent;
-import edu.udo.piq.style.PStyleLayout;
-import edu.udo.piq.style.PStyleObs;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PiqUtil;
 import edu.udo.piq.util.ThrowException;
 
-public class AbstractPComponent implements PComponent {
+public class AbstractPComponent extends AbstractPStylable<PStyleComponent> implements PComponent {
 	
 	/**
 	 * The value returned by {@link #isIgnoredByPicking()} if the user does not
@@ -52,9 +53,6 @@ public class AbstractPComponent implements PComponent {
 	 */
 	private PComponent parent;
 	private PBorder border;
-	protected PStyleComponent customStyle;
-	protected PStyleComponent sheetStyle;
-	protected PStyleObs styleObs = null;//lazy initialization
 	protected final DefaultPLayoutPreference layoutPref = new DefaultPLayoutPreference();
 	private PComponentLayoutData layoutData;
 	protected PComponentActionMap actionMap;
@@ -193,8 +191,6 @@ public class AbstractPComponent implements PComponent {
 	 * change of the parents root is noticed.<br>
 	 */
 	private PRoot cachedRoot;
-//	private PBounds cachedBounds;
-//	private boolean cachedBoundsInvalid = true;
 	protected final MutablePSize prefSize = new MutablePSize();
 	private MutablePBounds bndsNoBorder;
 	protected PCursor mouseOverCursor = null;
@@ -224,7 +220,6 @@ public class AbstractPComponent implements PComponent {
 	 * classes simple name.
 	 */
 	private String id = null;
-	private Object styleID = getClass();
 	/**
 	 * Cached for removing observers
 	 */
@@ -248,57 +243,29 @@ public class AbstractPComponent implements PComponent {
 		return null;
 	}
 	
+	@CallSuper
 	@Override
-	public void setCustomStyle(PStyleComponent style) {
-		setStyles(style, getStyleFromSheet());
-	}
-	
-	@Override
-	public PStyleComponent getCustomStyle() {
-		return customStyle;
-	}
-	
-	@Override
-	public void setStyleFromSheet(PStyleComponent style) {
-		setStyles(getCustomStyle(), style);
-	}
-	
-	@Override
-	public PStyleComponent getStyleFromSheet() {
-		return sheetStyle;
-	}
-	
-	protected void setStyles(PStyleComponent custom, PStyleComponent sheet) {
-		PStyleComponent oldActiveStyle = getStyle();
-		customStyle = custom;
-		sheetStyle = sheet;
-		PStyleComponent newActiveStyle = getStyle();
-		if (oldActiveStyle == newActiveStyle) {
-			return;
-		}
+	protected void onActiveStyleChanged(PStyleComponent oldActiveStyle, PStyleComponent newActiveStyle) {
 		if (oldActiveStyle != null) {
-			oldActiveStyle.removeObs(styleObs);
-			if (newActiveStyle == null) {
-				styleObs = null;
-			}
+			oldActiveStyle.removeStyledComponent(this);
 		}
 		if (newActiveStyle != null) {
-			if (styleObs == null) {
-				styleObs = new PStyleObs() {
-					@Override
-					public void onSizeChanged() {
-						AbstractPComponent.this.firePreferredSizeChangedEvent();
-					}
-					@Override
-					public void onReRenderEvent() {
-						AbstractPComponent.this.fireReRenderEvent();
-					}
-				};
-			}
-			newActiveStyle.addObs(styleObs);
+			newActiveStyle.addStyledComponent(this);
 		}
 		refreshBorderAndLayoutStyle();
 		firePreferredSizeChangedEvent();
+		fireReRenderEvent();
+	}
+	
+	@CallSuper
+	@Override
+	protected void onStyleSizeChangedEvent() {
+		firePreferredSizeChangedEvent();
+	}
+	
+	@CallSuper
+	@Override
+	protected void onStyleReRenderEvent() {
 		fireReRenderEvent();
 	}
 	
@@ -308,23 +275,24 @@ public class AbstractPComponent implements PComponent {
 		PBorder border = getBorder();
 		if (border != null) {
 			if (style == null) {
-				border.setStyleFromSheet(null);
+				border.setInheritedStyle(null);
 			} else {
 				PStyleBorder borderStyle = style.getBorderStyle(this, border);
-				border.setStyleFromSheet(borderStyle);
+				border.setInheritedStyle(borderStyle);
 			}
 		}
-		PReadOnlyLayout layout = getLayout();
-		if (layout != null) {
-			if (style == null) {
-				layout.setStyleFromSheet(null);
-			} else {
-				PStyleLayout layoutStyle = style.getLayoutStyle(this, layout);
-				layout.setStyleFromSheet(layoutStyle);
-			}
-		}
+//		PReadOnlyLayout layout = getLayout();
+//		if (layout != null) {
+//			if (style == null) {
+//				layout.setInheritedStyle(null);
+//			} else {
+//				PStyleLayout layoutStyle = style.getLayoutStyle(this, layout);
+//				layout.setInheritedStyle(layoutStyle);
+//			}
+//		}
 	}
 	
+	@CallSuper
 	@Override
 	public void setParent(PComponent parent) throws IllegalArgumentException, IllegalStateException {
 		if (parent != null && this.parent != null) {
@@ -359,6 +327,7 @@ public class AbstractPComponent implements PComponent {
 		}
 	}
 	
+	@CallSuper
 	private void setCachedRoot(PComponent oldParent, PRoot root) {
 		PRoot oldCachedRoot = cachedRoot;
 		if (oldCachedRoot == root) {
@@ -395,6 +364,7 @@ public class AbstractPComponent implements PComponent {
 		registerMouseObs();
 	}
 	
+	@CallSuper
 	private void registerKeyBoardObs() {
 		if (keyObsRegistered && keyboardObsList.isEmpty()) {
 			currentKeyboard.removeObs(delegateKeyObs);
@@ -407,6 +377,7 @@ public class AbstractPComponent implements PComponent {
 		}
 	}
 	
+	@CallSuper
 	private void registerMouseObs() {
 		if (mouseObsRegistered && mouseObsList.isEmpty()) {
 			currentMouse.removeObs(delegateMouseObs);
@@ -451,6 +422,7 @@ public class AbstractPComponent implements PComponent {
 		return data.getComponentBounds();
 	}
 	
+	@CallSuper
 	@Override
 	public PBounds getBoundsWithoutBorder() {
 		PBounds bounds = getBounds();
@@ -476,6 +448,7 @@ public class AbstractPComponent implements PComponent {
 		return layoutPref;
 	}
 	
+	@CallSuper
 	@Override
 	public PComponentLayoutData getLayoutData() {
 		// no parent => no layout data
@@ -560,6 +533,7 @@ public class AbstractPComponent implements PComponent {
 	 * Refreshes the layout as needed.<br>
 	 * May fire a {@link #firePreferredSizeChangedEvent()} as necessary.<br>
 	 */
+	@CallSuper
 	@Override
 	public void redoLayOut() {
 		if (needReLayout && getLayout() != null) {
@@ -796,6 +770,7 @@ public class AbstractPComponent implements PComponent {
 		focusObsList.fireEvent(obs -> obs.onFocusLost(this));
 	}
 	
+	@CallSuper
 	protected void checkForBoundsChange() {
 		final PBounds currentBounds = getBounds();
 		final int currentX;
@@ -830,6 +805,7 @@ public class AbstractPComponent implements PComponent {
 		}
 	}
 	
+	@CallSuper
 	protected void checkForPreferredSizeChange() {
 		PSize currentPrefSize = getPreferredSize();
 		if (lastPrefW != currentPrefSize.getWidth()
@@ -843,14 +819,19 @@ public class AbstractPComponent implements PComponent {
 		}
 	}
 	
+	@TemplateMethod
 	protected void onRootChanged(PRoot oldRoot) {}
 	
+	@TemplateMethod
 	protected void onAddedToUi(PRoot newRoot) {}
 	
+	@TemplateMethod
 	protected void onRemovedFromUi(PRoot oldRoot) {}
 	
+	@TemplateMethod
 	protected void onParentChanged(PComponent oldParent) {}
 	
+	@TemplateMethod
 	protected void onThisLaidOut(PComponentLayoutData data) {}
 	
 	@Override

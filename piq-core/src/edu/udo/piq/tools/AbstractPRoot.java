@@ -17,7 +17,6 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PComponentObs;
 import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PFocusTraversal;
-import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PKeyboardObs;
 import edu.udo.piq.PMouse;
@@ -27,6 +26,7 @@ import edu.udo.piq.PRoot;
 import edu.udo.piq.PRootObs;
 import edu.udo.piq.PRootOverlay;
 import edu.udo.piq.PTimer;
+import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.components.containers.DefaultPRootOverlay;
 import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.dnd.PDnDManager;
@@ -469,11 +469,11 @@ public abstract class AbstractPRoot implements PRoot {
 			return;
 		}
 		if (oldStyleSheet != null) {
-			oldStyleSheet.setRoot(null);
+			oldStyleSheet.onRemovedFromRoot(this);
 		}
 		this.styleSheet = styleSheet;
 		if (getStyleSheet() != null) {
-			getStyleSheet().setRoot(this);
+			getStyleSheet().onAddedToRoot(this);
 		}
 		fireStyleSheetChanged(oldStyleSheet);
 		scheduleLayout(this);

@@ -1,14 +1,14 @@
 package edu.udo.piq.style;
 
-public interface PStyleable<E> {
+public interface PStyleable<E extends PStyle> {
 	
 	public void setCustomStyle(E style);
 	
 	public E getCustomStyle();
 	
-	public void setStyleFromSheet(E style);
+	public void setInheritedStyle(E style);
 	
-	public E getStyleFromSheet();
+	public E getInheritedStyle();
 	
 	public Object getStyleID();
 	
@@ -17,7 +17,7 @@ public interface PStyleable<E> {
 		if (customStyle != null) {
 			return customStyle;
 		}
-		return getStyleFromSheet();
+		return getInheritedStyle();
 	}
 	
 }

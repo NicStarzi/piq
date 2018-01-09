@@ -5,7 +5,7 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PRenderer;
 
-public interface PStyleBorder {
+public interface PStyleBorder extends PStyle {
 	
 	public static final PStyleBorder DEFAULT_BORDER_STYLE = new PStyleBorder() {
 		@Override
@@ -46,9 +46,5 @@ public interface PStyleBorder {
 	{
 		return border.defaultFillsAllPixels(component);
 	}
-	
-	public void addObs(PStyleObs obs);
-	
-	public void removeObs(PStyleObs obs);
 	
 }

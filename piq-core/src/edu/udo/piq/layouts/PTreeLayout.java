@@ -211,7 +211,7 @@ public class PTreeLayout extends AbstractMapPLayout implements PReadOnlyLayout {
 	}
 	
 	public PInsets getInsets() {
-		return getStyleAttribute(ATTRIBUTE_KEY_INSETS, insets);
+		return insets;
 	}
 	
 	public void setIndentSize(int value) {
@@ -235,7 +235,7 @@ public class PTreeLayout extends AbstractMapPLayout implements PReadOnlyLayout {
 	}
 	
 	public int getGap() {
-		return getStyleAttribute(ATTRIBUTE_KEY_GAP, gap);
+		return gap;
 	}
 	
 	public void setHideRootNode(boolean value) {

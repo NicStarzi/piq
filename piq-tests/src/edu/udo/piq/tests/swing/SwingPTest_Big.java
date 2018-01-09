@@ -166,7 +166,7 @@ public class SwingPTest_Big extends AbstractSwingPTest {
 		bodyPnl.addChild(btnPnl, PBorderLayout.BorderLayoutConstraint.BOTTOM);
 		
 		final PButton btnChange = new PButton();
-		btnChange.setGlobalEventProvider((btn) -> "CreateNew");
+//		btnChange.setGlobalEventProvider((btn) -> "CreateNew");
 		btnChange.setID("Change Button");
 		btnChange.setContent(new PSlider());
 //		btnChange.setContent(new PLabel(new DefaultPTextModel("Change")));

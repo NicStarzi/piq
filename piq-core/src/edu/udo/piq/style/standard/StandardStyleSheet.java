@@ -8,10 +8,8 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.borders.PButtonBorder;
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.textbased.PLabel;
-import edu.udo.piq.layouts.PReadOnlyLayout;
 import edu.udo.piq.style.PStyleBorder;
 import edu.udo.piq.style.PStyleComponent;
-import edu.udo.piq.style.PStyleLayout;
 import edu.udo.piq.tools.AbstractPStyleSheet;
 
 public class StandardStyleSheet extends AbstractPStyleSheet {
@@ -21,9 +19,9 @@ public class StandardStyleSheet extends AbstractPStyleSheet {
 		styleMapComp.put(PButton.class, new StandardButtonStyle());
 		styleMapComp.put(PLabel.class, new StandardLabelStyle());
 	}
-	protected final Map<Object, PStyleLayout> styleMapLayout = new HashMap<>();
-	{
-	}
+//	protected final Map<Object, PStyleLayout> styleMapLayout = new HashMap<>();
+//	{
+//	}
 	protected final Map<Object, PStyleBorder> styleMapBorder = new HashMap<>();
 	{
 		styleMapBorder.put(PButtonBorder.class, new StandardButtonBorderStyle());
@@ -39,14 +37,14 @@ public class StandardStyleSheet extends AbstractPStyleSheet {
 		return styleMapComp.get(key);
 	}
 	
-	public PStyleLayout getStyleFor(PReadOnlyLayout layout) {
-		Object key = layout.getStyleID();
-		if (key == null) {
-			return PStyleLayout.DEFAULT_LAYOUT_STYLE;
-		}
-		// Style might be null. Thats okay.
-		return styleMapLayout.get(key);
-	}
+//	public PStyleLayout getStyleFor(PReadOnlyLayout layout) {
+//		Object key = layout.getStyleID();
+//		if (key == null) {
+//			return PStyleLayout.DEFAULT_LAYOUT_STYLE;
+//		}
+//		// Style might be null. Thats okay.
+//		return styleMapLayout.get(key);
+//	}
 	
 	public PStyleBorder getStyleFor(PBorder border) {
 		Object key = border.getStyleID();
@@ -59,6 +57,6 @@ public class StandardStyleSheet extends AbstractPStyleSheet {
 	
 	@Override
 	protected void onComponentAdded(PComponent addedComponent) {
-		addedComponent.setStyleFromSheet(getStyleFor(addedComponent));
+		addedComponent.setInheritedStyle(getStyleFor(addedComponent));
 	}
 }

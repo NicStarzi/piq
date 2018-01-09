@@ -28,7 +28,6 @@ import edu.udo.piq.layouts.PRootLayout;
 import edu.udo.piq.layouts.PRootLayout.Constraint;
 import edu.udo.piq.style.PStyleBorder;
 import edu.udo.piq.style.PStyleComponent;
-import edu.udo.piq.style.PStyleLayout;
 import edu.udo.piq.style.PStyleSheet;
 import edu.udo.piq.style.PStyleable;
 import edu.udo.piq.tools.AbstractPTextComponent;
@@ -149,7 +148,7 @@ public interface PRoot extends PComponent {
 	 * @author Nic
 	 */
 	@Override
-	public default void setStyleFromSheet(PStyleComponent style)
+	public default void setInheritedStyle(PStyleComponent style)
 			throws UnsupportedOperationException
 	{
 		throw new UnsupportedOperationException("this instanceof PRoot");
@@ -161,7 +160,7 @@ public interface PRoot extends PComponent {
 	 * @author Nic
 	 */
 	@Override
-	public default PStyleComponent getStyleFromSheet() {
+	public default PStyleComponent getInheritedStyle() {
 		return null;
 	}
 	
@@ -300,7 +299,6 @@ public interface PRoot extends PComponent {
 	 * @see PStyleSheet
 	 * @see PStyleable
 	 * @see PStyleComponent
-	 * @see PStyleLayout
 	 * @see PStyleBorder
 	 */
 	public PStyleSheet getStyleSheet();

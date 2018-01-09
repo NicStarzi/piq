@@ -6,7 +6,6 @@ import edu.udo.piq.layouts.PComponentLayoutData;
 import edu.udo.piq.layouts.PLayout;
 import edu.udo.piq.layouts.PLayoutObs;
 import edu.udo.piq.layouts.PReadOnlyLayout;
-import edu.udo.piq.style.PStyleComponent;
 import edu.udo.piq.util.ThrowException;
 
 public abstract class AbstractPLayoutOwner extends AbstractPComponent {
@@ -49,7 +48,7 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 		PLayout oldLayout = (PLayout) getLayout();
 		if (oldLayout != null) {
 			oldLayout.removeObs(layoutObs);
-			oldLayout.setStyleFromSheet(null);
+//			oldLayout.setInheritedStyle(null);
 			oldLayout.clearChildren();
 			oldLayout.dispose();
 		}
@@ -57,10 +56,10 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 		if (getLayout() != null) {
 			ThrowException.ifNotEqual(this, getLayout().getOwner(),
 					"getLayout().getOwner() != this");
-			PStyleComponent style = getStyle();
-			if (style != null) {
-				getLayout().setStyleFromSheet(style.getLayoutStyle(this, getLayout()));
-			}
+//			PStyleComponent style = getStyle();
+//			if (style != null) {
+//				getLayout().setInheritedStyle(style.getLayoutStyle(this, getLayout()));
+//			}
 			getLayout().addObs(layoutObs);
 			fireReLayOutEvent();
 		}
@@ -75,22 +74,6 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 	protected PLayout getLayoutInternal() {
 		return layout;
 	}
-	
-	//TODO
-//	@Override
-//	public void setStyleFromSheet(PStyleComponent style) {
-//		super.setStyleFromSheet(style);
-//		PReadOnlyLayout layout = getLayout();
-//		if (layout == null) {
-//			return;
-//		}
-//		PStyleComponent newStyle = getStyleFromSheet();
-//		if (newStyle == null) {
-//			getLayout().setStyleFromSheet(null);
-//		} else {
-//			getLayout().setStyleFromSheet(newStyle.getLayoutStyle(this, getLayout()));
-//		}
-//	}
 	
 	/**
 	 * Returns true if the {@link PReadOnlyLayout} of this container has at least

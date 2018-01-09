@@ -229,7 +229,7 @@ public class PGridListLayout extends AbstractMapPLayout {
 	}
 	
 	public PInsets getInsets() {
-		return getStyleAttribute(ATTRIBUTE_KEY_INSETS, insets);
+		return insets;
 	}
 	
 	public List<PComponent> getChildren(PTableIndex index) {

@@ -6,16 +6,17 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PFontResource;
-import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
+import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.components.textbased.PLabel;
+import edu.udo.piq.style.MutablePStyle;
 import edu.udo.piq.style.PStyleComponent;
 import edu.udo.piq.tools.AbstractPRoot.FontInfo;
 import edu.udo.piq.util.ThrowException;
 
-public class StandardLabelStyle implements PStyleComponent {
+public class StandardLabelStyle extends MutablePStyle implements PStyleComponent {
 	
 	public static final Object FONT_ID = new FontInfo("Monospaced", 18, Style.PLAIN);
 	public static final PColor DEFAULT_TEXT_COLOR = PColor.BLACK;
@@ -29,6 +30,8 @@ public class StandardLabelStyle implements PStyleComponent {
 		if (!Objects.equals(getFontId(), value)) {
 			fontId = value;
 			cachedFont = null;
+			fireSizeChangedEvent();
+			fireReRenderEvent();
 		}
 	}
 	
@@ -37,7 +40,10 @@ public class StandardLabelStyle implements PStyleComponent {
 	}
 	
 	public void setTextColor(PColor value) {
-		txtColor = value;
+		if (!Objects.equals(getTextColor(), value)) {
+			txtColor = value;
+			fireReRenderEvent();
+		}
 	}
 	
 	public PColor getTextColor() {
@@ -45,7 +51,10 @@ public class StandardLabelStyle implements PStyleComponent {
 	}
 	
 	public void setBackgroundColor(PColor value) {
-		bgColor = value;
+		if (!Objects.equals(getBackgroundColor(), value)) {
+			bgColor = value;
+			fireReRenderEvent();
+		}
 	}
 	
 	public PColor getBackgroundColor() {

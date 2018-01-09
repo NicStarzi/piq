@@ -91,7 +91,7 @@ public class PListLayout extends AbstractMapPLayout {
 	}
 	
 	public int getGap() {
-		return getStyleAttribute(ATTRIBUTE_KEY_GAP, gap);
+		return gap;
 	}
 	
 	public void setAlignment(ListAlignment value) {
@@ -120,7 +120,7 @@ public class PListLayout extends AbstractMapPLayout {
 	}
 	
 	public AlignmentX getAlignmentX() {
-		return getStyleAttribute(PReadOnlyLayout.ATTRIBUTE_KEY_ALIGNMENT_X, alignX);
+		return alignX;
 	}
 	
 	public void setAlignmentY(AlignmentY value) {
@@ -132,7 +132,7 @@ public class PListLayout extends AbstractMapPLayout {
 	}
 	
 	public AlignmentY getAlignmentY() {
-		return getStyleAttribute(PReadOnlyLayout.ATTRIBUTE_KEY_ALIGNMENT_Y, alignY);
+		return alignY;
 	}
 	
 	public void setInsets(PInsets value) {
@@ -144,7 +144,7 @@ public class PListLayout extends AbstractMapPLayout {
 	}
 	
 	public PInsets getInsets() {
-		return getStyleAttribute(ATTRIBUTE_KEY_INSETS, insets);
+		return insets;
 	}
 	
 	public PComponent getChild(int index) {

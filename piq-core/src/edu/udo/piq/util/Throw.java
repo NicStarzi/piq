@@ -10,14 +10,14 @@ public class Throw {
 	public static <E> E ifNull(E obj, String optionalMsg)
 			throws IllegalArgumentException
 	{
-		return ifNull(obj, () -> optionalMsg);
+		return Throw.ifNull(obj, () -> optionalMsg);
 	}
 	
 	public static <E> E ifNull(E obj, Supplier<String> optionalMsg)
 			throws IllegalArgumentException
 	{
 		if (obj == null) {
-			iae(optionalMsg);
+			Throw.iae(optionalMsg);
 		}
 		return obj;
 	}
@@ -26,7 +26,7 @@ public class Throw {
 			throws IllegalArgumentException
 	{
 		if (obj != null) {
-			iae(optionalMsg);
+			Throw.iae(optionalMsg);
 		}
 	}
 	
@@ -34,7 +34,7 @@ public class Throw {
 			throws IllegalArgumentException
 	{
 		if (guard.equals(value)) {
-			iae(optionalMsg);
+			Throw.iae(optionalMsg);
 		}
 	}
 	
@@ -42,7 +42,7 @@ public class Throw {
 			throws IllegalArgumentException
 	{
 		if (!guard.equals(value)) {
-			iae(optionalMsg);
+			Throw.iae(optionalMsg);
 		}
 	}
 	
@@ -50,7 +50,7 @@ public class Throw {
 			throws IllegalArgumentException
 	{
 		if (value == guard) {
-			iae(optionalMsg);
+			Throw.iae(optionalMsg);
 		}
 	}
 	
@@ -58,7 +58,7 @@ public class Throw {
 			throws IllegalArgumentException
 	{
 		if (value == guard) {
-			iae(optionalMsg);
+			Throw.iae(optionalMsg);
 		}
 	}
 	
@@ -66,7 +66,7 @@ public class Throw {
 			throws IllegalArgumentException
 	{
 		if (value < min) {
-			iae(optionalMsg);
+			Throw.iae(optionalMsg);
 		}
 	}
 	
@@ -74,29 +74,29 @@ public class Throw {
 			throws IllegalArgumentException
 	{
 		if (value < min) {
-			iae(optionalMsg);
+			Throw.iae(optionalMsg);
 		}
 	}
 	
 	public static void ifLessOrEqual(long min, long value, Supplier<String> optionalMsg)
 			throws IllegalArgumentException
 	{
-		ifLess(min, value, optionalMsg);
-		ifEqual(min, value, optionalMsg);
+		Throw.ifLess(min, value, optionalMsg);
+		Throw.ifEqual(min, value, optionalMsg);
 	}
 	
 	public static void ifLessOrEqual(double min, double value, Supplier<String> optionalMsg)
 			throws IllegalArgumentException
 	{
-		ifLess(min, value, optionalMsg);
-		ifEqual(min, value, optionalMsg);
+		Throw.ifLess(min, value, optionalMsg);
+		Throw.ifEqual(min, value, optionalMsg);
 	}
 	
 	public static void ifMore(long max, long value, Supplier<String> optionalMsg)
 			throws IllegalArgumentException
 	{
 		if (value > max) {
-			iae(optionalMsg);
+			Throw.iae(optionalMsg);
 		}
 	}
 	
@@ -104,29 +104,29 @@ public class Throw {
 			throws IllegalArgumentException
 	{
 		if (value > max) {
-			iae(optionalMsg);
+			Throw.iae(optionalMsg);
 		}
 	}
 	
 	public static void ifMoreOrEqual(long max, long value, Supplier<String> optionalMsg)
 			throws IllegalArgumentException
 	{
-		ifMore(max, value, optionalMsg);
-		ifEqual(max, value, optionalMsg);
+		Throw.ifMore(max, value, optionalMsg);
+		Throw.ifEqual(max, value, optionalMsg);
 	}
 	
 	public static void ifMoreOrEqual(double max, double value, Supplier<String> optionalMsg)
 			throws IllegalArgumentException
 	{
-		ifMore(max, value, optionalMsg);
-		ifEqual(max, value, optionalMsg);
+		Throw.ifMore(max, value, optionalMsg);
+		Throw.ifEqual(max, value, optionalMsg);
 	}
 	
 	public static void ifWithin(long min, long max, long value, Supplier<String> optionalMsg)
 			throws IllegalArgumentException
 	{
 		if (value >= min && value <= max) {
-			iae(optionalMsg);
+			Throw.iae(optionalMsg);
 		}
 	}
 	
@@ -134,59 +134,59 @@ public class Throw {
 			throws IllegalArgumentException
 	{
 		if (value >= min && value <= max) {
-			iae(optionalMsg);
+			Throw.iae(optionalMsg);
 		}
 	}
 	
 	public static void ifNotWithinArrayBounds(int[] arr, long index, Supplier<String> optionalMsg)
 			throws IllegalArgumentException
 	{
-		ifNotWithin(0, arr.length - 1, index, optionalMsg);
+		Throw.ifNotWithin(0, arr.length - 1, index, optionalMsg);
 	}
 	
 	public static void ifNotWithinArrayBounds(double[] arr, long index, Supplier<String> optionalMsg)
 			throws IllegalArgumentException
 	{
-		ifNotWithin(0, arr.length - 1, index, optionalMsg);
+		Throw.ifNotWithin(0, arr.length - 1, index, optionalMsg);
 	}
 	
 	public static void ifNotWithinArrayBounds(boolean[] arr, long index, Supplier<String> optionalMsg)
 			throws IllegalArgumentException
 	{
-		ifNotWithin(0, arr.length - 1, index, optionalMsg);
+		Throw.ifNotWithin(0, arr.length - 1, index, optionalMsg);
 	}
 	
 	public static <E> void ifNotWithinArrayBounds(E[] arr, long index, Supplier<String> optionalMsg)
 			throws IllegalArgumentException
 	{
-		ifNotWithin(0, arr.length - 1, index, optionalMsg);
+		Throw.ifNotWithin(0, arr.length - 1, index, optionalMsg);
 	}
 	
 	public static void ifNotWithinSize(Collection<?> col, long index, Supplier<String> optionalMsg)
 			throws IllegalArgumentException
 	{
-		ifNotWithin(0, col.size() - 1, index, optionalMsg);
+		Throw.ifNotWithin(0, col.size() - 1, index, optionalMsg);
 	}
 	
 	public static void ifNotWithin(long min, long max, long value, Supplier<String> optionalMsg)
 			throws IllegalArgumentException
 	{
-		ifLess(min, value, optionalMsg);
-		ifMore(max, value, optionalMsg);
+		Throw.ifLess(min, value, optionalMsg);
+		Throw.ifMore(max, value, optionalMsg);
 	}
 	
 	public static void ifNotWithin(double min, double max, double value, Supplier<String> optionalMsg)
 			throws IllegalArgumentException
 	{
-		ifLess(min, value, optionalMsg);
-		ifMore(max, value, optionalMsg);
+		Throw.ifLess(min, value, optionalMsg);
+		Throw.ifMore(max, value, optionalMsg);
 	}
 	
 	public static void ifTrue(boolean condition, Supplier<String> optionalMsg)
 			throws IllegalStateException
 	{
 		if (condition) {
-			ise(optionalMsg);
+			Throw.ise(optionalMsg);
 		}
 	}
 	
@@ -194,7 +194,7 @@ public class Throw {
 			throws IllegalStateException
 	{
 		if (!condition) {
-			ise(optionalMsg);
+			Throw.ise(optionalMsg);
 		}
 	}
 	
@@ -202,7 +202,7 @@ public class Throw {
 			throws IllegalStateException
 	{
 		if (condition.test(elem)) {
-			ise(optionalMsg);
+			Throw.ise(optionalMsg);
 		}
 	}
 	
@@ -210,23 +210,25 @@ public class Throw {
 			throws IllegalStateException
 	{
 		if (!condition.test(elem)) {
-			ise(optionalMsg);
+			Throw.ise(optionalMsg);
 		}
 	}
 	
+	@SuppressWarnings("unlikely-arg-type")
 	public static void ifContains(Collection<?> collection, Object obj, Supplier<String> optionalMsg)
 			throws IllegalArgumentException
 	{
 		if (collection.contains(obj)) {
-			iae(optionalMsg);
+			Throw.iae(optionalMsg);
 		}
 	}
 	
+	@SuppressWarnings("unlikely-arg-type")
 	public static void ifNotContains(Collection<?> collection, Object obj, Supplier<String> optionalMsg)
 			throws IllegalArgumentException
 	{
 		if (!collection.contains(obj)) {
-			iae(optionalMsg);
+			Throw.iae(optionalMsg);
 		}
 	}
 	
@@ -235,7 +237,7 @@ public class Throw {
 	{
 		for (E other : array) {
 			if (Objects.equals(elem, other)) {
-				iae(optionalMsg);
+				Throw.iae(optionalMsg);
 				return;
 			}
 		}
@@ -249,7 +251,7 @@ public class Throw {
 				return;
 			}
 		}
-		iae(optionalMsg);
+		Throw.iae(optionalMsg);
 	}
 	
 	public static void ifContains(int[] array, int elem, Supplier<String> optionalMsg)
@@ -257,7 +259,7 @@ public class Throw {
 	{
 		for (int i = 0; i < array.length; i++) {
 			if (array[i] == elem) {
-				iae(optionalMsg);
+				Throw.iae(optionalMsg);
 				return;
 			}
 		}
@@ -271,7 +273,7 @@ public class Throw {
 				return;
 			}
 		}
-		iae(optionalMsg);
+		Throw.iae(optionalMsg);
 	}
 	
 	public static void ifContains(double[] array, double elem, Supplier<String> optionalMsg)
@@ -279,7 +281,7 @@ public class Throw {
 	{
 		for (int i = 0; i < array.length; i++) {
 			if (array[i] == elem) {
-				iae(optionalMsg);
+				Throw.iae(optionalMsg);
 				return;
 			}
 		}
@@ -293,7 +295,7 @@ public class Throw {
 				return;
 			}
 		}
-		iae(optionalMsg);
+		Throw.iae(optionalMsg);
 	}
 	
 	public static void always(Supplier<String> optionalMsg)
@@ -307,11 +309,11 @@ public class Throw {
 	
 	@SuppressWarnings("unchecked") // this is safe because of the instanceof check
 	public static <E> E ifTypeCastFails(Object obj, Class<E> clazz, Supplier<String> optionalMsg) {
-		ifNull(obj, optionalMsg);
+		Throw.ifNull(obj, optionalMsg);
 		if (clazz.isInstance(obj)) {
 			return (E) obj;
 		} else {
-			iae(optionalMsg);
+			Throw.iae(optionalMsg);
 			// this can never happen!
 			throw new UnsupportedOperationException();
 		}

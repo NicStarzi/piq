@@ -48,7 +48,7 @@ public class PLayeredLayout extends AbstractMapPLayout {
 	}
 	
 	public PInsets getInsets() {
-		return getStyleAttribute(ATTRIBUTE_KEY_INSETS, insets);
+		return insets;
 	}
 	
 	public void setAlignment(AlignmentX alignmentX, AlignmentY alignmentY) {

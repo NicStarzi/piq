@@ -1,12 +1,11 @@
 package edu.udo.piq.tools;
 
-import java.util.Objects;
-
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PRootObs;
 import edu.udo.piq.style.PStyleComponent;
 import edu.udo.piq.style.PStyleSheet;
+import edu.udo.piq.util.Throw;
 
 public class AbstractPStyleSheet implements PStyleSheet {
 	
@@ -25,13 +24,8 @@ public class AbstractPStyleSheet implements PStyleSheet {
 	protected PRoot root;
 	
 	@Override
-	public void setRoot(PRoot root) {
-		if (Objects.equals(getRoot(), root)) {
-			return;
-		}
-		if (getRoot() != null) {
-			getRoot().removeObs(rootObs);
-		}
+	public void onAddedToRoot(PRoot root) {
+		Throw.ifNotNull(getRoot(), () -> "getRoot() != null");
 		this.root = root;
 		if (getRoot() != null) {
 			getRoot().addObs(rootObs);
@@ -39,6 +33,14 @@ public class AbstractPStyleSheet implements PStyleSheet {
 	}
 	
 	@Override
+	public void onRemovedFromRoot(PRoot root) {
+		Throw.ifNull(getRoot(), "getRoot() == null");
+		if (getRoot() != null) {
+			getRoot().removeObs(rootObs);
+		}
+		this.root = null;
+	}
+	
 	public PRoot getRoot() {
 		return root;
 	}

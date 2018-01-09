@@ -1,5 +1,7 @@
 package edu.udo.piq.style.standard;
 
+import java.util.Objects;
+
 import edu.udo.piq.PBorder;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
@@ -7,15 +9,13 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.borders.PButtonBorder;
 import edu.udo.piq.components.PButton;
-import edu.udo.piq.layouts.PAnchorLayout;
-import edu.udo.piq.layouts.PReadOnlyLayout;
+import edu.udo.piq.style.MutablePStyle;
 import edu.udo.piq.style.PStyleBorder;
 import edu.udo.piq.style.PStyleComponent;
-import edu.udo.piq.style.PStyleLayout;
 import edu.udo.piq.tools.ImmutablePColor;
 import edu.udo.piq.util.ThrowException;
 
-public class StandardButtonStyle implements PStyleComponent {
+public class StandardButtonStyle extends MutablePStyle implements PStyleComponent {
 	
 	protected PColor bgColor = new ImmutablePColor(0.66, 0.66, 1.0);
 	protected PColor focusColor = new ImmutablePColor(1.0, 1.0, 0.33);
@@ -30,7 +30,10 @@ public class StandardButtonStyle implements PStyleComponent {
 	}
 	
 	public void setFocusColor(PColor value) {
-		focusColor = value;
+		if (!Objects.equals(getFocusColor(), value)) {
+			focusColor = value;
+			fireReRenderEvent();
+		}
 	}
 	
 	public PColor getFocusColor() {
@@ -38,7 +41,10 @@ public class StandardButtonStyle implements PStyleComponent {
 	}
 	
 	public void setBackgroundColor(PColor value) {
-		bgColor = value;
+		if (!Objects.equals(getBackgroundColor(), value)) {
+			bgColor = value;
+			fireReRenderEvent();
+		}
 	}
 	
 	public PColor getBackgroundColor() {
@@ -78,15 +84,15 @@ public class StandardButtonStyle implements PStyleComponent {
 		return PStyleBorder.DEFAULT_BORDER_STYLE;
 	}
 	
-	@Override
-	public PStyleLayout getLayoutStyle(PComponent component, PReadOnlyLayout layout) {
-		if (sheet != null) {
-			return sheet.getStyleFor(layout);
-		}
-		if (layout instanceof PAnchorLayout) {
-			return new StandardButtonLayoutStyle();
-		}
-		return PStyleLayout.DEFAULT_LAYOUT_STYLE;
-	}
+//	@Override
+//	public PStyleLayout getLayoutStyle(PComponent component, PReadOnlyLayout layout) {
+//		if (sheet != null) {
+//			return sheet.getStyleFor(layout);
+//		}
+//		if (layout instanceof PAnchorLayout) {
+//			return new StandardButtonLayoutStyle();
+//		}
+//		return PStyleLayout.DEFAULT_LAYOUT_STYLE;
+//	}
 	
 }

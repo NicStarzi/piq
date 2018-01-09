@@ -27,6 +27,21 @@ public class PiqUtil {
 	}
 	
 	/**
+	 * Creates a new instance of {@link ObserverList} and returns it.<br>
+	 * Use this method if you are not sure which implementation of
+	 * {@link ObserverList} is the best for your use case. This method
+	 * will always return the default implementation that should be used
+	 * in the most general case.<br>
+	 * @return		a non-null instance of {@link ObserverList}
+	 * @see ObserverList
+	 */
+	public static <T> ObserverList<T> createDefaultObserverList() {
+//		return new ArrayObsList<>();
+		return new BufferedObsList<>();
+//		return new BufferedWeakRefObsList<>();// for debugging purposes only
+	}
+	
+	/**
 	 * Returns the portion of the components {@link PBounds} that is not
 	 * clipped by the bounds of an ancestor of the component.<br>
 	 * More specifically the returned {@link PBounds} are those bounds that
@@ -87,20 +102,6 @@ public class PiqUtil {
 		result.setWidth(clipW);
 		result.setHeight(clipH);
 		return result;
-	}
-	
-	/**
-	 * Creates a new instance of {@link ObserverList} and returns it.<br>
-	 * Use this method if you are not sure which implementation of
-	 * {@link ObserverList} is the best for your use case. This method
-	 * will always return the default implementation that should be used
-	 * in the most general case.<br>
-	 * @return		a non-null instance of {@link ObserverList}
-	 * @see ObserverList
-	 */
-	public static <T> ObserverList<T> createDefaultObserverList() {
-//		return new ArrayObsList<>();
-		return new BufferedObsList<>();
 	}
 	
 	/**

@@ -7,12 +7,13 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.components.PButton;
+import edu.udo.piq.style.MutablePStyle;
 import edu.udo.piq.style.PStyleBorder;
 import edu.udo.piq.tools.ImmutablePColor;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.util.ThrowException;
 
-public class StandardButtonBorderStyle implements PStyleBorder {
+public class StandardButtonBorderStyle extends MutablePStyle implements PStyleBorder {
 	
 	public static final PInsets INSETS = new ImmutablePInsets(2);
 	protected PColor lightInner = new ImmutablePColor(0.66, 0.66, 1.0);
@@ -22,6 +23,7 @@ public class StandardButtonBorderStyle implements PStyleBorder {
 	
 	public void setColorHighlightInner(PColor value) {
 		lightInner = value;
+		fireReRenderEvent();
 	}
 	
 	public PColor getColorHighlightInner() {
@@ -30,6 +32,7 @@ public class StandardButtonBorderStyle implements PStyleBorder {
 	
 	public void setColorHighlightOuter(PColor value) {
 		lightOuter = value;
+		fireReRenderEvent();
 	}
 	
 	public PColor getColorHighlightOuter() {
@@ -38,6 +41,7 @@ public class StandardButtonBorderStyle implements PStyleBorder {
 	
 	public void setColorShadowInner(PColor value) {
 		shadowInner = value;
+		fireReRenderEvent();
 	}
 	
 	public PColor getColorShadowInner() {
@@ -46,6 +50,7 @@ public class StandardButtonBorderStyle implements PStyleBorder {
 	
 	public void setColorShadowOuter(PColor value) {
 		shadowOuter = value;
+		fireReRenderEvent();
 	}
 	
 	public PColor getColorShadowOuter() {

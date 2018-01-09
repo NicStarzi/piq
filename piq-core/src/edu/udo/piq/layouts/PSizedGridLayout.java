@@ -83,7 +83,7 @@ public class PSizedGridLayout extends AbstractMapPLayout {
 	}
 	
 	public PInsets getInsets() {
-		return getStyleAttribute(ATTRIBUTE_KEY_INSETS, insets);
+		return insets;
 	}
 	
 	public int getColumnCount() {

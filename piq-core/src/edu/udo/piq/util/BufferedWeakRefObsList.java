@@ -1,14 +1,19 @@
 package edu.udo.piq.util;
 
+import java.lang.ref.Reference;
+import java.lang.ref.ReferenceQueue;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-public class BufferedObsList<E> implements ObserverList<E> {
+public class BufferedWeakRefObsList<E> implements ObserverList<E> {
 	
 	/**
 	 * Contains the actual elements of this ObserverList
 	 */
-	private final List<E> list = new ArrayList<>(3);
+	private final List<WeakReference<E>> list = new ArrayList<>(3);
+	private final ReferenceQueue<E> refQueue = new ReferenceQueue<>();
 	/**
 	 * Buffers all modifications (add / remove operations) as {@link Runnable} instances.
 	 * @see #add(Object)
@@ -28,9 +33,9 @@ public class BufferedObsList<E> implements ObserverList<E> {
 				buffer = new ArrayList<>(2);
 			}
 			// Use a lambda for the write operation and add it to the buffer
-			buffer.add(() -> list.add(element));
+			buffer.add(() -> list.add(new WeakReference<>(element, refQueue)));
 		} else {
-			list.add(element);
+			list.add(new WeakReference<>(element, refQueue));
 		}
 	}
 	
@@ -41,9 +46,18 @@ public class BufferedObsList<E> implements ObserverList<E> {
 				buffer = new ArrayList<>(2);
 			}
 			// Use a lambda for the write operation and add it to the buffer
-			buffer.add(() -> list.remove(element));
+			buffer.add(() -> removeReferenceOf(element));
 		} else {
-			list.remove(element);
+			removeReferenceOf(element);
+		}
+	}
+	
+	private void removeReferenceOf(E elem) {
+		for (int i = 0; i < list.size(); i++) {
+			if (Objects.equals(list.get(i).get(), elem)) {
+				list.remove(i);
+				break;
+			}
 		}
 	}
 	
@@ -60,11 +74,21 @@ public class BufferedObsList<E> implements ObserverList<E> {
 		if (msg == null) {
 			throw new IllegalArgumentException("consumer == null");
 		}
+		for (Reference<?> ref = refQueue.poll();
+			ref != null;
+			ref = refQueue.poll()) 
+		{
+			new Throwable("Lapsed-Observer detected. size="+list.size()).printStackTrace();
+//			list.remove(ref);
+		}
 		
 		forEachCount++;
-		List<E> tempList = list;
-		for (E element : tempList) {
-			msg.notifyObs(element);
+		List<WeakReference<E>> tempList = list;
+		for (WeakReference<E> ref : tempList) {
+			E element = ref.get();
+			if (element != null) {
+				msg.notifyObs(element);
+			}
 		}
 		forEachCount--;
 		

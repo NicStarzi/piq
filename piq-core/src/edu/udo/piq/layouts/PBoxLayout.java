@@ -32,7 +32,7 @@ public class PBoxLayout extends AbstractMapPLayout {
 	}
 	
 	public PInsets getInsets() {
-		return getStyleAttribute(PReadOnlyLayout.ATTRIBUTE_KEY_INSETS, insets);
+		return insets;
 	}
 	
 	public Box getRootBox() {

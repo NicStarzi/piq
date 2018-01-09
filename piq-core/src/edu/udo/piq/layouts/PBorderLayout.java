@@ -36,7 +36,7 @@ public class PBorderLayout extends AbstractEnumPLayout<BorderLayoutConstraint> {
 	}
 	
 	public PInsets getInsets() {
-		return getStyleAttribute(PReadOnlyLayout.ATTRIBUTE_KEY_INSETS, insets);
+		return insets;
 	}
 	
 	public void setAlignment(AlignmentX alignmentX, AlignmentY alignmentY) {
@@ -53,7 +53,7 @@ public class PBorderLayout extends AbstractEnumPLayout<BorderLayoutConstraint> {
 	}
 	
 	public AlignmentX getAlignmentX() {
-		return getStyleAttribute(PReadOnlyLayout.ATTRIBUTE_KEY_ALIGNMENT_X, alignX);
+		return alignX;
 	}
 	
 	public void setAlignmentY(AlignmentY value) {
@@ -65,7 +65,7 @@ public class PBorderLayout extends AbstractEnumPLayout<BorderLayoutConstraint> {
 	}
 	
 	public AlignmentY getAlignmentY() {
-		return getStyleAttribute(PReadOnlyLayout.ATTRIBUTE_KEY_ALIGNMENT_Y, alignY);
+		return alignY;
 	}
 	
 	public void setGap(int value) {
@@ -77,7 +77,7 @@ public class PBorderLayout extends AbstractEnumPLayout<BorderLayoutConstraint> {
 	}
 	
 	public int getGap() {
-		return getStyleAttribute(PReadOnlyLayout.ATTRIBUTE_KEY_GAP, gap);
+		return gap;
 	}
 	
 	@Override

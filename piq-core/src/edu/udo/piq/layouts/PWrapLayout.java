@@ -10,8 +10,8 @@ public class PWrapLayout extends PListLayout {
 	
 	public static final int DEFAULT_SECONDARY_GAP = 2;
 	public static final PrefSizeMode DEFAULT_PREF_SIZE_MODE = PrefSizeMode.PREFER_WRAPPING;
-	public static final String ATTRIBUTE_KEY_SECONDARY_GAP = "secondary_gap";
-	public static final String ATTRIBUTE_KEY_PREF_SIZE_MODE = "pref_size_mode";
+//	public static final String ATTRIBUTE_KEY_SECONDARY_GAP = "secondary_gap";
+//	public static final String ATTRIBUTE_KEY_PREF_SIZE_MODE = "pref_size_mode";
 	
 	protected int secondaryGap = DEFAULT_SECONDARY_GAP;
 	protected PrefSizeMode prefSizeMode = DEFAULT_PREF_SIZE_MODE;
@@ -41,7 +41,7 @@ public class PWrapLayout extends PListLayout {
 	}
 	
 	public int getSecondaryGap() {
-		return getStyleAttribute(ATTRIBUTE_KEY_SECONDARY_GAP, secondaryGap);
+		return secondaryGap;
 	}
 	
 	public void setPrefSizeMode(PrefSizeMode value) {
@@ -53,7 +53,7 @@ public class PWrapLayout extends PListLayout {
 	}
 	
 	public PrefSizeMode getPrefSizeMode() {
-		return getStyleAttribute(ATTRIBUTE_KEY_PREF_SIZE_MODE, prefSizeMode);
+		return prefSizeMode;
 	}
 	
 	@Override

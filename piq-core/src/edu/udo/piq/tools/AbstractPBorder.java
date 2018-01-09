@@ -1,36 +1,24 @@
 package edu.udo.piq.tools;
 
-import java.util.Objects;
-
 import edu.udo.piq.PBorder;
 import edu.udo.piq.PBorderObs;
+import edu.udo.piq.style.AbstractPStylable;
 import edu.udo.piq.style.PStyleBorder;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PiqUtil;
 
-public abstract class AbstractPBorder implements PBorder {
+public abstract class AbstractPBorder extends AbstractPStylable<PStyleBorder> implements PBorder {
 	
 	protected final ObserverList<PBorderObs> obsList = PiqUtil.createDefaultObserverList();
-	protected PStyleBorder style;
-	private Object styleID = getClass();
 	
 	@Override
-	public void setStyleFromSheet(PStyleBorder style) {
-		if (!Objects.equals(getStyleFromSheet(), style)) {
-			this.style = style;
-			fireInsetsChangedEvent();
-			fireReRenderEvent();
-		}
+	protected void onStyleReRenderEvent() {
+		fireReRenderEvent();
 	}
 	
 	@Override
-	public PStyleBorder getStyleFromSheet() {
-		return style;
-	}
-	
-	@Override
-	public Object getStyleID() {
-		return styleID;
+	protected void onStyleSizeChangedEvent() {
+		fireInsetsChangedEvent();
 	}
 	
 	@Override

@@ -1,9 +1,10 @@
 package edu.udo.piq.layouts;
 
+import edu.udo.piq.CallSuper;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PComponentObs;
 import edu.udo.piq.PSize;
-import edu.udo.piq.style.PStyleLayout;
+import edu.udo.piq.TemplateMethod;
 import edu.udo.piq.tools.MutablePSize;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PiqUtil;
@@ -27,8 +28,8 @@ public abstract class AbstractPLayout implements PLayout {
 	protected final ObserverList<PLayoutObs> obsList
 		= PiqUtil.createDefaultObserverList();
 	protected final PComponent owner;
-	private PStyleLayout style;
-	private Object styleID = getClass();
+//	private PStyleLayout style;
+//	private Object styleID = getClass();
 	protected MutablePSize prefSize = new MutablePSize();
 	protected boolean invalidated = true;
 	
@@ -51,6 +52,7 @@ public abstract class AbstractPLayout implements PLayout {
 		return owner;
 	}
 	
+	@CallSuper
 	@Override
 	public void addChild(PComponent component, Object constraint) throws NullPointerException, IllegalArgumentException, IllegalStateException {
 		ThrowException.ifNull(component, "component == null");
@@ -67,6 +69,7 @@ public abstract class AbstractPLayout implements PLayout {
 		invalidate();
 	}
 	
+	@CallSuper
 	@Override
 	public void removeChild(PComponent child) throws NullPointerException, IllegalArgumentException {
 		ThrowException.ifNull(child, "child == null");
@@ -151,28 +154,30 @@ public abstract class AbstractPLayout implements PLayout {
 		return child.getPreferredSize();
 	}
 	
-	@Override
-	public void setStyleFromSheet(PStyleLayout value) {
-		style = value;
-		invalidate();
-	}
+//	@Override
+//	public void setInheritedStyle(PStyleLayout value) {
+//		style = value;
+//		invalidate();
+//	}
+//	
+//	@Override
+//	public PStyleLayout getInheritedStyle() {
+//		return style;
+//	}
+//	
+//	@Override
+//	public Object getStyleID() {
+//		return styleID;
+//	}
 	
-	@Override
-	public PStyleLayout getStyleFromSheet() {
-		return style;
-	}
-	
-	@Override
-	public Object getStyleID() {
-		return styleID;
-	}
-	
+	@CallSuper
 	@Override
 	public void invalidate() {
 		invalidated = true;
 		fireInvalidateEvent();
 	}
 	
+	@CallSuper
 	@Override
 	public void layOut() {
 		if (getOwner().getBounds().isEmpty()) {
@@ -189,6 +194,7 @@ public abstract class AbstractPLayout implements PLayout {
 	
 	protected abstract void layOutInternal();
 	
+	@CallSuper
 	@Override
 	public PSize getPreferredSize() {
 		if (invalidated) {
@@ -202,22 +208,31 @@ public abstract class AbstractPLayout implements PLayout {
 		return prefSize;
 	}
 	
+	@CallSuper
+	@TemplateMethod
 	protected void onChildPrefSizeChanged(PComponent child) {
 		invalidate();
 	}
 	
+	@CallSuper
+	@TemplateMethod
 	protected void onOwnerBoundsChanged() {
 		invalidate();
 	}
 	
+	@TemplateMethod
 	protected void onInvalidated() {}
 	
+	@TemplateMethod
 	protected void onChildAdded(PComponentLayoutData data) {}
 	
+	@CallSuper
+	@TemplateMethod
 	protected void onChildRemoved(PComponentLayoutData data) {
 		invalidate();
 	}
 	
+	@TemplateMethod
 	protected void onChildCleared(PComponentLayoutData data) {}
 	
 	/*

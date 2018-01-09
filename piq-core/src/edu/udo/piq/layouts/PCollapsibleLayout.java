@@ -71,7 +71,7 @@ public class PCollapsibleLayout extends AbstractEnumPLayout<PCollapsibleLayout.C
 	}
 	
 	public PInsets getInsets() {
-		return getStyleAttribute(PReadOnlyLayout.ATTRIBUTE_KEY_INSETS, insets);
+		return insets;
 	}
 	
 	public void setHeaderBodyGap(int value) {

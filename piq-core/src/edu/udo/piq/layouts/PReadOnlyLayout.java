@@ -8,9 +8,6 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PDisposable;
 import edu.udo.piq.PSize;
-import edu.udo.piq.style.PStyleLayout;
-import edu.udo.piq.style.PStyleSheet;
-import edu.udo.piq.style.PStyleable;
 import edu.udo.piq.util.PiqUtil;
 import edu.udo.piq.util.ThrowException;
 
@@ -34,12 +31,12 @@ import edu.udo.piq.util.ThrowException;
  * @see PComponent
  * @see PBounds
  */
-public interface PReadOnlyLayout extends PDisposable, PStyleable<PStyleLayout> {
+public interface PReadOnlyLayout extends PDisposable {//, PStyleable<PStyleLayout>
 	
-	public static final String ATTRIBUTE_KEY_INSETS = "insets";
-	public static final String ATTRIBUTE_KEY_GAP = "gap";
-	public static final String ATTRIBUTE_KEY_ALIGNMENT_X = "alignmentX";
-	public static final String ATTRIBUTE_KEY_ALIGNMENT_Y = "alignmentY";
+//	public static final String ATTRIBUTE_KEY_INSETS = "insets";
+//	public static final String ATTRIBUTE_KEY_GAP = "gap";
+//	public static final String ATTRIBUTE_KEY_ALIGNMENT_X = "alignmentX";
+//	public static final String ATTRIBUTE_KEY_ALIGNMENT_Y = "alignmentY";
 	
 	public void invalidate();
 	
@@ -68,31 +65,11 @@ public interface PReadOnlyLayout extends PDisposable, PStyleable<PStyleLayout> {
 	 */
 	public PSize getPreferredSize();
 	
-	/**
-	 * Sets a custom {@link PStyleLayout} for this layout.<br>
-	 * When a custom design is set the layout will take configuration information
-	 * from the custom design if possible.<br>
-	 * If no custom design is set the default design will be taken from the
-	 * {@link PStyleSheet} of the root of the owner.<br>
-	 * @param style		the custom design for this layout or null to use the default design
-	 */
-	@Override
-	public void setStyleFromSheet(PStyleLayout style);
+//	@Override
+//	public void setInheritedStyle(PStyleLayout style);
 	
-	/**
-	 * Returns the {@link PStyleLayout} used to configure this layout.<br>
-	 * If this layout has a custom design set then the custom design is
-	 * returned. Otherwise the returned design will be taken from the
-	 * {@link PStyleSheet} of the root of the owner of this layout.<br>
-	 * If this layout has no owner, or if the owner is not part of a GUI,
-	 * and thus does not have a root, null is returned.<br>
-	 *
-	 * @return				the design where the configuration for this layout is stored
-	 * @see PStyleLayout
-	 * @see PStyleSheet
-	 */
-	@Override
-	public PStyleLayout getStyleFromSheet();
+//	@Override
+//	public PStyleLayout getInheritedStyle();
 	
 	/**
 	 * Returns the owner of this layout.<br>
@@ -110,7 +87,7 @@ public interface PReadOnlyLayout extends PDisposable, PStyleable<PStyleLayout> {
 	public int getChildCount();
 	
 	public default Iterable<PComponent> getChildren() {
-		return new ComponentIterable(getAllData());
+		return new ComponentIterableWrapper(getAllData());
 	}
 	
 	public default boolean isEmpty() {
@@ -262,13 +239,13 @@ public interface PReadOnlyLayout extends PDisposable, PStyleable<PStyleLayout> {
 		return null;
 	}
 	
-	public default <E> E getStyleAttribute(Object attrKey, E defaultValue) {
-		PStyleLayout style = getStyle();
-		if (style == null) {
-			return defaultValue;
-		}
-		return style.getAttribute(this, attrKey, defaultValue);
-	}
+//	public default <E> E getStyleAttribute(Object attrKey, E defaultValue) {
+//		PStyleLayout style = getStyle();
+//		if (style == null) {
+//			return defaultValue;
+//		}
+//		return style.getAttribute(this, attrKey, defaultValue);
+//	}
 	
 	/**
 	 * Adds the layout observer to this layout.<br>
@@ -297,11 +274,11 @@ public interface PReadOnlyLayout extends PDisposable, PStyleable<PStyleLayout> {
 	@Override
 	public default void dispose() {}
 	
-	public static class ComponentIterable implements Iterable<PComponent> {
+	public static class ComponentIterableWrapper implements Iterable<PComponent> {
 		
 		private final Iterable<PComponentLayoutData> allData;
 		
-		public ComponentIterable(Iterable<PComponentLayoutData> data) {
+		public ComponentIterableWrapper(Iterable<PComponentLayoutData> data) {
 			allData = data;
 		}
 		

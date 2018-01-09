@@ -9,7 +9,6 @@ public abstract class AbstractArrayPLayout extends AbstractPLayout implements PL
 	
 	private final LinkedArray<PComponentLayoutData> dataArray;
 	private final int cap;
-//	private List<PComponent> childrenList;
 	
 	protected AbstractArrayPLayout(PComponent component, int capacity) {
 		super(component);

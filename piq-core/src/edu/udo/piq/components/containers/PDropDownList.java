@@ -6,12 +6,14 @@ import edu.udo.piq.PKeyboard.ActualKey;
 import edu.udo.piq.PKeyboardObs;
 import edu.udo.piq.components.collections.PList;
 import edu.udo.piq.components.collections.PListIndex;
+import edu.udo.piq.components.collections.PListModel;
 import edu.udo.piq.components.collections.PListSingleSelection;
 import edu.udo.piq.components.collections.PModelIndex;
 import edu.udo.piq.components.collections.PModelObs;
 import edu.udo.piq.components.collections.PReadOnlyModel;
 import edu.udo.piq.components.collections.PSelection;
 import edu.udo.piq.components.collections.PSelectionObs;
+import edu.udo.piq.components.defaults.DefaultPListModel;
 import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.components.textbased.PTextModel;
 import edu.udo.piq.util.ThrowException;
@@ -69,6 +71,22 @@ public class PDropDownList extends PDropDown {
 	};
 	protected PList list;
 	protected PListIndex displayedIndex = null;
+	
+	public PDropDownList(Iterable<Object> initialContents) {
+		this(new DefaultPListModel(initialContents));
+	}
+	
+	public PDropDownList(Object ... initialContents) {
+		this(new DefaultPListModel(initialContents));
+	}
+	
+	public PDropDownList(PListModel initialModel) {
+		this();
+		getList().setModel(initialModel);
+		if (initialModel.getSize() > 0) {
+			setDisplayedContent(initialModel.get(0));
+		}
+	}
 	
 	public PDropDownList() {
 		super();

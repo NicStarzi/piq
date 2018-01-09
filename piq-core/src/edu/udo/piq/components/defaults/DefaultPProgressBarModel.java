@@ -12,9 +12,14 @@ public class DefaultPProgressBarModel implements PProgressBarModel {
 	
 	protected final ObserverList<PProgressBarModelObs> obsList
 		= PiqUtil.createDefaultObserverList();
-	private int maxValue = DEFAULT_MAX_VALUE;
-	private int value = DEFAULT_VALUE;
+	protected int maxValue = DEFAULT_MAX_VALUE;
+	protected int value = DEFAULT_VALUE;
 	
+	public void addValue(int value) {
+		setValue(getValue() + value);
+	}
+	
+	@Override
 	public void setValue(Object valAsObj) {
 		int value = ((Integer) valAsObj).intValue();
 		if (value < 0) {
@@ -30,26 +35,31 @@ public class DefaultPProgressBarModel implements PProgressBarModel {
 		}
 	}
 	
+	@Override
 	public int getValue() {
 		return value;
 	}
 	
+	@Override
 	public void setMaximum(Object valAsObj) {
 		int value = ((Integer) valAsObj).intValue();
 		if (value <= 0) {
 			throw new IllegalArgumentException("value="+value);
 		}
-		this.maxValue = value;
+		maxValue = value;
 	}
 	
+	@Override
 	public int getMaxValue() {
 		return maxValue;
 	}
 	
+	@Override
 	public void addObs(PProgressBarModelObs obs) {
 		obsList.add(obs);
 	}
 	
+	@Override
 	public void removeObs(PProgressBarModelObs obs) {
 		obsList.remove(obs);
 	}

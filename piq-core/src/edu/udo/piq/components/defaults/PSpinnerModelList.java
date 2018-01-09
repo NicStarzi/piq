@@ -14,7 +14,7 @@ public class PSpinnerModelList extends AbstractPSpinnerModel {
 	protected Function<String, Object> decoder;
 	protected int index;
 	
-	public PSpinnerModelList(Object[] values) {
+	public PSpinnerModelList(Object ... values) {
 		this(Arrays.asList(values), 0);
 	}
 	
@@ -30,6 +30,7 @@ public class PSpinnerModelList extends AbstractPSpinnerModel {
 		this(values, 0);
 	}
 	
+	@SuppressWarnings("unlikely-arg-type")
 	public PSpinnerModelList(List<?> values, Object selectedValue) {
 		this(values, values.indexOf(selectedValue));
 	}

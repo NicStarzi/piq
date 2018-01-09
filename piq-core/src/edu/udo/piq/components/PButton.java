@@ -63,6 +63,26 @@ public class PButton extends AbstractPLayoutOwner implements PClickable {
 	protected double repeatTimerInitialDelay;
 	protected double repeatTimerDelay;
 	
+	public PButton(Object initialLabelValue, PClickObs clickObs) {
+		this(initialLabelValue);
+		addObs(clickObs);
+	}
+	
+	public PButton(PTextModel initialLabelModel, PClickObs clickObs) {
+		this(initialLabelModel);
+		addObs(clickObs);
+	}
+	
+	public PButton(PComponent content, PClickObs clickObs) {
+		this(content);
+		addObs(clickObs);
+	}
+	
+	public PButton(PClickObs clickObs) {
+		this();
+		addObs(clickObs);
+	}
+	
 	public PButton(Object initialLabelValue) {
 		this(new PLabel(initialLabelValue));
 	}

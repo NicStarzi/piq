@@ -146,7 +146,7 @@ public class PSlider extends AbstractPComponent {
 	
 	@Override
 	public void defaultRender(PRenderer renderer) {
-		PBounds bnds = getBounds();
+		PBounds bnds = getBoundsWithoutBorder();
 		int x = bnds.getX();
 		int y = bnds.getY();
 		int fx = bnds.getFinalX();

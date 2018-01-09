@@ -17,6 +17,7 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PComponentObs;
 import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PFocusTraversal;
+import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PKeyboardObs;
 import edu.udo.piq.PMouse;
@@ -26,7 +27,6 @@ import edu.udo.piq.PRoot;
 import edu.udo.piq.PRootObs;
 import edu.udo.piq.PRootOverlay;
 import edu.udo.piq.PTimer;
-import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.components.containers.DefaultPRootOverlay;
 import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.dnd.PDnDManager;
@@ -59,7 +59,7 @@ public abstract class AbstractPRoot implements PRoot {
 	
 	protected final ObserverList<PRootObs> rootObsList = PiqUtil.createDefaultObserverList();
 	protected final PRootLayout layout;
-	protected PStyleSheet styleSheet = new AbstractPStyleSheet();
+	protected PStyleSheet styleSheet;
 	protected PMouse mouse;
 	protected PKeyboard keyboard;
 	protected PClipboard clipboard;
@@ -101,6 +101,12 @@ public abstract class AbstractPRoot implements PRoot {
 		layout = new PRootLayout(this);
 		reRenderSet = new ReRenderSet(this);
 		getLayout().addObs(layoutObs);
+//		setStyleSheet(new AbstractPStyleSheet() {
+//			@Override
+//			public PStyleComponent getStyleFor(PComponent component) {
+//				return PStyleComponent.DEFAULT_COMPONENT_STYLE;
+//			}
+//		});
 		PPanel body = new PPanel();
 		body.setLayout(new PBorderLayout(body));
 		getLayout().addChild(body, Constraint.BODY);

@@ -1,13 +1,14 @@
 package edu.udo.piq.tools;
 
+import java.util.Iterator;
+
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PRootObs;
-import edu.udo.piq.style.PStyleComponent;
 import edu.udo.piq.style.PStyleSheet;
 import edu.udo.piq.util.Throw;
 
-public class AbstractPStyleSheet implements PStyleSheet {
+public abstract class AbstractPStyleSheet implements PStyleSheet {
 	
 	protected final PRootObs rootObs = new PRootObs() {
 		@Override
@@ -27,17 +28,15 @@ public class AbstractPStyleSheet implements PStyleSheet {
 	public void onAddedToRoot(PRoot root) {
 		Throw.ifNotNull(getRoot(), () -> "getRoot() != null");
 		this.root = root;
-		if (getRoot() != null) {
-			getRoot().addObs(rootObs);
-		}
+		addAllComponents();
+		getRoot().addObs(rootObs);
 	}
 	
 	@Override
 	public void onRemovedFromRoot(PRoot root) {
 		Throw.ifNull(getRoot(), "getRoot() == null");
-		if (getRoot() != null) {
-			getRoot().removeObs(rootObs);
-		}
+		getRoot().removeObs(rootObs);
+		removeAllComponents();
 		this.root = null;
 	}
 	
@@ -45,14 +44,36 @@ public class AbstractPStyleSheet implements PStyleSheet {
 		return root;
 	}
 	
-	@Override
-	public PStyleComponent getStyleFor(PComponent component) {
-		return PStyleComponent.DEFAULT_COMPONENT_STYLE;
+//	@Override
+//	public PStyleComponent getStyleFor(PComponent component) {
+//		return PStyleComponent.DEFAULT_COMPONENT_STYLE;
+//	}
+	
+	protected void addAllComponents() {
+		Iterator<PComponent> iter = getRoot().getDescendants().iterator();
+		iter.next();//remove root
+		while (iter.hasNext()) {
+			PComponent component = iter.next();
+			component.setInheritedStyle(getStyleFor(component));
+		}
 	}
 	
-	protected void onComponentAdded(PComponent addedComponent) {}
+	protected void removeAllComponents() {
+		Iterator<PComponent> iter = getRoot().getDescendants().iterator();
+		iter.next();//remove root
+		while (iter.hasNext()) {
+			PComponent component = iter.next();
+			component.setInheritedStyle(null);
+		}
+	}
 	
-	protected void onComponentRemoved(PComponent parent, PComponent removedComponent) {}
+	protected void onComponentAdded(PComponent addedComponent) {
+		addedComponent.setInheritedStyle(getStyleFor(addedComponent));
+	}
+	
+	protected void onComponentRemoved(PComponent parent, PComponent removedComponent) {
+		removedComponent.setInheritedStyle(null);
+	}
 //
 //	/**
 //	 * Contains all registered {@link PDesignFactory}s.<br>

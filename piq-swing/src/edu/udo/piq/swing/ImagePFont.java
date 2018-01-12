@@ -1,5 +1,6 @@
 package edu.udo.piq.swing;
 
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +13,7 @@ import edu.udo.piq.tools.ImmutablePColor;
 import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.tools.MutablePSize;
 
-public class ImagePFont implements PFontResource {
+public class ImagePFont implements PFontResource, SwingRenderFont {
 	
 	protected Map<PColor, BufferedImage> tintedImgMap;
 	protected final BufferedImage glyphImg;
@@ -82,6 +83,11 @@ public class ImagePFont implements PFontResource {
 			result.set(textW, textH);
 			return result;
 		}
+	}
+	
+	@Override
+	public void renderTo(Graphics2D graphics, String text, float x, float y) {
+		// TODO
 	}
 	
 }

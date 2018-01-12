@@ -1,11 +1,8 @@
 package edu.udo.piq.swing;
 
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.font.LineMetrics;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
@@ -191,17 +188,13 @@ public class SwingPRenderer implements PRenderer {
 	
 	@Override
 	public boolean isFontSupported(PFontResource font) {
-		return font instanceof AwtPFontResource;
+		return font instanceof SwingRenderFont;
 	}
 	
 	@Override
 	public void drawString(PFontResource font, String text, float x, float y) {
-		Font awtFont = ((AwtPFontResource) font).getAwtFont();
-		FontMetrics fm = graphics.getFontMetrics(awtFont);
-		LineMetrics lm = fm.getLineMetrics(text, graphics);
-		y += lm.getAscent() + lm.getLeading();
-		graphics.setFont(awtFont);
-		graphics.drawString(text, x, y);
+		SwingRenderFont renderFont = (SwingRenderFont) font;
+		renderFont.renderTo(getAwtGraphics(), text, x, y);
 	}
 	
 	/*

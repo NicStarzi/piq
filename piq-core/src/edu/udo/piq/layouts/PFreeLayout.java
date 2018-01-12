@@ -30,6 +30,7 @@ public class PFreeLayout extends AbstractMapPLayout {
 	
 	@Override
 	protected void onChildRemoved(PComponentLayoutData data) {
+		super.onChildRemoved(data);
 		sortedChildren.remove(data.getComponent());
 	}
 	

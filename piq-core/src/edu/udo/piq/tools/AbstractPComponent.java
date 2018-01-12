@@ -14,16 +14,16 @@ import edu.udo.piq.PCursor;
 import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PFocusTraversal;
 import edu.udo.piq.PKeyboard;
+import edu.udo.piq.PKeyboard.ActualKey;
+import edu.udo.piq.PKeyboard.Modifier;
 import edu.udo.piq.PKeyboardObs;
 import edu.udo.piq.PMouse;
+import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
 import edu.udo.piq.TemplateMethod;
-import edu.udo.piq.PKeyboard.ActualKey;
-import edu.udo.piq.PKeyboard.Modifier;
-import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.actions.PActionKey;
 import edu.udo.piq.actions.PComponentAction;
 import edu.udo.piq.actions.PComponentActionMap;
@@ -253,8 +253,10 @@ public class AbstractPComponent extends AbstractPStylable<PStyleComponent> imple
 			newActiveStyle.addStyledComponent(this);
 		}
 		refreshBorderAndLayoutStyle();
-		firePreferredSizeChangedEvent();
-		fireReRenderEvent();
+		if (getRoot() != null) {
+			firePreferredSizeChangedEvent();
+			fireReRenderEvent();
+		}
 	}
 	
 	@CallSuper
@@ -505,10 +507,10 @@ public class AbstractPComponent extends AbstractPStylable<PStyleComponent> imple
 	@Override
 	public PSize getDefaultPreferredSize() {
 		PReadOnlyLayout layout = getLayout();
-		if (layout != null) {
-			prefSize.set(layout.getPreferredSize());
-		} else {
+		if (layout == null) {
 			prefSize.set(getConstantDefaultPreferredSize());
+		} else {
+			prefSize.set(layout.getPreferredSize());
 		}
 		PBorder border = getBorder();
 		if (border != null) {

@@ -3,6 +3,7 @@ package edu.udo.piq.swing;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
@@ -10,7 +11,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javax.imageio.ImageIO;
@@ -27,7 +30,9 @@ import edu.udo.piq.PImageMeta;
 import edu.udo.piq.PImageResource;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
+import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.components.textbased.PTextArea;
+import edu.udo.piq.components.util.StandardFontKey;
 import edu.udo.piq.dnd.PDnDManager;
 import edu.udo.piq.style.PStyleSheet;
 import edu.udo.piq.swing.util.SwingImageUtil;
@@ -50,6 +55,7 @@ public class SwingPRoot extends AbstractPRoot implements PRoot {
 	protected final PDnDManager dndManager = new PDnDManager(this);
 	protected final JCompPBounds bounds;
 	protected final Component awtComp;
+	protected Set<RenderingHintTuple> renderingHints;
 	protected double deltaTime = 0;
 	
 	public SwingPRoot(Component awtComp) {
@@ -83,6 +89,20 @@ public class SwingPRoot extends AbstractPRoot implements PRoot {
 		return awtComp;
 	}
 	
+	public void addRenderingHint(RenderingHints.Key key, Object value) {
+		if (renderingHints == null) {
+			renderingHints = new HashSet<>();
+		}
+		renderingHints.add(new RenderingHintTuple(key, value));
+	}
+	
+	public void removeRenderingHint(RenderingHints.Key key) {
+		if (renderingHints == null) {
+			return;
+		}
+		renderingHints.remove(new RenderingHintTuple(key, null));
+	}
+	
 	/*
 	 * Overwrites the protected super method
 	 */
@@ -105,7 +125,7 @@ public class SwingPRoot extends AbstractPRoot implements PRoot {
 	public void update(double deltaTime) {
 		this.deltaTime = deltaTime;
 		while (!openedDialogs.isEmpty()) {
-			PDialog dlg = openedDialogs.get(openedDialogs.size() - 1);
+			SwingPDialog dlg = openedDialogs.get(openedDialogs.size() - 1);
 			if (dlg.isDisposed()) {
 				openedDialogs.remove(dlg);
 			} else {
@@ -155,13 +175,17 @@ public class SwingPRoot extends AbstractPRoot implements PRoot {
 		String fontName = null;
 		int pixelSize = 0;
 		Style style = null;
-		if (fontID instanceof FontInfo) {
-			FontInfo fi = (FontInfo) fontID;
+		if (fontID instanceof StandardFontKey) {
+			StandardFontKey fi = (StandardFontKey) fontID;
 			fontName = fi.getName();
-			pixelSize = fi.getPixelSize();
+			pixelSize = (int) (fi.getPixelSize() + 0.5);
 			style = fi.getStyle();
 		} else if (fontID == PTextArea.FONT_ID) {
 			fontName = "Monospaced";
+			pixelSize = 14;
+			style = Style.PLAIN;
+		} else if (fontID == PLabel.FONT_ID) {
+			fontName = "Arial";
 			pixelSize = 14;
 			style = Style.PLAIN;
 		} else {
@@ -249,6 +273,9 @@ public class SwingPRoot extends AbstractPRoot implements PRoot {
 	
 	protected void render(Graphics2D g) {
 //		System.out.println("### RENDER ALL ###");
+		if (renderingHints != null) {
+			renderingHints.forEach(tuple -> g.setRenderingHint(tuple.KEY, tuple.VALUE));
+		}
 		renderer.setAwtGraphics(g);
 		PBounds bnds = getBounds();
 		int rootFx = bnds.getWidth();
@@ -289,6 +316,33 @@ public class SwingPRoot extends AbstractPRoot implements PRoot {
 		AbstractPRoot.defaultRootRender(this, renderer, renderStack);
 //		System.out.println("#######");
 //		System.out.println();
+	}
+	
+	public static class RenderingHintTuple {
+		public final RenderingHints.Key KEY;
+		public final Object VALUE;
+		
+		public RenderingHintTuple(RenderingHints.Key key, Object value) {
+			KEY = key;
+			VALUE = value;
+		}
+		
+		@Override
+		public int hashCode() {
+			return KEY.hashCode();
+		}
+		
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (!(obj instanceof RenderingHintTuple)) {
+				return false;
+			}
+			RenderingHintTuple other = (RenderingHintTuple) obj;
+			return KEY == other.KEY;
+		}
 	}
 	
 }

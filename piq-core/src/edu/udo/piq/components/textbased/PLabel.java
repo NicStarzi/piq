@@ -93,7 +93,7 @@ public class PLabel extends AbstractPComponent {
 		if (font == null) {
 			return;
 		}
-		PBounds bounds = getBounds();
+		PBounds bounds = getBoundsWithoutBorder();
 		
 		renderer.setColor(getDefaultTextColor());
 		renderer.drawString(font, text, bounds.getX(), bounds.getY());

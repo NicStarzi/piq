@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.font.LineMetrics;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
@@ -14,7 +15,7 @@ import edu.udo.piq.PSize;
 import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.tools.MutablePSize;
 
-public class AwtPFontResource implements PFontResource {
+public class AwtPFontResource implements PFontResource, SwingRenderFont {
 	
 	private final Font font;
 	private final FontMetrics metrics;
@@ -66,6 +67,16 @@ public class AwtPFontResource implements PFontResource {
 	
 	@Override
 	public void dispose() {
+	}
+	
+	@Override
+	public void renderTo(Graphics2D graphics, String text, float x, float y) {
+		Font awtFont = getAwtFont();
+		FontMetrics fm = graphics.getFontMetrics(awtFont);
+		LineMetrics lm = fm.getLineMetrics(text, graphics);
+		y += lm.getAscent() + lm.getLeading();
+		graphics.setFont(awtFont);
+		graphics.drawString(text, x, y);
 	}
 	
 	public static int getAwtStyle(Style style) {

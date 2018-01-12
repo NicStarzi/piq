@@ -17,7 +17,6 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PComponentObs;
 import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PFocusTraversal;
-import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PKeyboardObs;
 import edu.udo.piq.PMouse;
@@ -40,7 +39,6 @@ import edu.udo.piq.style.PStyleSheet;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PiqUtil;
 import edu.udo.piq.util.Throw;
-import edu.udo.piq.util.ThrowException;
 
 public abstract class AbstractPRoot implements PRoot {
 	
@@ -673,73 +671,6 @@ public abstract class AbstractPRoot implements PRoot {
 		sb.append(getLayout());
 		sb.append("]");
 		return sb.toString();
-	}
-	
-	/*
-	 * Utility class
-	 */
-	
-	public static class FontInfo {
-		
-		protected final String name;
-		protected final int size;
-		protected final Style style;
-		
-		public FontInfo(String fontName, int pixelSize, Style fontStyle) {
-			ThrowException.ifNull(fontName, "fontName == null");
-			ThrowException.ifNull(fontStyle, "fontStyle == null");
-			ThrowException.ifLess(1, pixelSize, "pixelSize < 1");
-			name = fontName;
-			size = pixelSize;
-			style = fontStyle;
-		}
-		
-		public String getName() {
-			return name;
-		}
-		
-		public int getPixelSize() {
-			return size;
-		}
-		
-		public Style getStyle() {
-			return style;
-		}
-		
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + style.ordinal();
-			result = prime * result + name.hashCode();
-			result = prime * result + Double.hashCode(size);
-			return result;
-		}
-		
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj) {
-				return true;
-			}
-			if (obj == null || !(obj instanceof FontInfo)) {
-				return false;
-			}
-			FontInfo other = (FontInfo) obj;
-			return name.equals(other.name) && size == other.size && style == other.style;
-		}
-		
-		@Override
-		public String toString() {
-			StringBuilder builder = new StringBuilder();
-			builder.append("FontInfo [name=");
-			builder.append(name);
-			builder.append(", size=");
-			builder.append(size);
-			builder.append(", style=");
-			builder.append(style);
-			builder.append("]");
-			return builder.toString();
-		}
 	}
 	
 }

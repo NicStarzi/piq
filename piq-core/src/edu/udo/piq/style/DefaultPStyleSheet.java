@@ -1,82 +1,50 @@
 package edu.udo.piq.style;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Supplier;
 
 import edu.udo.piq.PComponent;
 import edu.udo.piq.tools.AbstractPStyleSheet;
+import edu.udo.piq.util.ClassMap;
 
 public class DefaultPStyleSheet extends AbstractPStyleSheet implements PStyleSheet {
 	
-	protected final Map<Class<?>, Supplier<PStyleComponent>> classToStyleFactoryMap = new HashMap<>();
-	protected boolean checkSuperClasses = true;
-	protected boolean checkInterfaces = true;
+	protected final ClassMap<Supplier<PStyleComponent>> clsToStyleMap = new ClassMap<>();
 	
 	@Override
 	public PStyleComponent getStyleFor(PComponent component) {
 		return createStyleBasedOnClass(component.getClass());
 	}
 	
-	protected PStyleComponent createStyleBasedOnClass(Class<?> objClass) {
-		Supplier<PStyleComponent> fact = classToStyleFactoryMap.get(objClass);
-		if (fact != null) {
-			return fact.get();
+	protected PStyleComponent createStyleBasedOnClass(Class<?> compClass) {
+		Supplier<PStyleComponent> fact = clsToStyleMap.search(compClass);
+		if (fact == null) {
+			return PStyleComponent.DEFAULT_COMPONENT_STYLE;
 		}
-		if (isCheckInterfacesEnabled()) {
-			for (Class<?> ifaceClass : objClass.getInterfaces()) {
-				fact = classToStyleFactoryMap.get(ifaceClass);
-				if (fact != null) {
-					classToStyleFactoryMap.put(objClass, fact);
-					return fact.get();
-				}
-			}
-		}
-		if (isCheckSuperClassesEnabled()) {
-			Class<?> current = objClass.getSuperclass();
-			while (current != null) {
-				fact = classToStyleFactoryMap.get(current);
-				if (fact != null) {
-					classToStyleFactoryMap.put(objClass, fact);
-					return fact.get();
-				}
-				if (isCheckInterfacesEnabled()) {
-					for (Class<?> ifaceClass : current.getInterfaces()) {
-						fact = classToStyleFactoryMap.get(ifaceClass);
-						if (fact != null) {
-							classToStyleFactoryMap.put(objClass, fact);
-							return fact.get();
-						}
-					}
-				}
-				current = current.getSuperclass();
-			}
-		}
-		return PStyleComponent.DEFAULT_COMPONENT_STYLE;
+		return fact.get();
 	}
 	
-	public void setDefaultModelFactoryFor(Class<?> componentClass, Supplier<PStyleComponent> modelFactory) {
-		classToStyleFactoryMap.put(componentClass, modelFactory);
+	public void setStyleFor(Class<?> componentClass, Supplier<PStyleComponent> factory) {
+		clsToStyleMap.put(componentClass, factory);
 	}
 	
-	public Supplier<?> getDefaultModelFactoryFor(Class<?> componentClass) {
-		return classToStyleFactoryMap.get(componentClass);
+	public Supplier<?> getStyleFor(Class<?> componentClass) {
+		return clsToStyleMap.get(componentClass);
 	}
 	
 	public void setCheckSuperClassesEnabled(boolean value) {
-		checkSuperClasses = value;
+		clsToStyleMap.setCheckSuperClassesEnabled(value);
 	}
 	
 	public boolean isCheckSuperClassesEnabled() {
-		return checkSuperClasses;
+		return clsToStyleMap.isCheckSuperClassesEnabled();
 	}
 	
 	public void setCheckInterfacesEnabled(boolean value) {
-		checkInterfaces = value;
+		clsToStyleMap.setCheckInterfacesEnabled(value);
 	}
 	
 	public boolean isCheckInterfacesEnabled() {
-		return checkInterfaces;
+		return clsToStyleMap.isCheckInterfacesEnabled();
 	}
 	
 }

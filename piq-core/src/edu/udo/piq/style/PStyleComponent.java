@@ -4,6 +4,7 @@ import edu.udo.piq.PBorder;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
+import edu.udo.piq.TemplateMethod;
 
 public interface PStyleComponent extends PStyle {
 	
@@ -34,8 +35,10 @@ public interface PStyleComponent extends PStyle {
 //		return PStyleLayout.DEFAULT_LAYOUT_STYLE;
 //	}
 	
+	@TemplateMethod
 	public default void addStyledComponent(PComponent component) {}
 	
+	@TemplateMethod
 	public default void removeStyledComponent(PComponent component) {}
 	
 }

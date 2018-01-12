@@ -6,19 +6,19 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PFontResource;
+import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
-import edu.udo.piq.PFontResource.Style;
 import edu.udo.piq.components.textbased.PLabel;
+import edu.udo.piq.components.util.StandardFontKey;
 import edu.udo.piq.style.MutablePStyle;
 import edu.udo.piq.style.PStyleComponent;
-import edu.udo.piq.tools.AbstractPRoot.FontInfo;
 import edu.udo.piq.util.ThrowException;
 
 public class StandardLabelStyle extends MutablePStyle implements PStyleComponent {
 	
-	public static final Object FONT_ID = new FontInfo("Monospaced", 18, Style.PLAIN);
+	public static final Object FONT_ID = new StandardFontKey("Monospaced", 18, Style.PLAIN);
 	public static final PColor DEFAULT_TEXT_COLOR = PColor.BLACK;
 	
 	protected PColor txtColor = DEFAULT_TEXT_COLOR;

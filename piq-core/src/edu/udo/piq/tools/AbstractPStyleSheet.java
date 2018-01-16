@@ -2,9 +2,11 @@ package edu.udo.piq.tools;
 
 import java.util.Iterator;
 
+import edu.udo.piq.CallSuper;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PRootObs;
+import edu.udo.piq.TemplateMethod;
 import edu.udo.piq.style.PStyleSheet;
 import edu.udo.piq.util.Throw;
 
@@ -24,6 +26,8 @@ public abstract class AbstractPStyleSheet implements PStyleSheet {
 	};
 	protected PRoot root;
 	
+	@TemplateMethod
+	@CallSuper
 	@Override
 	public void onAddedToRoot(PRoot root) {
 		Throw.ifNotNull(getRoot(), () -> "getRoot() != null");
@@ -32,6 +36,8 @@ public abstract class AbstractPStyleSheet implements PStyleSheet {
 		getRoot().addObs(rootObs);
 	}
 	
+	@TemplateMethod
+	@CallSuper
 	@Override
 	public void onRemovedFromRoot(PRoot root) {
 		Throw.ifNull(getRoot(), "getRoot() == null");
@@ -43,11 +49,6 @@ public abstract class AbstractPStyleSheet implements PStyleSheet {
 	public PRoot getRoot() {
 		return root;
 	}
-	
-//	@Override
-//	public PStyleComponent getStyleFor(PComponent component) {
-//		return PStyleComponent.DEFAULT_COMPONENT_STYLE;
-//	}
 	
 	protected void addAllComponents() {
 		Iterator<PComponent> iter = getRoot().getDescendants().iterator();
@@ -67,10 +68,14 @@ public abstract class AbstractPStyleSheet implements PStyleSheet {
 		}
 	}
 	
+	@TemplateMethod
+	@CallSuper
 	protected void onComponentAdded(PComponent addedComponent) {
 		addedComponent.setInheritedStyle(getStyleFor(addedComponent));
 	}
 	
+	@TemplateMethod
+	@CallSuper
 	protected void onComponentRemoved(PComponent parent, PComponent removedComponent) {
 		removedComponent.setInheritedStyle(null);
 	}

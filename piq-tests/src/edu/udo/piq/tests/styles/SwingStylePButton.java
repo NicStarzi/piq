@@ -15,7 +15,7 @@ import edu.udo.piq.style.PStyleBorder;
 import edu.udo.piq.swing.SwingPRenderer;
 import edu.udo.piq.tools.ImmutablePInsets;
 
-public class SwingStylePButton extends MutablePStyleComponent {
+public class SwingStylePButton extends MutablePStyleComponent implements SwingPStyle {
 	
 	private static final PColor COLOR_FOCUS = PColor.WHITE;
 	private static final PColor COLOR_UNFOCUS = COLOR_FOCUS.mult1(1.0, 1.0, 1.0, 0.5);

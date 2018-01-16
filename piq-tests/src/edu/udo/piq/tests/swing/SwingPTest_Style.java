@@ -16,7 +16,10 @@ import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.components.defaults.DefaultPProgressBarModel;
 import edu.udo.piq.components.defaults.PSpinnerModelList;
 import edu.udo.piq.components.textbased.PLabel;
+import edu.udo.piq.layouts.AlignmentX;
 import edu.udo.piq.layouts.PGridLayout;
+import edu.udo.piq.layouts.PListLayout;
+import edu.udo.piq.layouts.PListLayout.ListAlignment;
 import edu.udo.piq.tests.styles.SwingStyleSheet;
 import edu.udo.piq.tools.AbstractPTextModel;
 
@@ -45,8 +48,6 @@ public class SwingPTest_Style extends AbstractSwingPTest {
 		
 		PPanel body = new PPanel();
 		PGridLayout layout = new PGridLayout(body, 5, 6);
-//		layout.setColumnGrowth(2, Growth.MAXIMIZE);
-//		layout.setRowGrowth(3, Growth.MAXIMIZE);
 		body.setLayout(layout);
 		
 		DefaultPProgressBarModel progMdl = new DefaultPProgressBarModel();
@@ -56,24 +57,25 @@ public class SwingPTest_Style extends AbstractSwingPTest {
 		body.addChild(new PButton("Hello", clickObsChangeStyle), "1 0 alignX=R alignY=T");
 		body.addChild(new PButton("World"), "2 0 alignX=L alignY=B");
 		body.addChild(new PSpinner(new PSpinnerModelList("Red", "Blue", "Green", "Yellow", "Magenta")), "3 0 2 1 alignX=F");
-		body.addChild(new PButton("How", progClickObs), "0 1 alignX=F");
-		body.addChild(new PButton("Are", progClickObs), "0 2 alignX=F");
-		body.addChild(new PButton("You?", progClickObs), "0 3 alignX=F");
-		PSlider sld1 = new PSlider(0, 0, 50);
-		PSlider sld2 = new PSlider(0, -25, 25);
-		PSlider sld3 = new PSlider(0, -50, 0);
-		PCheckBoxTuple chkBx1 = new PCheckBoxTuple("Check 1");
-		PCheckBoxTuple chkBx2 = new PCheckBoxTuple("Check 2");
-		PCheckBoxTuple chkBx3 = new PCheckBoxTuple("Check 3");
-		body.addChild(sld1, "1 1 2 1 alignX=F");
-		body.addChild(sld2, "1 2 2 1 alignX=F");
-		body.addChild(sld3, "1 3 2 1 alignX=F");
-		body.addChild(new PLabel(new SpecialTextModel(sld1, chkBx1)), "3 1 alignX=L");
-		body.addChild(new PLabel(new SpecialTextModel(sld2, chkBx2)), "3 2 alignX=L");
-		body.addChild(new PLabel(new SpecialTextModel(sld3, chkBx3)), "3 3 alignX=L");
-		body.addChild(chkBx1, "4 1");
-		body.addChild(chkBx2, "4 2");
-		body.addChild(chkBx3, "4 3");
+		
+		String[] btnLabels = {"How", "Are", "You?"};
+		for (int i = 0; i < btnLabels.length; i++) {
+			PPanel subPnl = new PPanel();
+			subPnl.setLayout(new PListLayout(subPnl, ListAlignment.LEFT_TO_RIGHT));
+			
+			PButton btn = new PButton(btnLabels[i], progClickObs);
+			PSlider sld = new PSlider(0, i * -25, btnLabels.length * 25 - i * 25);
+			PCheckBoxTuple chkBx = new PCheckBoxTuple("Check "+i);
+			PLabel lbl = new PLabel(new SpecialTextModel(sld, chkBx));
+			lbl.getLayoutPreference().setAlignmentX(AlignmentX.RIGHT);
+			
+			subPnl.addChild(btn, null);
+			subPnl.addChild(sld, null);
+			subPnl.addChild(lbl, null);
+			subPnl.addChild(chkBx, null);
+			
+			body.addChild(subPnl, "0 "+(i+1)+" 4 1 alignX=F alignY=F");
+		}
 		body.addChild(new PProgressBar(progMdl), "0 4 5 1 alignX=F");
 		body.addChild(new PSpacer(100, 0), "0 5");
 		body.addChild(new PSpacer(100, 0), "1 5");
@@ -102,7 +104,11 @@ public class SwingPTest_Style extends AbstractSwingPTest {
 		}
 		@Override
 		public String getText() {
-			return getValue().toString();
+			String valStr = getValue().toString();
+			if (valStr.length() > 5) {
+				return valStr.substring(0, 5);
+			}
+			return valStr;
 		}
 		@Override
 		public Object getValue() {

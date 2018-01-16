@@ -12,7 +12,7 @@ import edu.udo.piq.style.MutablePStyleComponent;
 import edu.udo.piq.swing.SwingPRenderer;
 import edu.udo.piq.tools.ImmutablePSize;
 
-public class SwingStylePSlider extends MutablePStyleComponent {
+public class SwingStylePSlider extends MutablePStyleComponent implements SwingPStyle {
 	
 	private static final int KNOB_W = 8;
 	private static final int KNOB_H = 16;

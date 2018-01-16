@@ -19,7 +19,7 @@ import edu.udo.piq.components.util.StandardFontKey;
 import edu.udo.piq.style.MutablePStyleComponent;
 import edu.udo.piq.tools.MutablePSize;
 
-public class SwingStylePLabel extends MutablePStyleComponent {
+public class SwingStylePLabel extends MutablePStyleComponent implements SwingPStyle {
 	
 	private static final PColor COLOR_PANEL = PColor.WHITE;
 	private static final PColor COLOR_OTHER = PColor.BLACK;

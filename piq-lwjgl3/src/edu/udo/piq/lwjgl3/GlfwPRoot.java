@@ -37,6 +37,7 @@ import edu.udo.piq.PImageResource;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRootOverlay;
 import edu.udo.piq.components.textbased.PTextArea;
+import edu.udo.piq.components.util.StandardFontKey;
 import edu.udo.piq.dnd.PDnDManager;
 import edu.udo.piq.lwjgl3.StbImageResource.TexelFormat;
 import edu.udo.piq.lwjgl3.renderer.LwjglPRendererBase;
@@ -280,10 +281,10 @@ public class GlfwPRoot extends AbstractPRoot {
 	private StbTtFontResource loadFontResource(Object fontID) {
 		String fontName = null;
 		int pixelSize = 0;
-		if (fontID instanceof FontInfo) {
-			FontInfo fi = (FontInfo) fontID;
+		if (fontID instanceof StandardFontKey) {
+			StandardFontKey fi = (StandardFontKey) fontID;
 			fontName = fi.getName();
-			pixelSize = fi.getPixelSize();
+			pixelSize = (int) (fi.getPixelSize() + 0.5);
 		} else if (fontID == PTextArea.FONT_ID) {
 			fontName = "Monospaced";
 			pixelSize = 14;

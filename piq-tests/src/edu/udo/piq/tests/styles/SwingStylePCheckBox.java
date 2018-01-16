@@ -12,7 +12,7 @@ import edu.udo.piq.style.MutablePStyleComponent;
 import edu.udo.piq.swing.SwingPRenderer;
 import edu.udo.piq.tools.ImmutablePSize;
 
-public class SwingStylePCheckBox extends MutablePStyleComponent {
+public class SwingStylePCheckBox extends MutablePStyleComponent implements SwingPStyle {
 	
 	private static final int BTN_W = 48;
 	private static final int BTN_H = 24;

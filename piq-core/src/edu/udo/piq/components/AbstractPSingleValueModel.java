@@ -15,7 +15,7 @@ public abstract class AbstractPSingleValueModel implements PSingleValueModel {
 		Object oldValue = getValue();
 		if (!Objects.equals(value, oldValue)) {
 			setValueInternal(value);
-			if (!Objects.equals(value, oldValue)) {
+			if (!Objects.equals(getValue(), oldValue)) {
 				fireChangeEvent(oldValue);
 			}
 		}

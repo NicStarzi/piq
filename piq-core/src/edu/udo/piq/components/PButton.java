@@ -1,5 +1,6 @@
 package edu.udo.piq.components;
 
+import edu.udo.piq.CallSuper;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
@@ -10,6 +11,7 @@ import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PTimer;
+import edu.udo.piq.TemplateMethod;
 import edu.udo.piq.actions.FocusOwnerAction;
 import edu.udo.piq.actions.PAccelerator;
 import edu.udo.piq.actions.PAccelerator.FocusPolicy;
@@ -29,7 +31,7 @@ import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PModelFactory;
 import edu.udo.piq.util.PiqUtil;
 
-public class PButton extends AbstractPLayoutOwner implements PClickable {
+public class PButton extends AbstractPLayoutOwner implements PInteractiveComponent, PClickable {
 	
 	public static final PActionKey KEY_PRESS_ENTER = StandardComponentActionKey.INTERACT;
 	public static final PAccelerator ACCELERATOR_PRESS_ENTER = new PAccelerator(
@@ -57,8 +59,10 @@ public class PButton extends AbstractPLayoutOwner implements PClickable {
 	protected final ObserverList<PClickObs> obsList
 		= PiqUtil.createDefaultObserverList();
 	protected final PSingleValueModelObs modelObs = this::onModelChange;
-	protected PTimer repeatTimer;
 	protected PButtonModel model;
+	protected final PSingleValueModelObs enableObs = this::onEnabledChange;
+	protected PEnableModel enableModel;
+	protected PTimer repeatTimer;
 	protected boolean ignoreClickOnChildren = false;
 	protected double repeatTimerInitialDelay;
 	protected double repeatTimerDelay;
@@ -102,11 +106,14 @@ public class PButton extends AbstractPLayoutOwner implements PClickable {
 		
 		PButtonModel defaultModel = PModelFactory.createModelFor(this,
 				DefaultPButtonModel::new, PButtonModel.class);
+		PEnableModel defaultEnableModel = PModelFactory.createModelFor(this,
+				DefaultPEnableModel::new, PEnableModel.class);
 		
 		PAnchorLayout defaultLayout = new PAnchorLayout(this);
 		defaultLayout.setInsets(new ImmutablePInsets(8));
 		setLayout(defaultLayout);
 		setModel(defaultModel);
+		setEnableModel(defaultEnableModel);
 		addObs(new PMouseObs() {
 			@Override
 			public void onMouseMoved(PMouse mouse) {
@@ -196,19 +203,20 @@ public class PButton extends AbstractPLayoutOwner implements PClickable {
 		return model;
 	}
 	
-	public void setEnabled(boolean isEnabled) {
-		PButtonModel model = getModel();
-		if (model != null) {
-			model.setEnabled(isEnabled);
+	@Override
+	public void setEnableModel(PEnableModel model) {
+		if (getEnableModel() != null) {
+			getEnableModel().removeObs(enableObs);
+		}
+		enableModel = model;
+		if (getEnableModel() != null) {
+			getEnableModel().addObs(enableObs);
 		}
 	}
 	
-	public boolean isEnabled() {
-		PButtonModel model = getModel();
-		if (model == null) {
-			return false;
-		}
-		return model.isEnabled();
+	@Override
+	public PEnableModel getEnableModel() {
+		return enableModel;
 	}
 	
 	@Override
@@ -265,6 +273,8 @@ public class PButton extends AbstractPLayoutOwner implements PClickable {
 		return true;
 	}
 	
+	@TemplateMethod
+	@CallSuper
 	protected void onModelChange(PSingleValueModel model, Object oldVal, Object newVal) {
 		if (repeatTimer != null) {
 			repeatTimer.setDelay(repeatTimerInitialDelay);
@@ -273,12 +283,20 @@ public class PButton extends AbstractPLayoutOwner implements PClickable {
 		fireReRenderEvent();
 	}
 	
+	@TemplateMethod
+	protected void onEnabledChange(PSingleValueModel model, Object oldVal, Object newVal) {
+		fireReRenderEvent();
+	}
+	
+	@TemplateMethod
 	protected void onMouseMoved(PMouse mouse) {
 	}
 	
+	@TemplateMethod
 	protected void onMouseButtonPressed(PMouse mouse, MouseButton btn) {
 	}
 	
+	@TemplateMethod
 	protected void onMouseButtonTriggered(PMouse mouse, MouseButton btn) {
 		if (isEnabled() && btn == MouseButton.LEFT && getModel() != null
 				&& isMouseOverThisOrChild(mouse))
@@ -287,6 +305,7 @@ public class PButton extends AbstractPLayoutOwner implements PClickable {
 		}
 	}
 	
+	@TemplateMethod
 	protected void onMouseButtonReleased(PMouse mouse, MouseButton btn) {
 		boolean oldPressed = isPressed();
 		if (btn == MouseButton.LEFT && oldPressed) {

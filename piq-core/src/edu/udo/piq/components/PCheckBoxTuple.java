@@ -24,8 +24,9 @@ import edu.udo.piq.layouts.PTupleLayout.Constraint;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PiqUtil;
+import edu.udo.piq.util.Throw;
 
-public class PCheckBoxTuple extends AbstractPLayoutOwner implements PClickable {
+public class PCheckBoxTuple extends AbstractPLayoutOwner implements PInteractiveComponent, PClickable {
 	
 	public static final PActionKey KEY_TRIGGER_ENTER = StandardComponentActionKey.INTERACT;
 	public static final PAccelerator ACCELERATOR_TRIGGER_ENTER = new PAccelerator(
@@ -111,27 +112,16 @@ public class PCheckBoxTuple extends AbstractPLayoutOwner implements PClickable {
 		return getLayoutInternal().getSecond();
 	}
 	
-	public void setEnabled(boolean isEnabled) {
-		PCheckBox chkBx = getCheckBox();
-		if (chkBx == null) {
-			return;
-		}
-		PCheckBoxModel model = chkBx.getModel();
-		if (model != null) {
-			model.setEnabled(isEnabled);
-		}
+	@Override
+	public void setEnableModel(PEnableModel model) {
+		Throw.ifNull(getCheckBox(), "getCheckBox() == null");
+		getCheckBox().setEnableModel(model);
 	}
 	
-	public boolean isEnabled() {
-		PCheckBox chkBx = getCheckBox();
-		if (chkBx == null) {
-			return false;
-		}
-		PCheckBoxModel model = chkBx.getModel();
-		if (model == null) {
-			return false;
-		}
-		return model.isEnabled();
+	@Override
+	public PEnableModel getEnableModel() {
+		Throw.ifNull(getCheckBox(), "getCheckBox() == null");
+		return getCheckBox().getEnableModel();
 	}
 	
 	@Override

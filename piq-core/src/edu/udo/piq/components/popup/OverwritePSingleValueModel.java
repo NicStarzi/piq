@@ -152,8 +152,6 @@ public class OverwritePSingleValueModel extends AbstractPSingleValueModel {
 	
 	public static class OverwritePCheckBoxModel extends OverwritePSingleValueModel implements PCheckBoxModel {
 		
-		protected boolean enabled = PCheckBoxModel.DEFAULT_ENABLED_VALUE;
-		
 		public OverwritePCheckBoxModel() {
 			super(new DefaultPCheckBoxModel());
 		}
@@ -183,20 +181,6 @@ public class OverwritePSingleValueModel extends AbstractPSingleValueModel {
 				return getDelegateModel().isChecked();
 			}
 			return Boolean.TRUE.equals(getValue());
-		}
-		
-		@Override
-		public void setEnabled(boolean trueIfEnabled) {
-			if (enabled != trueIfEnabled) {
-				Object oldValue = getValue();
-				enabled = trueIfEnabled;
-				fireChangeEvent(oldValue);
-			}
-		}
-		
-		@Override
-		public boolean isEnabled() {
-			return enabled;
 		}
 		
 	}

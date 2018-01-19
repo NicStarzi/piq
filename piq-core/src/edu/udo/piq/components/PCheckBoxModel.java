@@ -27,8 +27,4 @@ public interface PCheckBoxModel extends PSingleValueModel {
 	
 	public boolean isChecked();
 	
-	public void setEnabled(boolean trueIfEnabled);
-	
-	public boolean isEnabled();
-	
 }

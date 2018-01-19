@@ -3,7 +3,6 @@ package edu.udo.piq.components;
 public interface PRadioButtonModel extends PSingleValueModel {
 	
 	public static final boolean DEFAULT_SELECTED_VALUE = false;
-	public static final boolean DEFAULT_ENABLED_VALUE = true;
 	
 	@Override
 	public default void setValue(Object obj) {
@@ -18,9 +17,5 @@ public interface PRadioButtonModel extends PSingleValueModel {
 	public void setSelected(boolean value);
 	
 	public boolean isSelected();
-	
-	public void setEnabled(boolean trueIfEnabled);
-	
-	public boolean isEnabled();
 	
 }

@@ -7,6 +7,7 @@ import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
+import edu.udo.piq.TemplateMethod;
 import edu.udo.piq.components.defaults.DefaultPCheckBoxModel;
 import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.ImmutablePSize;
@@ -14,9 +15,9 @@ import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PModelFactory;
 import edu.udo.piq.util.PiqUtil;
 
-public class PCheckBox extends AbstractPComponent implements PClickable {
+public class PCheckBox extends AbstractPComponent implements PInteractiveComponent, PClickable {
 	
-	private static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(12, 12);
+	public static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(12, 12);
 	
 	protected final ObserverList<PSingleValueModelObs> modelObsList
 		= PiqUtil.createDefaultObserverList();
@@ -24,12 +25,26 @@ public class PCheckBox extends AbstractPComponent implements PClickable {
 		= PiqUtil.createDefaultObserverList();
 	protected final PMouseObs mouseObs = new PMouseObs() {
 		@Override
+		public void onMouseMoved(PMouse mouse) {
+			PCheckBox.this.onMouseMoved(mouse);
+		}
+		@Override
 		public void onButtonTriggered(PMouse mouse, MouseButton btn, int clickCount) {
-			PCheckBox.this.onMouseButtonTriggered(mouse, btn);
+			PCheckBox.this.onMouseButtonTriggered(mouse, btn, clickCount);
+		}
+		@Override
+		public void onButtonPressed(PMouse mouse, MouseButton btn, int clickCount) {
+			PCheckBox.this.onMouseButtonPressed(mouse, btn, clickCount);
+		}
+		@Override
+		public void onButtonReleased(PMouse mouse, MouseButton btn, int clickCount) {
+			PCheckBox.this.onMouseButtonReleased(mouse, btn, clickCount);
 		}
 	};
 	protected final PSingleValueModelObs modelObs = this::onModelChange;
 	protected PCheckBoxModel model;
+	protected final PSingleValueModelObs enableObs = this::onEnabledChange;
+	protected PEnableModel enableModel;
 	
 	public PCheckBox() {
 		super();
@@ -75,19 +90,20 @@ public class PCheckBox extends AbstractPComponent implements PClickable {
 		}
 	}
 	
-	public void setEnabled(boolean isEnabled) {
-		PCheckBoxModel model = getModel();
-		if (model != null) {
-			model.setEnabled(isEnabled);
+	@Override
+	public void setEnableModel(PEnableModel model) {
+		if (getEnableModel() != null) {
+			getEnableModel().removeObs(enableObs);
+		}
+		enableModel = model;
+		if (getEnableModel() != null) {
+			getEnableModel().addObs(enableObs);
 		}
 	}
 	
-	public boolean isEnabled() {
-		PCheckBoxModel model = getModel();
-		if (model == null) {
-			return false;
-		}
-		return model.isEnabled();
+	@Override
+	public PEnableModel getEnableModel() {
+		return enableModel;
 	}
 	
 	@Override
@@ -145,12 +161,29 @@ public class PCheckBox extends AbstractPComponent implements PClickable {
 		obsList.fireEvent((obs) -> obs.onClick(this));
 	}
 	
+	@TemplateMethod
 	protected void onModelChange(PSingleValueModel model, Object oldValue, Object newValue) {
 		firePreferredSizeChangedEvent();
 		fireReRenderEvent();
 	}
 	
-	protected void onMouseButtonTriggered(PMouse mouse, MouseButton btn) {
+	@TemplateMethod
+	protected void onEnabledChange(PSingleValueModel model, Object oldVal, Object newVal) {
+		fireReRenderEvent();
+	}
+	
+	@TemplateMethod
+	protected void onMouseMoved(PMouse mouse) {
+	}
+	
+	@TemplateMethod
+	protected void onMouseButtonPressed(PMouse mouse, MouseButton btn, int clickCount) {}
+	
+	@TemplateMethod
+	protected void onMouseButtonReleased(PMouse mouse, MouseButton btn, int clickCount) {}
+	
+	@TemplateMethod
+	protected void onMouseButtonTriggered(PMouse mouse, MouseButton btn, int clickCount) {
 		if (btn == MouseButton.LEFT && isMouseOver(mouse)) {
 			toggleChecked();
 			fireClickEvent();

@@ -1,14 +1,10 @@
 TODO:
- - PTree copy, cut, paste support
  - PTextArea drag and drop support
  - PTable overhaul + drag and drop support
- - PTextField scroll
- - PScrollPanel scroll bars
+ - Request scroll to rect support in many components
+ - PScrollPanel scroll bars + PScrollable support
  - PMouse: press and trigger is the same right now
  - PKeyObsMode: ALWAYS, WHEN_FOCUSED
  - PMouseObsMode: ALWAYS, WHEN_MOUSE_OVER, WHEN_MOUSE_OVER_THIS_OR_DESCENDANT
- - Consistent use of models (constructor, PModelFactory, etc) for all components that have models
- - PPopups
- - PClickable (PButton, PCheckBox, PRadioButton, etc)
- - PButtonModel: Change model data from "isPressed" to "isEnabled"
  - PComponent when width * height == 0 disable mouse and keyboard observers
+ - Powerful default styles

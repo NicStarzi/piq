@@ -104,9 +104,7 @@ public abstract class AbstractPTextComponent
 		if (renderBounds == null) {
 			return;
 		}
-		int scrollOffsetX = renderBounds.getFinalX() - ownBounds.getX();
-		int scrollOffsetY = renderBounds.getFinalY() - ownBounds.getY();
-		requestScroll(scrollOffsetX, scrollOffsetY);
+		requestScrollToRect(renderBounds);
 	}
 	
 	protected void setTextInput(PTextInput textInput) {

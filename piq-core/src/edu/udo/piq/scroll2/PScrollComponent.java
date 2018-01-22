@@ -4,6 +4,6 @@ import edu.udo.piq.PComponent;
 
 public interface PScrollComponent extends PComponent {
 	
-	public void onScrollRequest(int x, int y, int fx, int fy);
+	public void onScrollRequest(PComponent descendant, int x, int y, int fx, int fy);
 	
 }

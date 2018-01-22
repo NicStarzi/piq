@@ -965,12 +965,18 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 		root.setFocusOwner(null);
 	}
 	
+	public default void requestScrollToRect(PBounds bounds) {
+		requestScrollToRect(bounds.getX(), bounds.getY(), bounds.getFinalX(), bounds.getFinalY());
+	}
+	
 	public default void requestScrollToRect(int x, int y, int fx, int fy) {
-		for (PComponent ancestor : getAncestors()) {
+		PComponent ancestor = getParent();
+		while (ancestor != null) {
 			if (ancestor instanceof PScrollComponent) {
 				PScrollComponent scrollArea = (PScrollComponent) ancestor;
-				scrollArea.onScrollRequest(x, y, fx, fy);
+				scrollArea.onScrollRequest(this, x, y, fx, fy);
 			}
+			ancestor = ancestor.getParent();
 		}
 	}
 	

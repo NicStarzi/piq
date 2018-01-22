@@ -9,6 +9,7 @@ import edu.udo.piq.actions.FocusOwnerAction;
 import edu.udo.piq.actions.PAccelerator;
 import edu.udo.piq.actions.PAccelerator.FocusPolicy;
 import edu.udo.piq.actions.PAccelerator.KeyInputType;
+import edu.udo.piq.actions.PActionKey;
 import edu.udo.piq.actions.PComponentAction;
 import edu.udo.piq.actions.StandardComponentActionKey;
 import edu.udo.piq.components.PSpinnerButton.PSpinnerBtnDir;
@@ -16,20 +17,14 @@ import edu.udo.piq.components.defaults.PSpinnerModelInt;
 import edu.udo.piq.layouts.PLayout;
 import edu.udo.piq.layouts.PSpinnerLayout;
 import edu.udo.piq.layouts.PSpinnerLayout.Constraint;
-import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PModelFactory;
 import edu.udo.piq.util.PiqUtil;
 import edu.udo.piq.util.ThrowException;
 
-public class PSpinner extends AbstractPLayoutOwner {
+public class PSpinner extends AbstractPInteractiveLayoutOwner {
 	
-	/*
-	 * Input: Press Up
-	 * If the UP key is pressed while the spinner has focus, a model and
-	 * is enabled, the next value of the spinners model will be selected.
-	 */
-	public static final Object KEY_NEXT = StandardComponentActionKey.MOVE_NEXT;
+	public static final PActionKey KEY_NEXT = StandardComponentActionKey.MOVE_NEXT;
 	public static final PAccelerator ACCELERATOR_NEXT = new PAccelerator(
 			ActualKey.UP, FocusPolicy.THIS_OR_CHILD_HAS_FOCUS, KeyInputType.PRESS);
 	public static final PComponentAction ACTION_NEXT = new FocusOwnerAction<>(
@@ -38,20 +33,14 @@ public class PSpinner extends AbstractPLayoutOwner {
 			self -> self.isEnabled() && self.getModel().hasNext(),
 			self -> self.selectNext());
 	
-//	public static final String INPUT_IDENTIFIER_PRESS_UP = "pressUp";
-//	public static final PAccelerator<PSpinner> INPUT_PRESS_UP = new DefaultPAccelerator<>(
-//			FocusPolicy.THIS_OR_CHILD_HAS_FOCUS, KeyInputType.PRESS, ActualKey.UP, PSpinner::canSelectNextOrPrevious);
-//	public static final Consumer<PSpinner> REACTION_PRESS_UP = PSpinner::selectNext;
-//
-//	/*
-//	 * Input: Press Down
-//	 * If the DOWN key is pressed while the spinner has focus, a model and
-//	 * is enabled, the previous value of the spinners model will be selected.
-//	 */
-//	public static final String INPUT_IDENTIFIER_PRESS_DOWN = "pressDown";
-//	public static final PAccelerator<PSpinner> INPUT_PRESS_DOWN = new DefaultPAccelerator<>(
-//			FocusPolicy.THIS_OR_CHILD_HAS_FOCUS, KeyInputType.PRESS, ActualKey.DOWN, PSpinner::canSelectNextOrPrevious);
-//	public static final Consumer<PSpinner> REACTION_PRESS_DOWN = PSpinner::selectPrevious;
+	public static final PActionKey KEY_PREV = StandardComponentActionKey.MOVE_PREV;
+	public static final PAccelerator ACCELERATOR_PREV = new PAccelerator(
+			ActualKey.DOWN, FocusPolicy.THIS_OR_CHILD_HAS_FOCUS, KeyInputType.PRESS);
+	public static final PComponentAction ACTION_PREV = new FocusOwnerAction<>(
+			PSpinner.class, false,
+			ACCELERATOR_PREV,
+			self -> self.isEnabled() && self.getModel().hasPrevious(),
+			self -> self.selectPrevious());
 	
 	protected final ObserverList<PSpinnerModelObs> modelObsList =
 			PiqUtil.createDefaultObserverList();
@@ -73,8 +62,8 @@ public class PSpinner extends AbstractPLayoutOwner {
 		
 		setModel(PModelFactory.createModelFor(this, PSpinnerModelInt::new, PSpinnerModel.class));
 		
-//		defineInput(INPUT_IDENTIFIER_PRESS_UP, INPUT_PRESS_UP, REACTION_PRESS_UP);
-//		defineInput(INPUT_IDENTIFIER_PRESS_DOWN, INPUT_PRESS_DOWN, REACTION_PRESS_DOWN);
+		addActionMapping(KEY_NEXT, ACTION_NEXT);
+		addActionMapping(KEY_PREV, ACTION_PREV);
 	}
 	
 	@Override
@@ -156,21 +145,6 @@ public class PSpinner extends AbstractPLayoutOwner {
 	
 	public PSpinnerModel getModel() {
 		return model;
-	}
-	
-	public void setEnabled(boolean value) {
-		PSpinnerModel model = getModel();
-		if (model != null) {
-			model.setEnabled(value);
-		}
-	}
-	
-	public boolean isEnabled() {
-		PSpinnerModel model = getModel();
-		if (model == null) {
-			return false;
-		}
-		return model.isEnabled();
 	}
 	
 	public void selectNext() {

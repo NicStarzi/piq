@@ -8,6 +8,7 @@ import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
+import edu.udo.piq.TemplateMethod;
 import edu.udo.piq.actions.FocusOwnerAction;
 import edu.udo.piq.actions.PAccelerator;
 import edu.udo.piq.actions.PAccelerator.FocusPolicy;
@@ -22,8 +23,9 @@ import edu.udo.piq.layouts.PTupleLayout.Constraint;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PiqUtil;
+import edu.udo.piq.util.Throw;
 
-public class PRadioButtonTuple extends AbstractPLayoutOwner implements PClickable {
+public class PRadioButtonTuple extends AbstractPLayoutOwner implements PInteractiveComponent, PClickable {
 	
 	public static final PActionKey KEY_TRIGGER_ENTER = StandardComponentActionKey.INTERACT;
 	public static final PAccelerator ACCELERATOR_TRIGGER_ENTER = new PAccelerator(
@@ -91,27 +93,16 @@ public class PRadioButtonTuple extends AbstractPLayoutOwner implements PClickabl
 		return (PRadioButton) getLayoutInternal().getFirst();
 	}
 	
-	public void setEnabled(boolean isEnabled) {
-		PRadioButton radBtn = getRadioButton();
-		if (radBtn == null) {
-			return;
-		}
-		PRadioButtonModel model = radBtn.getModel();
-		if (model != null) {
-			model.setEnabled(isEnabled);
-		}
+	@Override
+	public void setEnableModel(PEnableModel model) {
+		Throw.ifNull(getRadioButton(), "getRadioButton() == null");
+		getRadioButton().setEnableModel(model);
 	}
 	
-	public boolean isEnabled() {
-		PRadioButton radBtn = getRadioButton();
-		if (radBtn == null) {
-			return false;
-		}
-		PRadioButtonModel model = radBtn.getModel();
-		if (model == null) {
-			return false;
-		}
-		return model.isEnabled();
+	@Override
+	public PEnableModel getEnableModel() {
+		Throw.ifNull(getRadioButton(), "getRadioButton() == null");
+		return getRadioButton().getEnableModel();
 	}
 	
 	@Override
@@ -175,12 +166,13 @@ public class PRadioButtonTuple extends AbstractPLayoutOwner implements PClickabl
 		takeFocus();
 	}
 	
-	protected void onMouseMoved(PMouse mouse) {
-	}
+	@TemplateMethod
+	protected void onMouseMoved(PMouse mouse) {}
 	
-	protected void onMouseButtonPressed(PMouse mouse, MouseButton btn) {
-	}
+	@TemplateMethod
+	protected void onMouseButtonPressed(PMouse mouse, MouseButton btn) {}
 	
+	@TemplateMethod
 	protected void onMouseButtonTriggered(PMouse mouse, MouseButton btn) {
 		PComponent scndCmp = getSecondComponent();
 		if (scndCmp != null && scndCmp.isMouseOver(mouse)) {
@@ -194,10 +186,11 @@ public class PRadioButtonTuple extends AbstractPLayoutOwner implements PClickabl
 		}
 	}
 	
-	protected void onMouseButtonReleased(PMouse mouse, MouseButton btn) {
-	}
+	@TemplateMethod
+	protected void onMouseButtonReleased(PMouse mouse, MouseButton btn) {}
 	
 	@Override
+	@TemplateMethod
 	protected void onChildAdded(PComponentLayoutData data) {
 		if (data.getConstraint() == Constraint.FIRST) {
 			PComponent child = data.getComponent();
@@ -209,6 +202,7 @@ public class PRadioButtonTuple extends AbstractPLayoutOwner implements PClickabl
 	}
 	
 	@Override
+	@TemplateMethod
 	protected void onChildRemoved(PComponentLayoutData data) {
 		if (data.getConstraint() == Constraint.FIRST) {
 			((PRadioButton) data.getComponent()).removeObs(radBtnObs);

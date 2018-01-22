@@ -9,13 +9,12 @@ import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
 import edu.udo.piq.TemplateMethod;
 import edu.udo.piq.components.defaults.DefaultPCheckBoxModel;
-import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PModelFactory;
 import edu.udo.piq.util.PiqUtil;
 
-public class PCheckBox extends AbstractPComponent implements PInteractiveComponent, PClickable {
+public class PCheckBox extends AbstractPInteractiveComponent implements PClickable {
 	
 	public static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(12, 12);
 	
@@ -43,8 +42,6 @@ public class PCheckBox extends AbstractPComponent implements PInteractiveCompone
 	};
 	protected final PSingleValueModelObs modelObs = this::onModelChange;
 	protected PCheckBoxModel model;
-	protected final PSingleValueModelObs enableObs = this::onEnabledChange;
-	protected PEnableModel enableModel;
 	
 	public PCheckBox() {
 		super();
@@ -88,22 +85,6 @@ public class PCheckBox extends AbstractPComponent implements PInteractiveCompone
 		if (getModel() != null) {
 			getModel().toggleChecked();
 		}
-	}
-	
-	@Override
-	public void setEnableModel(PEnableModel model) {
-		if (getEnableModel() != null) {
-			getEnableModel().removeObs(enableObs);
-		}
-		enableModel = model;
-		if (getEnableModel() != null) {
-			getEnableModel().addObs(enableObs);
-		}
-	}
-	
-	@Override
-	public PEnableModel getEnableModel() {
-		return enableModel;
 	}
 	
 	@Override
@@ -168,13 +149,7 @@ public class PCheckBox extends AbstractPComponent implements PInteractiveCompone
 	}
 	
 	@TemplateMethod
-	protected void onEnabledChange(PSingleValueModel model, Object oldVal, Object newVal) {
-		fireReRenderEvent();
-	}
-	
-	@TemplateMethod
-	protected void onMouseMoved(PMouse mouse) {
-	}
+	protected void onMouseMoved(PMouse mouse) {}
 	
 	@TemplateMethod
 	protected void onMouseButtonPressed(PMouse mouse, MouseButton btn, int clickCount) {}

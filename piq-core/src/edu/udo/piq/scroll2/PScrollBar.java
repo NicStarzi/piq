@@ -378,10 +378,12 @@ public class PScrollBar extends AbstractPLayoutOwner {
 			return prefSize;
 		}
 		
+		@Override
 		public void addObs(PClickObs obs) {
 			obsList.add(obs);
 		}
 		
+		@Override
 		public void removeObs(PClickObs obs) {
 			obsList.remove(obs);
 		}

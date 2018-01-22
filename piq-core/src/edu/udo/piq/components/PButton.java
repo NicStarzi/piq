@@ -25,13 +25,12 @@ import edu.udo.piq.components.defaults.ReRenderPFocusObs;
 import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.components.textbased.PTextModel;
 import edu.udo.piq.layouts.PAnchorLayout;
-import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PModelFactory;
 import edu.udo.piq.util.PiqUtil;
 
-public class PButton extends AbstractPLayoutOwner implements PInteractiveComponent, PClickable {
+public class PButton extends AbstractPInteractiveLayoutOwner implements PInteractiveComponent, PClickable {
 	
 	public static final PActionKey KEY_PRESS_ENTER = StandardComponentActionKey.INTERACT;
 	public static final PAccelerator ACCELERATOR_PRESS_ENTER = new PAccelerator(
@@ -60,8 +59,6 @@ public class PButton extends AbstractPLayoutOwner implements PInteractiveCompone
 		= PiqUtil.createDefaultObserverList();
 	protected final PSingleValueModelObs modelObs = this::onModelChange;
 	protected PButtonModel model;
-	protected final PSingleValueModelObs enableObs = this::onEnabledChange;
-	protected PEnableModel enableModel;
 	protected PTimer repeatTimer;
 	protected boolean ignoreClickOnChildren = false;
 	protected double repeatTimerInitialDelay;
@@ -204,22 +201,6 @@ public class PButton extends AbstractPLayoutOwner implements PInteractiveCompone
 	}
 	
 	@Override
-	public void setEnableModel(PEnableModel model) {
-		if (getEnableModel() != null) {
-			getEnableModel().removeObs(enableObs);
-		}
-		enableModel = model;
-		if (getEnableModel() != null) {
-			getEnableModel().addObs(enableObs);
-		}
-	}
-	
-	@Override
-	public PEnableModel getEnableModel() {
-		return enableModel;
-	}
-	
-	@Override
 	public boolean isFocusable() {
 		return isEnabled();
 	}
@@ -284,17 +265,10 @@ public class PButton extends AbstractPLayoutOwner implements PInteractiveCompone
 	}
 	
 	@TemplateMethod
-	protected void onEnabledChange(PSingleValueModel model, Object oldVal, Object newVal) {
-		fireReRenderEvent();
-	}
+	protected void onMouseMoved(PMouse mouse) {}
 	
 	@TemplateMethod
-	protected void onMouseMoved(PMouse mouse) {
-	}
-	
-	@TemplateMethod
-	protected void onMouseButtonPressed(PMouse mouse, MouseButton btn) {
-	}
+	protected void onMouseButtonPressed(PMouse mouse, MouseButton btn) {}
 	
 	@TemplateMethod
 	protected void onMouseButtonTriggered(PMouse mouse, MouseButton btn) {

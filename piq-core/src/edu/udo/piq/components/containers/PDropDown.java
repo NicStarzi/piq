@@ -11,6 +11,7 @@ import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRootOverlay;
 import edu.udo.piq.PSize;
+import edu.udo.piq.components.AbstractPInteractiveLayoutOwner;
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PButtonModel;
 import edu.udo.piq.components.PClickObs;
@@ -32,7 +33,7 @@ import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PModelFactory;
 import edu.udo.piq.util.PiqUtil;
 
-public class PDropDown extends AbstractPLayoutOwner {
+public class PDropDown extends AbstractPInteractiveLayoutOwner {
 	
 	protected final ObserverList<PDropDownObs> obsList = PiqUtil.createDefaultObserverList();
 	protected final PMouseObs mouseObs = new PMouseObs() {
@@ -133,21 +134,6 @@ public class PDropDown extends AbstractPLayoutOwner {
 	
 	public PButtonModel getModel() {
 		return model;
-	}
-	
-	public void setEnabled(boolean isEnabled) {
-		PButtonModel model = getModel();
-		if (model != null) {
-			model.setEnabled(isEnabled);
-		}
-	}
-	
-	public boolean isEnabled() {
-		PButtonModel model = getModel();
-		if (model == null) {
-			return false;
-		}
-		return model.isEnabled();
 	}
 	
 	@Override

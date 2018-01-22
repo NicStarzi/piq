@@ -221,7 +221,6 @@ public class PTreePCellComponent extends AbstractPLayoutOwner implements PCellCo
 	public static class NodeExpandedPCheckBoxModel extends AbstractPCheckBoxModel {
 		
 		protected final PTreePCellComponent owner;
-		protected boolean enabled = PCheckBoxModel.DEFAULT_ENABLED_VALUE;
 		
 		public NodeExpandedPCheckBoxModel(PTreePCellComponent cellComp) {
 			owner = cellComp;
@@ -237,20 +236,6 @@ public class PTreePCellComponent extends AbstractPLayoutOwner implements PCellCo
 		public boolean isChecked() {
 			PTree tree = (PTree) owner.getParent();
 			return !tree.isIndexExpanded(owner.getElementIndex());
-		}
-		
-		@Override
-		public void setEnabled(boolean trueIfEnabled) {
-			if (enabled != trueIfEnabled) {
-				Object oldValue = getValue();
-				enabled = trueIfEnabled;
-				fireChangeEvent(oldValue);
-			}
-		}
-		
-		@Override
-		public boolean isEnabled() {
-			return enabled;
 		}
 		
 	}

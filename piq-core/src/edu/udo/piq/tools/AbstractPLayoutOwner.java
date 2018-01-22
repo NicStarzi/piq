@@ -1,7 +1,6 @@
 package edu.udo.piq.tools;
 
-import edu.udo.piq.PComponent;
-import edu.udo.piq.PComponentObs;
+import edu.udo.piq.TemplateMethod;
 import edu.udo.piq.layouts.PComponentLayoutData;
 import edu.udo.piq.layouts.PLayout;
 import edu.udo.piq.layouts.PLayoutObs;
@@ -28,12 +27,12 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 			AbstractPLayoutOwner.this.onLayoutInvalidated();
 		}
 	};
-	protected final PComponentObs childObs = new PComponentObs() {
-		@Override
-		public void onScrollRequest(PComponent component, int offsetX, int offsetY) {
-			onChildRequestedScroll(component, offsetX, offsetY);
-		}
-	};
+//	protected final PComponentObs childObs = new PComponentObs() {
+//		@Override
+//		public void onScrollRequest(PComponent component, int offsetX, int offsetY) {
+//			onChildRequestedScroll(component, offsetX, offsetY);
+//		}
+//	};
 	protected PLayout layout;
 	
 	/**
@@ -85,28 +84,33 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 		return getLayout().isEmpty();
 	}
 	
+	@TemplateMethod
 	protected void onChildRemoved(PComponentLayoutData data) {
-		data.getComponent().removeObs(childObs);
+//		data.getComponent().removeObs(childObs);
 		checkForPreferredSizeChange();
 		fireReRenderEvent();
 	}
 	
+	@TemplateMethod
 	protected void onChildAdded(PComponentLayoutData data) {
-		data.getComponent().addObs(childObs);
+//		data.getComponent().addObs(childObs);
 		checkForPreferredSizeChange();
 		fireReRenderEvent();
 	}
 	
+	@TemplateMethod
 	protected void onChildLaidOut(PComponentLayoutData data) {
 		fireReRenderEvent();
 	}
 	
+	@TemplateMethod
 	protected void onLayoutInvalidated() {
 		fireReLayOutEvent();
 	}
 	
-	protected void onChildRequestedScroll(PComponent child, int offsetX, int offsetY) {
-		fireScrollRequestEvent(child, offsetX, offsetY);
-	}
+//	@TemplateMethod
+//	protected void onChildRequestedScroll(PComponent child, int offsetX, int offsetY) {
+//		fireScrollRequestEvent(child, offsetX, offsetY);
+//	}
 	
 }

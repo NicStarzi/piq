@@ -7,14 +7,14 @@ import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
+import edu.udo.piq.TemplateMethod;
 import edu.udo.piq.components.defaults.DefaultPRadioButtonModel;
-import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PModelFactory;
 import edu.udo.piq.util.PiqUtil;
 
-public class PRadioButton extends AbstractPComponent implements PClickable {
+public class PRadioButton extends AbstractPInteractiveComponent implements PClickable {
 	
 	private static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(12, 12);
 	
@@ -24,8 +24,20 @@ public class PRadioButton extends AbstractPComponent implements PClickable {
 		= PiqUtil.createDefaultObserverList();
 	protected final PMouseObs mouseObs = new PMouseObs() {
 		@Override
+		public void onMouseMoved(PMouse mouse) {
+			PRadioButton.this.onMouseMoved(mouse);
+		}
+		@Override
 		public void onButtonTriggered(PMouse mouse, MouseButton btn, int clickCount) {
-			PRadioButton.this.onMouseButtonTriggered(mouse, btn);
+			PRadioButton.this.onMouseButtonTriggered(mouse, btn, clickCount);
+		}
+		@Override
+		public void onButtonPressed(PMouse mouse, MouseButton btn, int clickCount) {
+			PRadioButton.this.onMouseButtonPressed(mouse, btn, clickCount);
+		}
+		@Override
+		public void onButtonReleased(PMouse mouse, MouseButton btn, int clickCount) {
+			PRadioButton.this.onMouseButtonReleased(mouse, btn, clickCount);
 		}
 	};
 	protected final PSingleValueModelObs modelObs = this::onModelChange;
@@ -66,21 +78,6 @@ public class PRadioButton extends AbstractPComponent implements PClickable {
 			return false;
 		}
 		return getModel().isSelected();
-	}
-	
-	public void setEnabled(boolean isEnabled) {
-		PRadioButtonModel model = getModel();
-		if (model != null) {
-			model.setEnabled(isEnabled);
-		}
-	}
-	
-	public boolean isEnabled() {
-		PRadioButtonModel model = getModel();
-		if (model == null) {
-			return false;
-		}
-		return model.isEnabled();
 	}
 	
 	@Override
@@ -138,13 +135,24 @@ public class PRadioButton extends AbstractPComponent implements PClickable {
 		obsList.fireEvent((obs) -> obs.onClick(this));
 	}
 	
-	protected void onMouseButtonTriggered(PMouse mouse, MouseButton btn) {
+	@TemplateMethod
+	protected void onMouseMoved(PMouse mouse) {}
+	
+	@TemplateMethod
+	protected void onMouseButtonPressed(PMouse mouse, MouseButton btn, int clickCount) {}
+	
+	@TemplateMethod
+	protected void onMouseButtonReleased(PMouse mouse, MouseButton btn, int clickCount) {}
+	
+	@TemplateMethod
+	protected void onMouseButtonTriggered(PMouse mouse, MouseButton btn, int clickCount) {
 		if (btn == MouseButton.LEFT && isMouseOver(mouse)) {
 			setSelected();
 			fireClickEvent();
 		}
 	}
 	
+	@TemplateMethod
 	protected void onModelChange(PSingleValueModel model, Object oldValue, Object newValue) {
 		firePreferredSizeChangedEvent();
 		fireReRenderEvent();

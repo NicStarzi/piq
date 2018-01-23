@@ -36,6 +36,7 @@ public abstract class AbstractPInteractiveComponent extends AbstractPComponent i
 	
 	@TemplateMethod
 	protected void onEnabledChange(PSingleValueModel model, Object oldVal, Object newVal) {
+		if (hasFocus() && !isEnabled()) {
 			releaseFocus();
 		}
 		fireReRenderEvent();

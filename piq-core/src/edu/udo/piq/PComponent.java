@@ -603,6 +603,7 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 					first = current;
 				} else if (result == null) {
 					result = new ArrayList<>();
+					result.add(first);
 					result.add(current);
 				} else {
 					result.add(current);
@@ -629,6 +630,7 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 					first = (T) current;
 				} else if (result == null) {
 					result = new ArrayList<>();
+					result.add(first);
 					result.add((T) current);
 				} else {
 					result.add((T) current);

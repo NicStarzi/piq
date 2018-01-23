@@ -8,6 +8,7 @@ import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
+import edu.udo.piq.TemplateMethod;
 import edu.udo.piq.actions.FocusOwnerAction;
 import edu.udo.piq.actions.PAccelerator;
 import edu.udo.piq.actions.PAccelerator.FocusPolicy;
@@ -115,7 +116,11 @@ public class PCheckBoxTuple extends AbstractPLayoutOwner implements PInteractive
 	@Override
 	public void setEnableModel(PEnableModel model) {
 		Throw.ifNull(getCheckBox(), "getCheckBox() == null");
+		boolean oldEnabled = isEnabled();
 		getCheckBox().setEnableModel(model);
+		if (oldEnabled != isEnabled()) {
+			fireReRenderEvent();
+		}
 	}
 	
 	@Override
@@ -180,13 +185,17 @@ public class PCheckBoxTuple extends AbstractPLayoutOwner implements PInteractive
 		getCheckBox().removeObs(obs);
 	}
 	
-	protected void onMouseMoved(PMouse mouse) {
-	}
+	@TemplateMethod
+	protected void onMouseMoved(PMouse mouse) {}
 	
-	protected void onMouseButtonPressed(PMouse mouse, MouseButton btn) {
-	}
+	@TemplateMethod
+	protected void onMouseButtonPressed(PMouse mouse, MouseButton btn) {}
 	
+	@TemplateMethod
 	protected void onMouseButtonTriggered(PMouse mouse, MouseButton btn) {
+		if (!isEnabled()) {
+			return;
+		}
 		PComponent scndCmp = getSecondComponent();
 		if (scndCmp != null && scndCmp.isMouseOver(mouse)) {
 			if (!scndCmp.isFocusable()) {
@@ -199,9 +208,10 @@ public class PCheckBoxTuple extends AbstractPLayoutOwner implements PInteractive
 		}
 	}
 	
-	protected void onMouseButtonReleased(PMouse mouse, MouseButton btn) {
-	}
+	@TemplateMethod
+	protected void onMouseButtonReleased(PMouse mouse, MouseButton btn) {}
 	
+	@TemplateMethod
 	@Override
 	protected void onChildAdded(PComponentLayoutData data) {
 		if (data.getConstraint() == Constraint.FIRST) {
@@ -213,6 +223,7 @@ public class PCheckBoxTuple extends AbstractPLayoutOwner implements PInteractive
 		}
 	}
 	
+	@TemplateMethod
 	@Override
 	protected void onChildRemoved(PComponentLayoutData data) {
 		if (data.getConstraint() == Constraint.FIRST) {
@@ -220,6 +231,7 @@ public class PCheckBoxTuple extends AbstractPLayoutOwner implements PInteractive
 		}
 	}
 	
+	@TemplateMethod
 	protected void onCheckBoxClick() {
 		takeFocus();
 		obsList.fireEvent((obs) -> obs.onClick(getCheckBox()));

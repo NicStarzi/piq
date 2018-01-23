@@ -18,17 +18,8 @@ public class SwingStylePSlider extends MutablePStyleComponent implements SwingPS
 	private static final int KNOB_H = 16;
 	private static final PSize PREF_SIZE = new ImmutablePSize(100, KNOB_H + 2);
 	private static final PColor COLOR_FOCUS = PColor.WHITE;
-	private static final PColor COLOR_UNFOCUS = COLOR_FOCUS.mult1(1.0, 1.0, 1.0, 0.5);
-	
-//	@Override
-//	public void addStyledComponent(PComponent component) {
-//		super.addStyledComponent(component);
-//	}
-	
-//	@Override
-//	public void removeStyledComponent(PComponent component) {
-//		super.removeStyledComponent(component);
-//	}
+	private static final PColor COLOR_UNFOCUS = COLOR_FOCUS.mult1(1.0, 1.0, 1.0, 0.75);
+	private static final PColor COLOR_DISABLED = PColor.GREY50;
 	
 	@Override
 	public boolean fillsAllPixels(PComponent component) {
@@ -51,7 +42,9 @@ public class SwingStylePSlider extends MutablePStyleComponent implements SwingPS
 		SwingPRenderer swingRenderer = (SwingPRenderer) renderer;
 		Graphics2D g2d = swingRenderer.getAwtGraphics();
 		
-		if (self.hasFocus()) {
+		if (!self.isEnabled()) {
+			renderer.setColor(COLOR_DISABLED);
+		} else if (self.hasFocus()) {
 			renderer.setColor(COLOR_FOCUS);
 		} else {
 			renderer.setColor(COLOR_UNFOCUS);

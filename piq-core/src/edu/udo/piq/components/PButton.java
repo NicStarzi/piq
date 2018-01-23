@@ -103,14 +103,11 @@ public class PButton extends AbstractPInteractiveLayoutOwner implements PInterac
 		
 		PButtonModel defaultModel = PModelFactory.createModelFor(this,
 				DefaultPButtonModel::new, PButtonModel.class);
-		PEnableModel defaultEnableModel = PModelFactory.createModelFor(this,
-				DefaultPEnableModel::new, PEnableModel.class);
 		
 		PAnchorLayout defaultLayout = new PAnchorLayout(this);
 		defaultLayout.setInsets(new ImmutablePInsets(8));
 		setLayout(defaultLayout);
 		setModel(defaultModel);
-		setEnableModel(defaultEnableModel);
 		addObs(new PMouseObs() {
 			@Override
 			public void onMouseMoved(PMouse mouse) {
@@ -198,11 +195,6 @@ public class PButton extends AbstractPInteractiveLayoutOwner implements PInterac
 	
 	public PButtonModel getModel() {
 		return model;
-	}
-	
-	@Override
-	public boolean isFocusable() {
-		return isEnabled();
 	}
 	
 	@Override

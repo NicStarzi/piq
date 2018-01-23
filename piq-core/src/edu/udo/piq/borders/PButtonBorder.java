@@ -29,7 +29,14 @@ public class PButtonBorder extends AbstractPBorder implements PBorder {
 		int y = bnds.getY();
 		int fx = bnds.getFinalX();
 		int fy = bnds.getFinalY();
-		if (btn.isPressed()) {
+		if (!btn.isEnabled()) {
+			renderer.setColor(PColor.GREY875);
+			renderer.strokeBottom(x, y, fx, fy);
+			renderer.strokeRight(x, y, fx, fy);
+			renderer.setColor(PColor.GREY50);
+			renderer.strokeTop(x, y, fx, fy);
+			renderer.strokeLeft(x, y, fx, fy);
+		} else if (btn.isPressed()) {
 			renderer.setColor(PColor.GREY875);
 			renderer.strokeBottom(x, y, fx, fy);
 			renderer.strokeRight(x, y, fx, fy);

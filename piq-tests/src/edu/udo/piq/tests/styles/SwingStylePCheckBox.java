@@ -17,9 +17,11 @@ public class SwingStylePCheckBox extends MutablePStyleComponent implements Swing
 	private static final int BTN_W = 48;
 	private static final int BTN_H = 24;
 	private static final PSize PREF_SIZE = new ImmutablePSize(BTN_W, BTN_H);
-	private static final PColor COLOR_BTN = PColor.WHITE;
+	private static final PColor COLOR_BTN_ENABLED = PColor.WHITE;
+	private static final PColor COLOR_BTN_DISABLED = PColor.GREY75;
 	private static final PColor COLOR_CHECKED = PColor.GREEN.mult1(1.0, 1.0, 1.0, 0.75);
 	private static final PColor COLOR_UNCHECKED = PColor.RED.mult1(1.0, 1.0, 1.0, 0.75);
+	private static final PColor COLOR_DISABLED = PColor.GREY50;
 	
 	@Override
 	public boolean fillsAllPixels(PComponent component) {
@@ -43,18 +45,25 @@ public class SwingStylePCheckBox extends MutablePStyleComponent implements Swing
 		SwingPRenderer swingRenderer = (SwingPRenderer) renderer;
 		Graphics2D g2d = swingRenderer.getAwtGraphics();
 		
-		renderer.setColor(COLOR_BTN);
+		boolean enabled = self.isEnabled();
+		boolean checked = self.isChecked();
+		renderer.setColor(enabled ? COLOR_BTN_ENABLED : COLOR_BTN_DISABLED);
 		g2d.fillRoundRect(x, y, w, h, 4, 4);
 		int gap = 2;
 		int boxX;
 		int boxY = y + gap;
 		int boxW = (w - gap - gap) / 2;
 		int boxH = (h - gap - gap);
-		if (self.isChecked()) {
+		if (checked) {
 			boxX = x + gap;
-			renderer.setColor(COLOR_CHECKED);
 		} else {
 			boxX = x + w - gap - boxW;
+		}
+		if (!enabled) {
+			renderer.setColor(COLOR_DISABLED);
+		} else if (checked) {
+			renderer.setColor(COLOR_CHECKED);
+		} else {
 			renderer.setColor(COLOR_UNCHECKED);
 		}
 		g2d.fillRoundRect(boxX, boxY, boxW, boxH, 4, 4);

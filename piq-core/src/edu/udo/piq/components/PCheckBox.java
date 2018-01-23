@@ -95,16 +95,26 @@ public class PCheckBox extends AbstractPInteractiveComponent implements PClickab
 		int fx = bnds.getFinalX();
 		int fy = bnds.getFinalY();
 		
-		renderer.setColor(PColor.BLACK);
+		boolean enabled = isEnabled();
+		PColor darkColor;
+		PColor lightColor;
+		if (enabled) {
+			darkColor = PColor.BLACK;
+			lightColor = PColor.WHITE;
+		} else {
+			darkColor = PColor.GREY50;
+			lightColor = PColor.GREY875;
+		}
+		renderer.setColor(darkColor);
 		renderer.strokeQuad(x, y, fx, fy, 1);
-		renderer.setColor(PColor.WHITE);
+		renderer.setColor(lightColor);
 		renderer.drawQuad(x + 1, y + 1, fx - 1, fy - 1);
 		
 		if (isChecked()) {
 			int gapW = bnds.getWidth() / 4;
 			int gapH = bnds.getHeight() / 4;
 			
-			renderer.setColor(PColor.BLACK);
+			renderer.setColor(darkColor);
 			renderer.drawQuad(x + gapW, y + gapH, fx - gapW, fy - gapH);
 		}
 	}
@@ -159,7 +169,7 @@ public class PCheckBox extends AbstractPInteractiveComponent implements PClickab
 	
 	@TemplateMethod
 	protected void onMouseButtonTriggered(PMouse mouse, MouseButton btn, int clickCount) {
-		if (btn == MouseButton.LEFT && isMouseOver(mouse)) {
+		if (btn == MouseButton.LEFT && isEnabled() && isMouseOver(mouse)) {
 			toggleChecked();
 			fireClickEvent();
 		}

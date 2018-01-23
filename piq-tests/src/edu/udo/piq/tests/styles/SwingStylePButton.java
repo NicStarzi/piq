@@ -18,7 +18,8 @@ import edu.udo.piq.tools.ImmutablePInsets;
 public class SwingStylePButton extends MutablePStyleComponent implements SwingPStyle {
 	
 	private static final PColor COLOR_FOCUS = PColor.WHITE;
-	private static final PColor COLOR_UNFOCUS = COLOR_FOCUS.mult1(1.0, 1.0, 1.0, 0.5);
+	private static final PColor COLOR_UNFOCUS = COLOR_FOCUS.mult1(1.0, 1.0, 1.0, 0.75);
+	private static final PColor COLOR_DISABLED = PColor.GREY50;
 	private static final PColor COLOR_PRESSED = PColor.YELLOW;
 	
 	@Override
@@ -43,7 +44,9 @@ public class SwingStylePButton extends MutablePStyleComponent implements SwingPS
 		SwingPRenderer swingRenderer = (SwingPRenderer) renderer;
 		Graphics2D g2d = swingRenderer.getAwtGraphics();
 		
-		if (self.isPressed()) {
+		if (!self.isEnabled()) {
+			renderer.setColor(COLOR_DISABLED);
+		} else if (self.isPressed()) {
 			renderer.setColor(COLOR_PRESSED);
 		} else if (self.hasFocus()) {
 			renderer.setColor(COLOR_FOCUS);
@@ -65,7 +68,8 @@ public class SwingStylePButton extends MutablePStyleComponent implements SwingPS
 		}
 		@Override
 		public void render(PRenderer renderer, PBorder border, PComponent component) {
-			PBounds bnds = component.getBounds();
+			PButton self = (PButton) component;
+			PBounds bnds = self.getBounds();
 			int x = bnds.getX();
 			int y = bnds.getY();
 			int w = bnds.getWidth() - 1;
@@ -74,7 +78,9 @@ public class SwingStylePButton extends MutablePStyleComponent implements SwingPS
 			SwingPRenderer swingRenderer = (SwingPRenderer) renderer;
 			Graphics2D g2d = swingRenderer.getAwtGraphics();
 			
-			if (component.hasFocus()) {
+			if (!self.isEnabled()) {
+				renderer.setColor(COLOR_DISABLED);
+			} else if (self.hasFocus()) {
 				renderer.setColor(COLOR_FOCUS);
 			} else {
 				renderer.setColor(COLOR_UNFOCUS);

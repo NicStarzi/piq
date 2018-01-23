@@ -2,11 +2,16 @@ package edu.udo.piq.components;
 
 import edu.udo.piq.TemplateMethod;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
+import edu.udo.piq.util.PModelFactory;
 
 public abstract class AbstractPInteractiveLayoutOwner extends AbstractPLayoutOwner implements PInteractiveComponent {
 	
 	protected final PSingleValueModelObs enableObs = this::onEnabledChange;
 	protected PEnableModel enableModel;
+	
+	{
+		setEnableModel(PModelFactory.createModelFor(this, DefaultPEnableModel::new, PEnableModel.class));
+	}
 	
 	@Override
 	public void setEnableModel(PEnableModel model) {
@@ -24,8 +29,16 @@ public abstract class AbstractPInteractiveLayoutOwner extends AbstractPLayoutOwn
 		return enableModel;
 	}
 	
+	@Override
+	public boolean isFocusable() {
+		return isEnabled();
+	}
+	
 	@TemplateMethod
 	protected void onEnabledChange(PSingleValueModel model, Object oldVal, Object newVal) {
+		if (hasFocus() && !isEnabled()) {
+			releaseFocus();
+		}
 		fireReRenderEvent();
 	}
 	

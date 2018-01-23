@@ -12,6 +12,7 @@ import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
+import edu.udo.piq.TemplateMethod;
 import edu.udo.piq.actions.FocusOwnerAction;
 import edu.udo.piq.actions.PAccelerator;
 import edu.udo.piq.actions.PAccelerator.KeyInputType;
@@ -20,19 +21,18 @@ import edu.udo.piq.actions.PComponentAction;
 import edu.udo.piq.actions.StandardComponentActionKey;
 import edu.udo.piq.components.defaults.DefaultPSliderModel;
 import edu.udo.piq.components.defaults.ReRenderPFocusObs;
-import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PModelFactory;
 import edu.udo.piq.util.PiqUtil;
 
-public class PSlider extends AbstractPComponent {
+public class PSlider extends AbstractPInteractiveComponent {
 	
 	protected static final int DEFAULT_SLIDER_KNOB_WIDTH = 8;
 	protected static final int DEFAULT_SLIDER_KNOB_HEIGHT = 12;
 	protected static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(100, DEFAULT_SLIDER_KNOB_HEIGHT + 2);
 	
-	public static final Predicate<PSlider> ACTION_CONDITION = self -> self.getModel() != null;
+	public static final Predicate<PSlider> ACTION_CONDITION = self -> self.getModel() != null && self.isEnabled();
 	public static final Consumer<PSlider> ACTION_ADD_1 = new AddToSliderModel(+1);
 	public static final Consumer<PSlider> ACTION_SUB_1 = new AddToSliderModel(-1);
 	public static final Consumer<PSlider> ACTION_ADD_10 = new AddToSliderModel(+10);
@@ -154,7 +154,8 @@ public class PSlider extends AbstractPComponent {
 		
 		int centerY = y + bnds.getHeight() / 2;
 		
-		renderer.setColor(PColor.BLACK);
+		boolean enabled = isEnabled();
+		renderer.setColor(enabled ? PColor.BLACK : PColor.GREY50);
 		renderer.drawQuad(x, centerY - 1, fx, centerY + 1);
 		
 		int sldX = x + (int) (getModel().getValuePercent() * bnds.getWidth()) - DEFAULT_SLIDER_KNOB_WIDTH / 2;
@@ -162,10 +163,10 @@ public class PSlider extends AbstractPComponent {
 		int sldFx = sldX + DEFAULT_SLIDER_KNOB_WIDTH;
 		int sldFy = fy - 1;
 		
-		renderer.setColor(PColor.BLACK);
+		renderer.setColor(enabled ? PColor.BLACK : PColor.GREY50);
 		renderer.strokeBottom(sldX, sldY, sldFx, sldFy);
 		renderer.strokeRight(sldX, sldY, sldFx, sldFy);
-		renderer.setColor(PColor.WHITE);
+		renderer.setColor(enabled ? PColor.WHITE : PColor.GREY875);
 		renderer.strokeTop(sldX, sldY, sldFx, sldFy);
 		renderer.strokeLeft(sldX, sldY, sldFx, sldFy);
 		renderer.setColor(PColor.GREY75);
@@ -189,11 +190,6 @@ public class PSlider extends AbstractPComponent {
 	}
 	
 	@Override
-	public boolean isFocusable() {
-		return true;
-	}
-	
-	@Override
 	public boolean isStrongFocusOwner() {
 		return false;
 	}
@@ -212,14 +208,23 @@ public class PSlider extends AbstractPComponent {
 		}
 	}
 	
+	protected void updateModelValue(PMouse mouse) {
+		int mx = mouse.getX();
+		PBounds bnds = getBounds();
+		double valuePercent = (mx - bnds.getX()) / (double) bnds.getWidth();
+		getModel().setValuePercent(valuePercent);
+	}
+	
+	@TemplateMethod
 	protected void onMouseMoved(PMouse mouse) {
-		if (mouse.isPressed(MouseButton.LEFT) && getModel().isPressed()) {
+		if (mouse.isPressed(MouseButton.LEFT) && isEnabled() && getModel().isPressed()) {
 			updateModelValue(mouse);
 		}
 	}
 	
+	@TemplateMethod
 	protected void onMouseButtonTriggered(PMouse mouse, MouseButton btn) {
-		if (btn == MouseButton.LEFT && !getModel().isPressed()
+		if (btn == MouseButton.LEFT && isEnabled() && !getModel().isPressed()
 				&& isMouseWithinClippedBounds())
 		{
 			getModel().setPressed(true);
@@ -228,26 +233,22 @@ public class PSlider extends AbstractPComponent {
 		}
 	}
 	
-	protected void onMouseButtonPressed(PMouse mouse, MouseButton btn) {
-	}
+	@TemplateMethod
+	protected void onMouseButtonPressed(PMouse mouse, MouseButton btn) {}
 	
+	@TemplateMethod
 	protected void onMouseButtonReleased(PMouse mouse, MouseButton btn) {
-		if (btn == MouseButton.LEFT && getModel().isPressed()) {
+		if (btn == MouseButton.LEFT && isEnabled() && getModel().isPressed()) {
 			getModel().setPressed(false);
 		}
 	}
 	
-	protected void updateModelValue(PMouse mouse) {
-		int mx = mouse.getX();
-		PBounds bnds = getBounds();
-		double valuePercent = (mx - bnds.getX()) / (double) bnds.getWidth();
-		getModel().setValuePercent(valuePercent);
-	}
-	
+	@TemplateMethod
 	protected void onModelRangeChanged() {
 		fireReRenderEvent();
 	}
 	
+	@TemplateMethod
 	protected void onModelValueChanged() {
 		fireReRenderEvent();
 	}

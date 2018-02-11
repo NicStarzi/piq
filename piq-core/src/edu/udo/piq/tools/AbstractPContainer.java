@@ -65,6 +65,7 @@ public abstract class AbstractPContainer<CONSTRAINT_CLASS> extends AbstractPLayo
 		return getLayout().getChildForConstraint(constraint);
 	}
 	
+	@Override
 	public int getChildCount() {
 		return getLayout().getChildCount();
 	}

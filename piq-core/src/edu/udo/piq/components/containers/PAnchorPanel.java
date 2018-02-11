@@ -10,6 +10,11 @@ import edu.udo.piq.tools.AbstractPContainer;
 
 public class PAnchorPanel extends AbstractPContainer<Integer> {
 	
+	public static final Object STYLE_ID = PPanel.STYLE_ID;
+	{
+		setStyleID(STYLE_ID);
+	}
+	
 	public PAnchorPanel() {
 		super();
 		setLayout(new PAnchorLayout(this));

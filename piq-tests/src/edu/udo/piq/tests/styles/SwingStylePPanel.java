@@ -7,7 +7,6 @@ import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
-import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.style.MutablePStyleComponent;
 import edu.udo.piq.util.PiqUtil;
 
@@ -26,7 +25,7 @@ public class SwingStylePPanel extends MutablePStyleComponent implements SwingPSt
 			SwingStylePPanel.this.onFocusChanged(oldOwner.getRoot());
 		}
 	};
-	protected PPanel lastFocusedPanel;
+	protected PComponent lastFocusedPanel;
 	
 	public void onFocusChanged(PRoot root) {
 		PComponent focusOwner = root == null ? null : root.getFocusOwner();
@@ -37,7 +36,7 @@ public class SwingStylePPanel extends MutablePStyleComponent implements SwingPSt
 			}
 			return;
 		}
-		PPanel curFocusPnl = focusOwner.getFirstAncestorOfType(PPanel.class);
+		PComponent curFocusPnl = focusOwner.getFirstAncestorMatchingCondition(anc -> anc.getStyle() == SwingStylePPanel.this);
 		if (curFocusPnl != lastFocusedPanel) {
 			if (lastFocusedPanel != null) {
 				PiqUtil.fireReRenderEventFor(lastFocusedPanel);

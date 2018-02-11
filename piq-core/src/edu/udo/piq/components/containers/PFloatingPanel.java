@@ -11,6 +11,11 @@ import edu.udo.piq.util.ThrowException;
 
 public class PFloatingPanel extends AbstractPFloatingPanel {
 	
+	public static final Object STYLE_ID = PFloatingPanel.class;
+	{
+		setStyleID(STYLE_ID);
+	}
+	
 	protected int showX;
 	protected int showY;
 	protected PComponent target;

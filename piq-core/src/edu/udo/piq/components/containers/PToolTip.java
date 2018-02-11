@@ -15,6 +15,11 @@ import edu.udo.piq.layouts.PAnchorLayout;
 
 public class PToolTip extends AbstractPFloatingPanel {
 	
+	public static final Object STYLE_ID = PToolTip.class;
+	{
+		setStyleID(STYLE_ID);
+	}
+	
 	public static final int DEFAULT_SHOW_DELAY = 60;
 	
 	protected final PMouseObs mouseObs = new PMouseObs() {

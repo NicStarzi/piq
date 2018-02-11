@@ -8,6 +8,11 @@ import edu.udo.piq.tools.AbstractPContainer;
 
 public class PListPanel extends AbstractPContainer<Integer> {
 	
+	public static final Object STYLE_ID = PPanel.STYLE_ID;
+	{
+		setStyleID(STYLE_ID);
+	}
+	
 	public PListPanel() {
 		super();
 		setLayout(new PListLayout(this));
@@ -32,6 +37,7 @@ public class PListPanel extends AbstractPContainer<Integer> {
 		getLayout().setGap(gap);
 	}
 	
+	@Override
 	public PListLayout getLayout() {
 		return (PListLayout) super.getLayout();
 	}

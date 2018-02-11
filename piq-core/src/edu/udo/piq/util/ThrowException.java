@@ -8,7 +8,7 @@ public class ThrowException {
 			throws IllegalArgumentException
 	{
 		if (obj == null) {
-			iae(createErrorMsg(optionalMsg));
+			ThrowException.iae(ThrowException.createErrorMsg(optionalMsg));
 		}
 		return obj;
 	}
@@ -17,8 +17,8 @@ public class ThrowException {
 			throws IllegalArgumentException
 	{
 		if (obj != null) {
-			iae(createErrorMsg(optionalMsg, obj,
-					" must be null but is not"));
+			ThrowException.iae(ThrowException.createErrorMsg(optionalMsg, obj,
+					"must be null but is not"));
 		}
 	}
 	
@@ -26,7 +26,7 @@ public class ThrowException {
 			throws IllegalArgumentException
 	{
 		if (guard.equals(value)) {
-			iae(createErrorMsg(optionalMsg, "value(",
+			ThrowException.iae(ThrowException.createErrorMsg(optionalMsg, "value(",
 					value, ") equals (", guard, ")"));
 		}
 	}
@@ -35,7 +35,7 @@ public class ThrowException {
 			throws IllegalArgumentException
 	{
 		if (!guard.equals(value)) {
-			iae(createErrorMsg(optionalMsg, "(",
+			ThrowException.iae(ThrowException.createErrorMsg(optionalMsg, "(",
 					value, ") not equal (", guard, ")"));
 		}
 	}
@@ -44,7 +44,7 @@ public class ThrowException {
 			throws IllegalArgumentException
 	{
 		if (value == guard) {
-			iae(createErrorMsg(optionalMsg, "value(",
+			ThrowException.iae(ThrowException.createErrorMsg(optionalMsg, "value(",
 					value, ") == (", guard, ")"));
 		}
 	}
@@ -53,7 +53,7 @@ public class ThrowException {
 			throws IllegalArgumentException
 	{
 		if (value == guard) {
-			iae(createErrorMsg(optionalMsg, "value(",
+			ThrowException.iae(ThrowException.createErrorMsg(optionalMsg, "value(",
 					value, ") == (", guard, ")"));
 		}
 	}
@@ -62,7 +62,7 @@ public class ThrowException {
 			throws IllegalArgumentException
 	{
 		if (value < min) {
-			iae(createErrorMsg(optionalMsg, "value(",
+			ThrowException.iae(ThrowException.createErrorMsg(optionalMsg, "value(",
 					value, ") < minimum(", min, ")"));
 		}
 	}
@@ -71,7 +71,7 @@ public class ThrowException {
 			throws IllegalArgumentException
 	{
 		if (value < min) {
-			iae(createErrorMsg(optionalMsg, "value(",
+			ThrowException.iae(ThrowException.createErrorMsg(optionalMsg, "value(",
 					value, ") < minimum(", min, ")"));
 		}
 	}
@@ -79,22 +79,22 @@ public class ThrowException {
 	public static void ifLessOrEqual(long min, long value, String optionalMsg)
 			throws IllegalArgumentException
 	{
-		ifLess(min, value, optionalMsg);
-		ifEqual(min, value, optionalMsg);
+		ThrowException.ifLess(min, value, optionalMsg);
+		ThrowException.ifEqual(min, value, optionalMsg);
 	}
 	
 	public static void ifLessOrEqual(double min, double value, String optionalMsg)
 			throws IllegalArgumentException
 	{
-		ifLess(min, value, optionalMsg);
-		ifEqual(min, value, optionalMsg);
+		ThrowException.ifLess(min, value, optionalMsg);
+		ThrowException.ifEqual(min, value, optionalMsg);
 	}
 	
 	public static void ifMore(long max, long value, String optionalMsg)
 			throws IllegalArgumentException
 	{
 		if (value > max) {
-			iae(createErrorMsg(optionalMsg, "value(",
+			ThrowException.iae(ThrowException.createErrorMsg(optionalMsg, "value(",
 					value, ") > maximum(", max, ")"));
 		}
 	}
@@ -103,7 +103,7 @@ public class ThrowException {
 			throws IllegalArgumentException
 	{
 		if (value > max) {
-			iae(createErrorMsg(optionalMsg, "value(",
+			ThrowException.iae(ThrowException.createErrorMsg(optionalMsg, "value(",
 					value, ") > maximum(", max, ")"));
 		}
 	}
@@ -111,22 +111,22 @@ public class ThrowException {
 	public static void ifMoreOrEqual(long max, long value, String optionalMsg)
 			throws IllegalArgumentException
 	{
-		ifMore(max, value, optionalMsg);
-		ifEqual(max, value, optionalMsg);
+		ThrowException.ifMore(max, value, optionalMsg);
+		ThrowException.ifEqual(max, value, optionalMsg);
 	}
 	
 	public static void ifMoreOrEqual(double max, double value, String optionalMsg)
 			throws IllegalArgumentException
 	{
-		ifMore(max, value, optionalMsg);
-		ifEqual(max, value, optionalMsg);
+		ThrowException.ifMore(max, value, optionalMsg);
+		ThrowException.ifEqual(max, value, optionalMsg);
 	}
 	
 	public static void ifWithin(long min, long max, long value, String optionalMsg)
 			throws IllegalArgumentException
 	{
 		if (value >= min && value <= max) {
-			iae(createErrorMsg(optionalMsg, "minimum(", min, ") <= value(",
+			ThrowException.iae(ThrowException.createErrorMsg(optionalMsg, "minimum(", min, ") <= value(",
 					value, ") <= maximum(", max, ")"));
 		}
 	}
@@ -135,7 +135,7 @@ public class ThrowException {
 			throws IllegalArgumentException
 	{
 		if (value >= min && value <= max) {
-			iae(createErrorMsg(optionalMsg, "minimum(", min, ") <= value(",
+			ThrowException.iae(ThrowException.createErrorMsg(optionalMsg, "minimum(", min, ") <= value(",
 					value, ") <= maximum(", max, ")"));
 		}
 	}
@@ -143,52 +143,52 @@ public class ThrowException {
 	public static void ifNotWithin(int[] arr, long value, String optionalMsg)
 			throws IllegalArgumentException
 	{
-		ifNotWithin(0, arr.length - 1, value, optionalMsg);
+		ThrowException.ifNotWithin(0, arr.length - 1, value, optionalMsg);
 	}
 	
 	public static void ifNotWithin(double[] arr, long value, String optionalMsg)
 			throws IllegalArgumentException
 	{
-		ifNotWithin(0, arr.length - 1, value, optionalMsg);
+		ThrowException.ifNotWithin(0, arr.length - 1, value, optionalMsg);
 	}
 	
 	public static void ifNotWithin(boolean[] arr, long value, String optionalMsg)
 			throws IllegalArgumentException
 	{
-		ifNotWithin(0, arr.length - 1, value, optionalMsg);
+		ThrowException.ifNotWithin(0, arr.length - 1, value, optionalMsg);
 	}
 	
 	public static void ifNotWithin(Object[] arr, long value, String optionalMsg)
 			throws IllegalArgumentException
 	{
-		ifNotWithin(0, arr.length - 1, value, optionalMsg);
+		ThrowException.ifNotWithin(0, arr.length - 1, value, optionalMsg);
 	}
 	
 	public static void ifNotWithin(Collection<?> col, long value, String optionalMsg)
 			throws IllegalArgumentException
 	{
-		ifNotWithin(0, col.size() - 1, value, optionalMsg);
+		ThrowException.ifNotWithin(0, col.size() - 1, value, optionalMsg);
 	}
 	
 	public static void ifNotWithin(long min, long max, long value, String optionalMsg)
 			throws IllegalArgumentException
 	{
-		ifLess(min, value, optionalMsg);
-		ifMore(max, value, optionalMsg);
+		ThrowException.ifLess(min, value, optionalMsg);
+		ThrowException.ifMore(max, value, optionalMsg);
 	}
 	
 	public static void ifNotWithin(double min, double max, double value, String optionalMsg)
 			throws IllegalArgumentException
 	{
-		ifLess(min, value, optionalMsg);
-		ifMore(max, value, optionalMsg);
+		ThrowException.ifLess(min, value, optionalMsg);
+		ThrowException.ifMore(max, value, optionalMsg);
 	}
 	
 	public static void ifTrue(boolean condition, String optionalMsg)
 			throws IllegalStateException
 	{
 		if (condition) {
-			ise(createErrorMsg(optionalMsg, "success condition not met"));
+			ThrowException.ise(ThrowException.createErrorMsg(optionalMsg, "success condition not met"));
 		}
 	}
 	
@@ -196,7 +196,7 @@ public class ThrowException {
 			throws IllegalStateException
 	{
 		if (!condition) {
-			ise(createErrorMsg(optionalMsg, "error condition met"));
+			ThrowException.ise(ThrowException.createErrorMsg(optionalMsg, "error condition met"));
 		}
 	}
 	
@@ -204,7 +204,7 @@ public class ThrowException {
 			throws IllegalArgumentException
 	{
 		if (collection.contains(obj)) {
-			iae(createErrorMsg(optionalMsg, obj, " is included in ", collection));
+			ThrowException.iae(ThrowException.createErrorMsg(optionalMsg, obj, " is included in ", collection));
 		}
 	}
 	
@@ -212,7 +212,7 @@ public class ThrowException {
 			throws IllegalArgumentException
 	{
 		if (!collection.contains(obj)) {
-			iae(createErrorMsg(optionalMsg, obj, " is missing from ", collection));
+			ThrowException.iae(ThrowException.createErrorMsg(optionalMsg, obj, " is missing from ", collection));
 		}
 	}
 	
@@ -227,11 +227,11 @@ public class ThrowException {
 	
 	@SuppressWarnings("unchecked") // this is safe because of the instanceof check
 	public static <E> E ifTypeCastFails(Object obj, Class<E> clazz, String optionalMsg) {
-		ifNull(obj, optionalMsg);
+		ThrowException.ifNull(obj, optionalMsg);
 		if (clazz.isInstance(obj)) {
 			return (E) obj;
 		} else {
-			iae(createErrorMsg(optionalMsg, "'", obj, " '", "is not of type", clazz));
+			ThrowException.iae(ThrowException.createErrorMsg(optionalMsg, "'", obj, " '", "is not of type", clazz));
 			// this can never happen!
 			throw new UnsupportedOperationException();
 		}

@@ -13,6 +13,11 @@ import edu.udo.piq.tools.AbstractPContainer;
 
 public class PGridListPanel extends AbstractPContainer<PTableCellIndex> {
 	
+	public static final Object STYLE_ID = PPanel.STYLE_ID;
+	{
+		setStyleID(STYLE_ID);
+	}
+	
 	public PGridListPanel(int numberOfColumns) {
 		super();
 		setLayout(new PGridListLayout(this, numberOfColumns));
@@ -32,6 +37,7 @@ public class PGridListPanel extends AbstractPContainer<PTableCellIndex> {
 		getLayout().setInsets(insets);
 	}
 	
+	@Override
 	public PGridListLayout getLayout() {
 		return (PGridListLayout) super.getLayout();
 	}

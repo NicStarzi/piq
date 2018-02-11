@@ -165,6 +165,18 @@ public interface PRoot extends PComponent {
 	}
 	
 	/**
+	 * <p>A root can not be styled.
+	 * Always throws an exception.</p>
+	 * @param value ignored
+	 * @throws UnsupportedOperationException
+	 * @author Nic
+	 */
+	@Override
+	public default void setStyleID(Object value) {
+		throw new UnsupportedOperationException("this instanceof PRoot");
+	}
+	
+	/**
 	 * <p>A root does not support drag and drop.</p>
 	 * @return always {@code null}
 	 * @author Nic

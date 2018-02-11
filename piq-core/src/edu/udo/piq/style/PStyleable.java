@@ -10,6 +10,8 @@ public interface PStyleable<E extends PStyle> {
 	
 	public E getInheritedStyle();
 	
+	public void setStyleID(Object value);
+	
 	public Object getStyleID();
 	
 	public default E getStyle() {

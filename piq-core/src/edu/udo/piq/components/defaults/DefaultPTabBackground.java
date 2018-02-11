@@ -8,6 +8,12 @@ import edu.udo.piq.components.containers.PPanel;
 
 public class DefaultPTabBackground extends PPanel {
 	
+	public static final Object STYLE_ID = DefaultPTabBackground.class;
+	{
+		setStyleID(STYLE_ID);
+	}
+	
+	@Override
 	public void defaultRender(PRenderer renderer) {
 		PBounds bnds = getBounds();
 		int x = bnds.getX();
@@ -19,6 +25,7 @@ public class DefaultPTabBackground extends PPanel {
 		renderer.drawQuad(x, y, fx, fy);
 	}
 	
+	@Override
 	public PSize getDefaultPreferredSize() {
 		return PSize.ZERO_SIZE;
 	}

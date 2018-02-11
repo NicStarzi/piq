@@ -9,7 +9,6 @@ import edu.udo.piq.PRoot;
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PCheckBox;
 import edu.udo.piq.components.PSlider;
-import edu.udo.piq.components.containers.PGlassPanel;
 import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.style.DefaultPStyleSheet;
@@ -27,8 +26,7 @@ public class SwingStyleSheet extends DefaultPStyleSheet {
 			Arrays.asList(stylePanel, styleLabel, styleButton, styleCheckBox, styleSlider));
 	
 	public SwingStyleSheet() {
-		setStyleFor(PPanel.class, this::getPanelStyle);
-		setStyleFor(PGlassPanel.class, () -> null);
+		setStyleFor(PPanel.STYLE_ID, this::getPanelStyle);
 		setStyleFor(PLabel.class, this::getLabelStyle);
 		setStyleFor(PButton.class, this::getButtonStyle);
 		setStyleFor(PCheckBox.class, this::getCheckBoxStyle);

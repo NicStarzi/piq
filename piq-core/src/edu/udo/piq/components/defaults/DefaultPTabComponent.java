@@ -11,6 +11,11 @@ import edu.udo.piq.layouts.PAnchorLayout;
 
 public class DefaultPTabComponent extends PPanel implements PTabComponent {
 	
+	public static final Object STYLE_ID = DefaultPTabComponent.class;
+	{
+		setStyleID(STYLE_ID);
+	}
+	
 	private PComponent preview = null;
 	private boolean selected = false;
 	private int index = -1;

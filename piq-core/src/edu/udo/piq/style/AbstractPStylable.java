@@ -3,6 +3,7 @@ package edu.udo.piq.style;
 import java.util.Objects;
 
 import edu.udo.piq.TemplateMethod;
+import edu.udo.piq.util.Throw;
 
 public class AbstractPStylable<E extends PStyle> implements PStyleable<E> {
 	
@@ -29,6 +30,15 @@ public class AbstractPStylable<E extends PStyle> implements PStyleable<E> {
 	@Override
 	public E getInheritedStyle() {
 		return sheetStyle;
+	}
+	
+	@Override
+	public void setStyleID(Object value) {
+		Throw.ifNull(value, "value == null");
+		if (!Objects.equals(styleID, value)) {
+			styleID = value;
+			onStyleIdChangedEvent();
+		}
 	}
 	
 	@Override
@@ -76,5 +86,8 @@ public class AbstractPStylable<E extends PStyle> implements PStyleable<E> {
 	
 	@TemplateMethod
 	protected void onStyleReRenderEvent() {}
+	
+	@TemplateMethod
+	protected void onStyleIdChangedEvent() {}
 	
 }

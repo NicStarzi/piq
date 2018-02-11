@@ -7,6 +7,11 @@ import edu.udo.piq.tools.AbstractPContainer;
 
 public class PBorderPanel extends AbstractPContainer<BorderLayoutConstraint> {
 	
+	public static final Object STYLE_ID = PPanel.STYLE_ID;
+	{
+		setStyleID(STYLE_ID);
+	}
+	
 	public PBorderPanel() {
 		super();
 		setLayout(new PBorderLayout(this));
@@ -26,6 +31,7 @@ public class PBorderPanel extends AbstractPContainer<BorderLayoutConstraint> {
 		getLayout().setGap(gap);
 	}
 	
+	@Override
 	public PBorderLayout getLayout() {
 		return (PBorderLayout) super.getLayout();
 	}

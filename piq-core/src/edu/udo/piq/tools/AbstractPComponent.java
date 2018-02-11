@@ -35,6 +35,7 @@ import edu.udo.piq.layouts.PReadOnlyLayout;
 import edu.udo.piq.style.AbstractPStylable;
 import edu.udo.piq.style.PStyleBorder;
 import edu.udo.piq.style.PStyleComponent;
+import edu.udo.piq.style.PStyleSheet;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PiqUtil;
 import edu.udo.piq.util.ThrowException;
@@ -259,16 +260,26 @@ public class AbstractPComponent extends AbstractPStylable<PStyleComponent> imple
 		}
 	}
 	
-	@CallSuper
 	@Override
 	protected void onStyleSizeChangedEvent() {
 		firePreferredSizeChangedEvent();
 	}
 	
-	@CallSuper
 	@Override
 	protected void onStyleReRenderEvent() {
 		fireReRenderEvent();
+	}
+	
+	@Override
+	protected void onStyleIdChangedEvent() {
+		PRoot root = getRoot();
+		if (root == null) {
+			return;
+		}
+		PStyleSheet sheet = root.getStyleSheet();
+		if (sheet != null) {
+			setCustomStyle(sheet.getStyleFor(this));
+		}
 	}
 	
 	protected void refreshBorderAndLayoutStyle() {
@@ -844,11 +855,6 @@ public class AbstractPComponent extends AbstractPStylable<PStyleComponent> imple
 	@Override
 	public String getID() {
 		return id;
-	}
-	
-	@Override
-	public Object getStyleID() {
-		return styleID;
 	}
 	
 	@Override

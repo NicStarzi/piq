@@ -24,9 +24,9 @@ public class SwingStylePLabel extends MutablePStyleComponent implements SwingPSt
 	private static final PColor COLOR_PANEL = PColor.WHITE;
 	private static final PColor COLOR_OTHER = PColor.BLACK;
 	private static final Object FONT_KEY = new StandardFontKey(Font.SANS_SERIF, 14, Style.PLAIN);
-	private static final Set<Class<? extends PComponent>> WHITE_COLOR_COMPS = new HashSet<>();
+	private static final Set<Object> WHITE_COLOR_COMPS = new HashSet<>();
 	static {
-		WHITE_COLOR_COMPS.add(PPanel.class);
+		WHITE_COLOR_COMPS.add(PPanel.STYLE_ID);
 		WHITE_COLOR_COMPS.add(PCheckBoxTuple.class);
 		WHITE_COLOR_COMPS.add(PRadioButtonTuple.class);
 	}
@@ -70,7 +70,7 @@ public class SwingStylePLabel extends MutablePStyleComponent implements SwingPSt
 		}
 		PBounds bounds = self.getBoundsWithoutBorder();
 		
-		if (WHITE_COLOR_COMPS.contains(self.getParent().getClass())) {
+		if (WHITE_COLOR_COMPS.contains(self.getParent().getStyleID())) {
 			renderer.setColor(COLOR_PANEL);
 		} else {
 			renderer.setColor(COLOR_OTHER);

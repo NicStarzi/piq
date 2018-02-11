@@ -1,8 +1,10 @@
 package edu.udo.piq.components;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import edu.udo.piq.util.Throw;
 import edu.udo.piq.util.ThrowException;
 
 public class PRadioButtonGroup {
@@ -12,7 +14,13 @@ public class PRadioButtonGroup {
 	private PRadioButtonModel selectedModel = null;
 	
 	public PRadioButtonGroup() {
-		this(new PRadioButton[] {});
+		this(Collections.emptyList());
+	}
+	
+	public PRadioButtonGroup(Iterable<PRadioButtonTuple> buttons) {
+		for (PRadioButtonTuple tuple : buttons) {
+			add(tuple.getRadioButton());
+		}
 	}
 	
 	public PRadioButtonGroup(PRadioButton ... buttons) {
@@ -22,9 +30,13 @@ public class PRadioButtonGroup {
 	}
 	
 	public PRadioButtonGroup(PRadioButtonTuple ... buttons) {
-		for (PRadioButtonTuple btn : buttons) {
-			add(btn.getRadioButton());
+		for (PRadioButtonTuple tuple : buttons) {
+			add(tuple.getRadioButton());
 		}
+	}
+	
+	public int getButtonCount() {
+		return btnList.size();
 	}
 	
 	public void clear() {
@@ -32,6 +44,7 @@ public class PRadioButtonGroup {
 			btn.removeObs(modelObs);
 		}
 		btnList.clear();
+		selectedModel = null;
 	}
 	
 	public void add(PRadioButton radioBtn) {
@@ -49,6 +62,24 @@ public class PRadioButtonGroup {
 		ThrowException.ifExcluded(btnList, radioBtn, "btnList.contains(radioBtn) == false");
 		btnList.remove(radioBtn);
 		radioBtn.removeObs(modelObs);
+		if (radioBtn.getModel() == selectedModel) {
+			selectedModel = null;
+		}
+	}
+	
+	public void selectFirst() {
+		setSelected(0);
+	}
+	
+	public void selectLast() {
+		setSelected(getButtonCount() - 1);
+	}
+	
+	public void setSelected(int index) {
+		Throw.ifNotWithin(0, getButtonCount(), index,
+				() -> "index == " + (index)
+				+ "; min=" + (0) + "; max=" + (getButtonCount()));
+		setSelected(btnList.get(index));
 	}
 	
 	public void setSelected(PRadioButton button) {

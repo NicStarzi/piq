@@ -223,7 +223,11 @@ public class SwingPRoot extends AbstractPRoot implements PRoot {
 			} catch (IOException e) {
 				System.err.print(e.getClass().getName());
 				System.err.print(": ");
-				System.err.println(e.getMessage());
+				System.err.print(e.getMessage());
+				System.err.print("; imgKey=");
+				System.err.print(imgID);
+				System.err.print("; filePath=");
+				System.err.println(imgPath);
 //				e.printStackTrace();
 			}
 			imgRes = new AwtPImageResource(bufImg);

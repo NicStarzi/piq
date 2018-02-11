@@ -22,6 +22,7 @@ import edu.udo.piq.style.PStyleable;
 import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.MutablePBounds;
 import edu.udo.piq.util.AncestorIterator;
+import edu.udo.piq.util.AncestorStream;
 import edu.udo.piq.util.BreadthFirstDescendantIterator;
 import edu.udo.piq.util.DepthFirstDescendantIterator;
 import edu.udo.piq.util.PiqUtil;
@@ -538,8 +539,23 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 		return Collections.emptyList();
 	}
 	
+	public default int getChildCount() {
+		if (getLayout() != null) {
+			return getLayout().getChildCount();
+		}
+		return 0;
+	}
+	
 	public default Iterable<PComponent> getAncestors() {
 		return new AncestorIterator(this, false);
+	}
+	
+	public default AncestorStream<PComponent> getAncestors2() {
+		return new AncestorStream<>(this, false);
+	}
+	
+	public default AncestorStream<PComponent> getAncestorsAndSelf2() {
+		return new AncestorStream<>(this, true);
 	}
 	
 	public default Iterable<PComponent> getAncestorsAndSelf() {

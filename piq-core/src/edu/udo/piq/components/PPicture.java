@@ -35,6 +35,10 @@ public class PPicture extends AbstractPComponent {
 		getModel().setValue(initialPictureID);
 	}
 	
+	public PPicture(PPictureModel initialModel) {
+		setModel(initialModel);
+	}
+	
 	public void setModel(PPictureModel model) {
 		PPictureModel oldModel = getModel();
 		if (oldModel != null) {

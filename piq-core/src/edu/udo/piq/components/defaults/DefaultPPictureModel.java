@@ -7,6 +7,13 @@ public class DefaultPPictureModel extends AbstractPPictureModel implements PPict
 	
 	private Object imgKey = null;
 	
+	public DefaultPPictureModel() {}
+	
+	public DefaultPPictureModel(Object initialValue) {
+		this();
+		setValue(initialValue);
+	}
+	
 	@Override
 	protected void setValueInternal(Object newValue) {
 		imgKey = newValue;

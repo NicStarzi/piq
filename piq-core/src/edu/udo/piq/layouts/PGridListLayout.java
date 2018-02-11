@@ -14,6 +14,7 @@ import edu.udo.piq.components.collections.PTableIndex;
 import edu.udo.piq.layouts.PGridLayout.Growth;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
 import edu.udo.piq.tools.ImmutablePInsets;
+import edu.udo.piq.util.Throw;
 import edu.udo.piq.util.ThrowException;
 
 public class PGridListLayout extends AbstractMapPLayout {
@@ -70,7 +71,7 @@ public class PGridListLayout extends AbstractMapPLayout {
 		}
 		if (rowIdx < getRowCount()) {
 			PComponent[] row = rowList.get(rowIdx);
-			ThrowException.ifNotNull(row[colIdx], "row[colIdx] != null");
+			Throw.ifNotNull(row[colIdx], () -> "row["+colIdx+"] == " + row[colIdx]);
 			row[colIdx] = data.getComponent();
 		} else {
 			for (int i = getRowCount(); i < rowIdx; i++) {

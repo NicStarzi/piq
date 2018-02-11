@@ -140,6 +140,14 @@ public class PSlider extends AbstractPInteractiveComponent {
 		return model;
 	}
 	
+	public int getModelValue() {
+		PSliderModel model = getModel();
+		if (model == null) {
+			return 0;
+		}
+		return getModel().getValue();
+	}
+	
 	public boolean isPressed() {
 		return getModel().isPressed();
 	}

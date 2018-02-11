@@ -74,7 +74,7 @@ public class PMenuBody extends AbstractPLayoutOwner {
 		getLayoutInternal().clearChildren();
 	}
 	
-	public PComponent getMenuItemIndexAt(int index) {
+	public PComponent getMenuItemAtIndex(int index) {
 		PDelegateRowIndex constraint = new PDelegateRowIndex(index);
 		return getLayoutInternal().getChildForConstraint(constraint);
 	}

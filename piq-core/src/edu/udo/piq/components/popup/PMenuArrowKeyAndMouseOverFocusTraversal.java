@@ -92,7 +92,7 @@ public class PMenuArrowKeyAndMouseOverFocusTraversal extends AbstractPFocusTrave
 	}
 	
 	protected PComponent getFocusCandidateByIndex(int index) {
-		return container.getMenuItemIndexAt(index);
+		return container.getMenuItemAtIndex(index);
 	}
 	
 	protected int getFocusComponentCount() {

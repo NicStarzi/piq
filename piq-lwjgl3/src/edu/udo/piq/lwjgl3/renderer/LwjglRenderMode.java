@@ -65,9 +65,9 @@ public interface LwjglRenderMode extends PRenderMode {
 		return () -> drawQuadImmediate(x1, y1, x2, y2, x3, y3, x4, y4);
 	}
 	
-	public void drawEllipseImmediate(int x, int y, int width, int height);
+	public void drawEllipseImmediate(float x, float y, float width, float height);
 	
-	public default Runnable drawEllipse(int x, int y, int width, int height) {
+	public default Runnable drawEllipse(float x, float y, float width, float height) {
 		return () -> drawEllipseImmediate(x, y, width, height);
 	}
 	

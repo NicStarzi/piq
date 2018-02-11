@@ -106,7 +106,7 @@ public class LwjglPRendererRenderList extends LwjglPRendererBase {
 	}
 	
 	@Override
-	public void drawEllipse(int x, int y, int width, int height) {
+	public void drawEllipse(float x, float y, float width, float height) {
 //		System.out.println("LwjglPRenderer.drawEllipse()");
 		renderList.add(curMode.drawEllipse(x, y, width, height));
 		drawCallsSinceLastScissor++;

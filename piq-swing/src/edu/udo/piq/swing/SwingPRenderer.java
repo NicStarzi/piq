@@ -20,7 +20,7 @@ public class SwingPRenderer implements PRenderer {
 	
 	public static final SwingPRenderMode MODE_FILL		= new SwingPRenderModeFill();
 	public static final SwingPRenderMode MODE_OUTLINE	= new SwingPRenderModeOutline();
-	public static final SwingPRenderMode MODE_DASHED	= new SwingPRenderModeOutlineDashed();
+	public static final SwingPRenderMode MODE_DASHED	= new SwingPRenderModeOutlineDashed((SwingPRenderModeOutline) MODE_OUTLINE);
 	public static final SwingPRenderMode MODE_XOR		= new SwingPRenderModeXOR();
 	
 	protected Map<PColor, Color> pColorToAwtColorMap = new HashMap<>();
@@ -145,8 +145,20 @@ public class SwingPRenderer implements PRenderer {
 	}
 	
 	@Override
-	public void drawEllipse(int x, int y, int width, int height) {
+	public void drawRoundedRect(float x, float y, float fx, float fy, float arcW, float arcH) {
+		renderMode.drawRoundedRect(graphics, x, y, fx, fy, arcW, arcH);
+	}
+	
+	@Override
+	public void drawEllipse(float x, float y, float width, float height) {
 		renderMode.drawEllipse(graphics, x, y, width, height);
+	}
+	
+	@Override
+	public void drawArc(float x, float y, float width, float height,
+			float angleFrom, float angleArc)
+	{
+		renderMode.drawArc(graphics, x, y, width, height, angleFrom, angleArc);
 	}
 	
 	/*

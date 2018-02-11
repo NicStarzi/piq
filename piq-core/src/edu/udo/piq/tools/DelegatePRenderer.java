@@ -7,6 +7,7 @@ import edu.udo.piq.PImageRenderer;
 import edu.udo.piq.PImageResource;
 import edu.udo.piq.PRenderMode;
 import edu.udo.piq.PRenderer;
+import edu.udo.piq.PSize;
 
 public class DelegatePRenderer implements PImageRenderer {
 	
@@ -53,6 +54,7 @@ public class DelegatePRenderer implements PImageRenderer {
 		return oy;
 	}
 	
+	@Override
 	public void setClipBounds(PBounds bounds) {
 //		float ox = getPositionOffsetX();
 //		float oy = getPositionOffsetY();
@@ -66,28 +68,34 @@ public class DelegatePRenderer implements PImageRenderer {
 		delegate.setClipBounds(bounds);
 	}
 	
+	@Override
 	public void setClipBounds(int x, int y, int width, int height) {
 //		x += getPositionOffsetX();
 //		y += getPositionOffsetY();
 		delegate.setClipBounds(x, y, width, height);
 	}
 	
+	@Override
 	public void intersectClipBounds(int x, int y, int width, int height) {
 		delegate.intersectClipBounds(x, y, width, height);
 	}
 	
+	@Override
 	public void setColor(PColor color) {
 		delegate.setColor(color);
 	}
 	
+	@Override
 	public void setColor255(int r, int g, int b, int a) {
 		delegate.setColor255(r, g, b, a);
 	}
 	
+	@Override
 	public void setColor1(double r, double g, double b, double a) {
 		delegate.setColor1(r, g, b, a);
 	}
 	
+	@Override
 	public void drawImage(PImageResource imgRes, float x, float y, float fx, float fy) {
 		float ox = getPositionOffsetX();
 		float oy = getPositionOffsetY();
@@ -98,6 +106,7 @@ public class DelegatePRenderer implements PImageRenderer {
 		delegate.drawImage(imgRes, x, y, fx, fy);
 	}
 	
+	@Override
 	public void drawImage(PImageResource imgRes, int u, int v, int fu, int fv,
 			float x, float y, float fx, float fy) {
 		float ox = getPositionOffsetX();
@@ -109,6 +118,7 @@ public class DelegatePRenderer implements PImageRenderer {
 		delegate.drawImage(imgRes, u, v, fu, fv, x, y, fx, fy);
 	}
 	
+	@Override
 	public void drawLine(float x1, float y1, float x2, float y2, float lineWidth) {
 		float ox = getPositionOffsetX();
 		float oy = getPositionOffsetY();
@@ -119,10 +129,11 @@ public class DelegatePRenderer implements PImageRenderer {
 		delegate.drawLine(x1, y1, x2, y2, lineWidth);
 	}
 	
+	@Override
 	public void drawTriangle(
-			float x1, float y1, 
-			float x2, float y2, 
-			float x3, float y3) 
+			float x1, float y1,
+			float x2, float y2,
+			float x3, float y3)
 	{
 		float ox = getPositionOffsetX();
 		float oy = getPositionOffsetY();
@@ -135,9 +146,10 @@ public class DelegatePRenderer implements PImageRenderer {
 		delegate.drawTriangle(x1, y1, x2, y2, x3, y3);
 	}
 	
+	@Override
 	public void drawQuad(
-			float x, float y, 
-			float fx, float fy) 
+			float x, float y,
+			float fx, float fy)
 	{
 		float ox = getPositionOffsetX();
 		float oy = getPositionOffsetY();
@@ -148,11 +160,12 @@ public class DelegatePRenderer implements PImageRenderer {
 		delegate.drawQuad(x, y, fx, fy);
 	}
 	
+	@Override
 	public void drawQuad(
-			float x1, float y1, 
-			float x2, float y2, 
-			float x3, float y3, 
-			float x4, float y4) 
+			float x1, float y1,
+			float x2, float y2,
+			float x3, float y3,
+			float x4, float y4)
 	{
 		float ox = getPositionOffsetX();
 		float oy = getPositionOffsetY();
@@ -167,6 +180,7 @@ public class DelegatePRenderer implements PImageRenderer {
 		delegate.drawQuad(x1, y1, x2, y2, x3, y3, x4, y4);
 	}
 	
+	@Override
 	public void drawPolygon(float[] xCoords, float[] yCoords) {
 		float ox = getPositionOffsetX();
 		float oy = getPositionOffsetY();
@@ -177,10 +191,12 @@ public class DelegatePRenderer implements PImageRenderer {
 		delegate.drawPolygon(xCoords, yCoords);
 	}
 	
+	@Override
 	public boolean isFontSupported(PFontResource font) {
 		return delegate.isFontSupported(font);
 	}
 	
+	@Override
 	public void drawString(PFontResource font, String text, float x, float y) {
 		float ox = getPositionOffsetX();
 		float oy = getPositionOffsetY();
@@ -189,7 +205,8 @@ public class DelegatePRenderer implements PImageRenderer {
 		delegate.drawString(font, text, x, y);
 	}
 	
-	public void drawEllipse(int x, int y, int width, int height) {
+	@Override
+	public void drawArc(float x, float y, float width, float height, float angleFrom, float angleArc) {
 		float ox = getPositionOffsetX();
 		float oy = getPositionOffsetY();
 		x += ox;
@@ -197,26 +214,63 @@ public class DelegatePRenderer implements PImageRenderer {
 		delegate.drawEllipse(x, y, width, height);
 	}
 	
+	@Override
+	public void drawEllipse(float x, float y, float width, float height) {
+		float ox = getPositionOffsetX();
+		float oy = getPositionOffsetY();
+		x += ox;
+		y += oy;
+		delegate.drawEllipse(x, y, width, height);
+	}
+	
+	@Override
+	public void drawRoundedRect(float x, float y, float fx, float fy, float arcW, float arcH) {
+		float ox = getPositionOffsetX();
+		float oy = getPositionOffsetY();
+		x += ox;
+		y += oy;
+		fx += ox;
+		fy += oy;
+		delegate.drawRoundedRect(ox, oy, fx, fy, arcW, arcH);
+	}
+	
+	@Override
+	public void drawRoundedRect(float x, float y, float fx, float fy, PSize arcSize) {
+		float ox = getPositionOffsetX();
+		float oy = getPositionOffsetY();
+		x += ox;
+		y += oy;
+		fx += ox;
+		fy += oy;
+		delegate.drawRoundedRect(ox, oy, fx, fy, arcSize.getWidth(), arcSize.getHeight());
+	}
+	
+	@Override
 	public void setRenderMode(PRenderMode mode) {
 		delegate.setRenderMode(mode);
 	}
 	
+	@Override
 	public PRenderMode getActiveRenderMode() {
 		return delegate.getActiveRenderMode();
 	}
 	
+	@Override
 	public PRenderMode getRenderModeFill() {
 		return delegate.getRenderModeFill();
 	}
 	
+	@Override
 	public PRenderMode getRenderModeOutline() {
 		return delegate.getRenderModeOutline();
 	}
 	
+	@Override
 	public PRenderMode getRenderModeOutlineDashed() {
 		return delegate.getRenderModeOutlineDashed();
 	}
 	
+	@Override
 	public PRenderMode getRenderModeXOR() {
 		return delegate.getRenderModeXOR();
 	}

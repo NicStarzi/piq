@@ -9,19 +9,19 @@ public class SwingPRenderModeFill implements SwingPRenderMode {
 	private int[] yCoordsInternal = new int[4];
 	
 	@Override
-	public void drawLine(Graphics2D g, 
-			float x1, float y1, float x2, float y2, 
-			float lineWidth) 
+	public void drawLine(Graphics2D g,
+			float x1, float y1, float x2, float y2,
+			float lineWidth)
 	{
 		g.setStroke(new BasicStroke(lineWidth));
 		g.drawLine((int) x1, (int) y1, (int) x2, (int) y2);
 	}
 	
 	@Override
-	public void drawTriangle(Graphics2D g, 
-			float x1, float y1, 
-			float x2, float y2, 
-			float x3, float y3) 
+	public void drawTriangle(Graphics2D g,
+			float x1, float y1,
+			float x2, float y2,
+			float x3, float y3)
 	{
 		drawPolygon(g, x1, y1, x2, y2, x3, y3, 0, 0, 3);
 	}
@@ -32,18 +32,32 @@ public class SwingPRenderModeFill implements SwingPRenderMode {
 	}
 	
 	@Override
-	public void drawQuad(Graphics2D g, 
-			float x1, float y1, 
-			float x2, float y2, 
-			float x3, float y3, 
-			float x4, float y4) 
+	public void drawQuad(Graphics2D g,
+			float x1, float y1,
+			float x2, float y2,
+			float x3, float y3,
+			float x4, float y4)
 	{
 		drawPolygon(g, x1, y1, x2, y2, x3, y3, x4, y4, 3);
 	}
 	
 	@Override
-	public void drawEllipse(Graphics2D g, int x, int y, int width, int height) {
-		g.fillOval(x, y, width, height);
+	public void drawRoundedRect(Graphics2D g, float x, float y, float fx, float fy, float arcW, float arcH) {
+		int w = (int) (fx - x);
+		int h = (int) (fy - y);
+		g.fillRoundRect((int) x, (int) y, w, h, (int) arcW, (int) arcH);
+	}
+	
+	@Override
+	public void drawArc(Graphics2D g, float x, float y,
+			float width, float height, float angleFrom, float angleArc)
+	{
+		g.fillArc((int) x, (int) y, (int) width, (int) height, (int) angleFrom, (int) angleArc);
+	}
+	
+	@Override
+	public void drawEllipse(Graphics2D g, float x, float y, float width, float height) {
+		g.fillOval((int) x, (int) y, (int) width, (int) height);
 	}
 	
 	@Override
@@ -60,12 +74,12 @@ public class SwingPRenderModeFill implements SwingPRenderMode {
 		g.fillPolygon(xCoordsInternal, xCoordsInternal, count);
 	}
 	
-	private void drawPolygon(Graphics2D g, 
-			float x1, float y1, 
-			float x2, float y2, 
-			float x3, float y3, 
-			float x4, float y4, 
-			int number) 
+	private void drawPolygon(Graphics2D g,
+			float x1, float y1,
+			float x2, float y2,
+			float x3, float y3,
+			float x4, float y4,
+			int number)
 	{
 		xCoordsInternal[0] = (int) x1;
 		xCoordsInternal[1] = (int) x2;

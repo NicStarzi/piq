@@ -80,7 +80,7 @@ public class LwjglRmFill implements LwjglRenderMode {
 	}
 	
 	@Override
-	public void drawEllipseImmediate(int x, int y, int width, int height) {
+	public void drawEllipseImmediate(float x, float y, float width, float height) {
 		float halfW = width / 2f;
 		float halfH = height / 2f;
 		float x0 = x + halfW;

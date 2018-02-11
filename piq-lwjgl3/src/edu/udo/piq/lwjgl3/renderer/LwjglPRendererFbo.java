@@ -107,7 +107,7 @@ public class LwjglPRendererFbo extends LwjglPRendererBase {
 	}
 	
 	@Override
-	public void drawEllipse(int x, int y, int width, int height) {
+	public void drawEllipse(float x, float y, float width, float height) {
 		curMode.drawEllipseImmediate(x, y, width, height);
 	}
 	

@@ -243,7 +243,54 @@ public interface PRenderer extends PDisposable {
 	
 	public void drawString(PFontResource font, String text, float x, float y);
 	
-	public void drawEllipse(int x, int y, int width, int height);
+	public default void drawEllipse(float x, float y, float width, float height) {
+		drawArc(x, y, width, height, 0, 360);
+	}
+	
+	public void drawArc(float x, float y, float width, float height,
+			float angleFrom, float angleArc);
+	
+	public default void drawRoundedRect(PBounds bounds, PSize arcSize) {
+		drawRoundedRect(bounds.getX(), bounds.getY(), bounds.getFinalX(), bounds.getFinalY(), arcSize.getWidth(), arcSize.getHeight());
+	}
+	
+	public default void drawRoundedRect(PBounds bounds, float arcW, float arcH) {
+		drawRoundedRect(bounds.getX(), bounds.getY(), bounds.getFinalX(), bounds.getFinalY(), arcW, arcH);
+	}
+	
+	public default void drawRoundedRect(float x, float y, float fx, float fy, PSize arcSize) {
+		drawRoundedRect(x, y, fx, fy, arcSize.getWidth(), arcSize.getHeight());
+	}
+	
+	public default void drawRoundedRect(float x, float y, float fx, float fy, float arcW, float arcH) {
+		if (arcW == 0 || arcH == 0) {
+			drawQuad(x, y, fx, fy);
+			return;
+		}
+		float radW = arcW / 2;
+		float radH = arcH / 2;
+		float tlX = x + radW;
+		float tlY = y + radH;
+		float brX = fx - radW;
+		float brY = fy - radH;
+		float diamW = arcW;// * 2;
+		float diamH = arcH;// * 2;
+		
+		// draw center
+		drawQuad(tlX, y, brX, fy);
+		// draw left side
+		drawQuad(x, tlY, tlX, brY);
+		// draw right side
+		drawQuad(brX, tlY, fx, brY);
+		// draw arc top right
+		drawArc(fx - diamW, y, diamW, diamH, 0, 90);
+		// draw arc top left
+		drawArc(x, y, diamW, diamH, 90, 90);
+		// draw arc bottom left
+		drawArc(x, fy - diamH, diamW, diamH, 180, 90);
+		// draw arc bottom right
+		drawArc(fx - diamW, fy - diamH, diamW, diamH, 270, 90);
+	}
 	
 	public default void strokeQuad(PBounds bounds) {
 		int x = bounds.getX();

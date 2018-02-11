@@ -1,8 +1,14 @@
 package edu.udo.piq.tests.swing;
 
+import edu.udo.piq.PBounds;
+import edu.udo.piq.PColor;
+import edu.udo.piq.PRenderer;
+import edu.udo.piq.PSize;
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PCheckBoxTuple;
 import edu.udo.piq.components.PSlider;
+import edu.udo.piq.components.PSliderModel;
+import edu.udo.piq.components.PSliderModelObs;
 import edu.udo.piq.components.containers.PDropDown;
 import edu.udo.piq.components.containers.PDropDownList;
 import edu.udo.piq.components.containers.PDropDownObs;
@@ -11,6 +17,8 @@ import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.layouts.PFreeLayout;
 import edu.udo.piq.layouts.PWrapLayout;
+import edu.udo.piq.tools.AbstractPComponent;
+import edu.udo.piq.util.PiqUtil;
 
 public class SwingPTest_FreeLayout extends AbstractSwingPTest {
 	
@@ -22,37 +30,58 @@ public class SwingPTest_FreeLayout extends AbstractSwingPTest {
 		super(640, 480);
 	}
 	
+	static class Circle extends AbstractPComponent {
+		public int angle1 = 0;
+		public int angle2 = 360;
+		@Override
+		public PSize getDefaultPreferredSize() {
+			prefSize.set(128, 128);
+			return prefSize;
+		}
+		@Override
+		public void defaultRender(PRenderer renderer) {
+			PBounds bnds = getBoundsWithoutBorder();
+			int x = bnds.getX();
+			int y = bnds.getY();
+			int w = bnds.getWidth();
+			int h = bnds.getHeight();
+			int fx = x + w;
+			int fy = y + h;
+			
+			renderer.setColor(PColor.DARK_BLUE);
+			renderer.drawRoundedRect(x, y, fx, fy, 24, 24);
+			renderer.setColor(PColor.LIGHT_BLUE);
+			renderer.drawArc(x, y, w, h, angle1, angle2);
+		}
+	}
+	
 	@Override
 	public void buildGUI() {
 		PPanel bodyPnl = new PPanel();
 		bodyPnl.setLayout(new PFreeLayout(bodyPnl));
 		root.setBody(bodyPnl);
 		
-		Person p = new Person("Max", "Mustermann");
+		Circle circle = new Circle();
 		
-//		PDesignSheet sheet = new AbstractPDesignSheet() {
-//			@Override
-//			protected PDesign getDesignInternally(PComponent component) {
-//				if (component.getClass() == PButton.class) {
-//					return new PDesign() {
-//						@Override
-//						public void render(PRenderer renderer, PComponent component) {
-//							PBounds bnds = component.getBounds();
-//							PButton btn = (PButton) component;
-//
-//							if (btn.isPressed()) {
-//								renderer.setColor(PColor.RED);
-//							} else {
-//								renderer.setColor(PColor.BLUE);
-//							}
-//							renderer.drawQuad(bnds);
-//						}
-//					};
-//				}
-//				return super.getDesignInternally(component);
-//			}
-//		};
-//		root.setDesignSheet(sheet);
+		PSlider sld1 = new PSlider(circle.angle1, 0, 360);
+		bodyPnl.addChild(sld1, new PFreeLayout.FreeConstraint(256, 128));
+		PSlider sld2 = new PSlider(circle.angle2, 0, 360);
+		bodyPnl.addChild(sld2, new PFreeLayout.FreeConstraint(256, 160));
+		
+		PSliderModelObs sldObs = new PSliderModelObs() {
+			@Override
+			public void onValueChanged(PSliderModel model) {
+				circle.angle1 = sld1.getModelValue();
+				circle.angle2 = sld2.getModelValue();
+				PiqUtil.fireReRenderEventFor(circle);
+			}
+		};
+		sld1.addObs(sldObs);
+		sld2.addObs(sldObs);
+		
+		bodyPnl.addChild(circle, new PFreeLayout.FreeConstraint(256, 256));
+		
+		Person p = new Person("Max", "Mustermann");
 		
 		PButton btn = new PButton();
 		btn.setContent(new PLabel(new DefaultPTextModel(p) {
@@ -62,15 +91,7 @@ public class SwingPTest_FreeLayout extends AbstractSwingPTest {
 				return p.firstName + ": " + p.lastName;
 			}
 		}));
-//		btn.setDesign(new PDesign() {
-//			public void render(PRenderer renderer, PComponent component) {
-//				PBounds bnds = component.getBounds();
-//				renderer.setColor(PColor.YELLOW);
-//				renderer.drawQuad(bnds);
-//			}
-//		});
-//		btn.setDesign();
-		bodyPnl.getLayout().addChild(btn, new PFreeLayout.FreeConstraint(36, 53));
+		bodyPnl.addChild(btn, new PFreeLayout.FreeConstraint(36, 53));
 		
 		p.firstName = "Frederick";
 		
@@ -115,7 +136,7 @@ public class SwingPTest_FreeLayout extends AbstractSwingPTest {
 //				System.out.println(root.getDebugInfo());
 			}
 		});
-		bodyPnl.getLayout().addChild(dd, new PFreeLayout.FreeConstraint(285, 64));
+		bodyPnl.addChild(dd, new PFreeLayout.FreeConstraint(285, 64));
 		
 		PDropDownList ddl = new PDropDownList();
 		String[] elems = new String[] {"eins", "zwei", "drei", "vier"};
@@ -123,7 +144,7 @@ public class SwingPTest_FreeLayout extends AbstractSwingPTest {
 			ddl.getList().getModel().add(ddl.getList().getModel().getSize(), s);
 		}
 //		pnlDd.addChild(ddl, null);
-		bodyPnl.getLayout().addChild(ddl, new PFreeLayout.FreeConstraint(122, 175));
+		bodyPnl.addChild(ddl, new PFreeLayout.FreeConstraint(122, 175));
 	}
 	
 	public static class Person {

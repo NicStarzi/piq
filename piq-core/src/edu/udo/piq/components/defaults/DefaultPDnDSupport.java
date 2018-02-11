@@ -19,9 +19,9 @@ import edu.udo.piq.util.ThrowException;
 
 public class DefaultPDnDSupport implements PDnDSupport {
 	
-	public static final Object IMAGE_ID_DND_POSSIBLE = 
+	public static final Object IMAGE_ID_DND_POSSIBLE =
 			new SymbolicImageKey(DefaultPDnDSupport.class+"_possible");
-	public static final Object IMAGE_ID_DND_IMPOSSIBLE = 
+	public static final Object IMAGE_ID_DND_IMPOSSIBLE =
 			new SymbolicImageKey(DefaultPDnDSupport.class+"_impossible");
 	
 	protected PModelImport modelImport = null;
@@ -324,20 +324,20 @@ public class DefaultPDnDSupport implements PDnDSupport {
 	}
 	
 	@Override
-	public void showDropLocation(PComponent source, PDnDTransfer transfer, int x, int y) {
-		ThrowException.ifNull(source, "source == null");
+	public void showDropLocation(PComponent dropTarget, PDnDTransfer transfer, int x, int y) {
+		ThrowException.ifNull(dropTarget, "dropTarget == null");
 		ThrowException.ifNull(transfer, "transfer == null");
-		PDropComponent dropComp = ThrowException.ifTypeCastFails(source,
+		PDropComponent dropComp = ThrowException.ifTypeCastFails(dropTarget,
 				PDropComponent.class, "(source instanceof PDropComponent) == false");
 		PModelIndex dropIndex = dropComp.getDropIndex(x, y);
 		dropComp.setDropHighlight(dropIndex);
 	}
 	
 	@Override
-	public void hideDropLocation(PComponent source, PDnDTransfer transfer, int x, int y) {
-		ThrowException.ifNull(source, "source == null");
+	public void hideDropLocation(PComponent dropTarget, PDnDTransfer transfer, int x, int y) {
+		ThrowException.ifNull(dropTarget, "dropTarget == null");
 		ThrowException.ifNull(transfer, "transfer == null");
-		PDropComponent dropComp = ThrowException.ifTypeCastFails(source,
+		PDropComponent dropComp = ThrowException.ifTypeCastFails(dropTarget,
 				PDropComponent.class, "(source instanceof PDropComponent) == false");
 		dropComp.setDropHighlight(null);
 	}

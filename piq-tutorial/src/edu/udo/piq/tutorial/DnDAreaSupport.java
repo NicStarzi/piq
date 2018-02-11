@@ -121,14 +121,14 @@ public class DnDAreaSupport implements PDnDSupport {
 	}
 	
 	@Override
-	public void showDropLocation(PComponent source, PDnDTransfer transfer, int x, int y) {
-		if (source == null || transfer == null) {
+	public void showDropLocation(PComponent dropTarget, PDnDTransfer transfer, int x, int y) {
+		if (dropTarget == null || transfer == null) {
 			throw new NullPointerException();
 		}
-		if (!(source instanceof DnDArea)) {
-			throw new IllegalArgumentException("source not instance of "+DnDArea.class.getName());
+		if (!(dropTarget instanceof DnDArea)) {
+			throw new IllegalArgumentException("dropTarget not instance of "+DnDArea.class.getName());
 		}
-		DnDArea area = (DnDArea) source;
+		DnDArea area = (DnDArea) dropTarget;
 		PComponent comp = getComponent(transfer);
 		PSize compSize = comp.getPreferredSize();
 		
@@ -138,14 +138,14 @@ public class DnDAreaSupport implements PDnDSupport {
 	}
 	
 	@Override
-	public void hideDropLocation(PComponent source, PDnDTransfer transfer, int x, int y) {
-		if (source == null || transfer == null) {
+	public void hideDropLocation(PComponent dropTarget, PDnDTransfer transfer, int x, int y) {
+		if (dropTarget == null || transfer == null) {
 			throw new NullPointerException();
 		}
-		if (!(source instanceof DnDArea)) {
-			throw new IllegalArgumentException("source not instance of "+DnDArea.class.getName());
+		if (!(dropTarget instanceof DnDArea)) {
+			throw new IllegalArgumentException("dropTarget not instance of "+DnDArea.class.getName());
 		}
-		DnDArea area = (DnDArea) source;
+		DnDArea area = (DnDArea) dropTarget;
 		area.hideDropLoc();
 	}
 	

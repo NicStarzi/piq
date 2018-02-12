@@ -86,7 +86,7 @@ public abstract class AbstractPMenuItem extends AbstractPLayoutOwner {
 	}
 	
 	protected void fireActionEvent() {
-		PMenuBody body = getFirstAncestorOfType(PMenuBody.class);
+		PMenuBody body = getAncestors().getNextOfType(PMenuBody.class);
 		if (body != null) {
 			body.fireActionEvent(this);
 		}
@@ -179,10 +179,10 @@ public abstract class AbstractPMenuItem extends AbstractPLayoutOwner {
 		if (root == null) {
 			return false;
 		}
-		PMenuBody container = getFirstAncestorOfType(PMenuBody.class);
+		PMenuBody body = getAncestors().getNextOfType(PMenuBody.class);
 		PComponent focusOwner = root.getFocusOwner();
 		return focusOwner != null
-				&& focusOwner != container
+				&& focusOwner != body
 				&& (focusOwner == this
 				|| isAncestorOf(focusOwner)
 				|| isDescendantOf(focusOwner));

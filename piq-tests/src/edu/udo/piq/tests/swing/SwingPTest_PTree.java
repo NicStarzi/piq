@@ -144,7 +144,7 @@ public class SwingPTest_PTree extends AbstractSwingPTest {
 			MutableAction cancelEditAction = new MutableAction();
 			cancelEditAction.setAccelerator(ActualKey.ESCAPE);
 			cancelEditAction.setPerformAction(root -> {
-				PTree tree = editor.getFirstAncestorOfType(PTree.class);
+				PTree tree = editor.getAncestors().getNextOfType(PTree.class);
 				setEditorVisible(false);
 				tree.takeFocus();
 			});

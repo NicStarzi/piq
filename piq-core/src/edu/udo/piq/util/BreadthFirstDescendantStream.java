@@ -10,17 +10,25 @@ public class BreadthFirstDescendantStream<COMP_TYPE extends PComponent> implemen
 	
 	private final Deque<PComponent> stack = new ArrayDeque<>();
 	private final PComponent root;
+	private final boolean includeRoot;
 	private Predicate<COMP_TYPE> filters = null;
 	
-	public BreadthFirstDescendantStream(PComponent rootComp) {
+	public BreadthFirstDescendantStream(PComponent rootComp, boolean includeRoot) {
 		root = rootComp;
-		stack.push(root);
+		this.includeRoot = includeRoot;
+		rewindIteration();
 	}
 	
 	@Override
 	public ComponentStream<COMP_TYPE> rewindIteration() {
 		stack.clear();
-		stack.push(root);
+		if (includeRoot) {
+			stack.push(root);
+		} else {
+			for (PComponent child : root.getChildren()) {
+				stack.addLast(child);
+			}
+		}
 		return this;
 	}
 	

@@ -128,6 +128,24 @@ public interface ComponentStream<COMPONENT_TYPE extends PComponent> {
 		return (SUB_TYPE) getNextMatching(clazz::isInstance);
 	}
 	
+	public default COMPONENT_TYPE getLastMatching(Predicate<? super COMPONENT_TYPE> condition) {
+		COMPONENT_TYPE last = null;
+		for (	COMPONENT_TYPE current = getNext();
+				current != null;
+				current = getNext())
+		{
+			if (condition.test(current)) {
+				last = current;
+			}
+		}
+		return last;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public default <SUB_TYPE extends COMPONENT_TYPE> SUB_TYPE getLastOfType(Class<SUB_TYPE> clazz) {
+		return (SUB_TYPE) getLastMatching(clazz::isInstance);
+	}
+	
 	public default ComponentStream<COMPONENT_TYPE> without(PComponent excludedComponent) {
 		return require(component -> component != excludedComponent);
 	}

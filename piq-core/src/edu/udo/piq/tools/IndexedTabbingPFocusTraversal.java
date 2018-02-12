@@ -62,12 +62,7 @@ public class IndexedTabbingPFocusTraversal extends AbstractPFocusTraversal imple
 		}
 		PComponent comp = components.get(index);
 		if (!comp.isFocusable()) {
-			for (PComponent desc : comp.getDescendants()) {
-				if (desc.isFocusable()) {
-					comp = desc;
-					break;
-				}
-			}
+			comp = comp.getDescendants().getNextMatching(desc -> desc.isFocusable());
 		}
 		comp.tryToTakeFocus();
 	}

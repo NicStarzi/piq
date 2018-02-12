@@ -67,7 +67,7 @@ public class PMenuBar extends AbstractPLayoutOwner {
 			}
 			return;
 		}
-		PComponent itemComp = hoverComp.getFirstAncestorMatchingCondition(anc -> anc.getParent() == PMenuBar.this);
+		PComponent itemComp = hoverComp.getAncestors().getNextMatching(anc -> anc.getParent() == PMenuBar.this);
 		if (itemComp == null) {
 			if (!isArmed()) {
 				clearActiveItem();

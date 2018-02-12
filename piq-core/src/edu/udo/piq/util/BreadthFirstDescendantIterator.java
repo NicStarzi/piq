@@ -16,10 +16,12 @@ public class BreadthFirstDescendantIterator implements Iterator<PComponent>, Ite
 		stack.push(root);
 	}
 	
+	@Override
 	public boolean hasNext() {
 		return !stack.isEmpty();
 	}
 	
+	@Override
 	public PComponent next() {
 		PComponent cmp = stack.pop();
 		for (PComponent child : cmp.getChildren()) {
@@ -28,6 +30,7 @@ public class BreadthFirstDescendantIterator implements Iterator<PComponent>, Ite
 		return cmp;
 	}
 	
+	@Override
 	public Iterator<PComponent> iterator() {
 		if (stack.peek() != root) {
 			return new BreadthFirstDescendantIterator(root);

@@ -51,8 +51,8 @@ public class SwingPTest_Style extends AbstractSwingPTest {
 		PClickObs progClickObs = btn -> progMdl.addValue(+1);
 		
 		PClickObs disableAll = self -> {
-			self.getRoot().getAllDescendantsOfType(PInteractiveComponent.class)
-				.stream().forEach(comp -> {
+			self.getRoot().getDescendants().ofType(PInteractiveComponent.class)
+				.forEach(comp -> {
 					if (comp != self && !(comp instanceof PCheckBox)) {
 						comp.getEnableModel().toggleValue();
 					}

@@ -9,6 +9,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
 import edu.udo.piq.PClipboard;
+import edu.udo.piq.util.Throw;
 
 public class SwingPClipboard implements PClipboard {
 	
@@ -16,7 +17,9 @@ public class SwingPClipboard implements PClipboard {
 		return Toolkit.getDefaultToolkit().getSystemClipboard();
 	}
 	
+	@Override
 	public boolean put(Object object) {
+		Throw.ifNull(object, "object == null");
 		try {
 			Transferable trans;
 			if (object instanceof String) {
@@ -24,7 +27,7 @@ public class SwingPClipboard implements PClipboard {
 			} else {
 				trans = new ObjectTransferable<>(object);
 			}
-			getClipboard().setContents(trans, null);
+			SwingPClipboard.getClipboard().setContents(trans, null);
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -32,9 +35,10 @@ public class SwingPClipboard implements PClipboard {
 		}
 	}
 	
+	@Override
 	public Object get() {
 		try {
-			Transferable transferable = getClipboard().getContents(null);
+			Transferable transferable = SwingPClipboard.getClipboard().getContents(null);
 			for (DataFlavor dataFlavor : transferable.getTransferDataFlavors()) {
 				Object obj = transferable.getTransferData(dataFlavor);
 				return obj;
@@ -48,7 +52,7 @@ public class SwingPClipboard implements PClipboard {
 	@SuppressWarnings("unchecked")
 	public <E> E load(Class<E> expectedClass) {
 		try {
-			Transferable transferable = getClipboard().getContents(null);
+			Transferable transferable = SwingPClipboard.getClipboard().getContents(null);
 			for (DataFlavor dataFlavor : transferable.getTransferDataFlavors()) {
 				Object obj = transferable.getTransferData(dataFlavor);
 				if (expectedClass == null || expectedClass.isInstance(obj)) {
@@ -80,6 +84,7 @@ public class SwingPClipboard implements PClipboard {
 //			};
 //		}
 		
+		@Override
 		public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
 			if (!isDataFlavorSupported(flavor)) {
 				throw new UnsupportedFlavorException(flavor);
@@ -87,10 +92,12 @@ public class SwingPClipboard implements PClipboard {
 			return obj;
 		}
 		
+		@Override
 		public DataFlavor[] getTransferDataFlavors() {
 			return flavors;
 		}
 		
+		@Override
 		public boolean isDataFlavorSupported(DataFlavor flavor) {
 			return flavors[0].equals(flavor);
 		}

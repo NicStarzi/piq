@@ -26,7 +26,7 @@ public class PMenuLabel extends PLabel {
 	}
 	
 	public boolean isHighlighted() {
-		AbstractPMenuItem menuItem = getFirstAncestorOfType(AbstractPMenuItem.class);
+		AbstractPMenuItem menuItem = getAncestors().getNextOfType(AbstractPMenuItem.class);
 		return menuItem != null && menuItem.isHighlighted();
 	}
 	

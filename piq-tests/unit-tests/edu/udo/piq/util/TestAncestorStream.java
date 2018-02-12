@@ -92,7 +92,7 @@ public class TestAncestorStream {
 		leaf = componentHierarchy.get(componentHierarchy.size() - 1);
 		leaf.setID("Leaf");
 		leaf.getParent().setID("Parent of leaf");
-		stream = leaf.getAncestorsAndSelf2();
+		stream = leaf.getAncestors();
 	}
 	
 	@Test

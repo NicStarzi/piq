@@ -1,7 +1,5 @@
 package edu.udo.piq.tools;
 
-import java.util.Iterator;
-
 import edu.udo.piq.CallSuper;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PRoot;
@@ -51,21 +49,19 @@ public abstract class AbstractPStyleSheet implements PStyleSheet {
 	}
 	
 	protected void addAllComponents() {
-		Iterator<PComponent> iter = getRoot().getDescendants().iterator();
-		iter.next();//remove root
-		while (iter.hasNext()) {
-			PComponent component = iter.next();
-			component.setInheritedStyle(getStyleFor(component));
-		}
+		getRoot().getDescendants(false).forEach(this::setStyleFor);
+	}
+	
+	private void setStyleFor(PComponent component) {
+		component.setInheritedStyle(getStyleFor(component));
 	}
 	
 	protected void removeAllComponents() {
-		Iterator<PComponent> iter = getRoot().getDescendants().iterator();
-		iter.next();//remove root
-		while (iter.hasNext()) {
-			PComponent component = iter.next();
-			component.setInheritedStyle(null);
-		}
+		getRoot().getDescendants(false).forEach(this::resetStyleFor);
+	}
+	
+	private void resetStyleFor(PComponent component) {
+		component.setInheritedStyle(null);
 	}
 	
 	@TemplateMethod

@@ -36,7 +36,9 @@ public class SwingStylePPanel extends MutablePStyleComponent implements SwingPSt
 			}
 			return;
 		}
-		PComponent curFocusPnl = focusOwner.getFirstAncestorMatchingCondition(anc -> anc.getStyle() == SwingStylePPanel.this);
+		PComponent curFocusPnl = focusOwner.getAncestors().getNextMatching(
+			anc -> anc.getStyle() == SwingStylePPanel.this
+		);
 		if (curFocusPnl != lastFocusedPanel) {
 			if (lastFocusedPanel != null) {
 				PiqUtil.fireReRenderEventFor(lastFocusedPanel);

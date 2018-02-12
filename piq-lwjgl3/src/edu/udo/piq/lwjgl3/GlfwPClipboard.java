@@ -3,6 +3,7 @@ package edu.udo.piq.lwjgl3;
 import org.lwjgl.glfw.GLFW;
 
 import edu.udo.piq.PClipboard;
+import edu.udo.piq.util.Throw;
 
 public class GlfwPClipboard implements PClipboard {
 	
@@ -14,6 +15,7 @@ public class GlfwPClipboard implements PClipboard {
 	
 	@Override
 	public boolean put(Object obj) {
+		Throw.ifNull(obj, "obj == null");
 		try {
 			GLFW.glfwSetClipboardString(wndHandle, obj.toString());
 			return true;

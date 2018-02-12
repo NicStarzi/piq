@@ -23,13 +23,13 @@ public class ActionRemoveOnEscape extends AbstractPComponentAction implements PC
 		if (focusOwner == null) {
 			return false;
 		}
-		PMenuBody body = focusOwner.getFirstAncestorOfType(PMenuBody.class);
+		PMenuBody body = focusOwner.getAncestors().getNextOfType(PMenuBody.class);
 		return body != null;
 	}
 	
 	@Override
 	public void tryToPerform(PRoot root) {
-		PMenuBody body = root.getFocusOwner().getFirstAncestorOfType(PMenuBody.class);
+		PMenuBody body = root.getFocusOwner().getAncestors().getNextOfType(PMenuBody.class);
 		if (body != null) {
 			body.fireCloseRequestEvent();
 		}

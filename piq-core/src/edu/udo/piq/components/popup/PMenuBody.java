@@ -5,10 +5,10 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
-import edu.udo.piq.components.popup.AbstractPMenuItem.MenuEntryPart;
-import edu.udo.piq.components.popup.DelegationPGridListLayout.PDelegateRowIndex;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
+import edu.udo.piq.components.popup.AbstractPMenuItem.MenuEntryPart;
+import edu.udo.piq.components.popup.DelegationPGridListLayout.PDelegateRowIndex;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.tools.ImmutablePInsets;
@@ -124,7 +124,7 @@ public class PMenuBody extends AbstractPLayoutOwner {
 		if (!comp.isDescendantOf(this)) {
 			return;
 		}
-		AbstractPMenuItem item = (AbstractPMenuItem) comp.getFirstAncestorMatchingCondition(
+		AbstractPMenuItem item = (AbstractPMenuItem) comp.getAncestors().getNextMatching(
 			anc -> anc.getParent() == PMenuBody.this && anc instanceof AbstractPMenuItem
 		);
 		if (item == null) {

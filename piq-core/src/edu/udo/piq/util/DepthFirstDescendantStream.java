@@ -10,17 +10,25 @@ public class DepthFirstDescendantStream<COMP_TYPE extends PComponent> implements
 	
 	private final Deque<PComponent> stack = new ArrayDeque<>();
 	private final PComponent root;
+	private final boolean includeRoot;
 	private Predicate<COMP_TYPE> filters = null;
 	
-	public DepthFirstDescendantStream(PComponent rootComp) {
+	public DepthFirstDescendantStream(PComponent rootComp, boolean includeRoot) {
 		root = rootComp;
-		stack.push(root);
+		this.includeRoot = includeRoot;
+		rewindIteration();
 	}
 	
 	@Override
 	public ComponentStream<COMP_TYPE> rewindIteration() {
 		stack.clear();
-		stack.push(root);
+		if (includeRoot) {
+			stack.push(root);
+		} else {
+			for (PComponent child : root.getChildren()) {
+				stack.addFirst(child);
+			}
+		}
 		return this;
 	}
 	

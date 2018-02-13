@@ -18,9 +18,9 @@ public class PPicture extends AbstractPComponent {
 	public static final AlignmentX DEFAULT_ALIGNMENT_X = AlignmentX.CENTER;
 	public static final AlignmentY DEFAULT_ALIGNMENT_Y = AlignmentY.CENTER;
 	
-	protected final ObserverList<PSingleValueModelObs> modelObsList
+	protected final ObserverList<PSingleValueModelObs<Object>> modelObsList
 		= PiqUtil.createDefaultObserverList();
-	protected final PSingleValueModelObs modelObs = this::onModelChanged;
+	protected final PSingleValueModelObs<Object> modelObs = this::onModelChanged;
 	protected PPictureModel model;
 	protected AlignmentX alignX = DEFAULT_ALIGNMENT_X;
 	protected AlignmentY alignY = DEFAULT_ALIGNMENT_Y;
@@ -149,15 +149,15 @@ public class PPicture extends AbstractPComponent {
 		return root.fetchImageResource(imgID);
 	}
 	
-	public void addObs(PSingleValueModelObs obs) {
+	public void addObs(PSingleValueModelObs<Object> obs) {
 		modelObsList.add(obs);
 	}
 	
-	public void removeObs(PSingleValueModelObs obs) {
+	public void removeObs(PSingleValueModelObs<Object> obs) {
 		modelObsList.remove(obs);
 	}
 	
-	protected void onModelChanged(PSingleValueModel model, Object oldValue, Object newValue) {
+	protected void onModelChanged(PSingleValueModel<Object> model, Object oldValue, Object newValue) {
 		firePreferredSizeChangedEvent();
 		fireReRenderEvent();
 	}

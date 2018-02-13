@@ -3,7 +3,7 @@ package edu.udo.piq.tools;
 import edu.udo.piq.components.AbstractPSingleValueModel;
 import edu.udo.piq.components.PCheckBoxModel;
 
-public abstract class AbstractPCheckBoxModel extends AbstractPSingleValueModel implements PCheckBoxModel {
+public abstract class AbstractPCheckBoxModel extends AbstractPSingleValueModel<Boolean> implements PCheckBoxModel {
 	
 	@Override
 	protected void setValueInternal(Object newValue) {
@@ -19,7 +19,7 @@ public abstract class AbstractPCheckBoxModel extends AbstractPSingleValueModel i
 	}
 	
 	@Override
-	public Object getValue() {
+	public Boolean getValue() {
 		return Boolean.valueOf(isChecked());
 	}
 	

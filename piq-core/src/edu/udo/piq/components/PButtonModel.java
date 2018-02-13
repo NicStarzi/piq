@@ -1,6 +1,6 @@
 package edu.udo.piq.components;
 
-public interface PButtonModel extends PSingleValueModel {
+public interface PButtonModel extends PSingleValueModel<Boolean> {
 	
 	public static final boolean DEFAULT_PRESSED_VALUE = false;
 	
@@ -14,7 +14,7 @@ public interface PButtonModel extends PSingleValueModel {
 	}
 	
 	@Override
-	public default Object getValue() {
+	public default Boolean getValue() {
 		return Boolean.valueOf(isPressed());
 	}
 	

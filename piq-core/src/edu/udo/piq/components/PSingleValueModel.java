@@ -1,13 +1,13 @@
 package edu.udo.piq.components;
 
-public interface PSingleValueModel {
+public interface PSingleValueModel<VALUE_TYPE> {
 	
 	public void setValue(Object value);
 	
-	public Object getValue();
+	public VALUE_TYPE getValue();
 	
-	public void addObs(PSingleValueModelObs obs);
+	public void addObs(PSingleValueModelObs<VALUE_TYPE> obs);
 	
-	public void removeObs(PSingleValueModelObs obs);
+	public void removeObs(PSingleValueModelObs<VALUE_TYPE> obs);
 	
 }

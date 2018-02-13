@@ -76,6 +76,7 @@ public class PSpinnerModelEnum<E extends Enum<E>> extends AbstractPSpinnerModel 
 		return getValueList().get(getValueIndex() - 1);
 	}
 	
+	@SuppressWarnings("unlikely-arg-type")
 	@Override
 	public boolean canSetValue(Object obj) {
 		if (getValueList().contains(obj)) {
@@ -88,6 +89,7 @@ public class PSpinnerModelEnum<E extends Enum<E>> extends AbstractPSpinnerModel 
 		return false;
 	}
 	
+	@SuppressWarnings("unlikely-arg-type")
 	@Override
 	public void setValue(Object obj) {
 		ThrowException.ifFalse(canSetValue(obj),

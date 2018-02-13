@@ -6,7 +6,7 @@ import edu.udo.piq.util.PModelFactory;
 
 public abstract class AbstractPInteractiveLayoutOwner extends AbstractPLayoutOwner implements PInteractiveComponent {
 	
-	protected final PSingleValueModelObs enableObs = this::onEnabledChange;
+	protected final PSingleValueModelObs<Boolean> enableObs = this::onEnabledChange;
 	protected PEnableModel enableModel;
 	
 	{
@@ -35,8 +35,8 @@ public abstract class AbstractPInteractiveLayoutOwner extends AbstractPLayoutOwn
 	}
 	
 	@TemplateMethod
-	protected void onEnabledChange(PSingleValueModel model, Object oldVal, Object newVal) {
-		if (hasFocus() && !isEnabled()) {
+	protected void onEnabledChange(PSingleValueModel<Boolean> model, Boolean oldVal, Boolean newVal) {
+		if (hasFocus() && !newVal) {
 			releaseFocus();
 		}
 		fireReRenderEvent();

@@ -10,7 +10,7 @@ public class DefaultPRadioButtonModel extends AbstractPRadioButtonModel implemen
 	@Override
 	public void setSelected(boolean value) {
 		if (selected != value) {
-			Object oldValue = getValue();
+			Boolean oldValue = getValue();
 			selected = value;
 			fireChangeEvent(oldValue);
 		}

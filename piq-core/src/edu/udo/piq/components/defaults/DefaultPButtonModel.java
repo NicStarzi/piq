@@ -3,14 +3,14 @@ package edu.udo.piq.components.defaults;
 import edu.udo.piq.components.AbstractPSingleValueModel;
 import edu.udo.piq.components.PButtonModel;
 
-public class DefaultPButtonModel extends AbstractPSingleValueModel implements PButtonModel {
+public class DefaultPButtonModel extends AbstractPSingleValueModel<Boolean> implements PButtonModel {
 	
 	protected boolean pressed = PButtonModel.DEFAULT_PRESSED_VALUE;
 	
 	@Override
 	public void setPressed(boolean trueIfPressed) {
 		if (pressed != trueIfPressed) {
-			Object oldValue = getValue();
+			Boolean oldValue = getValue();
 			pressed = trueIfPressed;
 			fireChangeEvent(oldValue);
 		}

@@ -20,9 +20,9 @@ public class PLabel extends AbstractPComponent {
 	public static final Object FONT_ID = new SymbolicFontKey(PLabel.class);
 	protected static final PColor DEFAULT_TEXT_COLOR = PColor.BLACK;
 	
-	protected final ObserverList<PSingleValueModelObs> modelObsList
+	protected final ObserverList<PSingleValueModelObs<Object>> modelObsList
 		= PiqUtil.createDefaultObserverList();
-	protected final PSingleValueModelObs modelObs = this::onModelValueChanged;
+	protected final PSingleValueModelObs<Object> modelObs = this::onModelValueChanged;
 	protected PFontResource cachedFont;
 	protected PTextModel model;
 	
@@ -60,7 +60,7 @@ public class PLabel extends AbstractPComponent {
 		return model;
 	}
 	
-	protected void onModelValueChanged(PSingleValueModel model, Object oldValue, Object newValue) {
+	protected void onModelValueChanged(PSingleValueModel<Object> model, Object oldValue, Object newValue) {
 		firePreferredSizeChangedEvent();
 		fireReRenderEvent();
 	}

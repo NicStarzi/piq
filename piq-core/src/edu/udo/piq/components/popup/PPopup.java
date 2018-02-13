@@ -13,9 +13,15 @@ import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PRootOverlay;
 import edu.udo.piq.PSize;
+import edu.udo.piq.TemplateMethod;
+import edu.udo.piq.components.DefaultPEnableModel;
+import edu.udo.piq.components.PEnableModel;
+import edu.udo.piq.components.PSingleValueModel;
+import edu.udo.piq.components.PSingleValueModelObs;
 import edu.udo.piq.components.collections.PSelectionComponent;
 import edu.udo.piq.layouts.PFreeLayout.FreeConstraint;
 import edu.udo.piq.util.ObserverList;
+import edu.udo.piq.util.PModelFactory;
 import edu.udo.piq.util.PiqUtil;
 import edu.udo.piq.util.ThrowException;
 
@@ -53,16 +59,22 @@ public class PPopup {
 			PPopup.this.onMenuCloseRequet(body);
 		}
 	};
+	protected final PSingleValueModelObs<Boolean> enableObs = this::onEnabledChange;
 	protected final List<PComponent> items = new ArrayList<>();
 	protected final PComponent owner;
 	protected PMenuBody curBody = null;
+	protected PEnableModel enableModel;
 	protected int popupClickX = Integer.MIN_VALUE;// no useful initial value
 	protected int popupClickY = Integer.MIN_VALUE;// no useful initial value
 	protected boolean enabled = false;
 	
+	{
+		setEnableModel(PModelFactory.createModelFor(this, DefaultPEnableModel::new, PEnableModel.class));
+	}
+	
 	public PPopup(PComponent component) {
 		owner = component;
-		setEnabled(DEFAULT_IS_ENABLED);
+//		setEnabled(DEFAULT_IS_ENABLED);
 	}
 	
 	public PComponent getOwner() {
@@ -121,22 +133,45 @@ public class PPopup {
 		items.remove(item);
 	}
 	
+	public void setEnableModel(PEnableModel model) {
+		if (getEnableModel() != null) {
+			getEnableModel().removeObs(enableObs);
+		}
+		enableModel = model;
+		if (getEnableModel() != null) {
+			getEnableModel().addObs(enableObs);
+		}
+	}
+	
+	public PEnableModel getEnableModel() {
+		return enableModel;
+	}
+	
 	public void setEnabled(boolean isEnabled) {
-		if (enabled != isEnabled) {
-			enabled = isEnabled;
-			if (isEnabled()) {
-				getOwner().addObs(mouseObs);
-			} else {
-				getOwner().removeObs(mouseObs);
-				if (isShown()) {
-					hidePopup();
-				}
-			}
+		PEnableModel model = getEnableModel();
+		if (model != null) {
+			model.setValue(isEnabled);
 		}
 	}
 	
 	public boolean isEnabled() {
-		return enabled;
+		PEnableModel model = getEnableModel();
+		if (model == null) {
+			return false;
+		}
+		return model.isEnabled();
+	}
+	
+	@TemplateMethod
+	protected void onEnabledChange(PSingleValueModel<Boolean> model, Boolean oldVal, Boolean newVal) {
+		if (isEnabled()) {
+			getOwner().addObs(mouseObs);
+		} else {
+			getOwner().removeObs(mouseObs);
+			if (isShown()) {
+				hidePopup();
+			}
+		}
 	}
 	
 	public boolean isShown() {

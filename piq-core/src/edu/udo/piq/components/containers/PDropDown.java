@@ -11,6 +11,7 @@ import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRootOverlay;
 import edu.udo.piq.PSize;
+import edu.udo.piq.TemplateMethod;
 import edu.udo.piq.components.AbstractPInteractiveLayoutOwner;
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PButtonModel;
@@ -52,7 +53,7 @@ public class PDropDown extends AbstractPInteractiveLayoutOwner {
 			PDropDown.this.onPreferredSizeChanged();
 		}
 	};
-	protected final PSingleValueModelObs modelObs = this::onModelChange;
+	protected final PSingleValueModelObs<Boolean> modelObs = this::onModelChange;
 	protected final PClickObs btnObs = (btn) -> onButtonClick();
 	protected final PDropDownContainer dropDownContainer;
 	protected PButtonModel model;
@@ -228,6 +229,7 @@ public class PDropDown extends AbstractPInteractiveLayoutOwner {
 		overlayLayout.updateConstraint(dropDownContainer, constr);
 	}
 	
+	@TemplateMethod
 	protected void onMouseButtonTriggered(PMouse mouse, MouseButton btn) {
 		PButtonModel model = getModel();
 		if (btn == MouseButton.LEFT && model != null && !model.isPressed() && isMouseOverThisOrChild(mouse)) {
@@ -235,15 +237,18 @@ public class PDropDown extends AbstractPInteractiveLayoutOwner {
 		}
 	}
 	
+	@TemplateMethod
 	protected void onMouseButtonReleased(PMouse mouse, MouseButton btn) {}
 	
+	@TemplateMethod
 	protected void onPreferredSizeChanged() {
 		if (isBodyVisible()) {
 			repositionDropDownContainer();
 		}
 	}
 	
-	protected void onModelChange(PSingleValueModel model, Object oldValue, Object newValue) {
+	@TemplateMethod
+	protected void onModelChange(PSingleValueModel<Boolean> model, Boolean oldValue, Boolean newValue) {
 		if (!getModel().isPressed() && isMouseOverThisOrChild()) {
 			if (isBodyVisible()) {
 				hideDropDown();
@@ -254,6 +259,7 @@ public class PDropDown extends AbstractPInteractiveLayoutOwner {
 		fireReRenderEvent();
 	}
 	
+	@TemplateMethod
 	protected void onButtonClick() {}
 	
 	public void addObs(PDropDownObs obs) {

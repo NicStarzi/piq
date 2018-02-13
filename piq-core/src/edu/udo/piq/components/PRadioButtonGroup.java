@@ -4,13 +4,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import edu.udo.piq.CallSuper;
+import edu.udo.piq.TemplateMethod;
 import edu.udo.piq.util.Throw;
 import edu.udo.piq.util.ThrowException;
 
 public class PRadioButtonGroup {
 	
 	private final List<PRadioButton> btnList = new ArrayList<>();
-	private final PSingleValueModelObs modelObs = this::onModelChange;
+	private final PSingleValueModelObs<Boolean> modelObs = this::onModelChange;
 	private PRadioButtonModel selectedModel = null;
 	
 	public PRadioButtonGroup() {
@@ -39,6 +41,7 @@ public class PRadioButtonGroup {
 		return btnList.size();
 	}
 	
+	@CallSuper
 	public void clear() {
 		for (PRadioButton btn : btnList) {
 			btn.removeObs(modelObs);
@@ -47,6 +50,7 @@ public class PRadioButtonGroup {
 		selectedModel = null;
 	}
 	
+	@CallSuper
 	public void add(PRadioButton radioBtn) {
 		ThrowException.ifIncluded(btnList, radioBtn, "btnList.contains(radioBtn) == true");
 		radioBtn.addObs(modelObs);
@@ -58,6 +62,7 @@ public class PRadioButtonGroup {
 		}
 	}
 	
+	@CallSuper
 	public void remove(PRadioButton radioBtn) {
 		ThrowException.ifExcluded(btnList, radioBtn, "btnList.contains(radioBtn) == false");
 		btnList.remove(radioBtn);
@@ -86,7 +91,8 @@ public class PRadioButtonGroup {
 		setSelected(button.getModel());
 	}
 	
-	protected void onModelChange(PSingleValueModel model, Object oldValue, Object newValue) {
+	@TemplateMethod
+	protected void onModelChange(PSingleValueModel<Boolean> model, Boolean oldValue, Boolean newValue) {
 		PRadioButtonModel radBtnMdl = (PRadioButtonModel) model;
 		if (radBtnMdl.isSelected()) {
 			setSelected(radBtnMdl);

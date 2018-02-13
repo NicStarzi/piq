@@ -78,7 +78,7 @@ public class PTextArea extends AbstractPTextComponent {
 	}
 	
 	@Override
-	protected void onTextChanged(PSingleValueModel model, Object oldValue, Object newValue) {
+	protected void onTextChanged(PSingleValueModel<Object> model, Object oldValue, Object newValue) {
 		idxTableIsDirty = true;
 		super.onTextChanged(model, oldValue, newValue);
 	}

@@ -44,6 +44,7 @@ public class EnumPDictionary<E extends Enum<E>> extends AbstractMapDictionary<E>
 			return defaultString;
 		}
 		if (enumClass.isInstance(value)) {
+			@SuppressWarnings("unlikely-arg-type")
 			String translation = transMap.get(value);
 			if (translation == null) {
 				if (defaultTranslator == null) {

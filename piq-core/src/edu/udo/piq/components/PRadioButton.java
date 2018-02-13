@@ -18,7 +18,7 @@ public class PRadioButton extends AbstractPInteractiveComponent implements PClic
 	
 	private static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(12, 12);
 	
-	protected final ObserverList<PSingleValueModelObs> modelObsList
+	protected final ObserverList<PSingleValueModelObs<Boolean>> modelObsList
 		= PiqUtil.createDefaultObserverList();
 	protected final ObserverList<PClickObs> obsList
 		= PiqUtil.createDefaultObserverList();
@@ -40,7 +40,7 @@ public class PRadioButton extends AbstractPInteractiveComponent implements PClic
 			PRadioButton.this.onMouseButtonReleased(mouse, btn, clickCount);
 		}
 	};
-	protected final PSingleValueModelObs modelObs = this::onModelChange;
+	protected final PSingleValueModelObs<Boolean> modelObs = this::onModelChange;
 	protected PRadioButtonModel model;
 	
 	public PRadioButton() {
@@ -117,14 +117,14 @@ public class PRadioButton extends AbstractPInteractiveComponent implements PClic
 		obsList.remove(obs);
 	}
 	
-	public void addObs(PSingleValueModelObs obs) {
+	public void addObs(PSingleValueModelObs<Boolean> obs) {
 		modelObsList.add(obs);
 		if (getModel() != null) {
 			getModel().addObs(obs);
 		}
 	}
 	
-	public void removeObs(PSingleValueModelObs obs) {
+	public void removeObs(PSingleValueModelObs<Boolean> obs) {
 		modelObsList.remove(obs);
 		if (getModel() != null) {
 			getModel().removeObs(obs);
@@ -153,7 +153,7 @@ public class PRadioButton extends AbstractPInteractiveComponent implements PClic
 	}
 	
 	@TemplateMethod
-	protected void onModelChange(PSingleValueModel model, Object oldValue, Object newValue) {
+	protected void onModelChange(PSingleValueModel<Boolean> model, Boolean oldValue, Boolean newValue) {
 		firePreferredSizeChangedEvent();
 		fireReRenderEvent();
 	}

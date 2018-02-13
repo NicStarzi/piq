@@ -1,6 +1,6 @@
 package edu.udo.piq.components;
 
-public interface PEnableModel extends PSingleValueModel {
+public interface PEnableModel extends PSingleValueModel<Boolean> {
 	
 	public static final PEnableModel ALWAYS_ENABLED_MODEL = new PEnableModel() {
 		@Override
@@ -14,11 +14,11 @@ public interface PEnableModel extends PSingleValueModel {
 			return true;
 		}
 		@Override
-		public void addObs(PSingleValueModelObs obs) {
+		public void addObs(PSingleValueModelObs<Boolean> obs) {
 			// observers are not necessary since the value never changes
 		}
 		@Override
-		public void removeObs(PSingleValueModelObs obs) {
+		public void removeObs(PSingleValueModelObs<Boolean> obs) {
 			// observers are not necessary since the value never changes
 		}
 	};
@@ -35,11 +35,11 @@ public interface PEnableModel extends PSingleValueModel {
 			return false;
 		}
 		@Override
-		public void addObs(PSingleValueModelObs obs) {
+		public void addObs(PSingleValueModelObs<Boolean> obs) {
 			// observers are not necessary since the value never changes
 		}
 		@Override
-		public void removeObs(PSingleValueModelObs obs) {
+		public void removeObs(PSingleValueModelObs<Boolean> obs) {
 			// observers are not necessary since the value never changes
 		}
 	};

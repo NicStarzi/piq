@@ -153,11 +153,11 @@ public class PRadioButtonTuple extends AbstractPLayoutOwner implements PInteract
 		obsList.remove(obs);
 	}
 	
-	public void addObs(PSingleValueModelObs obs) {
+	public void addObs(PSingleValueModelObs<Boolean> obs) {
 		getRadioButton().addObs(obs);
 	}
 	
-	public void removeObs(PSingleValueModelObs obs) {
+	public void removeObs(PSingleValueModelObs<Boolean> obs) {
 		getRadioButton().removeObs(obs);
 	}
 	

@@ -41,7 +41,7 @@ import edu.udo.piq.PRoot;
  * 
  * @author Nic Starzi
  * 
- * @param COMPONENT_TYPE The type of {@link PComponent components} that this stream operates on
+ * @param <COMPONENT_TYPE> The type of {@link PComponent components} that this stream operates on
  */
 public interface ComponentStream<COMPONENT_TYPE extends PComponent> {
 	

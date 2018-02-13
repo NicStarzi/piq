@@ -50,11 +50,11 @@ public abstract class AbstractPTextComponent
 		addActionMapping(PTextInput.KEY_SELECT_ALL,	PTextInput.ACTION_SELECT_ALL);
 	}
 	
-	protected final ObserverList<PSingleValueModelObs> modelObsList
+	protected final ObserverList<PSingleValueModelObs<Object>> modelObsList
 		= PiqUtil.createDefaultObserverList();
 	protected final ObserverList<PSelectionObs> selectionObsList
 		= PiqUtil.createDefaultObserverList();
-	protected final PSingleValueModelObs modelObs = this::onTextChanged;
+	protected final PSingleValueModelObs<Object> modelObs = this::onTextChanged;
 	protected final PSelectionObs selectionObs = new PSelectionObs() {
 		@Override
 		public void onLastSelectedChanged(PSelection selection, PModelIndex prevLastSelected, PModelIndex newLastSelected) {
@@ -80,7 +80,7 @@ public abstract class AbstractPTextComponent
 		setCaretRenderTimer(new PCaretRenderTimer(this));
 	}
 	
-	protected void onTextChanged(PSingleValueModel model, Object oldValue, Object newValue) {
+	protected void onTextChanged(PSingleValueModel<Object> model, Object oldValue, Object newValue) {
 		if (getSelection() != null) {
 			getSelection().clearSelection();
 		}
@@ -243,14 +243,14 @@ public abstract class AbstractPTextComponent
 		return text.toString();
 	}
 	
-	public void addObs(PSingleValueModelObs obs) {
+	public void addObs(PSingleValueModelObs<Object> obs) {
 		modelObsList.add(obs);
 		if (getModel() != null) {
 			getModel().addObs(obs);
 		}
 	}
 	
-	public void removeObs(PSingleValueModelObs obs) {
+	public void removeObs(PSingleValueModelObs<Object> obs) {
 		modelObsList.remove(obs);
 		if (getModel() != null) {
 			getModel().removeObs(obs);

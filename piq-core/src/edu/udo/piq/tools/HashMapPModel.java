@@ -31,11 +31,13 @@ public class HashMapPModel extends AbstractPModel {
 		add(index, content);
 	}
 	
+	@SuppressWarnings("unlikely-arg-type")
 	@Override
 	public Object get(PModelIndex index) throws WrongIndexType, NullPointerException, IllegalIndex {
 		return hashMap.get(index);
 	}
 	
+	@SuppressWarnings("unlikely-arg-type")
 	@Override
 	public boolean contains(PModelIndex index) throws WrongIndexType, NullPointerException {
 		return hashMap.containsKey(index);
@@ -79,6 +81,7 @@ public class HashMapPModel extends AbstractPModel {
 	public void remove(PModelIndex index) throws WrongIndexType, NullPointerException, RemoveImpossible {
 		ThrowException.ifNull(index, "index == null");
 		ThrowException.ifFalse(canRemove(index), "canRemove(index) == false");
+		@SuppressWarnings("unlikely-arg-type")
 		Object content = hashMap.remove(index);
 		fireRemoveEvent(index, content);
 	}

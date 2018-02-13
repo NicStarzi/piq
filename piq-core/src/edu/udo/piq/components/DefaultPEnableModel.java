@@ -1,6 +1,6 @@
 package edu.udo.piq.components;
 
-public class DefaultPEnableModel extends AbstractPSingleValueModel implements PEnableModel {
+public class DefaultPEnableModel extends AbstractPSingleValueModel<Boolean> implements PEnableModel {
 	
 	protected boolean enabled = DEFAULT_ENABLED_VALUE;
 	

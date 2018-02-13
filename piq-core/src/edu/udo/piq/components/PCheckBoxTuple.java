@@ -177,11 +177,11 @@ public class PCheckBoxTuple extends AbstractPLayoutOwner implements PInteractive
 		obsList.remove(obs);
 	}
 	
-	public void addObs(PSingleValueModelObs obs) {
+	public void addObs(PSingleValueModelObs<Boolean> obs) {
 		getCheckBox().addObs(obs);
 	}
 	
-	public void removeObs(PSingleValueModelObs obs) {
+	public void removeObs(PSingleValueModelObs<Boolean> obs) {
 		getCheckBox().removeObs(obs);
 	}
 	

@@ -1,6 +1,6 @@
 package edu.udo.piq.components;
 
-public interface PCheckBoxModel extends PSingleValueModel {
+public interface PCheckBoxModel extends PSingleValueModel<Boolean> {
 	
 	public static final boolean DEFAULT_CHECKED_VALUE = false;
 	public static final boolean DEFAULT_ENABLED_VALUE = true;
@@ -19,7 +19,7 @@ public interface PCheckBoxModel extends PSingleValueModel {
 	}
 	
 	@Override
-	public default Object getValue() {
+	public default Boolean getValue() {
 		return Boolean.valueOf(isChecked());
 	}
 	

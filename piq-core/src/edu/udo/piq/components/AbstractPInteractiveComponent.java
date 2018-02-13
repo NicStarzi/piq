@@ -6,7 +6,7 @@ import edu.udo.piq.util.PModelFactory;
 
 public abstract class AbstractPInteractiveComponent extends AbstractPComponent implements PInteractiveComponent {
 	
-	protected final PSingleValueModelObs enableObs = this::onEnabledChange;
+	protected final PSingleValueModelObs<Boolean> enableObs = this::onEnabledChange;
 	protected PEnableModel enableModel;
 	
 	{
@@ -35,8 +35,8 @@ public abstract class AbstractPInteractiveComponent extends AbstractPComponent i
 	}
 	
 	@TemplateMethod
-	protected void onEnabledChange(PSingleValueModel model, Object oldVal, Object newVal) {
-		if (hasFocus() && !isEnabled()) {
+	protected void onEnabledChange(PSingleValueModel<Boolean> model, Boolean oldVal, Boolean newVal) {
+		if (hasFocus() && !newVal) {
 			releaseFocus();
 		}
 		fireReRenderEvent();

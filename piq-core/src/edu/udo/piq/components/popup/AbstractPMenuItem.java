@@ -210,8 +210,10 @@ public abstract class AbstractPMenuItem extends AbstractPLayoutOwner {
 		return sb.toString();
 	}
 	
-	public static void setOverwriteValue(PSingleValueModel model, Object value) {
+	@SuppressWarnings("unchecked")
+	public static void setOverwriteValue(PSingleValueModel<?> model, Object value) {
 		if (model instanceof OverwritePSingleValueModel) {
+			@SuppressWarnings("rawtypes")
 			OverwritePSingleValueModel overwriteModel = (OverwritePSingleValueModel) model;
 			overwriteModel.setOverwrite(value);
 		} else {

@@ -1,6 +1,6 @@
 package edu.udo.piq.components;
 
-public interface PRadioButtonModel extends PSingleValueModel {
+public interface PRadioButtonModel extends PSingleValueModel<Boolean> {
 	
 	public static final boolean DEFAULT_SELECTED_VALUE = false;
 	
@@ -10,7 +10,7 @@ public interface PRadioButtonModel extends PSingleValueModel {
 	}
 	
 	@Override
-	public default Object getValue() {
+	public default Boolean getValue() {
 		return Boolean.valueOf(isSelected());
 	}
 	

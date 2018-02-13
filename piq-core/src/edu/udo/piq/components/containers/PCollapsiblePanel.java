@@ -5,6 +5,7 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PRenderer;
+import edu.udo.piq.TemplateMethod;
 import edu.udo.piq.borders.PLineBorder;
 import edu.udo.piq.components.PCheckBox;
 import edu.udo.piq.components.PCheckBoxModel;
@@ -17,7 +18,7 @@ import edu.udo.piq.tools.AbstractPLayoutOwner;
 
 public class PCollapsiblePanel extends AbstractPLayoutOwner {
 	
-	private final PSingleValueModelObs expandModelObs = this::onExpandChanged;
+	private final PSingleValueModelObs<Boolean> expandModelObs = this::onExpandChanged;
 	
 	public PCollapsiblePanel() {
 		this(null, new PPanel());
@@ -44,7 +45,8 @@ public class PCollapsiblePanel extends AbstractPLayoutOwner {
 		getExpandButton().getModel().setValue(initiallyExpanded);
 	}
 	
-	protected void onExpandChanged(PSingleValueModel model, Object oldValue, Object newValue) {
+	@TemplateMethod
+	protected void onExpandChanged(PSingleValueModel<Boolean> model, Boolean oldValue, Boolean newValue) {
 		PCheckBoxModel chkBxMdl = (PCheckBoxModel) model;
 		getLayout().setExpanded(chkBxMdl.isChecked());
 	}
@@ -111,8 +113,6 @@ public class PCollapsiblePanel extends AbstractPLayoutOwner {
 		PBounds bounds = getBoundsWithoutBorder();
 		renderer.setColor(PColor.GREY75);
 		renderer.drawQuad(bounds);
-//		renderer.setColor(PColor.BLACK);
-//		renderer.strokeQuad(bounds);
 	}
 	
 }

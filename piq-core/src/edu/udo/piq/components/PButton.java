@@ -53,11 +53,11 @@ public class PButton extends AbstractPInteractiveLayoutOwner implements PInterac
 				self.fireClickEvent();
 			});
 	
-	protected final ObserverList<PSingleValueModelObs> modelObsList
+	protected final ObserverList<PSingleValueModelObs<Boolean>> modelObsList
 		= PiqUtil.createDefaultObserverList();
 	protected final ObserverList<PClickObs> obsList
 		= PiqUtil.createDefaultObserverList();
-	protected final PSingleValueModelObs modelObs = this::onModelChange;
+	protected final PSingleValueModelObs<Boolean> modelObs = this::onModelChange;
 	protected PButtonModel model;
 	protected PTimer repeatTimer;
 	protected boolean ignoreClickOnChildren = false;
@@ -248,10 +248,10 @@ public class PButton extends AbstractPInteractiveLayoutOwner implements PInterac
 	
 	@TemplateMethod
 	@CallSuper
-	protected void onModelChange(PSingleValueModel model, Object oldVal, Object newVal) {
+	protected void onModelChange(PSingleValueModel<Boolean> model, Boolean oldVal, Boolean newVal) {
 		if (repeatTimer != null) {
 			repeatTimer.setDelay(repeatTimerInitialDelay);
-			repeatTimer.setStarted(getModel().isPressed());
+			repeatTimer.setStarted(newVal);
 		}
 		fireReRenderEvent();
 	}
@@ -295,14 +295,14 @@ public class PButton extends AbstractPInteractiveLayoutOwner implements PInterac
 		obsList.remove(obs);
 	}
 	
-	public void addObs(PSingleValueModelObs obs) {
+	public void addObs(PSingleValueModelObs<Boolean> obs) {
 		modelObsList.add(obs);
 		if (getModel() != null) {
 			getModel().addObs(obs);
 		}
 	}
 	
-	public void removeObs(PSingleValueModelObs obs) {
+	public void removeObs(PSingleValueModelObs<Boolean> obs) {
 		modelObsList.remove(obs);
 		if (getModel() != null) {
 			getModel().removeObs(obs);
@@ -310,7 +310,7 @@ public class PButton extends AbstractPInteractiveLayoutOwner implements PInterac
 	}
 	
 	protected void fireClickEvent() {
-		obsList.fireEvent((obs) -> obs.onClick(this));
+		obsList.fireEvent(obs -> obs.onClick(this));
 	}
 	
 }

@@ -97,7 +97,7 @@ public class SwingPTest_Style extends AbstractSwingPTest {
 				}
 			});
 			chkBx = checkBox.getCheckBox();
-			chkBx.addObs((PSingleValueModelObs) (model, ov, nv) -> {
+			chkBx.addObs((PSingleValueModelObs<Boolean>) (model, ov, nv) -> {
 				Object oldValue = getValue();
 				fireChangeEvent(oldValue);
 			});

@@ -13,22 +13,22 @@ import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.components.textbased.PTextModel;
 import edu.udo.piq.util.ThrowException;
 
-public class OverwritePSingleValueModel extends AbstractPSingleValueModel {
+public class OverwritePSingleValueModel<VALUE_TYPE> extends AbstractPSingleValueModel<VALUE_TYPE> {
 	
-	protected final PSingleValueModelObs delegateObs = this::onDelegateChanged;
-	protected PSingleValueModel delegate;
+	protected final PSingleValueModelObs<VALUE_TYPE> delegateObs = this::onDelegateChanged;
+	protected PSingleValueModel<VALUE_TYPE> delegate;
 	protected boolean overwriteEnabled;
-	protected Object overwriteValue;
+	protected VALUE_TYPE overwriteValue;
 	
 	public OverwritePSingleValueModel() {
 	}
 	
-	public OverwritePSingleValueModel(PSingleValueModel delegateModel) {
+	public OverwritePSingleValueModel(PSingleValueModel<VALUE_TYPE> delegateModel) {
 		setDelegateModel(delegateModel);
 	}
 	
-	public void setDelegateModel(PSingleValueModel delegateModel) {
-		Object oldValue = getValue();
+	public void setDelegateModel(PSingleValueModel<VALUE_TYPE> delegateModel) {
+		VALUE_TYPE oldValue = getValue();
 		if (getDelegateModel() != null) {
 			getDelegateModel().removeObs(delegateObs);
 		}
@@ -41,13 +41,13 @@ public class OverwritePSingleValueModel extends AbstractPSingleValueModel {
 		}
 	}
 	
-	public PSingleValueModel getDelegateModel() {
+	public PSingleValueModel<VALUE_TYPE> getDelegateModel() {
 		return delegate;
 	}
 	
 	public void clearOverwrite() {
 		if (overwriteEnabled) {
-			Object oldVal = getValue();
+			VALUE_TYPE oldVal = getValue();
 			overwriteValue = null;
 			overwriteEnabled = false;
 			if (!Objects.equals(oldVal, getValue())) {
@@ -56,9 +56,9 @@ public class OverwritePSingleValueModel extends AbstractPSingleValueModel {
 		}
 	}
 	
-	public void setOverwrite(Object value) {
+	public void setOverwrite(VALUE_TYPE value) {
 		if (!overwriteEnabled || !Objects.equals(overwriteValue, value)) {
-			Object oldVal = getValue();
+			VALUE_TYPE oldVal = getValue();
 			overwriteEnabled = true;
 			overwriteValue = value;
 			if (!Objects.equals(oldVal, getValue())) {
@@ -71,12 +71,12 @@ public class OverwritePSingleValueModel extends AbstractPSingleValueModel {
 		return overwriteEnabled;
 	}
 	
-	public Object getOverwriteValue() {
+	public VALUE_TYPE getOverwriteValue() {
 		return overwriteValue;
 	}
 	
 	@Override
-	public Object getValue() {
+	public VALUE_TYPE getValue() {
 		if (isOverwriteEnabled()) {
 			return getOverwriteValue();
 		}
@@ -93,20 +93,20 @@ public class OverwritePSingleValueModel extends AbstractPSingleValueModel {
 		}
 	}
 	
-	protected void onDelegateChanged(PSingleValueModel model, Object oldValue, Object newValue) {
+	protected void onDelegateChanged(PSingleValueModel<VALUE_TYPE> model, VALUE_TYPE oldValue, VALUE_TYPE newValue) {
 		if (!isOverwriteEnabled()) {
 			fireChangeEvent(oldValue);
 		}
 	}
 	
-	public static class OverwritePTextModel extends OverwritePSingleValueModel implements PTextModel {
+	public static class OverwritePTextModel extends OverwritePSingleValueModel<Object> implements PTextModel {
 		
 		public OverwritePTextModel() {
 			super(new DefaultPTextModel());
 		}
 		
 		@Override
-		public void setDelegateModel(PSingleValueModel delegateModel) {
+		public void setDelegateModel(PSingleValueModel<Object> delegateModel) {
 			ThrowException.ifTypeCastFails(delegateModel, PTextModel.class,
 					"(delegateModel instanceof PTextModel) == false");
 			super.setDelegateModel(delegateModel);
@@ -130,14 +130,14 @@ public class OverwritePSingleValueModel extends AbstractPSingleValueModel {
 		
 	}
 	
-	public static class OverwritePPictureModel extends OverwritePSingleValueModel implements PPictureModel {
+	public static class OverwritePPictureModel extends OverwritePSingleValueModel<Object> implements PPictureModel {
 		
 		public OverwritePPictureModel() {
 			super(new DefaultPPictureModel());
 		}
 		
 		@Override
-		public void setDelegateModel(PSingleValueModel delegateModel) {
+		public void setDelegateModel(PSingleValueModel<Object> delegateModel) {
 			ThrowException.ifTypeCastFails(delegateModel, PPictureModel.class,
 					"(delegateModel instanceof PPictureModel) == false");
 			super.setDelegateModel(delegateModel);
@@ -150,14 +150,14 @@ public class OverwritePSingleValueModel extends AbstractPSingleValueModel {
 		
 	}
 	
-	public static class OverwritePCheckBoxModel extends OverwritePSingleValueModel implements PCheckBoxModel {
+	public static class OverwritePCheckBoxModel extends OverwritePSingleValueModel<Boolean> implements PCheckBoxModel {
 		
 		public OverwritePCheckBoxModel() {
 			super(new DefaultPCheckBoxModel());
 		}
 		
 		@Override
-		public void setDelegateModel(PSingleValueModel delegateModel) {
+		public void setDelegateModel(PSingleValueModel<Boolean> delegateModel) {
 			ThrowException.ifTypeCastFails(delegateModel, PCheckBoxModel.class,
 					"(delegateModel instanceof PCheckBoxModel) == false");
 			super.setDelegateModel(delegateModel);

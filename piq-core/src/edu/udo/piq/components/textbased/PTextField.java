@@ -115,7 +115,7 @@ public class PTextField extends AbstractPTextComponent {
 	}
 	
 	@Override
-	protected void onTextChanged(PSingleValueModel model, Object oldValue, Object newValue) {
+	protected void onTextChanged(PSingleValueModel<Object> model, Object oldValue, Object newValue) {
 		contentsWereChanged = true;
 		idxTab.setLastIndexInRow(getText().length());
 		super.onTextChanged(model, oldValue, newValue);

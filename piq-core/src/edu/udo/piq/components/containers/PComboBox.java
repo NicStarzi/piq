@@ -10,6 +10,7 @@ import edu.udo.piq.PKeyboardObs;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PRenderer;
+import edu.udo.piq.TemplateMethod;
 import edu.udo.piq.actions.FocusOwnerAction;
 import edu.udo.piq.actions.PAccelerator;
 import edu.udo.piq.actions.PAccelerator.FocusPolicy;
@@ -29,26 +30,9 @@ import edu.udo.piq.components.collections.PSelection;
 import edu.udo.piq.components.collections.PSelectionObs;
 import edu.udo.piq.components.textbased.PTextField;
 import edu.udo.piq.components.textbased.PTextFieldObs;
-import edu.udo.piq.util.AncestorIterator;
 import edu.udo.piq.util.ThrowException;
 
 public class PComboBox extends PDropDown {
-	
-	/**
-	 * This method is used by the {@link #INPUT_PRESS_DOWN} to get the
-	 * {@link PComboBox} that belongs to the source of the key event.<br>
-	 * @param comp	a non-null PComponent that is either a PComboBox or a descendant of a PComboBox
-	 * @return		a non-null PComboBox
-	 */
-	protected static PComboBox getComboBox(PComponent comp) {
-		for (PComponent anc : new AncestorIterator(comp, true)) {
-			if (anc instanceof PComboBox) {
-				return (PComboBox) anc;
-			}
-		}
-		throw new IllegalArgumentException("Event source has no "
-				+PComboBox.class.getSimpleName());
-	}
 	
 	public static final PActionKey KEY_OPEN = StandardComponentActionKey.INTERACT;
 	public static final PAccelerator ACCELERATOR_OPEN = new PAccelerator(
@@ -295,7 +279,9 @@ public class PComboBox extends PDropDown {
 	}
 	
 	@Override
-	protected void onModelChange(PSingleValueModel model, Object oldValue, Object newValue) {
+	@TemplateMethod
+	protected void onModelChange(PSingleValueModel<Boolean> model, Boolean oldValue, Boolean newValue) {
+		// does nothing
 	}
 	
 	@Override
@@ -312,11 +298,6 @@ public class PComboBox extends PDropDown {
 		prevDisplayedIndex = getDisplayedIndex();
 		super.showDropDown();
 	}
-	
-//	@Override
-//	protected void hideDropDown() {
-//		super.hideDropDown();
-//	}
 	
 	protected void hideDropDownAndReset() {
 		hideDropDown();

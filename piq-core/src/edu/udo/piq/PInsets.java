@@ -1,6 +1,7 @@
 package edu.udo.piq;
 
 import edu.udo.piq.layouts.PReadOnlyLayout;
+import edu.udo.piq.tools.AbstractPInsets;
 
 /**
  * {@link PInsets} define a padding inside a bounding box
@@ -10,9 +11,9 @@ import edu.udo.piq.layouts.PReadOnlyLayout;
  * 
  * @author Nic Starzi
  */
-public interface PInsets {
+public interface PInsets extends PSize {
 	
-	public static final PInsets ZERO_INSETS = new PInsets() {
+	public static final PInsets ZERO_INSETS = new AbstractPInsets() {
 		@Override
 		public int getFromTop() {
 			return 0;
@@ -30,29 +31,8 @@ public interface PInsets {
 			return 0;
 		}
 		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + getFromTop();
-			result = prime * result + getFromBottom();
-			result = prime * result + getFromLeft();
-			result = prime * result + getFromRight();
-			return result;
-		}
-		@Override
-		public boolean equals(Object obj) {
-			if (obj == null || !(obj instanceof PInsets)) {
-				return false;
-			}
-			PInsets other = (PInsets) obj;
-			return getFromTop() == other.getFromTop()
-					&& getFromBottom() == other.getFromBottom()
-					&& getFromLeft() == other.getFromLeft()
-					&& getFromRight() == other.getFromRight();
-		}
-		@Override
 		public String toString() {
-			return "ZERO_SIZE_INSETS";
+			return "ZERO_SIZED_INSETS";
 		}
 	};
 	
@@ -99,6 +79,7 @@ public interface PInsets {
 		return getFromLeft() + getFromRight();
 	}
 	
+	@Override
 	public default int getWidth() {
 		return getHorizontal();
 	}
@@ -114,6 +95,7 @@ public interface PInsets {
 		return getFromTop() + getFromBottom();
 	}
 	
+	@Override
 	public default int getHeight() {
 		return getVertical();
 	}

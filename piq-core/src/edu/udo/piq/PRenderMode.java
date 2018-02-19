@@ -3,7 +3,7 @@ package edu.udo.piq;
 /**
  * This interface defines render modes that a {@link PRenderer} can use 
  * to apply to primitive rendering operations.<br>
- * Primitive rendering operations are {@link PRenderer#drawEllipse(int, int, int, int)}, 
+ * Primitive rendering operations are {@link PRenderer#drawEllipse(float, float, float, float)}, 
  * {@link PRenderer#drawLine(float, float, float, float, float)}, 
  * {@link PRenderer#drawPolygon(float[], float[])}, 
  * {@link PRenderer#drawTriangle(float, float, float, float, float, float)} and all kinds of 

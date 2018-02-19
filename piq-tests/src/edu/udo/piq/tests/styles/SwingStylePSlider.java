@@ -18,7 +18,7 @@ public class SwingStylePSlider extends MutablePStyleComponent implements SwingPS
 	private static final int KNOB_H = 16;
 	private static final PSize PREF_SIZE = new ImmutablePSize(100, KNOB_H + 2);
 	private static final PColor COLOR_FOCUS = PColor.WHITE;
-	private static final PColor COLOR_UNFOCUS = COLOR_FOCUS.mult1(1.0, 1.0, 1.0, 0.75);
+	private static final PColor COLOR_UNFOCUS = COLOR_FOCUS.mult1(1.0f, 1.0f, 1.0f, 0.75f);
 	private static final PColor COLOR_DISABLED = PColor.GREY50;
 	
 	@Override

@@ -106,11 +106,11 @@ public abstract class LwjglPRendererBase implements PRenderer {
 	}
 	
 	@Override
-	public final void setColor1(double r, double g, double b, double a) {
-		curColorR = (float) r;
-		curColorG = (float) g;
-		curColorB = (float) b;
-		curColorA = (float) a;
+	public final void setColor1(float r, float g, float b, float a) {
+		curColorR = r;
+		curColorG = g;
+		curColorB = b;
+		curColorA = a;
 	}
 	
 	@Override

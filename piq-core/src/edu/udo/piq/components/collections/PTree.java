@@ -26,6 +26,7 @@ import edu.udo.piq.actions.PAccelerator.KeyInputType;
 import edu.udo.piq.actions.PActionKey;
 import edu.udo.piq.actions.PComponentAction;
 import edu.udo.piq.actions.StandardComponentActionKey;
+import edu.udo.piq.components.AbstractPInteractiveLayoutOwner;
 import edu.udo.piq.components.defaults.DefaultPTreeModel;
 import edu.udo.piq.components.defaults.PTreePCellFactory;
 import edu.udo.piq.components.defaults.PTreePDnDSupport;
@@ -34,15 +35,12 @@ import edu.udo.piq.dnd.PDnDSupport;
 import edu.udo.piq.layouts.PLayout;
 import edu.udo.piq.layouts.PTreeLayout;
 import edu.udo.piq.layouts.PTreeLayout.PTreeLayoutObs;
-import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PModelFactory;
 import edu.udo.piq.util.PiqUtil;
 import edu.udo.piq.util.ThrowException;
 
-public class PTree extends AbstractPLayoutOwner
-	implements PDropComponent
-{
+public class PTree extends AbstractPInteractiveLayoutOwner implements PDropComponent {
 	
 	protected static final PColor BACKGROUND_COLOR = PColor.WHITE;
 	protected static final PColor PARENT_CHILD_LINE_COLOR = PColor.GREY75;
@@ -146,7 +144,6 @@ public class PTree extends AbstractPLayoutOwner
 	protected int				lastDragX = -1;
 	protected int				lastDragY = -1;
 	protected boolean			isDragTagged = false;
-	protected boolean			enabled = true;
 	
 	public PTree(PTreeModel model) {
 		this();
@@ -302,19 +299,6 @@ public class PTree extends AbstractPLayoutOwner
 	@Override
 	public PDnDSupport getDragAndDropSupport() {
 		return dndSup;
-	}
-	
-	@Override
-	public void setEnabled(boolean value) {
-		if (enabled != value) {
-			enabled = value;
-			fireReRenderEvent();
-		}
-	}
-	
-	@Override
-	public boolean isEnabled() {
-		return enabled;
 	}
 	
 	@Override

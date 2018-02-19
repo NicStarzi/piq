@@ -53,12 +53,11 @@ public interface PDialog extends PRoot, PDisposable {
 	public PBounds getBounds();
 	
 	/**
-	 * Returns the {@link PDesignSheet} of the {@link PRoot} that
+	 * Returns the {@link PStyleSheet} of the {@link PRoot} that
 	 * created this {@link PDialog}.<br>
 	 * 
 	 * @return the design sheet for this GUI tree
-	 * @see PDesignSheet
-	 * @see PDesign
+	 * @see PStyleSheet
 	 * @see PRenderer
 	 */
 	@Override

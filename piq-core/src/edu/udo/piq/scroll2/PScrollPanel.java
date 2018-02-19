@@ -1,11 +1,13 @@
 package edu.udo.piq.scroll2;
 
+import edu.udo.piq.CallSuper;
 import edu.udo.piq.PBorder;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
+import edu.udo.piq.TemplateMethod;
 import edu.udo.piq.layouts.Axis;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
 
@@ -14,6 +16,11 @@ public class PScrollPanel extends AbstractPLayoutOwner implements PScrollCompone
 	public PScrollPanel() {
 		super();
 		setLayout(new PScrollPanelLayout(this));
+	}
+	
+	@Override
+	protected void checkForPreferredSizeChange() {
+		super.checkForPreferredSizeChange();
 	}
 	
 	public PScrollPanel(PComponent body) {
@@ -50,32 +57,28 @@ public class PScrollPanel extends AbstractPLayoutOwner implements PScrollCompone
 		return true;
 	}
 	
-	@Override
-	public PSize getDefaultPreferredSize() {
-		PComponent body = getBody();
-		if (body != null) {
-			return body.getDefaultPreferredSize();
-		}
-		prefSize.set(50, 50);
-		return prefSize;
-	}
-	
+	@TemplateMethod
 	protected void onScrollChanged(Axis axis) {
 		fireReLayOutEvent();
 	}
 	
+	@CallSuper
+	@TemplateMethod
 	protected void onBodyPrefSizeChanged() {
 		PSize bodyPrefSize = getBody().getPreferredSize();
 		getLayoutInternal().barX.setBodyPrefSize(bodyPrefSize.getWidth());
 		getLayoutInternal().barY.setBodyPrefSize(bodyPrefSize.getHeight());
 	}
 	
+	@CallSuper
+	@TemplateMethod
 	protected void onBodyLaidOut(int bodyW, int bodyH) {
 		getLayoutInternal().barX.setBodyActualSize(bodyW);
 		getLayoutInternal().barY.setBodyActualSize(bodyH);
 	}
 	
 	@Override
+	@TemplateMethod
 	public void onScrollRequest(PComponent descendant, int x, int y, int fx, int fy) {
 //		System.out.println("PScrollPanel.onChildRequestedScroll() child=" + child + "; x=" + offsetX + "; y="
 //				+ offsetY);

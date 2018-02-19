@@ -19,8 +19,8 @@ public class SwingStylePCheckBox extends MutablePStyleComponent implements Swing
 	private static final PSize PREF_SIZE = new ImmutablePSize(BTN_W, BTN_H);
 	private static final PColor COLOR_BTN_ENABLED = PColor.WHITE;
 	private static final PColor COLOR_BTN_DISABLED = PColor.GREY75;
-	private static final PColor COLOR_CHECKED = PColor.GREEN.mult1(1.0, 1.0, 1.0, 0.75);
-	private static final PColor COLOR_UNCHECKED = PColor.RED.mult1(1.0, 1.0, 1.0, 0.75);
+	private static final PColor COLOR_CHECKED = PColor.GREEN.mult1(1.0f, 1.0f, 1.0f, 0.75f);
+	private static final PColor COLOR_UNCHECKED = PColor.RED.mult1(1.0f, 1.0f, 1.0f, 0.75f);
 	private static final PColor COLOR_DISABLED = PColor.GREY50;
 	
 	@Override

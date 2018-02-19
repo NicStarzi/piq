@@ -8,10 +8,10 @@ public class ImmutablePColor extends AbstractPColor implements PColor {
 	protected final int g255;
 	protected final int b255;
 	protected final int a255;
-	protected final double r1;
-	protected final double g1;
-	protected final double b1;
-	protected final double a1;
+	protected final float r1;
+	protected final float g1;
+	protected final float b1;
+	protected final float a1;
 	
 	public ImmutablePColor(PColor color) {
 		this(color.getRed255(), color.getGreen255(), color.getBlue255(), 255);
@@ -36,21 +36,29 @@ public class ImmutablePColor extends AbstractPColor implements PColor {
 		b255 = b;
 		a255 = a;
 		
-		r1 = r / 255.0;
-		g1 = g / 255.0;
-		b1 = b / 255.0;
-		a1 = a / 255.0;
+		r1 = r / 255.0f;
+		g1 = g / 255.0f;
+		b1 = b / 255.0f;
+		a1 = a / 255.0f;
 	}
 	
-	public ImmutablePColor(PColor color, double a) {
+	public ImmutablePColor(PColor color, float a) {
 		this(color.getRed1(), color.getGreen1(), color.getBlue1(), a);
 	}
 	
 	public ImmutablePColor(double r, double g, double b) {
+		this((float) r, (float) g, (float) b);
+	}
+	
+	public ImmutablePColor(float r, float g, float b) {
 		this(r, g, b, 1);
 	}
 	
 	public ImmutablePColor(double r, double g, double b, double a) {
+		this((float) r, (float) g, (float) b, (float) a);
+	}
+	
+	public ImmutablePColor(float r, float g, float b, float a) {
 		throwExceptionIfValueIllegal1(r);
 		throwExceptionIfValueIllegal1(g);
 		throwExceptionIfValueIllegal1(b);
@@ -61,10 +69,10 @@ public class ImmutablePColor extends AbstractPColor implements PColor {
 		b1 = b;
 		a1 = a;
 		
-		r255 = (int) Math.round(r * 255);
-		g255 = (int) Math.round(g * 255);
-		b255 = (int) Math.round(b * 255);
-		a255 = (int) Math.round(a * 255);
+		r255 = Math.round(r * 255);
+		g255 = Math.round(g * 255);
+		b255 = Math.round(b * 255);
+		a255 = Math.round(a * 255);
 	}
 	
 	@Override
@@ -73,7 +81,7 @@ public class ImmutablePColor extends AbstractPColor implements PColor {
 	}
 	
 	@Override
-	public double getRed1() {
+	public float getRed1() {
 		return r1;
 	}
 	
@@ -83,7 +91,7 @@ public class ImmutablePColor extends AbstractPColor implements PColor {
 	}
 	
 	@Override
-	public double getGreen1() {
+	public float getGreen1() {
 		return g1;
 	}
 	
@@ -93,7 +101,7 @@ public class ImmutablePColor extends AbstractPColor implements PColor {
 	}
 	
 	@Override
-	public double getBlue1() {
+	public float getBlue1() {
 		return b1;
 	}
 	
@@ -103,7 +111,7 @@ public class ImmutablePColor extends AbstractPColor implements PColor {
 	}
 	
 	@Override
-	public double getAlpha1() {
+	public float getAlpha1() {
 		return a1;
 	}
 	

@@ -664,10 +664,6 @@ public class AbstractPComponent extends AbstractPStylable<PStyleComponent> imple
 		return mouseOverCursor;
 	}
 	
-//	public void requestScroll(int offsetX, int offsetY) {
-//		fireScrollRequestEvent(this, offsetX, offsetY);
-//	}
-	
 	@Override
 	public void addObs(PComponentObs obs) throws NullPointerException {
 		compObsList.add(obs);
@@ -741,17 +737,12 @@ public class AbstractPComponent extends AbstractPStylable<PStyleComponent> imple
 	}
 	
 	protected void firePreferredSizeChangedEvent() {
-//		System.out.println(this+".firePreferredSizeChangedEvent()");
 		compObsList.fireEvent(obs -> obs.onPreferredSizeChanged(this));
 	}
 	
 	protected void fireBoundsChangedEvent() {
 		compObsList.fireEvent(obs -> obs.onBoundsChanged(this));
 	}
-	
-//	protected void fireScrollRequestEvent(PComponent component, int offsetX, int offsetY) {
-//		compObsList.fireEvent(obs -> obs.onScrollRequest(component, offsetX, offsetY));
-//	}
 	
 	protected void fireReRenderEvent() {
 		PRoot root = getRoot();

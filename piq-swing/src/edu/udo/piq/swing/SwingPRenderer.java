@@ -87,8 +87,8 @@ public class SwingPRenderer implements PRenderer {
 	}
 	
 	@Override
-	public void setColor1(double r, double g, double b, double a) {
-		Color c = new Color((float) r, (float) g, (float) b, (float) a);
+	public void setColor1(float r, float g, float b, float a) {
+		Color c = new Color(r, g, b, a);
 		graphics.setColor(c);
 	}
 	

@@ -1,5 +1,8 @@
 package edu.udo.piq;
 
+import edu.udo.piq.style.PStyle;
+import edu.udo.piq.style.PStyleComponent;
+
 /**
  * This interface defines a platform independent rendering API.<br>
  * All {@link PComponent}s in the GUI will be rendered using the
@@ -16,7 +19,7 @@ package edu.udo.piq;
  * or font resources) for other platforms. It will usually only
  * work with its own implementations of these and no others.<br>
  * <br>
- * {@link PComponent}s and {@link PDesign}s should not make any
+ * {@link PComponent Components} and {@link PStyle styles} should not make any
  * assumptions about the internal mechanics of a renderer and not
  * try to do any premature optimization. Its the job of the
  * renderers implementation to improve the performance of the
@@ -25,7 +28,7 @@ package edu.udo.piq;
  * @author Nic Starzi
  * 
  * @see PComponent#defaultRender(PRenderer)
- * @see PDesign#render(PRenderer, PComponent)
+ * @see PStyleComponent#render(PRenderer, PComponent)
  * @see PColor
  * @see PBounds
  * @see PFontResource
@@ -37,7 +40,7 @@ public interface PRenderer extends PDisposable {
 	 * Sets the platform specific {@link PRenderMode} for this {@link PRenderer}.
 	 * All following primitive rendering operations will use this {@link PRenderMode}
 	 * when being performed.<br>
-	 * Primitive rendering operations are {@link #drawEllipse(int, int, int, int)},
+	 * Primitive rendering operations are {@link #drawEllipse(float, float, float, float)},
 	 * {@link #drawLine(float, float, float, float, float)},
 	 * {@link #drawPolygon(float[], float[])},
 	 * {@link #drawTriangle(float, float, float, float, float, float)} and all kinds of
@@ -52,7 +55,7 @@ public interface PRenderer extends PDisposable {
 	 * @see #drawTriangle(float, float, float, float, float, float)
 	 * @see #drawQuad(float, float, float, float, float, float, float, float)
 	 * @see #drawPolygon(float[], float[])
-	 * @see #drawEllipse(int, int, int, int)
+	 * @see #drawEllipse(float, float, float, float)
 	 * @see #getActiveRenderMode()
 	 * @see #getRenderModeFill()
 	 * @see #getRenderModeOutline()
@@ -135,7 +138,7 @@ public interface PRenderer extends PDisposable {
 	 * 
 	 * @param color the new color being used for rendering operations
 	 * @throws NullPointerException if color is null
-	 * @see #setColor1(double, double, double, double)
+	 * @see #setColor1(float, float, float, float)
 	 * @see #setColor255(int, int, int, int)
 	 * @see PColor
 	 * @see #drawLine(float, float, float, float, float)
@@ -158,7 +161,7 @@ public interface PRenderer extends PDisposable {
 	 * @param b the blue color component as an integer between 0 and 255 inclusive
 	 * @param a the alpha color component as an integer between 0 and 255 inclusive
 	 * @see #setColor(PColor)
-	 * @see #setColor1(double, double, double, double)
+	 * @see #setColor1(float, float, float, float)
 	 * @see PColor
 	 * @see #drawLine(float, float, float, float, float)
 	 * @see #drawTriangle(float, float, float, float, float, float)
@@ -167,7 +170,7 @@ public interface PRenderer extends PDisposable {
 	 * @see #drawString(PFontResource, String, float, float)
 	 */
 	public default void setColor255(int r, int g, int b, int a) {
-		setColor1(r / 255.0, g / 255.0, b / 255.0, a / 255.0);
+		setColor1(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
 	}
 	
 	/**
@@ -188,7 +191,7 @@ public interface PRenderer extends PDisposable {
 	 * @see #drawQuad(float, float, float, float, float, float, float, float)
 	 * @see #drawString(PFontResource, String, float, float)
 	 */
-	public void setColor1(double r, double g, double b, double a);
+	public void setColor1(float r, float g, float b, float a);
 	
 	public default void drawImage(PImageResource imgRes, float x, float y) {
 		int w = imgRes.getWidth();

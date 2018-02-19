@@ -12,6 +12,7 @@ import edu.udo.piq.PMouse.VirtualMouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
+import edu.udo.piq.components.AbstractPInteractiveLayoutOwner;
 import edu.udo.piq.components.defaults.DefaultPCellComponent;
 import edu.udo.piq.components.defaults.DefaultPCellFactory;
 import edu.udo.piq.components.defaults.FixedSizePTableModel;
@@ -19,14 +20,11 @@ import edu.udo.piq.components.defaults.PTablePDnDSupport;
 import edu.udo.piq.components.defaults.ReRenderPFocusObs;
 import edu.udo.piq.dnd.PDnDSupport;
 import edu.udo.piq.layouts.PTableLayout3;
-import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PModelFactory;
 import edu.udo.piq.util.PiqUtil;
 
-public class PTable extends AbstractPLayoutOwner
-	implements PDropComponent
-{
+public class PTable extends AbstractPInteractiveLayoutOwner implements PDropComponent {
 	
 	protected static final PColor BACKGROUND_COLOR = PColor.WHITE;
 	protected static final PColor FOCUS_COLOR = PColor.GREY50;
@@ -81,7 +79,6 @@ public class PTable extends AbstractPLayoutOwner
 	protected int lastDragX = -1;
 	protected int lastDragY = -1;
 	protected boolean isDragTagged = false;
-	protected boolean enabled = true;
 	
 	public PTable(PTableModel model) {
 		this();
@@ -256,19 +253,6 @@ public class PTable extends AbstractPLayoutOwner
 	@Override
 	public PDnDSupport getDragAndDropSupport() {
 		return dndSup;
-	}
-	
-	@Override
-	public void setEnabled(boolean value) {
-		if (enabled != value) {
-			enabled = value;
-			fireReRenderEvent();
-		}
-	}
-	
-	@Override
-	public boolean isEnabled() {
-		return enabled;
 	}
 	
 	//TODO

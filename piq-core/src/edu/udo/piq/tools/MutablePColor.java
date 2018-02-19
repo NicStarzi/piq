@@ -8,10 +8,10 @@ public class MutablePColor extends AbstractPColor implements PColor {
 	protected int g255;
 	protected int b255;
 	protected int a255;
-	protected double r1;
-	protected double g1;
-	protected double b1;
-	protected double a1;
+	protected float r1;
+	protected float g1;
+	protected float b1;
+	protected float a1;
 	
 	public MutablePColor(PColor color) {
 		this(color.getRed255(), color.getGreen255(), color.getBlue255(), 255);
@@ -29,15 +29,15 @@ public class MutablePColor extends AbstractPColor implements PColor {
 		set255(r, g, b, a);
 	}
 	
-	public MutablePColor(PColor color, double a) {
+	public MutablePColor(PColor color, float a) {
 		this(color.getRed1(), color.getGreen1(), color.getBlue1(), a);
 	}
 	
-	public MutablePColor(double r, double g, double b) {
+	public MutablePColor(float r, float g, float b) {
 		this(r, g, b, 1);
 	}
 	
-	public MutablePColor(double r, double g, double b, double a) {
+	public MutablePColor(float r, float g, float b, float a) {
 		set1(r, g, b, a);
 	}
 	
@@ -52,17 +52,17 @@ public class MutablePColor extends AbstractPColor implements PColor {
 		b255 = b;
 		a255 = a;
 		
-		r1 = r / 255.0;
-		g1 = g / 255.0;
-		b1 = b / 255.0;
-		a1 = a / 255.0;
+		r1 = r / 255.0f;
+		g1 = g / 255.0f;
+		b1 = b / 255.0f;
+		a1 = a / 255.0f;
 	}
 	
 	public void set(PColor other) {
 		set255(other.getRed255(), other.getGreen255(), other.getBlue255(), other.getAlpha255());
 	}
 	
-	public void set1(double r, double g, double b, double a) {
+	public void set1(float r, float g, float b, float a) {
 		throwExceptionIfValueIllegal1(r);
 		throwExceptionIfValueIllegal1(g);
 		throwExceptionIfValueIllegal1(b);
@@ -72,58 +72,58 @@ public class MutablePColor extends AbstractPColor implements PColor {
 		b1 = b;
 		a1 = a;
 		
-		r255 = (int) Math.round(r * 255);
-		g255 = (int) Math.round(g * 255);
-		b255 = (int) Math.round(b * 255);
-		a255 = (int) Math.round(a * 255);
+		r255 = Math.round(r * 255);
+		g255 = Math.round(g * 255);
+		b255 = Math.round(b * 255);
+		a255 = Math.round(a * 255);
 	}
 	
 	public void setRed255(int value) {
 		throwExceptionIfValueIllegal255(value);
 		r255 = value;
-		r1 = r255 / 255.0;
+		r1 = r255 / 255.0f;
 	}
 	
 	public void setGreen255(int value) {
 		throwExceptionIfValueIllegal255(value);
 		g255 = value;
-		g1 = g255 / 255.0;
+		g1 = g255 / 255.0f;
 	}
 	
 	public void setBlue255(int value) {
 		throwExceptionIfValueIllegal255(value);
 		b255 = value;
-		b1 = b255 / 255.0;
+		b1 = b255 / 255.0f;
 	}
 	
 	public void setAlpha255(int value) {
 		throwExceptionIfValueIllegal255(value);
 		a255 = value;
-		a1 = a255 / 255.0;
+		a1 = a255 / 255.0f;
 	}
 	
-	public void setRed1(double value) {
+	public void setRed1(float value) {
 		throwExceptionIfValueIllegal1(value);
 		r1 = value;
-		r255 = (int) Math.round(r1 * 255);
+		r255 = Math.round(r1 * 255);
 	}
 	
-	public void setGreen1(double value) {
+	public void setGreen1(float value) {
 		throwExceptionIfValueIllegal1(value);
 		g1 = value;
-		g255 = (int) Math.round(g1 * 255);
+		g255 = Math.round(g1 * 255);
 	}
 	
-	public void setBlue1(double value) {
+	public void setBlue1(float value) {
 		throwExceptionIfValueIllegal1(value);
 		b1 = value;
-		b255 = (int) Math.round(b1 * 255);
+		b255 = Math.round(b1 * 255);
 	}
 	
-	public void setAlpha1(double value) {
+	public void setAlpha1(float value) {
 		throwExceptionIfValueIllegal1(value);
 		a1 = value;
-		a255 = (int) Math.round(a1 * 255);
+		a255 = Math.round(a1 * 255);
 	}
 	
 	@Override
@@ -132,7 +132,7 @@ public class MutablePColor extends AbstractPColor implements PColor {
 	}
 	
 	@Override
-	public double getRed1() {
+	public float getRed1() {
 		return r1;
 	}
 	
@@ -142,7 +142,7 @@ public class MutablePColor extends AbstractPColor implements PColor {
 	}
 	
 	@Override
-	public double getGreen1() {
+	public float getGreen1() {
 		return g1;
 	}
 	
@@ -152,7 +152,7 @@ public class MutablePColor extends AbstractPColor implements PColor {
 	}
 	
 	@Override
-	public double getBlue1() {
+	public float getBlue1() {
 		return b1;
 	}
 	
@@ -162,7 +162,7 @@ public class MutablePColor extends AbstractPColor implements PColor {
 	}
 	
 	@Override
-	public double getAlpha1() {
+	public float getAlpha1() {
 		return a1;
 	}
 	

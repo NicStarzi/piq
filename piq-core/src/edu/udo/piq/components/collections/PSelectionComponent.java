@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 
 import edu.udo.piq.PClipboard;
-import edu.udo.piq.PComponent;
 import edu.udo.piq.PKeyboard.ActualKey;
 import edu.udo.piq.PKeyboard.VirtualKey;
 import edu.udo.piq.PRoot;
@@ -14,14 +13,15 @@ import edu.udo.piq.actions.FocusOwnerAction;
 import edu.udo.piq.actions.PAccelerator;
 import edu.udo.piq.actions.PAccelerator.FocusPolicy;
 import edu.udo.piq.actions.PAccelerator.KeyInputType;
-import edu.udo.piq.components.popup.ImmutablePActionIndicator;
-import edu.udo.piq.components.popup.PComponentActionIndicator;
 import edu.udo.piq.actions.PActionKey;
 import edu.udo.piq.actions.PComponentAction;
 import edu.udo.piq.actions.StandardComponentActionKey;
+import edu.udo.piq.components.PInteractiveComponent;
+import edu.udo.piq.components.popup.ImmutablePActionIndicator;
+import edu.udo.piq.components.popup.PComponentActionIndicator;
 import edu.udo.piq.util.ThrowException;
 
-public interface PSelectionComponent extends PComponent {
+public interface PSelectionComponent extends PInteractiveComponent {
 	
 	public static final PActionKey KEY_DELETE = StandardComponentActionKey.DELETE;
 	public static final PAccelerator ACCELERATOR_DEL = new PAccelerator(
@@ -150,10 +150,6 @@ public interface PSelectionComponent extends PComponent {
 	public PModel getModel();
 	
 	public PModelIndex getIndexAt(int x, int y);
-	
-	public void setEnabled(boolean value);
-	
-	public boolean isEnabled();
 	
 	public default void setSelected(Object value) {
 		ThrowException.ifNull(getModel(), "getModel() == null");

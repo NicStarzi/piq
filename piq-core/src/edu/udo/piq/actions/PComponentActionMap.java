@@ -17,12 +17,12 @@ public class PComponentActionMap {
 	
 	protected final PComponent owner;
 	/**
-	 * Lazily initialized in the {@link #addAction(Object, PComponentAction)}
+	 * Lazily initialized in the {@link #addAction(PActionKey, PComponentAction)}
 	 * method. <br>This will usually be a HashMap since the nature of the keys is not known.
 	 */
 	protected Map<PActionKey, PComponentAction> actionMap;
 	/**
-	 * Lazily initialized in the {@link #addAction(Object, PComponentAction)}
+	 * Lazily initialized in the {@link #addAction(PActionKey, PComponentAction)}
 	 * method.
 	 */
 	protected PKeyboardObs keyObs;

@@ -10,7 +10,7 @@ public abstract class AbstractPColor implements PColor {
 		}
 	}
 	
-	protected void throwExceptionIfValueIllegal1(double value) {
+	protected void throwExceptionIfValueIllegal1(float value) {
 		if (value < 0 || value > 1) {
 			throw new IllegalArgumentException("Color value must be between 0.0 and 1.0 but was: "+value);
 		}

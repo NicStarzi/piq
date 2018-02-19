@@ -15,7 +15,7 @@ import edu.udo.piq.util.ThrowException;
  * is only triggered once. By default the timer is not repeating. Use the
  * {@link #setRepeating(boolean)} method to change the timer into a
  * repeating timer if needed. The time (in milliseconds) that the timer is
- * counting can be set with the {@link #setDelay(int)} method.<br>
+ * counting can be set with the {@link #setDelay(double)} method.<br>
  * 
  * @author NicStarzi
  */

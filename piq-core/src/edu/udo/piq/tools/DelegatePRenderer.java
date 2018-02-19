@@ -91,7 +91,7 @@ public class DelegatePRenderer implements PImageRenderer {
 	}
 	
 	@Override
-	public void setColor1(double r, double g, double b, double a) {
+	public void setColor1(float r, float g, float b, float a) {
 		delegate.setColor1(r, g, b, a);
 	}
 	

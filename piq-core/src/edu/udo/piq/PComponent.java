@@ -1,9 +1,9 @@
 package edu.udo.piq;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 import edu.udo.piq.actions.PActionKey;
@@ -18,14 +18,14 @@ import edu.udo.piq.layouts.PLayoutPreference;
 import edu.udo.piq.layouts.PReadOnlyLayout;
 import edu.udo.piq.scroll2.PScrollComponent;
 import edu.udo.piq.style.PStyleComponent;
+import edu.udo.piq.style.PStyleSheet;
 import edu.udo.piq.style.PStyleable;
 import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.tools.MutablePBounds;
-import edu.udo.piq.util.AncestorIterator;
 import edu.udo.piq.util.AncestorStream;
-import edu.udo.piq.util.BreadthFirstDescendantIterator;
-import edu.udo.piq.util.DepthFirstDescendantIterator;
+import edu.udo.piq.util.BreadthFirstDescendantStream;
 import edu.udo.piq.util.PiqUtil;
+import edu.udo.piq.util.Throw;
 import edu.udo.piq.util.ThrowException;
 
 /**
@@ -97,15 +97,15 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 	 * used by the default rendering mechanism.<br>
 	 * This method should return a size as small as possible for rendering
 	 * itself with the {@link #defaultRender(PRenderer)} method.<br>
-	 * {@link PReadOnlyLayout}s and {@link PDesign}s might use this value or ignore
+	 * {@link PReadOnlyLayout}s and {@link PStyleComponent}s might use this value or ignore
 	 * it completely.<br>
 	 * This method never returns null.<br>
 	 * 
 	 * @return the preferred size for the default render
 	 * @see #defaultRender(PRenderer)
 	 * @see PSize
-	 * @see PDesign
-	 * @see PDesign#getPreferredSize(PComponent)
+	 * @see PStyleComponent
+	 * @see PStyleComponent#getPreferredSize(PComponent)
 	 * @see PReadOnlyLayout
 	 * @see PReadOnlyLayout#getChildBounds(PComponent)
 	 */
@@ -162,14 +162,14 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 	/**
 	 * Renders the default rendering of this component to the given
 	 * {@link PRenderer}.<br>
-	 * This method is called if the {@link PDesignSheet} of the
+	 * This method is called if the {@link PStyleSheet} of the
 	 * {@link PRoot} of this component does not associate a
-	 * {@link PDesign} with this component.<br>
+	 * {@link PStyleComponent} with this component.<br>
 	 * 
 	 * @param renderer the renderer to be used for rendering
 	 * @see PRenderer
-	 * @see PDesignSheet
-	 * @see PDesign
+	 * @see PStyleSheet
+	 * @see PStyleComponent
 	 */
 	public default void defaultRender(PRenderer renderer) {}
 	
@@ -195,8 +195,8 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 	 * @return true if the component is completely opaque
 	 * @see #defaultRender(PRenderer)
 	 * @see PRenderer
-	 * @see PDesignSheet
-	 * @see PDesign
+	 * @see PStyleSheet
+	 * @see PStyleComponent
 	 */
 	public default boolean defaultFillsAllPixels() {
 		return false;
@@ -298,7 +298,7 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 	 * Calls the {@link PLayout#layOut()} method on the {@link PLayout} of this
 	 * {@link PComponent} if it exists. Otherwise nothing happens.<br>
 	 * If this {@link PComponent PComponents} preferred size, as returned by
-	 * {@link PiqUtil#getPreferredSizeOf(PComponent)} changes as a result of
+	 * {@link #getPreferredSize()} changes as a result of
 	 * the layouting this component will call the {@link PRoot#scheduleLayout(PComponent)}
 	 * method of its {@link PRoot}.<br>
 	 * 
@@ -367,9 +367,9 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 	 * 
 	 * @param value the new id for this component
 	 * @see #getID()
-	 * @see PiqUtil#getDescendantByID(PComponent, String)
-	 * @see PGuiUtil#componentToString(PComponent)
-	 * @see PGuiUtil#guiTreeToString(PComponent)
+	 * @see #getFirstDescendantWithID(String)
+	 * @see #getFirstAncestorWithID(String)
+	 * @see PiqUtil#guiTreeToString(PComponent)
 	 */
 	public void setID(String value);
 	
@@ -381,9 +381,9 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 	 * 
 	 * @return the id use for debugging purposes
 	 * @see #setID(String)
-	 * @see PiqUtil#getDescendantByID(PComponent, String)
-	 * @see PGuiUtil#componentToString(PComponent)
-	 * @see PGuiUtil#guiTreeToString(PComponent)
+	 * @see #getFirstDescendantWithID(String)
+	 * @see #getFirstAncestorWithID(String)
+	 * @see PiqUtil#guiTreeToString(PComponent)
 	 */
 	public String getID();
 	
@@ -546,24 +546,20 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 		return 0;
 	}
 	
-	public default Iterable<PComponent> getAncestors() {
-		return new AncestorIterator(this, false);
-	}
-	
-	public default AncestorStream<PComponent> getAncestors2() {
-		return new AncestorStream<>(this, false);
-	}
-	
-	public default AncestorStream<PComponent> getAncestorsAndSelf2() {
+	public default AncestorStream<PComponent> getAncestors() {
 		return new AncestorStream<>(this, true);
 	}
 	
-	public default Iterable<PComponent> getAncestorsAndSelf() {
-		return new AncestorIterator(this, true);
+	public default AncestorStream<PComponent> getAncestors(boolean includeSelf) {
+		return new AncestorStream<>(this, includeSelf);
 	}
 	
-	public default Iterable<PComponent> getDescendants() {
-		return new BreadthFirstDescendantIterator(this);
+	public default BreadthFirstDescendantStream<PComponent> getDescendants() {
+		return new BreadthFirstDescendantStream<>(this, true);
+	}
+	
+	public default BreadthFirstDescendantStream<PComponent> getDescendants(boolean includeSelf) {
+		return new BreadthFirstDescendantStream<>(this, includeSelf);
 	}
 	
 	/**
@@ -571,7 +567,6 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 	 * If no such {@link PComponent} exists in the GUI null will be returned.<br>
 	 * If the root itself has the given ID the root will be returned.<br>
 	 * 
-	 * @param root the PComponent from where we start to search
 	 * @param id the ID for which we are searching for
 	 * @return a PComponent with the given ID or null if no such component exists
 	 * @throws IllegalArgumentException if either root or id are null
@@ -579,118 +574,31 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 	 * @see PComponent#getID()
 	 */
 	public default PComponent getFirstDescendantWithID(String id) throws IllegalArgumentException {
-		ThrowException.ifNull(id, "id == null");
-		for (PComponent current : new DepthFirstDescendantIterator(this)) {
-			if (id.equals(current.getID())) {
-				return current;
-			}
-		}
-		return null;
+		return getFirstDescendantMatchingCondition(desc -> Objects.equals(desc.getID(), id));
 	}
 	
-	@SuppressWarnings("unchecked")
-	public default <T> T getFirstDescendantOfType(Class<T> descendantType) {
-		ThrowException.ifNull(descendantType, "descendantType == null");
-		for (PComponent current : new DepthFirstDescendantIterator(this)) {
-			if (descendantType.isInstance(current)) {
-				return (T) current;
-			}
-		}
-		return null;
+	public default <T extends PComponent> T getFirstDescendantOfType(Class<T> descendantType) {
+		Throw.ifNull(descendantType, "descendantType == null");
+		return getDescendants().getNextOfType(descendantType);
 	}
 	
 	public default PComponent getFirstDescendantMatchingCondition(Predicate<PComponent> condition) {
-		ThrowException.ifNull(condition, "condition == null");
-		for (PComponent current : new DepthFirstDescendantIterator(this)) {
-			if (condition.test(current)) {
-				return current;
-			}
-		}
-		return null;
-	}
-	
-	public default Collection<PComponent> getAllDescendantsMatchingCondition(Predicate<PComponent> condition) {
-		ThrowException.ifNull(condition, "condition == null");
-		Collection<PComponent> result = null;
-		PComponent first = null;
-		for (PComponent current : new DepthFirstDescendantIterator(this)) {
-			if (condition.test(current)) {
-				if (first == null) {
-					first = current;
-				} else if (result == null) {
-					result = new ArrayList<>();
-					result.add(first);
-					result.add(current);
-				} else {
-					result.add(current);
-				}
-			}
-		}
-		if (result == null) {
-			if (first == null) {
-				return Collections.emptyList();
-			}
-			return Collections.singleton(first);
-		}
-		return result;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public default <T> Collection<T> getAllDescendantsOfType(Class<T> descendantType) {
-		ThrowException.ifNull(descendantType, "descendantType == null");
-		Collection<T> result = null;
-		T first = null;
-		for (PComponent current : new DepthFirstDescendantIterator(this)) {
-			if (descendantType.isInstance(current)) {
-				if (first == null) {
-					first = (T) current;
-				} else if (result == null) {
-					result = new ArrayList<>();
-					result.add(first);
-					result.add((T) current);
-				} else {
-					result.add((T) current);
-				}
-			}
-		}
-		if (result == null) {
-			if (first == null) {
-				return Collections.emptyList();
-			}
-			return Collections.singleton(first);
-		}
-		return result;
+		Throw.ifNull(condition, "condition == null");
+		return getDescendants().getNextMatching(condition);
 	}
 	
 	public default PComponent getFirstAncestorWithID(String id) {
-		ThrowException.ifNull(id, "id == null");
-		for (PComponent current : new AncestorIterator(this, true)) {
-			if (id.equals(current.getID())) {
-				return current;
-			}
-		}
-		return null;
+		return getFirstAncestorMatchingCondition(anc -> Objects.equals(anc.getID(), id));
 	}
 	
 	public default PComponent getFirstAncestorMatchingCondition(Predicate<PComponent> condition) {
-		ThrowException.ifNull(condition, "condition == null");
-		for (PComponent current : new AncestorIterator(this, true)) {
-			if (condition.test(current)) {
-				return current;
-			}
-		}
-		return null;
+		Throw.ifNull(condition, "condition == null");
+		return getAncestors().getNextMatching(condition);
 	}
 	
-	@SuppressWarnings("unchecked")
-	public default <T> T getFirstAncestorOfType(Class<T> ancestorType) {
-		ThrowException.ifNull(ancestorType, "ancestorType == null");
-		for (PComponent current : new AncestorIterator(this, true)) {
-			if (ancestorType.isInstance(current)) {
-				return (T) current;
-			}
-		}
-		return null;
+	public default <T extends PComponent> T getFirstAncestorOfType(Class<T> ancestorType) {
+		Throw.ifNull(ancestorType, "ancestorType == null");
+		return getAncestors().getNextOfType(ancestorType);
 	}
 	
 	/**
@@ -917,13 +825,7 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 	}
 	
 	public default PComponent getHighestFocusableAncestor() {
-		PComponent last = isFocusable() ? this : null;
-		for (PComponent anc : getAncestors()) {
-			if (anc.isFocusable()) {
-				last = anc;
-			}
-		}
-		return last;
+		return getAncestors().getLastMatching(anc -> anc.isFocusable());
 	}
 	
 	/**

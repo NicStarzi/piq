@@ -4,14 +4,7 @@ import edu.udo.piq.PInsets;
 
 public abstract class AbstractPInsets implements PInsets {
 	
-	public int getHorizontal() {
-		return getFromLeft() + getFromRight();
-	}
-	
-	public int getVertical() {
-		return getFromTop() + getFromBottom();
-	}
-	
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
@@ -22,6 +15,7 @@ public abstract class AbstractPInsets implements PInsets {
 		return result;
 	}
 	
+	@Override
 	public boolean equals(Object obj) {
 		if (obj == null || !(obj instanceof PInsets)) {
 			return false;
@@ -33,6 +27,7 @@ public abstract class AbstractPInsets implements PInsets {
 				&& getFromRight() == other.getFromRight();
 	}
 	
+	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append(getClass().getSimpleName());

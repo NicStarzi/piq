@@ -21,7 +21,7 @@ public class PTitleBorder extends AbstractPBorder {
 	
 	public static final Object FONT_ID = new SymbolicFontKey(PTitleBorder.class);
 	
-	protected final PSingleValueModelObs modelObs = this::onModelValueChanged;
+	protected final PSingleValueModelObs<Object> modelObs = this::onModelValueChanged;
 	protected final MutablePInsets insets = new MutablePInsets();
 	protected PTextModel model;
 	protected Orientation orientation = Orientation.TOP_LEFT;
@@ -73,7 +73,7 @@ public class PTitleBorder extends AbstractPBorder {
 		setOrientation(orientation);
 	}
 	
-	protected void onModelValueChanged(PSingleValueModel model, Object oldValue, Object newValue) {
+	protected void onModelValueChanged(PSingleValueModel<Object> model, Object oldValue, Object newValue) {
 		fireInsetsChangedEvent();
 		fireReRenderEvent();
 	}

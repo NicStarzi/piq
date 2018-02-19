@@ -29,10 +29,16 @@ public class MutablePPoint extends AbstractPPoint {
 		setY(other.getY());
 	}
 	
+	public void set(double x, double y) {
+		setX(x);
+		setY(y);
+	}
+	
 	public void setX(double value) {
 		x = value;
 	}
 	
+	@Override
 	public double getX() {
 		return x;
 	}
@@ -41,6 +47,7 @@ public class MutablePPoint extends AbstractPPoint {
 		y = value;
 	}
 	
+	@Override
 	public double getY() {
 		return y;
 	}

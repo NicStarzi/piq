@@ -1,8 +1,8 @@
 package edu.udo.piq;
 
 import edu.udo.piq.layouts.PReadOnlyLayout;
+import edu.udo.piq.style.PStyle;
 import edu.udo.piq.tools.MutablePSize;
-import edu.udo.piq.util.PiqUtil;
 
 /**
  * This interface defines abstract platform independent font resources.<br>
@@ -40,7 +40,7 @@ public interface PFontResource extends PDisposable {
 	/**
 	 * Returns the {@link PSize} that the given text would have when rendered
 	 * with this font.<br>
-	 * This method is useful for {@link PDesign}s and all text based components
+	 * This method is useful for {@link PStyle styles} and all text based components
 	 * that need to calculate their preferred sizes.<br>
 	 * This method should never return null.<br>
 	 * <br>
@@ -53,10 +53,9 @@ public interface PFontResource extends PDisposable {
 	 * @throws NullPointerException if string is null
 	 * @see PSize
 	 * @see PSize#ZERO_SIZE
+	 * @see PComponent#getPreferredSize()
 	 * @see PComponent#getDefaultPreferredSize()
-	 * @see PDesign#getPreferredSize(PComponent)
 	 * @see PReadOnlyLayout#getPreferredSize()
-	 * @see PiqUtil#getPreferredSizeOf(PComponent)
 	 */
 	public PSize getSize(String text, MutablePSize result);
 	

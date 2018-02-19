@@ -12,8 +12,8 @@ import edu.udo.piq.util.PiqUtil;
 
 public class SwingStylePPanel extends MutablePStyleComponent implements SwingPStyle {
 	
-	private static final PColor COLOR_FOCUS = PColor.WHITE.mult1(0.30);
-	private static final PColor COLOR_UNFOCUS = PColor.WHITE.mult1(0.15);
+	private static final PColor COLOR_FOCUS = PColor.WHITE.mult1(0.30f);
+	private static final PColor COLOR_UNFOCUS = PColor.WHITE.mult1(0.15f);
 	
 	protected final PFocusObs focusObs = new PFocusObs() {
 		@Override

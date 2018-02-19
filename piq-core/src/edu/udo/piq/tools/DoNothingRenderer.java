@@ -47,7 +47,7 @@ public class DoNothingRenderer implements PImageRenderer {
 	public void intersectClipBounds(int x, int y, int width, int height) {}
 	
 	@Override
-	public void setColor1(double r, double g, double b, double a) {}
+	public void setColor1(float r, float g, float b, float a) {}
 	
 	@Override
 	public void drawImage(PImageResource imgRes, int u, int v, int fu, int fv,

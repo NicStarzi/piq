@@ -20,10 +20,12 @@ public class ImmutablePPoint extends AbstractPPoint {
 		this(origin.getX() + offset.getX(), origin.getY() + offset.getY());
 	}
 	
+	@Override
 	public double getX() {
 		return x;
 	}
 	
+	@Override
 	public double getY() {
 		return y;
 	}

@@ -12,7 +12,7 @@ public interface PTimerCallback {
 	 * this method will be called.<br>
 	 * @param deltaMilliSc
 	 * @see PTimer#setRepeating(boolean)
-	 * @see PTimer#setDelay(int)
+	 * @see PTimer#setDelay(double)
 	 */
 	public void onTimerEvent(double deltaMilliSc);
 	

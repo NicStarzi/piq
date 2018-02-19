@@ -58,8 +58,14 @@ public class PScrollPanelLayout extends AbstractEnumPLayout<PScrollPanelLayout.C
 	
 	@Override
 	protected void onInvalidated() {
+//		System.out.println("PScrollPanelLayout.onInvalidated()");
 		prefSize.set(getPreferredSizeOf(getBody()));
+//		System.out.println("prefSize1="+prefSize);
 		addScrollBarsAsNecessary();
+		prefSize.addWidth(getPreferredSizeOf(getScrollBarY()));
+		prefSize.addHeight(getPreferredSizeOf(getScrollBarX()));
+//		System.out.println("prefSize2="+prefSize);
+//		System.out.println();
 	}
 	
 	protected void addScrollBarsAsNecessary() {
@@ -156,14 +162,15 @@ public class PScrollPanelLayout extends AbstractEnumPLayout<PScrollPanelLayout.C
 		}
 		int bodyX = x - offsetX;
 		int bodyY = y - offsetY;
-		int bodyW = w + offsetX;
-		int bodyH = h + offsetY;
+		PSize bodyPrefSize = body.getPreferredSize();
+		int bodyW = bodyPrefSize.getWidth();
+		int bodyH = bodyPrefSize.getHeight();
 		setChildCellFilled(body, bodyX, bodyY, bodyW, bodyH);
 		owner.onBodyLaidOut(w, h);
 	}
 	
 	public static enum Constraint {
-		BODY, BAR_X, BAR_Y,
+		BAR_X, BAR_Y, BODY,
 		;
 	}
 	

@@ -200,6 +200,7 @@ public class ThrowException {
 		}
 	}
 	
+	@SuppressWarnings("unlikely-arg-type")
 	public static void ifIncluded(Collection<?> collection, Object obj, String optionalMsg)
 			throws IllegalArgumentException
 	{
@@ -208,6 +209,7 @@ public class ThrowException {
 		}
 	}
 	
+	@SuppressWarnings("unlikely-arg-type")
 	public static void ifExcluded(Collection<?> collection, Object obj, String optionalMsg)
 			throws IllegalArgumentException
 	{

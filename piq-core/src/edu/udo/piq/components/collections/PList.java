@@ -1,27 +1,19 @@
 package edu.udo.piq.components.collections;
 
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PKeyboard;
-import edu.udo.piq.PKeyboard.ActualKey;
 import edu.udo.piq.PKeyboard.Modifier;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouse.VirtualMouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
-import edu.udo.piq.actions.FocusOwnerAction;
-import edu.udo.piq.actions.PAccelerator;
-import edu.udo.piq.actions.PAccelerator.FocusPolicy;
-import edu.udo.piq.actions.PAccelerator.KeyInputType;
-import edu.udo.piq.actions.PActionKey;
-import edu.udo.piq.actions.PComponentAction;
-import edu.udo.piq.actions.StandardComponentActionKey;
+import edu.udo.piq.components.AbstractPInteractiveLayoutOwner;
 import edu.udo.piq.components.defaults.DefaultPCellComponent;
 import edu.udo.piq.components.defaults.DefaultPCellFactory;
 import edu.udo.piq.components.defaults.DefaultPDnDSupport;
@@ -30,39 +22,16 @@ import edu.udo.piq.components.defaults.ReRenderPFocusObs;
 import edu.udo.piq.dnd.PDnDSupport;
 import edu.udo.piq.layouts.PListLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
-import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PModelFactory;
 import edu.udo.piq.util.PiqUtil;
 
-public class PList extends AbstractPLayoutOwner implements PDropComponent {
+public class PList extends AbstractPInteractiveLayoutOwner implements PListLike {
 	
 	protected static final PColor BACKGROUND_COLOR = PColor.WHITE;
 	protected static final PColor FOCUS_COLOR = PColor.GREY25;
 	protected static final PColor DROP_HIGHLIGHT_COLOR = PColor.RED;
 	protected static final int DRAG_AND_DROP_DISTANCE = 20;
-	
-	public static final Predicate<PList> CONDITION_MOVE_SELECTION = self -> self.isEnabled()
-			&& self.getModel() != null
-			&& self.getSelection() != null
-			&& self.getSelection().getLastSelected() != null;
-	public static final PActionKey KEY_NEXT = StandardComponentActionKey.MOVE_NEXT;
-	public static final PAccelerator ACCELERATOR_PRESS_DOWN = new PAccelerator(
-			ActualKey.DOWN, FocusPolicy.THIS_OR_CHILD_HAS_FOCUS, KeyInputType.PRESS);
-	public static final PComponentAction ACTION_PRESS_DOWN = new FocusOwnerAction<>(
-			PList.class, true,
-			ACCELERATOR_PRESS_DOWN,
-			CONDITION_MOVE_SELECTION,
-			self -> self.moveSelectedIndex(1));
-	
-	public static final PActionKey KEY_PREV = StandardComponentActionKey.MOVE_PREV;
-	public static final PAccelerator ACCELERATOR_PRESS_UP = new PAccelerator(
-			ActualKey.UP, FocusPolicy.THIS_OR_CHILD_HAS_FOCUS, KeyInputType.PRESS);
-	public static final PComponentAction ACTION_PRESS_UP = new FocusOwnerAction<>(
-			PList.class, true,
-			ACCELERATOR_PRESS_UP,
-			CONDITION_MOVE_SELECTION,
-			self -> self.moveSelectedIndex(-1));
 	
 	protected final ObserverList<PModelObs> modelObsList = PiqUtil.createDefaultObserverList();
 	protected final ObserverList<PSelectionObs> selectionObsList = PiqUtil.createDefaultObserverList();
@@ -110,7 +79,6 @@ public class PList extends AbstractPLayoutOwner implements PDropComponent {
 	protected int lastDragX = -1;
 	protected int lastDragY = -1;
 	protected boolean isDragTagged = false;
-	protected boolean enabled = true;
 	
 	public PList(PListModel model) {
 		this();
@@ -192,21 +160,6 @@ public class PList extends AbstractPLayoutOwner implements PDropComponent {
 		}
 	}
 	
-	protected void moveSelectedIndex(int moveOffset) {
-		PListIndex lastSelected = getSelection().getLastSelected();
-		int nextSelectedVal = lastSelected.getIndexValue() + moveOffset;
-		if (nextSelectedVal >= 0 && nextSelectedVal < getModel().getSize()) {
-			PListIndex nextSelected = new PListIndex(nextSelectedVal);
-			
-			PKeyboard keyBoard = getKeyboard();
-			if (keyBoard == null || !keyBoard.isModifierToggled(Modifier.CTRL)) {
-				getSelection().clearSelection();
-			}
-			
-			getSelection().addSelection(nextSelected);
-		}
-	}
-	
 	@Override
 	protected PListLayout getLayoutInternal() {
 		return (PListLayout) super.getLayout();
@@ -236,6 +189,7 @@ public class PList extends AbstractPLayoutOwner implements PDropComponent {
 		return getLayoutInternal().getInsets();
 	}
 	
+	@Override
 	public void setSelection(PListSelection listSelection) {
 		if (getSelection() != null) {
 			getSelection().clearSelection();
@@ -254,6 +208,7 @@ public class PList extends AbstractPLayoutOwner implements PDropComponent {
 		return selection;
 	}
 	
+	@Override
 	public void setModel(PListModel listModel) {
 		if (getModel() != null) {
 			getModel().removeObs(modelObs);
@@ -275,19 +230,6 @@ public class PList extends AbstractPLayoutOwner implements PDropComponent {
 	@Override
 	public PListModel getModel() {
 		return model;
-	}
-	
-	@Override
-	public void setEnabled(boolean value) {
-		if (enabled != value) {
-			enabled = value;
-			fireReRenderEvent();
-		}
-	}
-	
-	@Override
-	public boolean isEnabled() {
-		return enabled;
 	}
 	
 	public boolean isSynchronizedWithModel() {

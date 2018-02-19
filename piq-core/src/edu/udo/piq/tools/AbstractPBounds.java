@@ -4,39 +4,7 @@ import edu.udo.piq.PBounds;
 
 public abstract class AbstractPBounds implements PBounds {
 	
-	public int getFinalX() {
-		return getX() + getWidth();
-	}
-	
-	public int getFinalY() {
-		return getY() + getHeight();
-	}
-	
-	public int getCenterX() {
-		return getX() + getWidth() / 2;
-	}
-	
-	public int getCenterY() {
-		return getY() + getHeight() / 2;
-	}
-	
-	public boolean contains(int x, int y) {
-		return x >= getX() && x <= getFinalX() && y >= getY() && y <= getFinalY();
-	}
-	
-	public PBounds createIntersection(PBounds other) {
-		int x = Math.max(getX(), other.getX());
-		int y = Math.max(getY(), other.getY());
-		int fx = Math.min(getFinalX(), other.getFinalX());
-		int fy = Math.min(getFinalY(), other.getFinalY());
-		int w = fx - x;
-		int h = fy - y;
-		if (w < 0 || h < 0) {
-			return null;
-		}
-		return new ImmutablePBounds(x, y, w, h);
-	}
-	
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
@@ -47,6 +15,7 @@ public abstract class AbstractPBounds implements PBounds {
 		return result;
 	}
 	
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -61,6 +30,7 @@ public abstract class AbstractPBounds implements PBounds {
 				&& getHeight() == other.getHeight();
 	}
 	
+	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append(getClass().getSimpleName());

@@ -19,6 +19,7 @@ import edu.udo.piq.components.defaults.PSpinnerModelList;
 import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.layouts.AlignmentX;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
+import edu.udo.piq.scroll2.PScrollPanel;
 import edu.udo.piq.tests.styles.SwingStyleSheet;
 import edu.udo.piq.tools.AbstractPTextModel;
 
@@ -45,7 +46,7 @@ public class SwingPTest_Style extends AbstractSwingPTest {
 			}
 		};
 		
-		PGridPanel body = new PGridPanel(5, 6);
+		PGridPanel body = new PGridPanel(6, 6);
 		
 		DefaultPProgressBarModel progMdl = new DefaultPProgressBarModel();
 		PClickObs progClickObs = btn -> progMdl.addValue(+1);
@@ -60,8 +61,8 @@ public class SwingPTest_Style extends AbstractSwingPTest {
 		};
 		
 		body.addChild(new PDropDownList("One", "Two", "Three", "Four", "Five"), "0 0 alignX=F");
-		body.addChild(new PButton("Change Style", clickObsChangeStyle), "1 0 alignX=R alignY=T");
-		body.addChild(new PButton("Toggle Enabled", disableAll), "2 0 alignX=L alignY=B");
+		body.addChild(new PButton("Change Style", clickObsChangeStyle), "1 0");
+		body.addChild(new PButton("Toggle Enabled", disableAll), "2 0");
 		body.addChild(new PSpinner(new PSpinnerModelList("Red", "Blue", "Green", "Yellow", "Magenta")), "3 0 2 1 alignX=F");
 		
 		String[] btnLabels = {"How", "Are", "You?"};
@@ -82,7 +83,26 @@ public class SwingPTest_Style extends AbstractSwingPTest {
 			body.addChild(subPnl, "0 "+(i+1)+" 4 1 alignX=F alignY=F");
 		}
 		body.addChild(new PProgressBar(progMdl), "0 4 5 1 alignX=F");
-		root.setBody(body);
+		
+//		DefaultPListModel nameModel = new DefaultPListModel();
+//		char[] chars = new char[1];
+//		for (char a = 'a'; a <= 'z'; a++) {
+////			for (char b = 'a'; b <= 'z'; b++) {
+////				for (char c = 'a'; c <= 'z'; c++) {
+////					chars[0] = a;
+////					chars[1] = b;
+////					chars[2] = c;
+////					nameModel.add(new String(chars));
+////					System.out.println(new String(chars));
+////				}
+////			}
+//			chars[0] = a;
+//			nameModel.add(new String(chars));
+//		}
+//		PList nameList = new PList(nameModel);
+//		body.addChild(new PScrollPanel(nameList), "5 0 1 6 alignX=F alignY=F");
+		
+		root.setBody(new PScrollPanel(body));
 	}
 	
 	public static class SpecialTextModel extends AbstractPTextModel {

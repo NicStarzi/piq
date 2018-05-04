@@ -3,6 +3,7 @@ package edu.udo.piq.components.collections;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.udo.piq.components.collections.table.PTableCellIndex;
 import edu.udo.piq.tools.AbstractListBasedPSelection;
 
 public class PTableMultiSelection extends AbstractListBasedPSelection<PTableCellIndex> implements PTableSelection {

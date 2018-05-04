@@ -13,10 +13,10 @@ import edu.udo.piq.actions.CompositeAction;
 import edu.udo.piq.actions.FocusOwnerAction;
 import edu.udo.piq.actions.PAccelerator;
 import edu.udo.piq.actions.PAccelerator.KeyInputType;
+import edu.udo.piq.components.collections.list.PListIndex;
 import edu.udo.piq.actions.PActionKey;
 import edu.udo.piq.actions.PComponentAction;
 import edu.udo.piq.actions.StandardComponentActionKey;
-import edu.udo.piq.components.collections.PListIndex;
 
 public class PTextInput {
 	

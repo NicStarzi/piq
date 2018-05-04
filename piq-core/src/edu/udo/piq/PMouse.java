@@ -109,9 +109,9 @@ public interface PMouse {
 	public default boolean isReleased(VirtualMouseButton btn) {
 		switch (btn) {
 		case DRAG_AND_DROP:
-			return isPressed(MouseButton.LEFT);
+			return isReleased(MouseButton.LEFT);
 		case POPUP_TRIGGER:
-			return isPressed(MouseButton.RIGHT);
+			return isReleased(MouseButton.RIGHT);
 		default:
 			return false;
 		}
@@ -128,9 +128,9 @@ public interface PMouse {
 	public default boolean isTriggered(VirtualMouseButton btn) {
 		switch (btn) {
 		case DRAG_AND_DROP:
-			return isPressed(MouseButton.LEFT);
+			return isTriggered(MouseButton.LEFT);
 		case POPUP_TRIGGER:
-			return isPressed(MouseButton.RIGHT);
+			return isTriggered(MouseButton.RIGHT);
 		default:
 			return false;
 		}

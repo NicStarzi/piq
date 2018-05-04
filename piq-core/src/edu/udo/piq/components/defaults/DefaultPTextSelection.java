@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import edu.udo.piq.components.collections.PListIndex;
 import edu.udo.piq.components.collections.PModelIndex;
+import edu.udo.piq.components.collections.list.PListIndex;
 import edu.udo.piq.components.textbased.PTextSelection;
 import edu.udo.piq.tools.AbstractPSelection;
 import edu.udo.piq.util.ThrowException;

@@ -1,5 +1,7 @@
 package edu.udo.piq.components.collections;
 
+import edu.udo.piq.components.collections.table.PTableCellIndex;
+
 public interface PTableSelection extends PSelection {
 	
 	public PTableCellIndex getLastSelected();

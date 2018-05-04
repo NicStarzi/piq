@@ -3,6 +3,7 @@ package edu.udo.piq.components.collections;
 import java.util.Collections;
 import java.util.List;
 
+import edu.udo.piq.components.collections.table.PTableCellIndex;
 import edu.udo.piq.tools.AbstractPSelection;
 
 public class PTableSingleSelection extends AbstractPSelection implements PTableSelection {

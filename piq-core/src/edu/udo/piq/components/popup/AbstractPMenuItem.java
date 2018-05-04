@@ -22,7 +22,7 @@ import edu.udo.piq.actions.PAccelerator.FocusPolicy;
 import edu.udo.piq.actions.PActionKey;
 import edu.udo.piq.actions.PComponentAction;
 import edu.udo.piq.components.PSingleValueModel;
-import edu.udo.piq.components.collections.PColumnIndex;
+import edu.udo.piq.components.collections.table.PColumnIndex;
 import edu.udo.piq.components.textbased.PTextModel;
 import edu.udo.piq.layouts.AlignmentX;
 import edu.udo.piq.layouts.AlignmentY;

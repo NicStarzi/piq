@@ -4,7 +4,7 @@ import edu.udo.piq.PColor;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PCheckBoxTuple;
-import edu.udo.piq.components.collections.PColumnIndex;
+import edu.udo.piq.components.collections.table.PColumnIndex;
 import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.components.popup.DelegatedPLayout;
 import edu.udo.piq.components.popup.DelegationPGridListLayout;

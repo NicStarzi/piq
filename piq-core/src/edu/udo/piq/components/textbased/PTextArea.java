@@ -9,7 +9,7 @@ import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.PSingleValueModel;
-import edu.udo.piq.components.collections.PListIndex;
+import edu.udo.piq.components.collections.list.PListIndex;
 import edu.udo.piq.components.util.SymbolicFontKey;
 import edu.udo.piq.tools.AbstractPTextComponent;
 import edu.udo.piq.tools.ImmutablePBounds;

@@ -1,7 +1,7 @@
 package edu.udo.piq.components.textbased;
 
-import edu.udo.piq.components.collections.PListIndex;
 import edu.udo.piq.components.collections.PSelection;
+import edu.udo.piq.components.collections.list.PListIndex;
 
 public interface PTextSelection extends PSelection {
 	

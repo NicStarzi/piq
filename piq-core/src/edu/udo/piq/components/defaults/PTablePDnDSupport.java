@@ -6,8 +6,8 @@ import edu.udo.piq.components.collections.PDropComponent;
 import edu.udo.piq.components.collections.PModel;
 import edu.udo.piq.components.collections.PModelIndex;
 import edu.udo.piq.components.collections.PSelection;
-import edu.udo.piq.components.collections.PTableCellIndex;
 import edu.udo.piq.components.collections.PTableModel;
+import edu.udo.piq.components.collections.table.PTableCellIndex;
 import edu.udo.piq.dnd.PDnDSupport;
 
 public class PTablePDnDSupport extends DefaultPDnDSupport implements PDnDSupport {

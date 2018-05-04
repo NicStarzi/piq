@@ -1,8 +1,9 @@
-package edu.udo.piq.components.collections;
+package edu.udo.piq.components.collections.list;
 
 import java.util.Collections;
 import java.util.List;
 
+import edu.udo.piq.components.collections.PModelIndex;
 import edu.udo.piq.tools.AbstractPSelection;
 
 public class PListSingleSelection extends AbstractPSelection implements PListSelection {

@@ -244,6 +244,16 @@ public interface PBounds extends PSize {
 		return result;
 	}
 	
+	public default boolean hasIntersection(PBounds other) {
+		int x = Math.max(getX(), other.getX());
+		int y = Math.max(getY(), other.getY());
+		int fx = Math.min(getFinalX(), other.getFinalX());
+		int fy = Math.min(getFinalY(), other.getFinalY());
+		int w = fx - x;
+		int h = fy - y;
+		return w > 0 && h > 0;
+	}
+	
 	public default PBounds createCopyAndSubtract(PInsets insets) {
 		int x = getX() + insets.getFromLeft();
 		int fx = getFinalX() - insets.getFromRight();

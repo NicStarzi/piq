@@ -2,7 +2,7 @@ package edu.udo.piq.components;
 
 import java.util.function.Function;
 
-import edu.udo.piq.components.collections.PListIndex;
+import edu.udo.piq.components.collections.list.PListIndex;
 import edu.udo.piq.components.textbased.PTextField;
 import edu.udo.piq.components.textbased.PTextFieldObs;
 import edu.udo.piq.components.textbased.PTextSelection;

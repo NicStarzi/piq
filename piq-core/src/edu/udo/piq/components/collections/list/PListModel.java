@@ -1,4 +1,6 @@
-package edu.udo.piq.components.collections;
+package edu.udo.piq.components.collections.list;
+
+import edu.udo.piq.components.collections.PModel;
 
 public interface PListModel extends PModel {
 	

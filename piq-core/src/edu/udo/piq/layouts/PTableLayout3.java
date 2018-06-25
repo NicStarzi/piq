@@ -5,7 +5,7 @@ import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PSize;
-import edu.udo.piq.components.collections.PTableCellIndex;
+import edu.udo.piq.components.collections.table.PTableCellIndex;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.util.ThrowException;
 

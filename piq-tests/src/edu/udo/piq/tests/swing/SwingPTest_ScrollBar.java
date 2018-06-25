@@ -2,8 +2,8 @@ package edu.udo.piq.tests.swing;
 
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PClickObs;
-import edu.udo.piq.components.collections.PList;
-import edu.udo.piq.components.collections.PListModel;
+import edu.udo.piq.components.collections.list.PList;
+import edu.udo.piq.components.collections.list.PListModel;
 import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.components.textbased.PLabel;

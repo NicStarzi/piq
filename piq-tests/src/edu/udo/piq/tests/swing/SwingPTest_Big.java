@@ -9,8 +9,8 @@ import edu.udo.piq.components.PProgressBar;
 import edu.udo.piq.components.PSlider;
 import edu.udo.piq.components.PSliderModel;
 import edu.udo.piq.components.PSliderModelObs;
-import edu.udo.piq.components.collections.PList;
-import edu.udo.piq.components.collections.PListIndex;
+import edu.udo.piq.components.collections.list.PList;
+import edu.udo.piq.components.collections.list.PListIndex;
 import edu.udo.piq.components.containers.PDropDownList;
 import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.components.containers.PSplitPanel;
@@ -25,7 +25,7 @@ import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
 import edu.udo.piq.layouts.PSplitLayout.Orientation;
 import edu.udo.piq.layouts.PWrapLayout;
-import edu.udo.piq.scroll.PScrollPanel;
+import edu.udo.piq.scroll2.PScrollPanel;
 import edu.udo.piq.tools.AbstractPTextModel;
 
 public class SwingPTest_Big extends AbstractSwingPTest {

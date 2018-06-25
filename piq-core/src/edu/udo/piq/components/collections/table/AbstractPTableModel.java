@@ -1,38 +1,16 @@
-package edu.udo.piq.tools;
+package edu.udo.piq.components.collections.table;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import edu.udo.piq.components.collections.PModelIndex;
-import edu.udo.piq.components.collections.PTableHeaderObs;
-import edu.udo.piq.components.collections.PTableModel;
-import edu.udo.piq.components.collections.table.PTableCellIndex;
-import edu.udo.piq.util.ObserverList;
-import edu.udo.piq.util.PiqUtil;
+import edu.udo.piq.tools.AbstractPModel;
 
 public abstract class AbstractPTableModel extends AbstractPModel implements PTableModel {
 	
-	protected final ObserverList<PTableHeaderObs> obsList = 
-			PiqUtil.createDefaultObserverList();
-	
+	@Override
 	public Iterator<PModelIndex> iterator() {
 		return new DefaultPTableIterator(this);
-	}
-	
-	public void addObs(PTableHeaderObs obs) {
-		obsList.add(obs);
-	}
-	
-	public void removeObs(PTableHeaderObs obs) {
-		obsList.remove(obs);
-	}
-	
-	protected void fireHeaderStatusChangedEvent() {
-		obsList.fireEvent((obs) -> obs.onHeaderStatusChanged(this));
-	}
-	
-	protected void fireHeaderElementChangedEvent(int column, Object oldElement) {
-		obsList.fireEvent((obs) -> obs.onHeaderElementChanged(this, column, oldElement));
 	}
 	
 	public static class DefaultPTableIterator implements Iterator<PModelIndex> {
@@ -46,10 +24,12 @@ public abstract class AbstractPTableModel extends AbstractPModel implements PTab
 			cells = cols * model.getRowCount();
 		}
 		
+		@Override
 		public boolean hasNext() {
 			return index < cells;
 		}
 		
+		@Override
 		public PModelIndex next() {
 			if (!hasNext()) {
 				throw new NoSuchElementException();

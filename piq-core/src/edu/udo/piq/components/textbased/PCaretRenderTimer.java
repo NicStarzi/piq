@@ -3,10 +3,10 @@ package edu.udo.piq.components.textbased;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PTimer;
-import edu.udo.piq.components.collections.PListIndex;
 import edu.udo.piq.components.collections.PModelIndex;
 import edu.udo.piq.components.collections.PSelection;
 import edu.udo.piq.components.collections.PSelectionObs;
+import edu.udo.piq.components.collections.list.PListIndex;
 import edu.udo.piq.util.PiqUtil;
 
 public class PCaretRenderTimer {

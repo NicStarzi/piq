@@ -4,8 +4,8 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PFocusObs;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouse.MouseButton;
+import edu.udo.piq.components.collections.list.PListIndex;
 import edu.udo.piq.PMouseObs;
-import edu.udo.piq.components.collections.PListIndex;
 import edu.udo.piq.util.PiqUtil;
 
 public class PTextSelector {

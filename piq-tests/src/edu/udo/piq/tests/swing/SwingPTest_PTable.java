@@ -3,13 +3,13 @@ package edu.udo.piq.tests.swing;
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PClickObs;
 import edu.udo.piq.components.PSpinner;
-import edu.udo.piq.components.collections.PColumnIndex;
 import edu.udo.piq.components.collections.PModelIndex;
-import edu.udo.piq.components.collections.PRowIndex;
 import edu.udo.piq.components.collections.PSelection;
 import edu.udo.piq.components.collections.PSelectionObs;
 import edu.udo.piq.components.collections.PTable;
 import edu.udo.piq.components.collections.PTableMultiSelection;
+import edu.udo.piq.components.collections.table.PColumnIndex;
+import edu.udo.piq.components.collections.table.PRowIndex;
 import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.components.defaults.DefaultPTableModel;
 import edu.udo.piq.components.defaults.PSpinnerModelInt;
@@ -21,6 +21,10 @@ import edu.udo.piq.layouts.PBorderLayout.BorderLayoutConstraint;
 import edu.udo.piq.layouts.PGridLayout;
 
 public class SwingPTest_PTable extends AbstractSwingPTest {
+	
+	public static class Person {
+		public String test() {return null;}
+	}
 	
 	public static void main(String[] args) {
 		new SwingPTest_PTable();

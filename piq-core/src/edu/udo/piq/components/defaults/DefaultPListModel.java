@@ -2,40 +2,57 @@ package edu.udo.piq.components.defaults;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 import edu.udo.piq.components.collections.AddImpossible;
-import edu.udo.piq.components.collections.PListIndex;
-import edu.udo.piq.components.collections.PListModel;
 import edu.udo.piq.components.collections.PModelIndex;
 import edu.udo.piq.components.collections.RemoveImpossible;
 import edu.udo.piq.components.collections.WrongIndexType;
-import edu.udo.piq.tools.AbstractPListModel;
+import edu.udo.piq.components.collections.list.AbstractPListModel;
+import edu.udo.piq.components.collections.list.PListIndex;
+import edu.udo.piq.components.collections.list.PListModel;
 import edu.udo.piq.util.ThrowException;
 
 public class DefaultPListModel extends AbstractPListModel implements PListModel {
 	
-	protected final List<Object> list = createListImplementation();
+	public static final int DEFAULT_CAPACITY = 10;
+	
+	protected final List<Object> list;
 	protected BiPredicate<Integer, Object> testCanSet;
 	protected BiPredicate<Integer, Object> testCanAdd;
 	protected Predicate<Integer> testCanRemove;
 	
-	protected List<Object> createListImplementation() {
-		return new ArrayList<>();
+	protected List<Object> createListImplementation(int capacity) {
+		return new ArrayList<>(capacity);
+	}
+	
+	public DefaultPListModel(int capacity) {
+		list = createListImplementation(capacity);
 	}
 	
 	public DefaultPListModel() {
+		this(DEFAULT_CAPACITY);
 	}
 	
 	public DefaultPListModel(Iterable<?> contents) {
+		this();
+		for (Object o : contents) {
+			add(getSize(), o);
+		}
+	}
+	
+	public DefaultPListModel(Collection<?> contents) {
+		this(Math.min(10, contents.size()));
 		for (Object o : contents) {
 			add(getSize(), o);
 		}
 	}
 	
 	public DefaultPListModel(Object ... contents) {
+		this(Math.min(10, contents.length));
 		for (Object o : contents) {
 			add(getSize(), o);
 		}
@@ -46,11 +63,13 @@ public class DefaultPListModel extends AbstractPListModel implements PListModel 
 		return list.size();
 	}
 	
+	@Override
 	public boolean canSet(int index, Object content) {
 		return contains(index)
 				&& (testCanSet == null || testCanSet.test(index, content));
 	}
 	
+	@Override
 	public void set(int indexVal, Object content) {
 		if (!isIndexWithinBounds(indexVal, 0)) {
 			throw new IllegalArgumentException("indexVal == "+indexVal);
@@ -97,7 +116,26 @@ public class DefaultPListModel extends AbstractPListModel implements PListModel 
 	
 	@Override
 	public void add(int index, Object content) {
-		add(new PListIndex(index), content);
+		if (obsList.isEmpty()) {
+			if (!canAdd(index, content)) {
+				throw new AddImpossible(this, new PListIndex(index), content);
+			}
+			list.add(index, content);
+		} else {
+			add(new PListIndex(index), content);
+		}
+	}
+	
+	@Override
+	public void add(Object content) {
+		if (obsList.isEmpty()) {
+			if (!canAdd(getSize(), content)) {
+				throw new AddImpossible(this, new PListIndex(getSize()), content);
+			}
+			list.add(content);
+		} else {
+			super.add(content);
+		}
 	}
 	
 	@Override

@@ -2,7 +2,7 @@ package edu.udo.piq.components.containers;
 
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
-import edu.udo.piq.components.collections.PTableCellIndex;
+import edu.udo.piq.components.collections.table.PTableCellIndex;
 import edu.udo.piq.layouts.AlignmentX;
 import edu.udo.piq.layouts.AlignmentY;
 import edu.udo.piq.layouts.PGridLayout.Growth;

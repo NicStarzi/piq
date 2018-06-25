@@ -1,5 +1,6 @@
-package edu.udo.piq.components.collections;
+package edu.udo.piq.components.collections.list;
 
+import edu.udo.piq.components.collections.PModelIndex;
 import edu.udo.piq.util.ThrowException;
 
 public class PListIndex implements PModelIndex, Comparable<PListIndex> {

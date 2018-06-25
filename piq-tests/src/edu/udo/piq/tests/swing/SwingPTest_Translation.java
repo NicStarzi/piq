@@ -7,8 +7,8 @@ import java.util.Map;
 
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PClickObs;
-import edu.udo.piq.components.collections.PList;
 import edu.udo.piq.components.collections.PModelIndex;
+import edu.udo.piq.components.collections.list.PList;
 import edu.udo.piq.components.containers.PDropDownList;
 import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.components.textbased.PLabel;

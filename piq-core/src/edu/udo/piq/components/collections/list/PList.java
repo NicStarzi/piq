@@ -1,7 +1,8 @@
-package edu.udo.piq.components.collections;
+package edu.udo.piq.components.collections.list;
 
 import java.util.function.Function;
 
+import edu.udo.piq.CallSuper;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PComponent;
@@ -13,7 +14,15 @@ import edu.udo.piq.PMouse.MouseButton;
 import edu.udo.piq.PMouse.VirtualMouseButton;
 import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
+import edu.udo.piq.TemplateMethod;
 import edu.udo.piq.components.AbstractPInteractiveLayoutOwner;
+import edu.udo.piq.components.collections.PCellComponent;
+import edu.udo.piq.components.collections.PCellFactory;
+import edu.udo.piq.components.collections.PModelIndex;
+import edu.udo.piq.components.collections.PModelObs;
+import edu.udo.piq.components.collections.PReadOnlyModel;
+import edu.udo.piq.components.collections.PSelection;
+import edu.udo.piq.components.collections.PSelectionObs;
 import edu.udo.piq.components.defaults.DefaultPCellComponent;
 import edu.udo.piq.components.defaults.DefaultPCellFactory;
 import edu.udo.piq.components.defaults.DefaultPDnDSupport;
@@ -38,35 +47,31 @@ public class PList extends AbstractPInteractiveLayoutOwner implements PListLike 
 	protected final PSelectionObs selectionObs = new PSelectionObs() {
 		@Override
 		public void onSelectionAdded(PSelection selection, PModelIndex index) {
-			selectionAdded((PListIndex) index);
+			PList.this.onSelectionAdded((PListIndex) index);
 		}
 		@Override
 		public void onSelectionRemoved(PSelection selection, PModelIndex index) {
-			selectionRemoved((PListIndex) index);
+			PList.this.onSelectionRemoved((PListIndex) index);
 		}
 		@Override
 		public void onLastSelectedChanged(PSelection selection,
 				PModelIndex prevLastSelected, PModelIndex newLastSelected)
 		{
-			if (hasFocus()) {
-				fireReRenderEvent();
-			}
+			PList.this.onLastSelectedChanged(prevLastSelected, newLastSelected);
 		}
 	};
 	protected final PModelObs modelObs = new PModelObs() {
 		@Override
 		public void onContentAdded(PReadOnlyModel model, PModelIndex index, Object newContent) {
-			getSelection().clearSelection();
-			contentAdded((PListIndex) index, newContent);
+			PList.this.onContentAdded((PListIndex) index, newContent);
 		}
 		@Override
 		public void onContentRemoved(PReadOnlyModel model, PModelIndex index, Object oldContent) {
-			contentRemoved((PListIndex) index, oldContent);
-			getSelection().removeSelection(index);
+			PList.this.onContentRemoved((PListIndex) index, oldContent);
 		}
 		@Override
 		public void onContentChanged(PReadOnlyModel model, PModelIndex index, Object oldContent) {
-			contentChanged((PListIndex) index, oldContent);
+			PList.this.onContentChanged((PListIndex) index, oldContent);
 		}
 	};
 	protected PListSelection selection;
@@ -222,7 +227,7 @@ public class PList extends AbstractPInteractiveLayoutOwner implements PListLike 
 			model.addObs(modelObs);
 			modelObsList.forEach(obs -> model.addObs(obs));
 			for (PModelIndex index : model) {
-				contentAdded((PListIndex) index, model.get(index));
+				onContentAdded((PListIndex) index, model.get(index));
 			}
 		}
 	}
@@ -257,7 +262,7 @@ public class PList extends AbstractPInteractiveLayoutOwner implements PListLike 
 	public void synchronizeWithModel() {
 		getLayoutInternal().clearChildren();
 		for (PModelIndex index : getModel()) {
-			contentAdded((PListIndex) index, getModel().get(index));
+			onContentAdded((PListIndex) index, getModel().get(index));
 		}
 	}
 	
@@ -299,7 +304,7 @@ public class PList extends AbstractPInteractiveLayoutOwner implements PListLike 
 		PListModel model = getModel();
 		if (model != null) {
 			for (int i = 0; i < model.getSize(); i++) {
-				contentAdded(new PListIndex(i), model.get(i));
+				onContentAdded(new PListIndex(i), model.get(i));
 			}
 		}
 	}
@@ -361,7 +366,11 @@ public class PList extends AbstractPInteractiveLayoutOwner implements PListLike 
 		return currentDnDHighlightComponent != null || currentDnDHighlightIndex != null;
 	}
 	
-	protected void contentAdded(PListIndex index, Object newContent) {
+	@CallSuper
+	@TemplateMethod
+	protected void onContentAdded(PListIndex index, Object newContent) {
+		getSelection().clearSelection();
+		
 		PListModel model = getModel();
 		Integer layoutIndex = Integer.valueOf(index.getIndexValue());
 		
@@ -376,7 +385,9 @@ public class PList extends AbstractPInteractiveLayoutOwner implements PListLike 
 		}
 	}
 	
-	protected void contentRemoved(PListIndex index, Object oldContent) {
+	@CallSuper
+	@TemplateMethod
+	protected void onContentRemoved(PListIndex index, Object oldContent) {
 		getLayoutInternal().removeChild(getCellComponent(index));
 		
 		PListModel model = getModel();
@@ -386,23 +397,37 @@ public class PList extends AbstractPInteractiveLayoutOwner implements PListLike 
 			PCellComponent cell = getCellComponent(cellIndex);
 			cell.setElement(model, cellIndex);
 		}
+		getSelection().removeSelection(index);
 	}
 	
-	protected void contentChanged(PListIndex index, Object oldContent) {
+	@CallSuper
+	@TemplateMethod
+	protected void onContentChanged(PListIndex index, Object oldContent) {
 		getCellComponent(index).setElement(getModel(), index);
 	}
 	
-	protected void selectionAdded(PListIndex index) {
+	@CallSuper
+	@TemplateMethod
+	protected void onSelectionAdded(PListIndex index) {
 		PCellComponent cellComp = getCellComponent(index);
 		if (cellComp != null) {
 			cellComp.setSelected(true);
 		}
 	}
 	
-	protected void selectionRemoved(PListIndex index) {
+	@CallSuper
+	@TemplateMethod
+	protected void onSelectionRemoved(PListIndex index) {
 		PCellComponent cellComp = getCellComponent(index);
 		if (cellComp != null) {
 			cellComp.setSelected(false);
+		}
+	}
+	
+	@TemplateMethod
+	protected void onLastSelectedChanged(PModelIndex prevLastSelected, PModelIndex newLastSelected) {
+		if (hasFocus()) {
+			fireReRenderEvent();
 		}
 	}
 	

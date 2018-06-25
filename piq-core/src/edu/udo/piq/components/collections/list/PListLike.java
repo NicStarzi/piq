@@ -1,4 +1,4 @@
-package edu.udo.piq.components.collections;
+package edu.udo.piq.components.collections.list;
 
 import java.util.function.Predicate;
 
@@ -9,6 +9,9 @@ import edu.udo.piq.actions.FocusOwnerAction;
 import edu.udo.piq.actions.PAccelerator;
 import edu.udo.piq.actions.PAccelerator.FocusPolicy;
 import edu.udo.piq.actions.PAccelerator.KeyInputType;
+import edu.udo.piq.components.collections.PDropComponent;
+import edu.udo.piq.components.collections.PModelObs;
+import edu.udo.piq.components.collections.PSelectionObs;
 import edu.udo.piq.actions.PActionKey;
 import edu.udo.piq.actions.PComponentAction;
 import edu.udo.piq.actions.StandardComponentActionKey;
@@ -68,5 +71,17 @@ public interface PListLike extends PDropComponent {
 			getSelection().addSelection(nextSelected);
 		}
 	}
+	
+	@Override
+	public void addObs(PModelObs obs);
+	
+	@Override
+	public void removeObs(PModelObs obs);
+	
+	@Override
+	public void addObs(PSelectionObs obs);
+	
+	@Override
+	public void removeObs(PSelectionObs obs);
 	
 }

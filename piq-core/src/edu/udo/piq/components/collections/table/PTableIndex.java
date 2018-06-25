@@ -1,5 +1,6 @@
-package edu.udo.piq.components.collections;
+package edu.udo.piq.components.collections.table;
 
+import edu.udo.piq.components.collections.PModelIndex;
 import edu.udo.piq.util.ThrowException;
 
 public abstract class PTableIndex implements PModelIndex {

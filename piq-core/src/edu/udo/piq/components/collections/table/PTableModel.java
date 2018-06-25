@@ -1,23 +1,14 @@
-package edu.udo.piq.components.collections;
+package edu.udo.piq.components.collections.table;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.udo.piq.components.collections.table.PColumnIndex;
-import edu.udo.piq.components.collections.table.PRowIndex;
-import edu.udo.piq.components.collections.table.PTableCellIndex;
-import edu.udo.piq.components.collections.table.PTableIndex;
+import edu.udo.piq.components.collections.PModel;
+import edu.udo.piq.components.collections.PModelIndex;
+import edu.udo.piq.components.collections.WrongIndexType;
 import edu.udo.piq.util.ThrowException;
 
 public interface PTableModel extends PModel {
-	
-	public void setHeaderEnabled(boolean value);
-	
-	public boolean isHeaderEnabled();
-	
-	public void setHeader(int column, Object element);
-	
-	public Object getHeader(int column);
 	
 	public int getColumnCount();
 	

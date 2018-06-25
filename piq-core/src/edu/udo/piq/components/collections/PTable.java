@@ -13,6 +13,8 @@ import edu.udo.piq.PMouseObs;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.AbstractPInteractiveLayoutOwner;
+import edu.udo.piq.components.collections.table.PTableCellIndex;
+import edu.udo.piq.components.collections.table.PTableIndex;
 import edu.udo.piq.components.defaults.DefaultPCellComponent;
 import edu.udo.piq.components.defaults.DefaultPCellFactory;
 import edu.udo.piq.components.defaults.FixedSizePTableModel;

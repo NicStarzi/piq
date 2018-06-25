@@ -2,7 +2,7 @@ package edu.udo.piq.components.textbased;
 
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
-import edu.udo.piq.components.collections.PListIndex;
+import edu.udo.piq.components.collections.list.PListIndex;
 import edu.udo.piq.tools.MutablePBounds;
 
 public interface PTextComponent extends PComponent {

@@ -203,15 +203,16 @@ public class SwingPRoot extends AbstractPRoot implements PRoot {
 	}
 	
 	@Override
-	public PImageResource fetchImageResource(Object imgID)
+	public PImageResource fetchImageResource(Object imgKey)
 			throws NullPointerException
 	{
-		ThrowException.ifNull(imgID, "imgID == null");
+		//TODO: build in symbolic images
+		ThrowException.ifNull(imgKey, "imgKey == null");
 		String imgPath;
-		if (imgID instanceof String) {
-			imgPath = (String) imgID;
+		if (imgKey instanceof String) {
+			imgPath = (String) imgKey;
 		} else {
-			imgPath = imgID.toString();
+			imgPath = imgKey.toString();
 		}
 		AwtPImageResource imgRes = imgMap.get(imgPath);
 		if (imgRes == null) {
@@ -225,7 +226,7 @@ public class SwingPRoot extends AbstractPRoot implements PRoot {
 				System.err.print(": ");
 				System.err.print(e.getMessage());
 				System.err.print("; imgKey=");
-				System.err.print(imgID);
+				System.err.print(imgKey);
 				System.err.print("; filePath=");
 				System.err.println(imgPath);
 //				e.printStackTrace();

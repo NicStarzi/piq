@@ -3,10 +3,10 @@ package edu.udo.piq.components.defaults;
 import edu.udo.cs.util.ResizableTable;
 import edu.udo.piq.components.collections.AddImpossible;
 import edu.udo.piq.components.collections.PModelIndex;
-import edu.udo.piq.components.collections.PTableCellIndex;
-import edu.udo.piq.components.collections.PTableIndex;
 import edu.udo.piq.components.collections.PTableModel;
 import edu.udo.piq.components.collections.RemoveImpossible;
+import edu.udo.piq.components.collections.table.PTableCellIndex;
+import edu.udo.piq.components.collections.table.PTableIndex;
 import edu.udo.piq.tools.AbstractPTableModel;
 import edu.udo.piq.util.ThrowException;
 

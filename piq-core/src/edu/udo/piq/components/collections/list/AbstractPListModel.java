@@ -1,15 +1,14 @@
-package edu.udo.piq.tools;
+package edu.udo.piq.components.collections.list;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import edu.udo.piq.components.collections.AddImpossible;
 import edu.udo.piq.components.collections.IllegalIndex;
-import edu.udo.piq.components.collections.PListIndex;
-import edu.udo.piq.components.collections.PListModel;
 import edu.udo.piq.components.collections.PModelIndex;
 import edu.udo.piq.components.collections.RemoveImpossible;
 import edu.udo.piq.components.collections.WrongIndexType;
+import edu.udo.piq.tools.AbstractPModel;
 import edu.udo.piq.util.ThrowException;
 
 public abstract class AbstractPListModel extends AbstractPModel implements PListModel {

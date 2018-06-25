@@ -111,4 +111,9 @@ public class LwjglPRendererFbo extends LwjglPRendererBase {
 		curMode.drawEllipseImmediate(x, y, width, height);
 	}
 	
+	@Override
+	public void drawArc(float x, float y, float width, float height, float angleFrom, float angleArc) {
+		curMode.drawArcImmediate(x, y, width, height, angleFrom, angleArc);
+	}
+	
 }

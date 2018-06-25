@@ -31,6 +31,7 @@ import edu.udo.piq.dnd.PDnDSupport;
 import edu.udo.piq.layouts.DefaultPLayoutPreference;
 import edu.udo.piq.layouts.PComponentLayoutData;
 import edu.udo.piq.layouts.PLayoutObs;
+import edu.udo.piq.layouts.PLayoutPreference;
 import edu.udo.piq.layouts.PReadOnlyLayout;
 import edu.udo.piq.style.AbstractPStylable;
 import edu.udo.piq.style.PStyleBorder;
@@ -457,7 +458,7 @@ public class AbstractPComponent extends AbstractPStylable<PStyleComponent> imple
 	}
 	
 	@Override
-	public DefaultPLayoutPreference getLayoutPreference() {
+	public PLayoutPreference getLayoutPreference() {
 		return layoutPref;
 	}
 	

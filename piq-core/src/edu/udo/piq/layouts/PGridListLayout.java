@@ -65,6 +65,8 @@ public class PGridListLayout extends AbstractMapPLayout {
 		if (idx == null) {
 			colIdx = nextAddIdx % numOfCols;
 			rowIdx = nextAddIdx / numOfCols;
+			idx = new PTableCellIndex(colIdx, rowIdx);
+			data.setConstr(idx);
 		} else {
 			colIdx = idx.getColumn();
 			rowIdx = idx.getRow();

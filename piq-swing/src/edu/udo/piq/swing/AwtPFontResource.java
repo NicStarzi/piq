@@ -70,6 +70,16 @@ public class AwtPFontResource implements PFontResource, SwingRenderFont {
 	}
 	
 	@Override
+	public void renderTo(Graphics2D graphics, char[] text, int from, int length, float x, float y) {
+		Font awtFont = getAwtFont();
+		FontMetrics fm = graphics.getFontMetrics(awtFont);
+		LineMetrics lm = fm.getLineMetrics(text, from, length, graphics);
+		y += lm.getAscent() + lm.getLeading();
+		graphics.setFont(awtFont);
+		graphics.drawChars(text, from, length, (int) x, (int) y);
+	}
+	
+	@Override
 	public void renderTo(Graphics2D graphics, String text, float x, float y) {
 		Font awtFont = getAwtFont();
 		FontMetrics fm = graphics.getFontMetrics(awtFont);

@@ -112,4 +112,10 @@ public class LwjglPRendererRenderList extends LwjglPRendererBase {
 		drawCallsSinceLastScissor++;
 	}
 	
+	@Override
+	public void drawArc(float x, float y, float width, float height, float angleFrom, float angleArc) {
+		renderList.add(curMode.drawArc(x, y, width, height, angleFrom, angleArc));
+		drawCallsSinceLastScissor++;
+	}
+	
 }

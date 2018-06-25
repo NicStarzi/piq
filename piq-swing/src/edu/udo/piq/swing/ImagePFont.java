@@ -86,6 +86,11 @@ public class ImagePFont implements PFontResource, SwingRenderFont {
 	}
 	
 	@Override
+	public void renderTo(Graphics2D graphics, char[] text, int from, int length, float x, float y) {
+		// TODO
+	}
+	
+	@Override
 	public void renderTo(Graphics2D graphics, String text, float x, float y) {
 		// TODO
 	}

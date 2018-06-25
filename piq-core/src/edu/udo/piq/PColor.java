@@ -215,6 +215,10 @@ public interface PColor {
 		return new ImmutablePColor(r, g, b, a);
 	}
 	
+	public default PColor withAlpha1(float alpha) {
+		return new ImmutablePColor(getRed1(), getGreen1(), getBlue1(), alpha);
+	}
+	
 	public default PColor add255(int r, int g, int b) {
 		r = PColor.addColorComponent255(getRed255(), r);
 		g = PColor.addColorComponent255(getGreen255(), g);
@@ -251,6 +255,10 @@ public interface PColor {
 	
 	public default PColor mult255(int factor) {
 		return mult255(factor, factor, factor);
+	}
+	
+	public default PColor withAlpha255(int alpha) {
+		return new ImmutablePColor(getRed255(), getGreen255(), getBlue255(), alpha);
 	}
 	
 	public static float addColorComponent1(float c1, float c2) {

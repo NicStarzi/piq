@@ -146,6 +146,66 @@ public abstract class LwjglPRendererBase implements PRenderer {
 	}
 	
 	@Override
+	public void drawChars(PFontResource font, char[] charArr, int from, int length, float x, float y) {
+		StbTtFontResource fontRes = (StbTtFontResource) font;
+		int fontSize = fontRes.getPixelSize();
+		y += fontRes.getAscent();
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			FloatBuffer bufX = stack.floats(x);
+			FloatBuffer bufY = stack.floats(y);
+			
+			STBTTAlignedQuad q = STBTTAlignedQuad.mallocStack(stack);
+			STBTTBakedChar.Buffer charData = fontRes.getBakedCharData();
+			
+			GL11.glEnable(GL_TEXTURE_2D);
+			GL11.glBindTexture(GL_TEXTURE_2D, fontRes.getGlName());
+			
+			GL11.glBegin(GL11.GL_TRIANGLES);
+			GL11.glColor4f(curColorR, curColorG, curColorB, curColorA);
+			
+			int firstCP = StbTtFontResource.BAKE_FONT_FIRST_CHAR;
+			int lastCP = StbTtFontResource.BAKE_FONT_FIRST_CHAR + StbTtFontResource.GLYPH_COUNT - 1;
+			for (int i = from; i < length; i++) {
+				int codePoint = charArr[i];
+				if (codePoint == '\n') {
+					bufX.put(0, x);
+					bufY.put(0, y + bufY.get(0) + fontSize);
+					continue;
+				} else if (codePoint < firstCP || codePoint > lastCP) {
+					continue;
+				}
+				STBTruetype.stbtt_GetBakedQuad(charData,
+						StbTtFontResource.FONT_TEX_W, StbTtFontResource.FONT_TEX_H,
+						codePoint - firstCP,
+						bufX, bufY, q, true);
+//				System.out.println("RENDER \t c="+((char) codePoint)+"; w="+(x1 - x0)+"; w2="+(x0 - oldX1));
+				
+				GL11.glTexCoord2f(q.s0(), q.t0());
+				GL11.glVertex2f(q.x0(), q.y0());
+				
+				GL11.glTexCoord2f(q.s0(), q.t1());
+				GL11.glVertex2f(q.x0(), q.y1());
+				
+				GL11.glTexCoord2f(q.s1(), q.t1());
+				GL11.glVertex2f(q.x1(), q.y1());
+				
+				GL11.glTexCoord2f(q.s1(), q.t1());
+				GL11.glVertex2f(q.x1(), q.y1());
+				
+				GL11.glTexCoord2f(q.s1(), q.t0());
+				GL11.glVertex2f(q.x1(), q.y0());
+				
+				GL11.glTexCoord2f(q.s0(), q.t0());
+				GL11.glVertex2f(q.x0(), q.y0());
+			}
+			GL11.glEnd();
+			
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+			GL11.glDisable(GL11.GL_TEXTURE_2D);
+		}
+	}
+	
+	@Override
 	public final void drawString(PFontResource font, String text, float x, float y) {
 		StbTtFontResource fontRes = (StbTtFontResource) font;
 		int fontSize = fontRes.getPixelSize();

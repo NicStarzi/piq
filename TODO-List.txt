@@ -3,7 +3,6 @@ TODO:
  - PTable overhaul + drag and drop support
  - Request scroll to rect support in many components
  - PScrollPanel scroll bars + PScrollable support
- - PMouse: press and trigger is the same right now
  - PKeyObsMode: ALWAYS, WHEN_FOCUSED
  - PMouseObsMode: ALWAYS, WHEN_MOUSE_OVER, WHEN_MOUSE_OVER_THIS_OR_DESCENDANT
  - PComponent when width * height == 0 disable mouse and keyboard observers

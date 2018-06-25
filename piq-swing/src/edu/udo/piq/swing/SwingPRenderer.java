@@ -204,6 +204,12 @@ public class SwingPRenderer implements PRenderer {
 	}
 	
 	@Override
+	public void drawChars(PFontResource font, char[] charArr, int from, int length, float x, float y) {
+		SwingRenderFont renderFont = (SwingRenderFont) font;
+		renderFont.renderTo(getAwtGraphics(), charArr, from, length, x, y);
+	}
+	
+	@Override
 	public void drawString(PFontResource font, String text, float x, float y) {
 		SwingRenderFont renderFont = (SwingRenderFont) font;
 		renderFont.renderTo(getAwtGraphics(), text, x, y);

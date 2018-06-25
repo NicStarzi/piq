@@ -110,4 +110,35 @@ public class LwjglRmFill implements LwjglRenderMode {
 		GL11.glEnd();
 	}
 	
+	@Override
+	public void drawArcImmediate(float x, float y, float width, float height, float angleFrom, float angleArc) {
+		float halfW = width / 2f;
+		float halfH = height / 2f;
+		float x0 = x + halfW;
+		float y0 = y + halfH;
+		
+		double k = 1 - (0.5 / Math.max(halfW, halfH));
+		double th = Math.acos(2 * k * k - 1);
+		
+		int vertexCount = (int) Math.max(angleArc / th + 0.5, 4);
+		
+		GL11.glBegin(GL11.GL_TRIANGLE_FAN);
+		GL11.glColor4f(renderer.curColorR, renderer.curColorG,
+				renderer.curColorB, renderer.curColorA);
+		
+		float radStep = (float) Math.toRadians(angleArc / vertexCount);
+		float rad = 0;
+		GL11.glVertex2f(x0, y0);
+		for (int i = 0; i < vertexCount; i++) {
+			float xi = x0 + (float) Math.cos(rad) * halfW;
+			float yi = y0 + (float) Math.sin(rad) * halfH;
+			GL11.glVertex2f(xi, yi);
+			rad += radStep;
+		}
+		float xn = x0 + (float) Math.cos(0) * halfW;
+		float yn = y0 + (float) Math.sin(0) * halfH;
+		GL11.glVertex2f(xn, yn);
+		GL11.glEnd();
+	}
+	
 }

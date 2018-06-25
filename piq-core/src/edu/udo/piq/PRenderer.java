@@ -244,6 +244,14 @@ public interface PRenderer extends PDisposable {
 	
 	public boolean isFontSupported(PFontResource font);
 	
+	public default void drawChars(PFontResource font, char[] charArr, int from, int length, float x, float y) {
+		drawString(font, new String(charArr, from, length), x, y);
+	}
+	
+	public default void drawChars(PFontResource font, char[] charArr, float x, float y) {
+		drawChars(font, charArr, 0, charArr.length, x, y);
+	}
+	
 	public void drawString(PFontResource font, String text, float x, float y);
 	
 	public default void drawEllipse(float x, float y, float width, float height) {

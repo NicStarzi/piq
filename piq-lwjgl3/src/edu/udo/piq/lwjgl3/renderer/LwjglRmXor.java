@@ -54,7 +54,7 @@ public class LwjglRmXor extends LwjglRmOutline implements LwjglRenderMode {
 	}
 	
 	@Override
-	public void drawEllipseImmediate(int x, int y, int width, int height) {
+	public void drawEllipseImmediate(float x, float y, float width, float height) {
 		GL11.glEnable(GL11.GL_COLOR_LOGIC_OP);
 		GL11.glLogicOp(GL11.GL_XOR);
 		super.drawEllipseImmediate(x, y, width, height);

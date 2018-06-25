@@ -71,4 +71,10 @@ public interface LwjglRenderMode extends PRenderMode {
 		return () -> drawEllipseImmediate(x, y, width, height);
 	}
 	
+	public void drawArcImmediate(float x, float y, float width, float height, float angleFrom, float angleArc);
+	
+	public default Runnable drawArc(float x, float y, float width, float height, float angleFrom, float angleArc) {
+		return () -> drawArcImmediate(x, y, width, height, angleFrom, angleArc);
+	}
+	
 }

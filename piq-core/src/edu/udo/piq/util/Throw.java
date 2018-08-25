@@ -46,6 +46,22 @@ public class Throw {
 		}
 	}
 	
+	public static void ifNotEqual(long guard, long value, Supplier<String> optionalMsg)
+			throws IllegalArgumentException
+	{
+		if (guard != value) {
+			Throw.iae(optionalMsg);
+		}
+	}
+	
+	public static void ifNotEqual(double guard, double value, Supplier<String> optionalMsg)
+			throws IllegalArgumentException
+	{
+		if (guard != value) {
+			Throw.iae(optionalMsg);
+		}
+	}
+	
 	public static void ifEqual(long guard, long value, Supplier<String> optionalMsg)
 			throws IllegalArgumentException
 	{
@@ -296,6 +312,90 @@ public class Throw {
 			}
 		}
 		Throw.iae(optionalMsg);
+	}
+	
+	public static <T> void ifAnyMatch(Collection<T> collection, Predicate<T> cond, Supplier<String> msg)
+			throws IllegalArgumentException
+	{
+		for (T t : collection) {
+			if (cond.test(t)) {
+				Throw.iae(msg);
+			}
+		}
+	}
+	
+	public static <T> void ifNoneMatch(Collection<T> collection, Predicate<T> cond, Supplier<String> msg)
+			throws IllegalArgumentException
+	{
+		for (T t : collection) {
+			if (cond.test(t)) {
+				return;
+			}
+		}
+		Throw.iae(msg);
+	}
+	
+	public static <T> void ifAnyMatch(T[] arr, Predicate<T> cond, Supplier<String> msg)
+			throws IllegalArgumentException
+	{
+		for (T t : arr) {
+			if (cond.test(t)) {
+				Throw.iae(msg);
+			}
+		}
+	}
+	
+	public static <T> void ifNoneMatch(T[] arr, Predicate<T> cond, Supplier<String> msg)
+			throws IllegalArgumentException
+	{
+		for (T t : arr) {
+			if (cond.test(t)) {
+				return;
+			}
+		}
+		Throw.iae(msg);
+	}
+	
+	public static void ifAnyMatch(int[] arr, Predicate<Integer> cond, Supplier<String> msg)
+			throws IllegalArgumentException
+	{
+		for (int i : arr) {
+			if (cond.test(i)) {
+				Throw.iae(msg);
+			}
+		}
+	}
+	
+	public static void ifNoneMatch(int[] arr, Predicate<Integer> cond, Supplier<String> msg)
+			throws IllegalArgumentException
+	{
+		for (int i : arr) {
+			if (cond.test(i)) {
+				return;
+			}
+		}
+		Throw.iae(msg);
+	}
+	
+	public static void ifAnyMatch(double[] arr, Predicate<Double> cond, Supplier<String> msg)
+			throws IllegalArgumentException
+	{
+		for (double i : arr) {
+			if (cond.test(i)) {
+				Throw.iae(msg);
+			}
+		}
+	}
+	
+	public static void ifNoneMatch(double[] arr, Predicate<Double> cond, Supplier<String> msg)
+			throws IllegalArgumentException
+	{
+		for (double i : arr) {
+			if (cond.test(i)) {
+				return;
+			}
+		}
+		Throw.iae(msg);
 	}
 	
 	public static void always(Supplier<String> optionalMsg)

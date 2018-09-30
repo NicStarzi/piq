@@ -64,12 +64,16 @@ public class AbstractPStylable<E extends PStyle> implements PStyleable<E> {
 			if (styleObs == null) {
 				styleObs = new PStyleObs() {
 					@Override
-					public void onSizeChangedEvent() {
-						AbstractPStylable.this.onStyleSizeChangedEvent();
+					public void onSizeChangedEvent(PStyleable<?> styleable) {
+						if (styleable == null || styleable == AbstractPStylable.this) {
+							AbstractPStylable.this.onStyleSizeChangedEvent();
+						}
 					}
 					@Override
-					public void onReRenderEvent() {
-						AbstractPStylable.this.onStyleReRenderEvent();
+					public void onReRenderEvent(PStyleable<?> styleable) {
+						if (styleable == null || styleable == AbstractPStylable.this) {
+							AbstractPStylable.this.onStyleReRenderEvent();
+						}
 					}
 				};
 			}

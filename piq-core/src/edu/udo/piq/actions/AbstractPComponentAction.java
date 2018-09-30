@@ -14,6 +14,15 @@ public abstract class AbstractPComponentAction implements PComponentAction {
 	
 	public AbstractPComponentAction() {}
 	
+	@Override
+	public abstract AbstractPComponentAction clone();
+	
+	public AbstractPComponentAction cloneWithAccelerator(PAccelerator accelerator) {
+		AbstractPComponentAction aca = clone();
+		aca.setAccelerator(accelerator);
+		return aca;
+	}
+	
 	public AbstractPComponentAction(PAccelerator initialAccelerator) {
 		setAccelerator(initialAccelerator);
 	}

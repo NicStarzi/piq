@@ -20,6 +20,11 @@ public class ImmutableAction extends AbstractPComponentAction {
 	}
 	
 	@Override
+	public AbstractPComponentAction clone() {
+		return new ImmutableAction(getAccelerator(), enabledFunc, performAct);
+	}
+	
+	@Override
 	public boolean isEnabled(PRoot root) {
 		return enabledFunc.test(root);
 	}

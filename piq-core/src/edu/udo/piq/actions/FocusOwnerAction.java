@@ -42,6 +42,11 @@ public class FocusOwnerAction<E extends PComponent> extends AbstractPComponentAc
 		act = action;
 	}
 	
+	@Override
+	public AbstractPComponentAction clone() {
+		return new FocusOwnerAction<>(compCls, strongFocus, getAccelerator(), cond, act);
+	}
+	
 	protected PComponent getFocusedComponent(PRoot root) {
 		return strongFocus ? root.getLastStrongFocusOwner() : root.getFocusOwner();
 	}

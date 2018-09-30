@@ -18,11 +18,19 @@ public abstract class MutablePStyle implements PStyle {
 	}
 	
 	protected void fireReRenderEvent() {
-		obsList.fireEvent(obs -> obs.onReRenderEvent());
+		fireReRenderEvent(null);
+	}
+	
+	protected void fireReRenderEvent(PStyleable<?> styleable) {
+		obsList.fireEvent(obs -> obs.onReRenderEvent(styleable));
 	}
 	
 	protected void fireSizeChangedEvent() {
-		obsList.fireEvent(obs -> obs.onSizeChangedEvent());
+		fireSizeChangedEvent(null);
+	}
+	
+	protected void fireSizeChangedEvent(PStyleable<?> styleable) {
+		obsList.fireEvent(obs -> obs.onSizeChangedEvent(styleable));
 	}
 	
 }

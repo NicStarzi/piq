@@ -4,11 +4,11 @@ import java.util.List;
 
 import edu.udo.piq.PComponent;
 import edu.udo.piq.components.collections.PDropComponent;
-import edu.udo.piq.components.collections.PListIndex;
 import edu.udo.piq.components.collections.PModel;
 import edu.udo.piq.components.collections.PModelExport;
 import edu.udo.piq.components.collections.PModelImport;
 import edu.udo.piq.components.collections.PModelIndex;
+import edu.udo.piq.components.collections.list.PListIndex;
 import edu.udo.piq.components.util.SymbolicImageKey;
 import edu.udo.piq.dnd.PDnDIndicator;
 import edu.udo.piq.dnd.PDnDManager;

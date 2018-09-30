@@ -14,7 +14,6 @@ import edu.udo.piq.actions.PAccelerator;
 import edu.udo.piq.actions.PAccelerator.FocusPolicy;
 import edu.udo.piq.actions.PAccelerator.KeyInputType;
 import edu.udo.piq.actions.PActionKey;
-import edu.udo.piq.actions.PComponentAction;
 import edu.udo.piq.actions.StandardComponentActionKey;
 import edu.udo.piq.components.defaults.ReRenderPFocusObs;
 import edu.udo.piq.components.textbased.PLabel;
@@ -32,7 +31,7 @@ public class PCheckBoxTuple extends AbstractPLayoutOwner implements PInteractive
 	public static final PActionKey KEY_TRIGGER_ENTER = StandardComponentActionKey.INTERACT;
 	public static final PAccelerator ACCELERATOR_TRIGGER_ENTER = new PAccelerator(
 			ActualKey.ENTER, FocusPolicy.THIS_OR_CHILD_HAS_FOCUS, KeyInputType.TRIGGER);
-	public static final PComponentAction ACTION_TRIGGER_ENTER = new FocusOwnerAction<>(
+	public static final FocusOwnerAction<PCheckBoxTuple> ACTION_TRIGGER_ENTER = new FocusOwnerAction<>(
 			PCheckBoxTuple.class, false,
 			ACCELERATOR_TRIGGER_ENTER,
 			self -> self.isEnabled(),

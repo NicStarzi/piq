@@ -2,8 +2,8 @@ package edu.udo.piq.style;
 
 public interface PStyleObs {
 	
-	public void onSizeChangedEvent();
+	public void onSizeChangedEvent(PStyleable<?> styleable);
 	
-	public void onReRenderEvent();
+	public void onReRenderEvent(PStyleable<?> styleable);
 	
 }

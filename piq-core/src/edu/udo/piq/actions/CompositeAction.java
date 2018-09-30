@@ -37,6 +37,11 @@ public class CompositeAction extends AbstractPComponentAction implements PCompon
 	}
 	
 	@Override
+	public AbstractPComponentAction clone() {
+		return new CompositeAction(getAccelerator(), delegateKeys);
+	}
+	
+	@Override
 	public boolean isEnabled(PRoot root) {
 		PComponent focusOwner = root.getLastStrongFocusOwner();
 		if (focusOwner == null) {

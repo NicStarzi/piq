@@ -55,6 +55,11 @@ public abstract class AbstractPMenuItem extends AbstractPLayoutOwner {
 			}
 		}
 		
+		@Override
+		public AbstractPComponentAction clone() {
+			return new ActionTriggerOnEnter();
+		}
+		
 	}
 	
 	protected final Map<MenuEntryPart, PComponent> partsMap = new EnumMap<>(MenuEntryPart.class);

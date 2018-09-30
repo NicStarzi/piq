@@ -81,7 +81,7 @@ public class PCheckBox extends AbstractPInteractiveComponent implements PClickab
 		return getModel().isChecked();
 	}
 	
-	protected void toggleChecked() {
+	public void toggleChecked() {
 		if (getModel() != null) {
 			getModel().toggleChecked();
 		}

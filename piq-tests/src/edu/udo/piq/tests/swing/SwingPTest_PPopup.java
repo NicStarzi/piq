@@ -13,6 +13,7 @@ import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PCheckBoxTuple;
 import edu.udo.piq.components.collections.PSelectionComponent;
 import edu.udo.piq.components.collections.list.PList;
+import edu.udo.piq.components.collections.list.PListLike;
 import edu.udo.piq.components.collections.list.PListModel;
 import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.components.containers.PSplitPanel;
@@ -63,6 +64,10 @@ public class SwingPTest_PPopup extends AbstractSwingPTest {
 				for (int i = 0; i < 5; i++) {
 					model.add(content);
 				}
+			}
+			@Override
+			public AbstractPComponentAction clone() {
+				throw new UnsupportedOperationException();
 			}
 		};
 		PComponentActionIndicator indTest = new ImmutablePActionIndicator(new PActionKey("Test1"), "Copy first element 5 times");
@@ -120,8 +125,8 @@ public class SwingPTest_PPopup extends AbstractSwingPTest {
 		
 		PMenuBarItem itemEdit = new PMenuBarItem("Edit");
 		itemEdit.setID("edit");
-		itemEdit.addMenuItem(new ImmutablePActionIndicator(PList.KEY_PREV, "Move Selection Up"));
-		itemEdit.addMenuItem(new ImmutablePActionIndicator(PList.KEY_NEXT, "Move Selection Down"));
+		itemEdit.addMenuItem(new ImmutablePActionIndicator(PListLike.KEY_PREV, "Move Selection Up"));
+		itemEdit.addMenuItem(new ImmutablePActionIndicator(PListLike.KEY_NEXT, "Move Selection Down"));
 		itemEdit.addMenuItem(new PMenuDivider());
 		itemEdit.addMenuItem(PSelectionComponent.INDICATOR_COPY);
 		itemEdit.addMenuItem(PSelectionComponent.INDICATOR_PASTE);

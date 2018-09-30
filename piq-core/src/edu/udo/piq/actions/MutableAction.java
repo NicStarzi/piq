@@ -10,6 +10,14 @@ public class MutableAction extends AbstractPComponentAction {
 	protected Predicate<PRoot> enabledFunc;
 	protected Consumer<PRoot> performAct;
 	
+	@Override
+	public AbstractPComponentAction clone() {
+		MutableAction act = new MutableAction();
+		act.enabledFunc = enabledFunc;
+		act.performAct = performAct;
+		return act;
+	}
+	
 	public void setEnabledValue(boolean constantEnabledValue) {
 		setEnabledTest(root -> constantEnabledValue);
 	}

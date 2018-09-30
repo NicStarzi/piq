@@ -118,7 +118,8 @@ public class PFreeLayout extends AbstractMapPLayout {
 	
 	@Override
 	public PComponent getChildAt(int x, int y) {
-		for (int i = sortedChildren.size() - 1; i >= 0; i--) {
+//		for (int i = sortedChildren.size() - 1; i >= 0; i--) {
+		for (int i = 0; i < sortedChildren.size(); i++) {
 			PComponent child = sortedChildren.get(i);
 			if (child.isIgnoredByPicking()) {
 				if (child.getLayout() != null) {

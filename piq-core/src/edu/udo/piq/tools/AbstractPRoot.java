@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
+import edu.udo.piq.CallSuper;
 import edu.udo.piq.PBorder;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PClipboard;
@@ -21,11 +22,13 @@ import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PKeyboardObs;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PMouseObs;
+import edu.udo.piq.PRenderSubRoot;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PRootObs;
 import edu.udo.piq.PRootOverlay;
 import edu.udo.piq.PTimer;
+import edu.udo.piq.TemplateMethod;
 import edu.udo.piq.components.containers.DefaultPRootOverlay;
 import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.dnd.PDnDManager;
@@ -207,6 +210,15 @@ public abstract class AbstractPRoot implements PRoot {
 //					System.out.println("cullComponent="+comp);
 					continue;
 				}
+				// comp may be a sub root for rendering such as an PAnimationPanel
+				if (comp instanceof PRenderSubRoot) {
+					AbstractPRoot.resetRenderState(renderer, clipX, clipY, clipW, clipH);
+					
+					PRenderSubRoot subRoot = (PRenderSubRoot) comp;
+					subRoot.renderThisAndChildren(renderer, clipX, clipY, clipW, clipH);
+					continue;
+				}
+				// comp is regular component and visible. Do rendering of comp and its children.
 				AbstractPRoot.renderComponent(renderer, comp, clipX, clipY, clipW, clipH);
 				
 				PReadOnlyLayout layout = comp.getLayout();
@@ -256,7 +268,7 @@ public abstract class AbstractPRoot implements PRoot {
 			 * Performance Improvement:
 			 * Only one PBounds object is created for all components to cut down
 			 * the total number of object creations.
-			 * The bounds are filled with PCompUtil.fillClippedBounds(...)
+			 * The bounds are filled with PiqUtil.fillClippedBounds(...)
 			 */
 			MutablePBounds tmpBnds = new MutablePBounds();
 			
@@ -268,8 +280,7 @@ public abstract class AbstractPRoot implements PRoot {
 					// does not create a new instance of PBounds if tmpBnds != null
 					PBounds clipBnds = PiqUtil.fillClippedBounds(tmpBnds, child);
 					// If the clipped bounds are null the component is
-					// completely
-					// concealed and does not need to be rendered
+					// completely concealed and does not need to be rendered
 					if (clipBnds == null) {
 						continue;
 					}
@@ -283,8 +294,7 @@ public abstract class AbstractPRoot implements PRoot {
 				}
 			}
 		}
-		// The overlay must be rendered last whenever the rest of the GUI is
-		// rendered
+		// The overlay must be rendered last whenever the rest of the GUI is rendered
 		PRootOverlay overlay = root.getOverlay();
 		if (overlay != null) {
 			for (PComponent overlayComp : overlay.getChildren()) {
@@ -296,14 +306,19 @@ public abstract class AbstractPRoot implements PRoot {
 		return stack;
 	}
 	
-	public static void renderComponent(PRenderer renderer, PComponent comp,
+	public static void resetRenderState(PRenderer renderer,
 			int clipX, int clipY, int clipW, int clipH)
 	{
 		// Reset renderer state
 		renderer.setClipBounds(clipX, clipY, clipW, clipH);
 		renderer.setRenderMode(renderer.getRenderModeFill());
 		renderer.setColor1(1, 1, 1, 1);
-		
+	}
+	
+	public static void renderComponent(PRenderer renderer, PComponent comp,
+			int clipX, int clipY, int clipW, int clipH)
+	{
+		AbstractPRoot.resetRenderState(renderer, clipX, clipY, clipW, clipH);
 		// Render the border first
 		PBorder border = comp.getBorder();
 		if (border != null) {
@@ -401,6 +416,12 @@ public abstract class AbstractPRoot implements PRoot {
 		onFocusOwnerChanged();
 	}
 	
+	@TemplateMethod
+	protected void onComponentAddedToGui(PComponent addedComponent) {
+	}
+	
+	@TemplateMethod
+	@CallSuper
 	protected void onComponentRemovedFromRoot(PComponent parent, PComponent removedComponent) {
 		if (getLastStrongFocusOwner() == removedComponent) {
 			strongFocusOwner = null;
@@ -410,6 +431,8 @@ public abstract class AbstractPRoot implements PRoot {
 		}
 	}
 	
+	@TemplateMethod
+	@CallSuper
 	protected void onFocusOwnerChanged() {
 		PComponent current = getFocusOwner();
 		PFocusTraversal newActiveFocusTraversal = null;
@@ -616,6 +639,7 @@ public abstract class AbstractPRoot implements PRoot {
 	
 	@Override
 	public void fireComponentAddedToGui(PComponent addedComponent) {
+		onComponentAddedToGui(addedComponent);
 		rootObsList.fireEvent(obs -> obs.onComponentAddedToGui(addedComponent));
 	}
 	

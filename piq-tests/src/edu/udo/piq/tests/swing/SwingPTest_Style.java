@@ -18,6 +18,7 @@ import edu.udo.piq.components.defaults.DefaultPProgressBarModel;
 import edu.udo.piq.components.defaults.PSpinnerModelList;
 import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.layouts.AlignmentX;
+import edu.udo.piq.layouts.DefaultPLayoutPreference;
 import edu.udo.piq.layouts.PListLayout.ListAlignment;
 import edu.udo.piq.scroll2.PScrollPanel;
 import edu.udo.piq.tests.styles.SwingStyleSheet;
@@ -73,7 +74,8 @@ public class SwingPTest_Style extends AbstractSwingPTest {
 			PSlider sld = new PSlider(0, i * -25, btnLabels.length * 25 - i * 25);
 			PCheckBoxTuple chkBx = new PCheckBoxTuple("Check "+i);
 			PLabel lbl = new PLabel(new SpecialTextModel(sld, chkBx));
-			lbl.getLayoutPreference().setAlignmentX(AlignmentX.RIGHT);
+			DefaultPLayoutPreference layoutPref = (DefaultPLayoutPreference) lbl.getLayoutPreference();
+			layoutPref.setAlignmentX(AlignmentX.RIGHT);
 			
 			subPnl.addChild(btn, null);
 			subPnl.addChild(sld, null);

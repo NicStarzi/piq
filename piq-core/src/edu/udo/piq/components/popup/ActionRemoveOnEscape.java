@@ -35,4 +35,9 @@ public class ActionRemoveOnEscape extends AbstractPComponentAction implements PC
 		}
 	}
 	
+	@Override
+	public AbstractPComponentAction clone() {
+		return new ActionRemoveOnEscape();
+	}
+	
 }

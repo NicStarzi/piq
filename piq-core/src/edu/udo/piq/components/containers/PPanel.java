@@ -16,7 +16,7 @@ public class PPanel extends AbstractPContainer<Object> {
 	 * public to give access to the user.<br>
 	 */
 	@Override
-	public void setLayout(PLayout layout) {
-		super.setLayout(layout);
+	public <LAYOUT_T extends PLayout> LAYOUT_T setLayout(LAYOUT_T layout) {
+		return super.setLayout(layout);
 	}
 }

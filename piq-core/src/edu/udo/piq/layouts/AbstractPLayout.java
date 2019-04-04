@@ -1,6 +1,7 @@
 package edu.udo.piq.layouts;
 
 import edu.udo.piq.CallSuper;
+import edu.udo.piq.PBounds;
 import edu.udo.piq.PComponent;
 import edu.udo.piq.PComponentObs;
 import edu.udo.piq.PSize;
@@ -52,9 +53,14 @@ public abstract class AbstractPLayout implements PLayout {
 		return owner;
 	}
 	
+	protected Object transformConstraint(Object constraint) {
+		return constraint;
+	}
+	
 	@CallSuper
 	@Override
 	public void addChild(PComponent component, Object constraint) throws NullPointerException, IllegalArgumentException, IllegalStateException {
+		constraint = transformConstraint(constraint);
 		ThrowException.ifNull(component, "component == null");
 		ThrowException.ifFalse(canAdd(component, constraint), "canAdd(component, constraint) == false");
 		ThrowException.ifTrue(containsChild(component), "containsChild(component) == true");
@@ -67,6 +73,26 @@ public abstract class AbstractPLayout implements PLayout {
 		onChildAdded(data);
 		fireAddEvent(data);
 		invalidate();
+	}
+	
+	@Override
+	public void removeChild(Object constraint) {
+		PLayout.super.removeChild(transformConstraint(constraint));
+	}
+	
+	@Override
+	public boolean containsChild(Object constraint) {
+		return PLayout.super.containsChild(transformConstraint(constraint));
+	}
+	
+	@Override
+	public PBounds getChildBounds(Object constraint) {
+		return PLayout.super.getChildBounds(transformConstraint(constraint));
+	}
+	
+	@Override
+	public PComponent getChildForConstraint(Object constraint) {
+		return PLayout.super.getChildForConstraint(transformConstraint(constraint));
 	}
 	
 	@CallSuper
@@ -142,9 +168,17 @@ public abstract class AbstractPLayout implements PLayout {
 	}
 	
 	protected void setChildConstraint(PComponent child, Object constraint) {
+		constraint = transformConstraint(constraint);
 		PComponentLayoutData data = getDataFor(child);
 		ThrowException.ifNull(data, "containsChild(child) == false");
 		data.setConstr(constraint);
+	}
+	
+	protected PSize getSizeOf(PComponent child) {
+		if (child == null) {
+			return PSize.ZERO_SIZE;
+		}
+		return child.getBounds();
 	}
 	
 	protected PSize getPreferredSizeOf(PComponent child) {

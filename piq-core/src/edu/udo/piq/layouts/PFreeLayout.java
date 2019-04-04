@@ -11,12 +11,6 @@ import edu.udo.piq.util.ThrowException;
 
 public class PFreeLayout extends AbstractMapPLayout {
 	
-	/**
-	 * To save memory the preferred size of the layout
-	 * is an instance of MutablePSize which is updated
-	 * and returned by the {@link #getPreferredSize()}
-	 * method.<br>
-	 */
 	protected final List<PComponent> sortedChildren = new ArrayList<>();
 	
 	public PFreeLayout(PComponent owner) {
@@ -118,9 +112,15 @@ public class PFreeLayout extends AbstractMapPLayout {
 	
 	@Override
 	public PComponent getChildAt(int x, int y) {
-//		for (int i = sortedChildren.size() - 1; i >= 0; i--) {
-		for (int i = 0; i < sortedChildren.size(); i++) {
-			PComponent child = sortedChildren.get(i);
+		if (!getOwner().getBounds().contains(x, y)) {
+			return null;
+		}
+		if (isEmpty()) {
+			return null;
+		}
+		for (PComponent child : sortedChildren) {
+//		for (int i = 0; i < sortedChildren.size(); i++) {
+//			PComponent child = sortedChildren.get(i);
 			if (child.isIgnoredByPicking()) {
 				if (child.getLayout() != null) {
 					PComponent grandChild = child.getLayout().getChildAt(x, y);
@@ -147,31 +147,35 @@ public class PFreeLayout extends AbstractMapPLayout {
 	
 	public void updateConstraint(PComponent child, int x, int y) {
 		FreeConstraint con = getChildConstraint(child);
-		updateConstraint(child, con, x, y, con.w, con.h, con.z);
+		updateConstraint(child, con, x, y, con.w, con.h, con.z, con.alignX, con.alignY);
 	}
 	
 	public void updateConstraint(PComponent child, int x, int y, int z) {
 		FreeConstraint con = getChildConstraint(child);
-		updateConstraint(child, con, x, y, con.w, con.h, z);
+		updateConstraint(child, con, x, y, con.w, con.h, z, con.alignX, con.alignY);
 	}
 	
 	public void updateConstraint(PComponent child, int x, int y, int width, int height) {
 		FreeConstraint con = getChildConstraint(child);
-		updateConstraint(child, con, x, y, width, height, con.z);
+		updateConstraint(child, con, x, y, width, height, con.z, con.alignX, con.alignY);
 	}
 	
 	public void updateConstraint(PComponent child, int x, int y, int width, int height, int z) {
 		FreeConstraint con = getChildConstraint(child);
-		updateConstraint(child, con, x, y, width, height, z);
+		updateConstraint(child, con, x, y, width, height, z, con.alignX, con.alignY);
 	}
 	
-	protected void updateConstraint(PComponent child, FreeConstraint con, int x, int y, int width, int height, int z) {
+	protected void updateConstraint(PComponent child, FreeConstraint con, int x, int y, 
+			int width, int height, int z, AlignmentX alignX, AlignmentY alignY) 
+	{
 		boolean invalidate = false;
-		if (con.x != x || con.y != y || con.w != width || con.h != height) {
+		if (con.x != x || con.y != y || con.w != width || con.h != height || con.alignX != alignX || con.alignY != alignY) {
 			con.x = x;
 			con.y = y;
 			con.w = width;
 			con.h = height;
+			con.alignX = alignX;
+			con.alignY = alignY;
 			invalidate = true;
 		}
 		if (con.z != z) {
@@ -183,6 +187,34 @@ public class PFreeLayout extends AbstractMapPLayout {
 		if (invalidate) {
 			invalidate();
 		}
+	}
+	
+	protected void setConstraintX(FreeConstraint c, int value) {
+		c.x = value;
+	}
+	
+	protected void setConstraintY(FreeConstraint c, int value) {
+		c.y = value;
+	}
+	
+	protected void setConstraintZ(FreeConstraint c, int value) {
+		c.z = value;
+	}
+	
+	protected void setConstraintW(FreeConstraint c, int value) {
+		c.w = value;
+	}
+	
+	protected void setConstraintH(FreeConstraint c, int value) {
+		c.h = value;
+	}
+	
+	protected void setConstraintAlignmentX(FreeConstraint c, AlignmentX value) {
+		c.alignX = value;
+	}
+	
+	protected void setConstraintAlignmentY(FreeConstraint c, AlignmentY value) {
+		c.alignY = value;
 	}
 	
 	public void updateConstraint(PComponent child, AlignmentX alignX, AlignmentY alignY) {
@@ -199,7 +231,8 @@ public class PFreeLayout extends AbstractMapPLayout {
 		updateConstraint(child, con,
 				newConstraint.getX(), newConstraint.getY(),
 				newConstraint.getWidth(), newConstraint.getHeight(),
-				newConstraint.getZ());
+				newConstraint.getZ(), 
+				newConstraint.getAlignmentX(), newConstraint.getAlignmentY());
 	}
 	
 	@Override
@@ -298,6 +331,28 @@ public class PFreeLayout extends AbstractMapPLayout {
 		
 		public AlignmentY getAlignmentY() {
 			return alignY;
+		}
+		
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			sb.append(getClass().getSimpleName());
+			sb.append("{x=");
+			sb.append(getX());
+			sb.append("; y=");
+			sb.append(getY());
+			sb.append("; z=");
+			sb.append(getZ());
+			sb.append("; width=");
+			sb.append(getWidth());
+			sb.append("; height=");
+			sb.append(getHeight());
+			sb.append("; alignX=");
+			sb.append(getAlignmentX());
+			sb.append("; alignY=");
+			sb.append(getAlignmentY());
+			sb.append("}");
+			return sb.toString();
 		}
 	}
 	

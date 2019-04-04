@@ -84,9 +84,9 @@ public class PGridListLayout extends AbstractMapPLayout {
 			row[colIdx] = data.getComponent();
 			rowList.add(row);
 		}
-		int addIdx = colIdx + rowIdx * numOfCols;
-		if (nextAddIdx <= addIdx) {
-			nextAddIdx = addIdx + 1;
+		int addedIdx = colIdx + rowIdx * numOfCols;
+		if (nextAddIdx <= addedIdx) {
+			nextAddIdx = addedIdx + 1;
 		}
 		invalidate();
 	}
@@ -279,6 +279,12 @@ public class PGridListLayout extends AbstractMapPLayout {
 			return null;
 		}
 		return rowList.get(rowIdx)[colIdx];
+	}
+	
+	public PComponent getChild(int index) {
+		int colIdx = index % getColumnCount();
+		int rowIdx = index / getColumnCount();
+		return getChild(colIdx, rowIdx);
 	}
 	
 	@Override

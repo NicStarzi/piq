@@ -194,16 +194,17 @@ public class PTree extends AbstractPInteractiveLayoutOwner implements PDropCompo
 	}
 	
 	@Override
-	protected void setLayout(PLayout layout) {
+	protected <LAYOUT_T extends PLayout> LAYOUT_T setLayout(LAYOUT_T layout) {
 		ThrowException.ifTypeCastFails(layout, PTreeLayout.class,
 				"(layout instanceof PTreeLayout) == false");
 		if (getLayoutInternal() != null) {
 			getLayoutInternal().removeObs(cellMoveObs);
 		}
-		super.setLayout(layout);
+		LAYOUT_T result = super.setLayout(layout);
 		if (getLayoutInternal() != null) {
 			getLayoutInternal().addObs(cellMoveObs);
 		}
+		return result;
 	}
 	
 	@Override

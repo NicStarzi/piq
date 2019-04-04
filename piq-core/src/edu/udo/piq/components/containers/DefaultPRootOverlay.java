@@ -18,10 +18,10 @@ public class DefaultPRootOverlay extends PGlassPanel implements PRootOverlay {
 	}
 	
 	@Override
-	public void setLayout(PLayout layout) {
+	public <LAYOUT_T extends PLayout> LAYOUT_T setLayout(LAYOUT_T layout) {
 		ThrowException.ifTypeCastFails(layout, PFreeLayout.class,
 				"!(layout instanceof PFreeLayout)");
-		super.setLayout(layout);
+		return super.setLayout(layout);
 	}
 	
 	public void setLayout(PFreeLayout layout) {

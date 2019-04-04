@@ -38,10 +38,10 @@ public class PRingMenu extends AbstractPLayoutOwner {
 	}
 	
 	@Override
-	protected void setLayout(PLayout layout) {
+	protected <LAYOUT_T extends PLayout> LAYOUT_T setLayout(LAYOUT_T layout) {
 		ThrowException.ifTypeCastFails(layout, PRingLayout.class,
 				"(layout instanceof PRingLayout) == false");
-		super.setLayout(layout);
+		return super.setLayout(layout);
 	}
 	
 	@Override

@@ -19,8 +19,8 @@ public class PBorderLayout extends AbstractEnumPLayout<BorderLayoutConstraint> {
 	public static final int DEFAULT_GAP = 0;
 	
 	protected PInsets insets = PBorderLayout.DEFAULT_INSETS;
-	protected AlignmentX alignX = DEFAULT_ALIGN_X;
-	protected AlignmentY alignY = DEFAULT_ALIGN_Y;
+//	protected AlignmentX alignX = DEFAULT_ALIGN_X;
+//	protected AlignmentY alignY = DEFAULT_ALIGN_Y;
 	protected int gap = PBorderLayout.DEFAULT_GAP;
 	
 	public PBorderLayout(PComponent owner) {
@@ -39,34 +39,34 @@ public class PBorderLayout extends AbstractEnumPLayout<BorderLayoutConstraint> {
 		return insets;
 	}
 	
-	public void setAlignment(AlignmentX alignmentX, AlignmentY alignmentY) {
-		setAlignmentX(alignmentX);
-		setAlignmentY(alignmentY);
-	}
-	
-	public void setAlignmentX(AlignmentX value) {
-		ThrowException.ifNull(value, "value == null");
-		if (alignX != value) {
-			alignX = value;
-			invalidate();
-		}
-	}
-	
-	public AlignmentX getAlignmentX() {
-		return alignX;
-	}
-	
-	public void setAlignmentY(AlignmentY value) {
-		ThrowException.ifNull(value, "value == null");
-		if (alignY != value) {
-			alignY = value;
-			invalidate();
-		}
-	}
-	
-	public AlignmentY getAlignmentY() {
-		return alignY;
-	}
+//	public void setAlignment(AlignmentX alignmentX, AlignmentY alignmentY) {
+//		setAlignmentX(alignmentX);
+//		setAlignmentY(alignmentY);
+//	}
+//
+//	public void setAlignmentX(AlignmentX value) {
+//		ThrowException.ifNull(value, "value == null");
+//		if (alignX != value) {
+//			alignX = value;
+//			invalidate();
+//		}
+//	}
+//
+//	public AlignmentX getAlignmentX() {
+//		return alignX;
+//	}
+//
+//	public void setAlignmentY(AlignmentY value) {
+//		ThrowException.ifNull(value, "value == null");
+//		if (alignY != value) {
+//			alignY = value;
+//			invalidate();
+//		}
+//	}
+//
+//	public AlignmentY getAlignmentY() {
+//		return alignY;
+//	}
 	
 	public void setGap(int value) {
 		ThrowException.ifLess(0, value, "value < 0");
@@ -128,31 +128,31 @@ public class PBorderLayout extends AbstractEnumPLayout<BorderLayoutConstraint> {
 		PComponent cmpBtm = getChildForConstraint(BorderLayoutConstraint.BOTTOM);
 		PComponent cmpCtr = getChildForConstraint(BorderLayoutConstraint.CENTER);
 		
-		AlignmentX alignX = getAlignmentX();
-		AlignmentY alignY = getAlignmentY();
+//		AlignmentX alignX = getAlignmentX();
+//		AlignmentY alignY = getAlignmentY();
 		
 		if (cmpTop != null) {
 			int cmpPrefH = getPreferredSizeOf(cmpTop).getHeight();
-			setChildCell(cmpTop, lft, top, (rgt - lft), cmpPrefH, alignX, alignY);
+			setChildCellPreferred(cmpTop, lft, top, (rgt - lft), cmpPrefH);//, alignX, alignY
 			top += cmpPrefH + gap;
 		}
 		if (cmpBtm != null) {
 			int cmpPrefH = getPreferredSizeOf(cmpBtm).getHeight();
-			setChildCell(cmpBtm, lft, (btm - cmpPrefH), (rgt - lft), cmpPrefH, alignX, alignY);
+			setChildCellPreferred(cmpBtm, lft, (btm - cmpPrefH), (rgt - lft), cmpPrefH);//, alignX, alignY
 			btm -= (cmpPrefH + gap);
 		}
 		if (cmpRgt != null) {
 			int cmpPrefW = getPreferredSizeOf(cmpRgt).getWidth();
-			setChildCell(cmpRgt, (rgt - cmpPrefW), top, cmpPrefW, (btm - top), alignX, alignY);
+			setChildCellPreferred(cmpRgt, (rgt - cmpPrefW), top, cmpPrefW, (btm - top));//, alignX, alignY
 			rgt -= (cmpPrefW + gap);
 		}
 		if (cmpLft != null) {
 			int cmpPrefW = getPreferredSizeOf(cmpLft).getWidth();
-			setChildCell(cmpLft, lft, top, cmpPrefW, (btm - top), alignX, alignY);
+			setChildCellPreferred(cmpLft, lft, top, cmpPrefW, (btm - top));//, alignX, alignY
 			lft += cmpPrefW + gap;
 		}
 		if (cmpCtr != null) {
-			setChildCell(cmpCtr, lft, top, (rgt - lft), (btm - top), alignX, alignY);
+			setChildCellPreferred(cmpCtr, lft, top, (rgt - lft), (btm - top));//, alignX, alignY
 		}
 	}
 	

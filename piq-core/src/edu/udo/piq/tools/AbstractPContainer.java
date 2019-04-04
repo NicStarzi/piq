@@ -36,8 +36,9 @@ public abstract class AbstractPContainer<CONSTRAINT_CLASS> extends AbstractPLayo
 	 * @see #getLayout()
 	 * @see PLayout#addChild(PComponent, Object)
 	 */
-	public void addChild(PComponent component, CONSTRAINT_CLASS constraint) {
+	public <CMP_T extends PComponent> CMP_T addChild(CMP_T component, CONSTRAINT_CLASS constraint) {
 		getLayout().addChild(component, constraint);
+		return component;
 	}
 	
 	public void removeChild(PComponent component) {

@@ -9,6 +9,7 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PSize;
 import edu.udo.piq.layouts.PTupleLayout.Constraint;
+import edu.udo.piq.util.Throw;
 import edu.udo.piq.util.ThrowException;
 
 public class PTupleLayout extends AbstractEnumPLayout<Constraint> {
@@ -29,6 +30,20 @@ public class PTupleLayout extends AbstractEnumPLayout<Constraint> {
 	
 	public PTupleLayout(PComponent owner) {
 		super(owner, Constraint.class);
+	}
+	
+	@Override
+	protected Object transformConstraint(Object constraint) {
+		if (constraint == null) {
+			Throw.ifMore(1, getChildCount(), () -> "getChildCount() == " + (getChildCount()) + " > " + (1));
+			if (getFirst() == null) {
+				return Constraint.FIRST;
+			}
+			return Constraint.SECOND;
+		} else if (constraint instanceof Integer) {
+			return Constraint.get((int) constraint);
+		}
+		return constraint;
 	}
 	
 	public void setInsets(PInsets value) {
@@ -196,6 +211,14 @@ public class PTupleLayout extends AbstractEnumPLayout<Constraint> {
 	public static enum Constraint {
 		FIRST,
 		SECOND;
+		public static Constraint get(int index) {
+			if (index == 0) {
+				return FIRST;
+			} else if (index == 1) {
+				return SECOND;
+			}
+			throw new IllegalArgumentException("index == "+index);
+		}
 	}
 	
 	public static enum Orientation {
@@ -203,7 +226,7 @@ public class PTupleLayout extends AbstractEnumPLayout<Constraint> {
 		TOP_TO_BOTTOM,
 		;
 		public static final List<Orientation> ALL =
-				Collections.unmodifiableList(Arrays.asList(values()));
+				Collections.unmodifiableList(Arrays.asList(Orientation.values()));
 		public static final int COUNT = ALL.size();
 	}
 	
@@ -292,7 +315,7 @@ public class PTupleLayout extends AbstractEnumPLayout<Constraint> {
 		},
 		;
 		public static final List<Distribution> ALL =
-				Collections.unmodifiableList(Arrays.asList(values()));
+				Collections.unmodifiableList(Arrays.asList(Distribution.values()));
 		public static final int COUNT = ALL.size();
 		
 		protected abstract void transformPrimary(LayoutData data);

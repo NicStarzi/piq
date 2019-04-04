@@ -1,5 +1,6 @@
 package edu.udo.piq.tools;
 
+import edu.udo.piq.CallSuper;
 import edu.udo.piq.TemplateMethod;
 import edu.udo.piq.layouts.PComponentLayoutData;
 import edu.udo.piq.layouts.PLayout;
@@ -37,7 +38,7 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 	 * 
 	 * @param layout
 	 */
-	protected void setLayout(PLayout layout) {
+	protected <LAYOUT_T extends PLayout> LAYOUT_T setLayout(LAYOUT_T layout) {
 		PLayout oldLayout = (PLayout) getLayout();
 		if (oldLayout != null) {
 			oldLayout.removeObs(layoutObs);
@@ -57,6 +58,7 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 			fireReLayOutEvent();
 		}
 		fireLayoutChangedEvent(oldLayout);
+		return layout;
 	}
 	
 	@Override
@@ -79,23 +81,27 @@ public abstract class AbstractPLayoutOwner extends AbstractPComponent {
 	}
 	
 	@TemplateMethod
+	@CallSuper
 	protected void onChildRemoved(PComponentLayoutData data) {
 		checkForPreferredSizeChange();
 		fireReRenderEvent();
 	}
 	
 	@TemplateMethod
+	@CallSuper
 	protected void onChildAdded(PComponentLayoutData data) {
 		checkForPreferredSizeChange();
 		fireReRenderEvent();
 	}
 	
 	@TemplateMethod
+	@CallSuper
 	protected void onChildLaidOut(PComponentLayoutData data) {
 		fireReRenderEvent();
 	}
 	
 	@TemplateMethod
+	@CallSuper
 	protected void onLayoutInvalidated() {
 		fireReLayOutEvent();
 	}

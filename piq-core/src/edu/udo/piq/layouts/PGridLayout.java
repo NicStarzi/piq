@@ -10,6 +10,7 @@ import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.PSize;
 import edu.udo.piq.tools.ImmutablePInsets;
+import edu.udo.piq.util.Throw;
 import edu.udo.piq.util.ThrowException;
 
 public class PGridLayout extends AbstractMapPLayout {
@@ -494,7 +495,7 @@ public class PGridLayout extends AbstractMapPLayout {
 		}
 		
 		public GridConstraint(int x, int y, int width, int height) {
-			this(x, y, width, height, AlignmentX.CENTER, AlignmentY.CENTER);
+			this(x, y, width, height, AlignmentX.PREFERRED_OR_CENTER, AlignmentY.PREFERRED_OR_CENTER);
 		}
 		
 		public GridConstraint(int x, int y, AlignmentX alignH, AlignmentY alignV) {
@@ -532,6 +533,7 @@ public class PGridLayout extends AbstractMapPLayout {
 		}
 		
 		public GridConstraint w(int value) {
+			Throw.ifLess(1, value, () -> "value == " + (value) + " < " + (1));
 			w = value;	return this;
 		}
 		
@@ -544,6 +546,7 @@ public class PGridLayout extends AbstractMapPLayout {
 		}
 		
 		public GridConstraint h(int value) {
+			Throw.ifLess(1, value, () -> "value == " + (value) + " < " + (1));
 			h = value;	return this;
 		}
 		

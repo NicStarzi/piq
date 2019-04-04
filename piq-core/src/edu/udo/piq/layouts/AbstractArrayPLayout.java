@@ -43,7 +43,7 @@ public abstract class AbstractArrayPLayout extends AbstractPLayout implements PL
 	
 	@Override
 	public void removeChild(Object constraint) throws IllegalArgumentException, IllegalStateException {
-		int index = getIndexFor(constraint);
+		int index = getIndexFor(transformConstraint(constraint));
 		ThrowException.ifNotWithin(0, getCapacity(), index, getErrorMsgIndexIllegal(index));
 		PComponentLayoutData data = dataArray.get(index);
 		ThrowException.ifNull(data, "containsChild(child) == false");
@@ -61,7 +61,7 @@ public abstract class AbstractArrayPLayout extends AbstractPLayout implements PL
 	public PBounds getChildBounds(Object constraint)
 			throws IllegalStateException, IllegalArgumentException
 	{
-		int index = getIndexFor(constraint);
+		int index = getIndexFor(transformConstraint(constraint));
 		ThrowException.ifNotWithin(0, getCapacity(), index, getErrorMsgIndexIllegal(index));
 		ThrowException.ifNull(dataArray.get(index), "getChildForConstraint(constraint) == null");
 		return dataArray.get(index).getComponentBounds();
@@ -69,7 +69,7 @@ public abstract class AbstractArrayPLayout extends AbstractPLayout implements PL
 	
 	@Override
 	public PComponent getChildForConstraint(Object constraint) {
-		int index = getIndexFor(constraint);
+		int index = getIndexFor(transformConstraint(constraint));
 		ThrowException.ifNotWithin(0, getCapacity(), index, getErrorMsgIndexIllegal(index));
 		if (dataArray.get(index) == null) {
 			return null;

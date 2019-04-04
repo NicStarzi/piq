@@ -67,10 +67,10 @@ public class PSpinner extends AbstractPInteractiveLayoutOwner {
 	}
 	
 	@Override
-	protected void setLayout(PLayout layout) {
+	protected <LAYOUT_T extends PLayout> LAYOUT_T setLayout(LAYOUT_T layout) {
 		ThrowException.ifTypeCastFails(layout, PSpinnerLayout.class,
 				"! layout instanceof PSpinnerLayout");
-		super.setLayout(layout);
+		return super.setLayout(layout);
 	}
 	
 	@Override

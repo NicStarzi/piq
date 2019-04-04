@@ -12,7 +12,11 @@ public abstract class AbstractEnumPLayout<K extends Enum<K>> extends AbstractArr
 	}
 	
 	public void setChildForConstraint(PComponent component, Object constraint) {
-		if (getChildForConstraint(constraint) != null) {
+		PComponent oldChild = getChildForConstraint(constraint);
+		if (oldChild == component) {
+			return;
+		}
+		if (oldChild != null) {
 			removeChild(constraint);
 		}
 		if (component != null) {
@@ -20,6 +24,7 @@ public abstract class AbstractEnumPLayout<K extends Enum<K>> extends AbstractArr
 		}
 	}
 	
+	@Override
 	protected int getIndexFor(Object constr) {
 		return getOrdinal(constr);
 	}
@@ -28,6 +33,7 @@ public abstract class AbstractEnumPLayout<K extends Enum<K>> extends AbstractArr
 		return "constraint.getClass() != Constraint.class";
 	}
 	
+	@Override
 	protected boolean canAdd(PComponent cmp, Object constraint) {
 		return enumClass.isInstance(constraint) 
 				&& getChildForConstraint(constraint) == null;

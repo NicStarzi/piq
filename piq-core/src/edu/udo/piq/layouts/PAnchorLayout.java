@@ -68,10 +68,16 @@ public class PAnchorLayout extends AbstractArrayPLayout {
 	}
 	
 	public void setContent(PComponent component) {
-		if (getContent() != null) {
-			removeChild(component);
+		PComponent oldContent = getContent();
+		if (oldContent == component) {
+			return;
 		}
-		addChild(component, null);
+		if (oldContent != null) {
+			removeChild(oldContent);
+		}
+		if (component != null) {
+			addChild(component, null);
+		}
 	}
 	
 	public PComponent getContent() {

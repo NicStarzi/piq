@@ -183,13 +183,21 @@ public abstract class AbstractPRoot implements PRoot {
 	protected void defaultRootRender(PRenderer renderer, int rootClipX, int rootClipY, int rootClipFx, int rootClipFy) {
 //		System.out.println("### defaultRootRender ###");
 		Deque<RenderStackInfo> renderStack = AbstractPRoot.createRenderStack(this, reRenderSet, rootClipX, rootClipY, rootClipFx, rootClipFy);
-		AbstractPRoot.defaultRootRender(this, renderer, renderStack);
+		AbstractPRoot.defaultRootRender(renderer, renderStack);
 		reRenderSet.clear();
 //		System.out.println("#######");
 //		System.out.println();
 	}
 	
-	public static void defaultRootRender(PRoot root, PRenderer renderer, Deque<RenderStackInfo> renderStack) {
+//	public static void defaultRootRender(PRenderer renderer, Deque<RenderStackInfo> renderStack) {
+//		AbstractPRoot.defaultRootRender(renderer, renderStack, AbstractPRoot::renderComponent);
+//	}
+	
+//	public static interface RenderAction {
+//		public void doRender(PRenderer renderer, PComponent component, int clipX, int clipY, int clipW, int clipH);
+//	}, RenderAction renderAction
+	
+	public static void defaultRootRender(PRenderer renderer, Deque<RenderStackInfo> renderStack) {
 //		System.out.println();
 //		System.out.println(root+".defaultRootRender()");
 		while (!renderStack.isEmpty()) {
@@ -216,6 +224,7 @@ public abstract class AbstractPRoot implements PRoot {
 					
 					PRenderSubRoot subRoot = (PRenderSubRoot) comp;
 					subRoot.renderThisAndChildren(renderer, clipX, clipY, clipW, clipH);
+					// we exit here so the children of comp will not be rendered
 					continue;
 				}
 				// comp is regular component and visible. Do rendering of comp and its children.
@@ -274,8 +283,8 @@ public abstract class AbstractPRoot implements PRoot {
 			
 			for (PComponent child : reRenderSet) {
 				// We check to see whether the component is still part of this
-				// GUI tree (might have been removed by now)
-				// can this be too slow for components that don't cache the root?
+				// GUI tree (might have been removed by now).
+				// FIXME: Could this be too slow for components that don't cache the root?
 				if (child.getRoot() == root) {
 					// does not create a new instance of PBounds if tmpBnds != null
 					PBounds clipBnds = PiqUtil.fillClippedBounds(tmpBnds, child);
@@ -323,10 +332,8 @@ public abstract class AbstractPRoot implements PRoot {
 		PBorder border = comp.getBorder();
 		if (border != null) {
 			border.render(renderer, comp);
-			// the render method of border might have changed this state
-			renderer.setClipBounds(clipX, clipY, clipW, clipH);
-			renderer.setRenderMode(renderer.getRenderModeFill());
-			renderer.setColor1(1, 1, 1, 1);
+			// the render method of border might have changed the render state
+			AbstractPRoot.resetRenderState(renderer, clipX, clipY, clipW, clipH);
 		}
 		comp.render(renderer);
 	}

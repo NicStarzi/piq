@@ -49,6 +49,10 @@ public interface PMouse {
 	 */
 	public int getDeltaY();
 	
+	public default boolean hasMoved() {
+		return getDeltaX() != 0 || getDeltaY() != 0;
+	}
+	
 	/**
 	 * Returns true if the given {@link MouseButton} is being pressed
 	 * down at this update cycle.<br>

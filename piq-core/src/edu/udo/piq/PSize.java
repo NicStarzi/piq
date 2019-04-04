@@ -7,19 +7,19 @@ import edu.udo.piq.tools.MutablePSize;
 /**
  * <p>An abstract representation of size expressed as width and height.</p>
  * 
- * <p>Two important implementations of this interface are 
- * {@link ImmutablePSize} and {@link MutablePSize}. Instances of 
- * ImmutablePSize should be preferred as results returned by such methods 
- * as {@link PComponent#getPreferredSize()} or similar. Instances of 
- * MutablePSize can be used as output parameters for methods such as 
+ * <p>Two important implementations of this interface are
+ * {@link ImmutablePSize} and {@link MutablePSize}. Instances of
+ * ImmutablePSize should be preferred as results returned by such methods
+ * as {@link PComponent#getPreferredSize()} or similar. Instances of
+ * MutablePSize can be used as output parameters for methods such as
  * {@link PFontResource#getSize(String, MutablePSize)}.</p>
  * 
- * <p>All subclasses should inherit from {@link AbstractPSize} for a 
- * consistent implementation of {@link #toString()}, {@link #hashCode()} 
+ * <p>All subclasses should inherit from {@link AbstractPSize} for a
+ * consistent implementation of {@link #toString()}, {@link #hashCode()}
  * and {@link #equals(Object)}.</p>
  * 
- * <p>The constants {@link #ZERO_SIZE} and {@link #INFINITE_SIZE} can be 
- * used for size instances with a width and height of {@code 0} or 
+ * <p>The constants {@link #ZERO_SIZE} and {@link #INFINITE_SIZE} can be
+ * used for size instances with a width and height of {@code 0} or
  * {@link Integer#MAX_VALUE} respectively.</p>
  * 
  * @author Nic Starzi
@@ -34,7 +34,7 @@ import edu.udo.piq.tools.MutablePSize;
 public interface PSize {
 	
 	/**
-	 * <p>An implementation of {@link PSize} which always returns 
+	 * <p>An implementation of {@link PSize} which always returns
 	 * {@code 0} for both its width and height.</p>
 	 */
 	public static final PSize ZERO_SIZE = new AbstractPSize() {
@@ -49,7 +49,7 @@ public interface PSize {
 	};
 	
 	/**
-	 * <p>An implementation of {@link PSize} which always returns 
+	 * <p>An implementation of {@link PSize} which always returns
 	 * {@link Integer#MAX_VALUE} for both its width and height.</p>
 	 */
 	public static final PSize INFINITE_SIZE = new AbstractPSize() {
@@ -80,7 +80,7 @@ public interface PSize {
 	public int getHeight();
 	
 	/**
-	 * <p>Returns true if the area of this size is {@code 0}, that is, if either 
+	 * <p>Returns true if the area of this size is {@code 0}, that is, if either
 	 * {@link #getWidth() width} or {@link #getHeight() height} is {@code 0}.</p>
 	 * @return true if {@code getWidth() * getHeight() == 0}
 	 */
@@ -88,25 +88,29 @@ public interface PSize {
 		return getWidth() * getHeight() == 0;
 	}
 	
+	public default PSize createImmutableCopy() {
+		return new ImmutablePSize(this);
+	}
+	
 	/**
-	 * <p>Creates and returns a new instance of {@link PSize} with the exact same 
+	 * <p>Creates and returns a new instance of {@link PSize} with the exact same
 	 * {@link #getWidth() width} and {@link #getHeight() height} as this size.</p>
-	 * <p>No assumptions should be made about whether or not the returned instance 
-	 * is mutable. Changes to this size after the copy was created should not affect 
+	 * <p>No assumptions should be made about whether or not the returned instance
+	 * is mutable. Changes to this size after the copy was created should not affect
 	 * the copy.</p>
 	 * @return an instance of {@link ImmutablePSize} with the same width and height as this
 	 * @see #createCopyAndAdd(int, int)
 	 * @see #createCopyAndAdd(PSize)
 	 */
 	public default PSize createCopy() {
-		return createCopyAndAdd(0, 0);
+		return createImmutableCopy();
 	}
 	
 	/**
-	 * <p>Creates and returns a new instance of {@link PSize} with the exact same 
+	 * <p>Creates and returns a new instance of {@link PSize} with the exact same
 	 * {@link #getWidth() width} and {@link #getHeight() height} as this size.</p>
-	 * <p>No assumptions should be made about whether or not the returned instance 
-	 * is mutable. Changes to this size after the copy was created should not affect 
+	 * <p>No assumptions should be made about whether or not the returned instance
+	 * is mutable. Changes to this size after the copy was created should not affect
 	 * the copy.</p>
 	 * @return an instance of {@link ImmutablePSize} with the same width and height as this
 	 * @see #createCopy()
@@ -117,10 +121,10 @@ public interface PSize {
 	}
 	
 	/**
-	 * <p>Creates and returns a new instance of {@link PSize} with the exact same 
+	 * <p>Creates and returns a new instance of {@link PSize} with the exact same
 	 * {@link #getWidth() width} and {@link #getHeight() height} as this size.</p>
-	 * <p>No assumptions should be made about whether or not the returned instance 
-	 * is mutable. Changes to this size after the copy was created should not affect 
+	 * <p>No assumptions should be made about whether or not the returned instance
+	 * is mutable. Changes to this size after the copy was created should not affect
 	 * the copy.</p>
 	 * @return an instance of {@link ImmutablePSize} with the same width and height as this
 	 * @see #createCopy()

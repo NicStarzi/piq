@@ -103,6 +103,10 @@ public interface PBounds extends PSize {
 		return getY() + getHeight() / 2;
 	}
 	
+	public default PBounds makeImmutableCopy() {
+		return new ImmutablePBounds(this);
+	}
+	
 	/**
 	 * <p>Returns an instance of {@link PPoint} with its x at the {@link #getX() 
 	 * x-} and its y at the {@link #getY() y-}coordinate of these bounds.</p>

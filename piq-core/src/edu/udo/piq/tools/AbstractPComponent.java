@@ -379,7 +379,7 @@ public class AbstractPComponent extends AbstractPStylable<PStyleComponent> imple
 	}
 	
 	@CallSuper
-	private void registerKeyBoardObs() {
+	protected void registerKeyBoardObs() {
 		if (keyObsRegistered && keyboardObsList.isEmpty()) {
 			currentKeyboard.removeObs(delegateKeyObs);
 			keyObsRegistered = false;
@@ -392,7 +392,7 @@ public class AbstractPComponent extends AbstractPStylable<PStyleComponent> imple
 	}
 	
 	@CallSuper
-	private void registerMouseObs() {
+	protected void registerMouseObs() {
 		if (mouseObsRegistered && mouseObsList.isEmpty()) {
 			currentMouse.removeObs(delegateMouseObs);
 			mouseObsRegistered = false;

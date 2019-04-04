@@ -1,5 +1,9 @@
 package edu.udo.piq;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import edu.udo.piq.tools.ImmutablePColor;
 
 /**
@@ -84,6 +88,15 @@ public interface PColor {
 	public static final PColor TEAL		= new ImmutablePColor(0.00f, 1.00f, 1.00f);
 	public static final PColor DARK_TEAL	= TEAL.mult1(0.5f);
 	public static final PColor LIGHT_TEAL	= TEAL.add1(0.5f);
+	
+	public static final List<PColor> MAIN_COLORS =
+			Collections.unmodifiableList(
+					Arrays.asList(
+							new PColor[] {
+								RED, GREEN, BLUE, MAGENTA, YELLOW, TEAL,
+							}
+					)
+			);
 	
 	/**
 	 * Returns the value for the red color component in integer format.<br>

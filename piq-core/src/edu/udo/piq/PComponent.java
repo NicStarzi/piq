@@ -510,7 +510,7 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 	}
 	
 	public default PLayoutPreference getLayoutPreference() {
-		return PLayoutPreference.DEFAULT_LAYOUT_PREFERENCE;
+		return PLayoutPreference.FIXED_LAYOUT_PREFERENCE;
 	}
 	
 	public default Object getConstraintAtParent() {
@@ -547,11 +547,11 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 	}
 	
 	public default AncestorStream<PComponent> getAncestors() {
-		return new AncestorStream<>(this, true);
+		return new AncestorStream<>(this, false);
 	}
 	
-	public default AncestorStream<PComponent> getAncestors(boolean includeSelf) {
-		return new AncestorStream<>(this, includeSelf);
+	public default AncestorStream<PComponent> getAncestorsAndSelf() {
+		return new AncestorStream<>(this, true);
 	}
 	
 	public default BreadthFirstDescendantStream<PComponent> getDescendants() {
@@ -825,7 +825,7 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 	}
 	
 	public default PComponent getHighestFocusableAncestor() {
-		return getAncestors().getLastMatching(anc -> anc.isFocusable());
+		return getAncestorsAndSelf().getLastMatching(anc -> anc.isFocusable());
 	}
 	
 	/**

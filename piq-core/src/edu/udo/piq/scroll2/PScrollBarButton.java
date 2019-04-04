@@ -58,7 +58,7 @@ public class PScrollBarButton extends AbstractPComponent implements PClickable {
 		pressed = value;
 		if (repeatTimer != null) {
 			repeatTimer.setDelay(repeatTimerInitialDelay);
-			repeatTimer.setStarted(pressed);
+			repeatTimer.setRunning(pressed);
 		}
 		fireReRenderEvent();
 	}
@@ -85,7 +85,7 @@ public class PScrollBarButton extends AbstractPComponent implements PClickable {
 	public void setRepeatTimerDelay(double initialDelay, double delayBetweenEvents) {
 		repeatTimerInitialDelay = initialDelay;
 		repeatTimerDelay = delayBetweenEvents;
-		if (repeatTimer.isStarted()) {
+		if (repeatTimer.isRunning()) {
 			repeatTimer.setDelay(repeatTimerDelay);
 		} else {
 			repeatTimer.setDelay(repeatTimerInitialDelay);

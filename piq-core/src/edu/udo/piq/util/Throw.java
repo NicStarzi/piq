@@ -30,6 +30,22 @@ public class Throw {
 		}
 	}
 	
+	public static void ifIdentical(Object guard, Object value, Supplier<String> optionalMsg)
+			throws IllegalArgumentException
+	{
+		if (guard == value) {
+			Throw.iae(optionalMsg);
+		}
+	}
+	
+	public static void ifNotIdentical(Object guard, Object value, Supplier<String> optionalMsg)
+			throws IllegalArgumentException
+	{
+		if (guard != value) {
+			Throw.iae(optionalMsg);
+		}
+	}
+	
 	public static void ifEqual(Object guard, Object value, Supplier<String> optionalMsg)
 			throws IllegalArgumentException
 	{

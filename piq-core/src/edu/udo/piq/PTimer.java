@@ -1,5 +1,6 @@
 package edu.udo.piq;
 
+import edu.udo.piq.util.Throw;
 import edu.udo.piq.util.ThrowException;
 
 /**
@@ -20,6 +21,8 @@ import edu.udo.piq.util.ThrowException;
  * @author NicStarzi
  */
 public class PTimer {
+	
+	public static final double DEFAULT_DELAY = 1;
 	
 	/**
 	 * Used to observe the owner for root changes.
@@ -45,7 +48,7 @@ public class PTimer {
 	 */
 	protected PRoot currentRoot;
 	/**
-	 * When {@link #timeCount} reaches this value the timer is expired
+	 * When {@link #timeCount} reaches this value the timer will expire
 	 */
 	protected double delayInMillis = 1;
 	/**
@@ -62,7 +65,7 @@ public class PTimer {
 	 * If this is true but {@link #currentRoot} is null the timer is
 	 * disabled and can not count time
 	 */
-	protected boolean started;
+	protected boolean running;
 	/**
 	 * True if time should not be counted even if we are started and not
 	 * disabled.
@@ -72,44 +75,91 @@ public class PTimer {
 	protected boolean paused;
 	
 	/**
-	 * Creates a new, non-repeating timer with a delay of 1 millisecond that
-	 * will
-	 * trigger the code of <code>callback</code> when expired.<br>
-	 * Please note that a timer needs an owner in order to run. Without setting
-	 * its owner the timer will be disabled.<br>
-	 * 
-	 * @param callback the user code that is to be executed when the timer
-	 *            expires, must not be null
+	 * Creates a new, {@link #isRepeating() non-repeating} timer with a {@link #getDelay() delay} of
+	 * {@value #DEFAULT_DELAY} milliseconds. The timer will
+	 * {@link PTimerCallback#onTimerEvent(double) trigger the callback} when {@link #tick(double) expired}.
+	 * <p>
+	 * The constructed timer will initially be {@link #isDisabled() disabled} because it will have no
+	 * {@link #getOwner() owner}. You can {@link #setOwner(PComponent) set the owner} of the timer at a
+	 * later time to enable the timer. Without an owner a timer will not count time.
+	 * <p>
+	 * @param callback		the user code that is to be executed when this timer expires. Must not be {@code null}.
+	 * @see #setOwner(PComponent)
+	 * @see #setDelay(double)
+	 * @see #setDelay(TimeUnit, double)
 	 */
 	public PTimer(PTimerCallback callback) {
-		this(null, callback);
+		this(null, DEFAULT_DELAY, callback);
 	}
 	
 	/**
-	 * Creates a new, non-repeating timer with a delay of 1 millisecond that
-	 * will
-	 * trigger the code of <code>callback</code> when expired.<br>
-	 * The timer will be owned by <code>owner</code>.
-	 * 
-	 * @param owner the component that owns this timer or null
-	 * @param callback the user code that is to be executed when the timer
-	 *            expires, must not be null
+	 * Creates a new, {@link #isRepeating() non-repeating} timer with a {@link #getDelay() delay} of
+	 * {@value #DEFAULT_DELAY} milliseconds. The timer will
+	 * {@link PTimerCallback#onTimerEvent(double) trigger the callback} when {@link #tick(double) expired}.
+	 * <p>
+	 * The timer will be {@link #getOwner() owned} by the given {@code owner}. The owner can be
+	 * {@code null} in which case the timer will be {@link #isDisabled() disabled}.
+	 * <p>
+	 * @param owner			the {@link PComponent component} that {@link #getOwner() owns} this timer or {@code null}.
+	 * @param callback		the user code that is to be executed when this timer expires. Must not be {@code null}.
+	 * @see #setDelay(double)
+	 * @see #setDelay(TimeUnit, double)
 	 */
 	public PTimer(PComponent owner, PTimerCallback callback) {
+		this(owner, DEFAULT_DELAY, callback);
+	}
+	
+	/**
+	 * Creates a new, {@link #isRepeating() non-repeating} timer with a {@link #getDelay() delay} of
+	 * {@code delay} in the given {@link TimeUnit timeUnit}. The timer will
+	 * {@link PTimerCallback#onTimerEvent(double) trigger the callback} when {@link #tick(double) expired}.
+	 * <p>
+	 * The timer will be {@link #getOwner() owned} by the given {@code owner}. The owner can be
+	 * {@code null} in which case the timer will be {@link #isDisabled() disabled}.
+	 * <p>
+	 * The delay must be greater than 0.0, otherwise an exception will be thrown.
+	 * <p>
+	 * @param owner			the {@link PComponent component} that {@link #getOwner() owns} this timer or {@code null}.
+	 * @param timeUnit		the {@link TimeUnit} used for the delay. Must not be {@code null}.
+	 * @param delay			the {@link #getDelay() delay} of this timer. Must be greater than 0.0.
+	 * @param callback		the user code that is to be executed when this timer expires. Must not be {@code null}.
+	 */
+	public PTimer(PComponent owner, TimeUnit timeUnit, double delay, PTimerCallback callback) {
+		this(owner, timeUnit.convertTo(TimeUnit.MILLI_SECONDS, delay), callback);
+	}
+	
+	/**
+	 * Creates a new, {@link #isRepeating() non-repeating} timer with a {@link #getDelay() delay} of
+	 * {@code delayInMs} milliseconds. The timer will
+	 * {@link PTimerCallback#onTimerEvent(double) trigger the callback} when {@link #tick(double) expired}.
+	 * <p>
+	 * The timer will be {@link #getOwner() owned} by the given {@code owner}. The owner can be
+	 * {@code null} in which case the timer will be {@link #isDisabled() disabled}.
+	 * <p>
+	 * The delay must be greater than 0.0, otherwise an exception will be thrown.
+	 * <p>
+	 * @param owner			the {@link PComponent component} that {@link #getOwner() owns} this timer or {@code null}.
+	 * @param delayInMs		the {@link #getDelay() delay} of this timer in milliseconds. Must be greater than 0.0.
+	 * @param callback		the user code that is to be executed when this timer expires. Must not be {@code null}.
+	 */
+	public PTimer(PComponent owner, double delayInMs, PTimerCallback callback) {
 		ThrowException.ifNull(callback, "callback");
 		this.callback = callback;
+		setDelay(delayInMs);
 		setOwner(owner);
 	}
 	
 	/**
 	 * Changes the owner of this timer. The owner can be set to null in which
-	 * case
-	 * the timer will be disabled.<br>
-	 * If the timer is already started it will still be started without its time
-	 * being reset. If the new owner is null or not part of a GUI the timer will
-	 * be disabled.
+	 * case the timer will be disabled. If the timer is disabled it will not
+	 * count time even if it is {@link #isRunning() running}.<p>
+	 * When the owner of a timer is changed while the timer is already
+	 * {@link #isRunning() running} it will continue to be running without its
+	 * time being reset.<p>
 	 * 
-	 * @param component the new owner of this timer or null
+	 * @param component		the new owner of this timer or null
+	 * @see #getOwner()
+	 * @see #isDisabled()
 	 */
 	public void setOwner(PComponent component) {
 		if (owner != component) {
@@ -125,98 +175,183 @@ public class PTimer {
 	}
 	
 	/**
-	 * Returns the current owner of this timer. Might be null.<br>
-	 * If the owner of a timer is null the timer is disabled.<br>
+	 * Returns the current owner of this timer. Might be {@code null}.<p>
+	 * If the owner of a timer is {@code null} the timer is
+	 * {@link #isDisabled() disabled}.<p>
 	 * 
-	 * @return the owner of this timer or null
+	 * @return the owner of this timer or {@code null}
+	 * @see #setOwner(PComponent)
+	 * @see #isDisabled()
 	 */
 	public PComponent getOwner() {
 		return owner;
 	}
 	
 	/**
-	 * If a timer is disabled it will not be actively counting down
-	 * even if it is started.<br>
-	 * A timer is disabled if it has no owner or if the owner is not
-	 * part of a GUI.<br>
+	 * If a timer is disabled it will not be actively counting down even if it is
+	 * {@link #isRunning() running}.<p>
+	 * A timer is disabled if it has no {@link #getOwner() owner} or if the owner
+	 * is {@link PComponent#getRoot() not part of a GUI}.<p>
 	 * 
-	 * @return true if this timer is disabled
+	 * @return true	if this timer is currently disabled. Do not confuse this method with {@link #isRunning()}.
+	 * @see #isRunning()
+	 * @see #isPaused()
+	 * @see #isTicking()
+	 * @see #getOwner()
 	 */
 	public boolean isDisabled() {
 		return getOwner() == null || getOwner().getRoot() == null;
 	}
 	
 	/**
-	 * Sets whether or not this timer should start again after expiring.<br>
+	 * Sets whether or not this timer should start again after expiring.<p>
 	 * Changing this value has no effect on whether or not the timer is
-	 * currently started or the delay until it expires.<br>
+	 * currently {@link #isRunning() running} or the {@link #getDelay() delay}
+	 * until it expires.<p>
 	 * 
-	 * @param value true if the timer should repeat
+	 * @param value			true if the timer should repeat
+	 * @see #isRepeating()
 	 */
 	public void setRepeating(boolean value) {
 		repeating = value;
 	}
 	
 	/**
-	 * If the timer is repeating it will start again after it was expired.<br>
+	 * If the timer is repeating it will {@link #start() start} again after it expired.<p>
 	 * 
 	 * @return true if the timer is repeating
+	 * @see #setRepeating(boolean)
 	 */
 	public boolean isRepeating() {
 		return repeating;
 	}
 	
 	/**
-	 * Sets the pause flag for the timer. A timer that is paused will not
-	 * continue counting time even if it is started and not disabled.<br>
-	 * The difference between a paused timer and a timer that is stopped is,
-	 * that a paused timer will resume counting from the delay it had before
-	 * being paused. A timer that is restarted after having been stopped
-	 * will be reset.<br>
+	 * Pauses this timer in its current state. A paused timer is still
+	 * {@link #isRunning() running} but it is no longer counting time until it is
+	 * unpaused. A timer which is not running <b>can not be paused</b>. A disabled
+	 * timer can be paused. If a timer is {@link #stop() stopped} or
+	 * {@link #restart() restarted} it will automatically be unpaused.<p>
 	 * 
-	 * @param value true if the timer should be paused
+	 * If a timer is unpaused it will resume counting time from the state it was
+	 * in before it was paused. If the timer is {@link #restart() restarted} its
+	 * internal state will be reset and it will begin counting time from the start
+	 * of its {@link #getDelay() delay}.
+	 * 
+	 * @param value			true if the timer should be paused
+	 * @see #isPaused()
+	 * @see #isRunning()
+	 * @see #isDisabled()
+	 * @see #isTicking()
 	 */
 	public void setPaused(boolean value) {
-		paused = value & started;
+		paused = value & isRunning();
 	}
 	
 	/**
-	 * If the timer is paused it will not continue counting time but will
-	 * remember the time it has already counted before being paused.<br>
+	 * If the timer is paused it will not continue to count time. Only a
+	 * {@link #isRunning() running} timer can be paused. If a timer is
+	 * {@link #stop() stopped} or {@link #restart() restarted} it will
+	 * automatically be unpaused.<p>
 	 * 
 	 * @return true if the timer is paused
+	 * @see #setPaused(boolean)
+	 * @see #isRunning()
+	 * @see #isDisabled()
+	 * @see #isTicking()
 	 */
 	public boolean isPaused() {
 		return paused;
 	}
 	
 	/**
-	 * Sets the delay of this timer to <code>value</code> (in milliseconds).<br>
+	 * Sets the delay of this timer to {@code value} using the given
+	 * {@link TimeUnit}. The {@link TimeUnit#convertTo(TimeUnit, double)}
+	 * method is used for time conversion.<p>
 	 * The delay of a timer is the time it takes the timer to expire after
-	 * being started.<br>
-	 * The delay must be a positive integer.<br>
+	 * being {@link #start() started}.<p>
+	 * <b>The delay must be a positive value.</b>
+	 * {@link Double#NaN} is not a valid argument.<p>
 	 * 
-	 * @param value a positive integer
+	 * @param value			must be a positive value below {@link Double#POSITIVE_INFINITY}
+	 * @throws IllegalArgumentException		if {@code value} is <= 0,
+	 * 										{@link Double#POSITIVE_INFINITY} or {@link Double#NaN}
+	 * @see #setDelay(double)
+	 * @see #getDelay(TimeUnit)
+	 * @see #getDelay()
+	 */
+	public void setDelay(TimeUnit timeUnit, double value) {
+		setDelay(timeUnit.convertTo(TimeUnit.MILLI_SECONDS, value));
+	}
+	
+	/**
+	 * Sets the delay of this timer to {@code value} (in milliseconds).<p>
+	 * The delay of a timer is the time it takes the timer to expire after
+	 * being {@link #start() started}.<p>
+	 * <b>The delay must be a positive value.</b>
+	 * {@link Double#NaN} is not a valid argument.<p>
+	 * 
+	 * @param value			must be a positive value below {@link Double#POSITIVE_INFINITY}
+	 * @throws IllegalArgumentException		if {@code value} is <= 0,
+	 * 										{@link Double#POSITIVE_INFINITY} or {@link Double#NaN}
+	 * @see #setDelay()
+	 * @see #getDelay(TimeUnit)
+	 * @see #getDelay()
 	 */
 	public void setDelay(double value) {
 		ThrowException.ifLessOrEqual(0, value, "delay must be a positive number");
+		Throw.ifTrue(Double.isNaN(value), () -> "Double.isNaN(value) == true");
+		Throw.ifTrue(Double.isInfinite(value), () -> "Double.isInfinite(value) == true");
 		delayInMillis = value;
 	}
 	
 	/**
-	 * Returns the current delay of the timer (in milliseconds).<br>
+	 * Returns the current delay of the timer for the given
+	 * {@link TimeUnit}. The {@link TimeUnit#convertTo(TimeUnit, double)}
+	 * method is used for time conversion.<p>
 	 * The delay of a timer is the time it takes the timer to expire after
-	 * being started.<br>
-	 * The delay is always a positive integer.<br>
+	 * being {@link #start() started}.<p>
+	 * The delay is always a positive value.<p>
 	 * 
-	 * @return a positive integer
+	 * @return a positive value
+	 * @see #setDelay(double)
+	 * @see #setDelay(TimeUnit, double)
+	 * @see #getDelay()
+	 */
+	public double getDelay(TimeUnit timeUnit) {
+		return TimeUnit.MILLI_SECONDS.convertTo(timeUnit, getDelay());
+	}
+	
+	/**
+	 * Returns the current delay of the timer (in milliseconds).<p>
+	 * The delay of a timer is the time it takes the timer to expire after
+	 * being {@link #start() started}.<p>
+	 * The delay is always a positive value.<p>
+	 * 
+	 * @return a positive value
+	 * @see #setDelay(double)
+	 * @see #setDelay(TimeUnit, double)
+	 * @see #getDelay(TimeUnit)
 	 */
 	public double getDelay() {
 		return delayInMillis;
 	}
 	
-	public void setStarted(boolean isStarted) {
-		if (isStarted) {
+	/**
+	 * {@link #start() Starts} of {@link #stop() stops} this timer depending on whether
+	 * or not it is currently {@link #isRunning() running} and the value of the argument.<p>
+	 * 
+	 * If this timer is already running and {@code isRunning} is {@code true} this
+	 * method does nothing. This method will also do nothing if it is not running and
+	 * {@code isRunning} is {@code false}.<p>
+	 * 
+	 * @param isRunning		true if this timer should be {@link #isRunning() running}, otherwise false.
+	 * @see #start()
+	 * @see #stop()
+	 * @see #isRunning()
+	 */
+	public void setRunning(boolean isRunning) {
+		if (isRunning) {
 			start();
 		} else {
 			stop();
@@ -224,79 +359,117 @@ public class PTimer {
 	}
 	
 	/**
-	 * Sets the started flag of this timer to true.<br>
-	 * A started timer will count down the {@link #getDelay() delay}
-	 * (in milliseconds) before expiring unless it is either paused
-	 * or disabled.<br>
+	 * If the timer is already {@link #isRunning() running} this method does nothing.
+	 * If the timer is not running it will be started. A started timer will count down
+	 * the {@link #getDelay() delay} (in milliseconds) before expiring unless it is
+	 * {@link #isDisabled() disabled}.<p>
+	 * 
+	 * After a timer has been started it is {@link #isRunning() running} and <b>not</b>
+	 * {@link #isPaused() paused}. Being started has no effect on whether or not the
+	 * timer is {@link #isDisabled()}.<p>
+	 * 
 	 * When a timer expires it will run the
 	 * {@link PTimerCallback#onTimerEvent(double)} method of its
-	 * {@link PTimerCallback}.<br>
-	 * <br>
-	 * If this timer is already started this method call will be ignored.<br>
+	 * {@link PTimerCallback}.<p>
 	 * 
 	 * @see #stop()
 	 * @see #restart()
+	 * @see #isRunning()
 	 * @see #isPaused()
+	 * @see #isDisabled()
+	 * @see #isTicking()
 	 */
 	public void start() {
-		if (!started) {
+		if (!isRunning()) {
 			currentRoot = getOwner().getRoot();
 			if (currentRoot != null) {
 				currentRoot.registerTimer(this);
 			}
 			timeCount = 0;
-			started = true;
+			running = true;
+			// a subclass of PTimer may not set 'paused' to false when the timer is stopped.
+			paused = false;
 		}
 	}
 	
 	/**
-	 * Stops the timer if it was started before.<br>
-	 * <br>
-	 * If this timer was not started this method call will be ignored.<br>
+	 * If the timer is not currently {@link #isRunning() running} this method does nothing.
+	 * If the timer is running it will be stopped. A stopped timer will no longer count down
+	 * time. Any time it has counted down so far will be lost.<p>
 	 * 
-	 * @see #start()
+	 * After a timer has been started it is {@link #isRunning() running} and <b>not</b>
+	 * {@link #isPaused() paused}. Being started has no effect on whether or not the
+	 * timer is {@link #isDisabled()}.<p>
+	 * 
+	 * When a timer expires it will run the
+	 * {@link PTimerCallback#onTimerEvent(double)} method of its
+	 * {@link PTimerCallback}.<p>
+	 * 
+	 * @see #stop()
 	 * @see #restart()
+	 * @see #isRunning()
 	 * @see #isPaused()
+	 * @see #isDisabled()
+	 * @see #isTicking()
 	 */
 	public void stop() {
-		if (started) {
+		if (isRunning()) {
 			if (currentRoot != null) {
 				currentRoot.unregisterTimer(this);
 				currentRoot = null;
 			}
 			timeCount = 0;
-			started = false;
+			running = false;
+			// a stopped timer is never paused.
+			paused = false;
 		}
 	}
 	
 	/**
-	 * Restarts the timer if it was started before.<br>
-	 * <br>
-	 * If this timer was not started this method call will be ignored.<br>
+	 * If the timer is not currently {@link #isRunning() running} this method does nothing.
+	 * If the timer is running its internal state will be reset and it will begin counting
+	 * from the start of the {@link #getDelay() delay} again.<p>
+	 * 
+	 * After a timer has been restarted it is {@link #isRunning() running} and <b>not</b>
+	 * {@link #isPaused() paused}. Being restarted has no effect on whether or not the
+	 * timer is {@link #isDisabled()}.<p>
+	 * 
+	 * The state of the timer is otherwise unchanged.<p>
 	 * 
 	 * @see #start()
 	 * @see #stop()
+	 * @see #isRunning()
 	 * @see #isPaused()
+	 * @see #isDisabled()
+	 * @see #isTicking()
 	 */
 	public void restart() {
-		if (started) {
+		if (isRunning()) {
 			timeCount = 0;
+			paused = false;
 		}
 	}
 	
 	/**
-	 * Returns true if this timer was started before.<br>
-	 * Keep in mind that a timer might be paused or disabled!
-	 * A started timer is not the same as a ticking timer.<br>
-	 * If you need to know whether this timer is currently
-	 * ticking call the {@link #isTicking()} method.<br>
-	 * 
-	 * @return true if this timer was started and not stopped since
+	 * Returns {@code true} if this timer is currently running. A timer is running if
+	 * it was {@link #start() started} before. When a timer is {@link #stop() stopped}
+	 * or when it {@link #tick(double) expires} it is no longer running.
+	 * <p>
+	 * A running timer may be {@link #isPaused() paused} or {@link #isDisabled() disabled}.
+	 * To check whether a timer is actually counting down time use the {@link #isTicking()}
+	 * method instead.
+	 * <p>
+	 * @return true				if this timer was {@link #start() started} and has not yet
+	 * 							been {@link #stop() stopped} or {@link #tick(double) expired}.
+	 * @see #start()
+	 * @see #stop()
+	 * @see #restart()
 	 * @see #isPaused()
+	 * @see #isDisabled()
 	 * @see #isTicking()
 	 */
-	public boolean isStarted() {
-		return started;
+	public boolean isRunning() {
+		return running;
 	}
 	
 	/**
@@ -307,48 +480,65 @@ public class PTimer {
 	 * is not disabled.<br>
 	 * 
 	 * @return true if this timer is started, is not paused and is not disabled
-	 * @see #isStarted()
+	 * @see #isRunning()
 	 * @see #isPaused()
 	 * @see #isDisabled()
 	 */
 	public boolean isTicking() {
-		return isStarted() && !isPaused() && currentRoot != null;
+		return isRunning() && !isPaused() && currentRoot != null;
 	}
 	
 	/**
-	 * Advances the time of this timer by <code>deltaMilliSc</code>
-	 * milliseconds if this timer is both started and not paused.<br>
-	 * This method will advance the time even if this timer is
-	 * disabled.<br>
-	 * If the timer has counted down its delay in milliseconds and it
-	 * is repeating it will be reset.<br>
+	 * Advances the time of this timer by {@code deltaMilliSc} many milliseconds if
+	 * it is not {@link #isPaused() paused}. If this timer is paused this method does
+	 * nothing.<p>
 	 * 
-	 * If the timer has counted down its delay in milliseconds it
-	 * will expire and run the {@link PTimerCallback#onTimerEvent(double)}
-	 * method of its {@link PTimerCallback}. If the timer is repeating
-	 * it will then start counting time again.<br>
+	 * If the timer has counted down its {@link #getDelay() delay} it will expire
+	 * and call the {@link PTimerCallback#onTimerEvent(double) onTimerEvent(double)}
+	 * method of its {@link PTimerCallback} with the time between now and the previous
+	 * expiration as the argument. If the timer has never expired before, the time
+	 * since the timer was started will be used instead. If this timer is
+	 * {@link #isRepeating() repeating} it will be {@link #restart() restarted}
+	 * afterwards. Otherwise it will be stopped. In either case the callback will
+	 * be called last.<p>
 	 * 
-	 * @param deltaMilliSc
+	 * This method <b>assumes</b> that this timer is both {@link #isRunning() running}
+	 * and not {@link #isDisabled() disabled} when this method is called. It will not
+	 * check whether these pre-conditions are actually true or not. A user may call
+	 * this method while the timer is not supposed to be ticked if so desired.<p>
+	 * 
+	 * @param deltaMilliSc		the time between now and the previous call to this method in milliseconds
+	 * @see #start()
+	 * @see #stop()
+	 * @see #restart()
+	 * @see #isRunning()
+	 * @see #isDisabled()
+	 * @see #isPaused()
+	 * @see #isTicking()
 	 */
 	public void tick(double deltaMilliSc) {
-		ThrowException.ifLess(0.0, deltaMilliSc, "deltaTime < 0");
-		if (isStarted() && !isPaused()) {
-			timeCount += deltaMilliSc;
-			
-//			System.out.println(timeCount + " > " + delayInMillis);
-			if (timeCount >= delayInMillis) {
-				if (isRepeating()) {
-					timeCount = timeCount % delayInMillis;
-				} else {
-					stop();
-				}
-				callback.onTimerEvent(deltaMilliSc);
+		if (isPaused()) {
+			return;
+		}
+		timeCount += deltaMilliSc;
+		if (timeCount >= delayInMillis) {
+			if (isRepeating()) {
+				timeCount = timeCount % delayInMillis;
+			} else {
+				stop();
 			}
+			callback.onTimerEvent(deltaMilliSc);
 		}
 	}
 	
+	/**
+	 * Called any timer the {@link #getOwner() owner} of this timer has changed or if the
+	 * {@link PComponent#getRoot() root} of the owner has changed. This method handles
+	 * the {@link PRoot#registerTimer(PTimer) registration} of this timer and the caching
+	 * of the current root. Changes to this method should only be taken with care.
+	 */
 	protected void onRootChange() {
-		if (started) {
+		if (isRunning()) {
 			PRoot oldRoot = currentRoot;
 			PRoot newRoot = getOwner() == null ? null : getOwner().getRoot();
 			

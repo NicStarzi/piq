@@ -124,7 +124,7 @@ public class PMenuBody extends AbstractPLayoutOwner {
 		if (!comp.isDescendantOf(this)) {
 			return;
 		}
-		AbstractPMenuItem item = (AbstractPMenuItem) comp.getAncestors().getNextMatching(
+		AbstractPMenuItem item = (AbstractPMenuItem) comp.getAncestorsAndSelf().getNextMatching(
 			anc -> anc.getParent() == PMenuBody.this && anc instanceof AbstractPMenuItem
 		);
 		if (item == null) {

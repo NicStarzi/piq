@@ -85,7 +85,7 @@ public class PMenuArrowKeyAndMouseOverFocusTraversal extends AbstractPFocusTrave
 		if (!container.isAncestorOf(component)) {
 			return -1;
 		}
-		PComponent menuItem = component.getAncestors().getNextMatching(
+		PComponent menuItem = component.getAncestorsAndSelf().getNextMatching(
 			anc -> anc.getParent() == container
 		);
 		return container.getMenuItemIndex(menuItem);

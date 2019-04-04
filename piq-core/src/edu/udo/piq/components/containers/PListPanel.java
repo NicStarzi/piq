@@ -22,6 +22,10 @@ public class PListPanel extends AbstractPContainer<Integer> {
 		this(alignment, PListLayout.DEFAULT_INSETS, PListLayout.DEFAULT_GAP);
 	}
 	
+	public PListPanel(ListAlignment alignment, int gap) {
+		this(alignment, PListLayout.DEFAULT_INSETS, gap);
+	}
+	
 	public PListPanel(PInsets insets) {
 		this(PListLayout.DEFAULT_ALIGNMENT, insets, PListLayout.DEFAULT_GAP);
 	}
@@ -35,6 +39,14 @@ public class PListPanel extends AbstractPContainer<Integer> {
 		getLayout().setAlignment(alignment);
 		getLayout().setInsets(insets);
 		getLayout().setGap(gap);
+	}
+	
+	public void addChild(PComponent component, int index) {
+		addChild(component, Integer.valueOf(index));
+	}
+	
+	public void addChild(PComponent component) {
+		addChild(component, null);
 	}
 	
 	@Override

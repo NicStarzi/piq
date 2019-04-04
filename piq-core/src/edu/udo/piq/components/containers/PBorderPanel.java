@@ -1,5 +1,6 @@
 package edu.udo.piq.components.containers;
 
+import edu.udo.piq.PComponent;
 import edu.udo.piq.PInsets;
 import edu.udo.piq.layouts.PBorderLayout;
 import edu.udo.piq.layouts.PBorderLayout.BorderLayoutConstraint;
@@ -42,6 +43,30 @@ public class PBorderPanel extends AbstractPContainer<BorderLayoutConstraint> {
 	
 	public int getGap() {
 		return getLayout().getGap();
+	}
+	
+	public void setTop(PComponent component) {
+		setChild(component, BorderLayoutConstraint.TOP);
+	}
+	
+	public void setBottom(PComponent component) {
+		setChild(component, BorderLayoutConstraint.BOTTOM);
+	}
+	
+	public void setLeft(PComponent component) {
+		setChild(component, BorderLayoutConstraint.LEFT);
+	}
+	
+	public void setRight(PComponent component) {
+		setChild(component, BorderLayoutConstraint.RIGHT);
+	}
+	
+	public void setCenter(PComponent component) {
+		setChild(component, BorderLayoutConstraint.CENTER);
+	}
+	
+	public void setChild(PComponent component, BorderLayoutConstraint constraint) {
+		getLayout().setChildForConstraint(component, constraint);
 	}
 	
 }

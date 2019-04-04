@@ -172,7 +172,7 @@ public class PButton extends AbstractPInteractiveLayoutOwner implements PInterac
 			});
 			repeatTimer.setRepeating(true);
 		}
-		if (repeatTimer.isStarted()) {
+		if (repeatTimer.isRunning()) {
 			repeatTimer.setDelay(repeatTimerDelay);
 		} else {
 			repeatTimer.setDelay(repeatTimerInitialDelay);
@@ -251,7 +251,7 @@ public class PButton extends AbstractPInteractiveLayoutOwner implements PInterac
 	protected void onModelChange(PSingleValueModel<Boolean> model, Boolean oldVal, Boolean newVal) {
 		if (repeatTimer != null) {
 			repeatTimer.setDelay(repeatTimerInitialDelay);
-			repeatTimer.setStarted(newVal);
+			repeatTimer.setRunning(newVal);
 		}
 		fireReRenderEvent();
 	}

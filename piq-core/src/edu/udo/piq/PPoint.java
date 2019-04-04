@@ -6,15 +6,15 @@ import edu.udo.piq.tools.ImmutablePPoint;
 import edu.udo.piq.tools.MutablePPoint;
 
 /**
- * <p>Represents a location in 2D space. A point has an {@link #getX() x-} and 
+ * <p>Represents a location in 2D space. A point has an {@link #getX() x-} and
  * {@link #getY() y-coordinate}. Points have no size.</p>
  * 
- * <p>Two important implementations of this interface are {@link ImmutablePPoint} and 
- * {@link MutablePPoint}. Instances of ImmutablePPoints should be preferred as return values. 
- * Instances of MutablePPoints can be used as output parameters for methods such as 
+ * <p>Two important implementations of this interface are {@link ImmutablePPoint} and
+ * {@link MutablePPoint}. Instances of ImmutablePPoints should be preferred as return values.
+ * Instances of MutablePPoints can be used as output parameters for methods such as
  * {@link PBounds#getCenter(MutablePPoint)} and similar.</p>
  * 
- * <p>All subclasses should inherit from {@link AbstractPPoint} for a consistent implementation 
+ * <p>All subclasses should inherit from {@link AbstractPPoint} for a consistent implementation
  * of {@link #toString()}, {@link #hashCode()} and {@link #equals(Object)}.</p>
  * 
  * @author Nic Starzi
@@ -22,8 +22,8 @@ import edu.udo.piq.tools.MutablePPoint;
 public interface PPoint {
 	
 	/**
-	 * <p>If the given out parameter is null a new {@link ImmutablePPoint} will be created 
-	 * with the given coordinates and returned. If the out parameter is not null it will 
+	 * <p>If the given out parameter is null a new {@link ImmutablePPoint} will be created
+	 * with the given coordinates and returned. If the out parameter is not null it will
 	 * have its coordinates set to the given coordinates and then be returned.</p>
 	 * 
 	 * @param out		an output parameter. If null a new point will be created, if not out will be returned
@@ -45,21 +45,25 @@ public interface PPoint {
 	public static final PPoint ORIGIN = new ImmutablePPoint(0, 0);
 	
 	/**
-	 * <p>Returns the coordinate on the x-axis (going from left to right). 
+	 * <p>Returns the coordinate on the x-axis (going from left to right).
 	 * This may be positive or negative values or zero.</p>
 	 * @return		the coordinate on the horizontal (from left to right) axis
 	 */
 	public double getX();
 	
 	/**
-	 * <p>Returns the coordinate on the y-axis (going from top to bottom). 
+	 * <p>Returns the coordinate on the y-axis (going from top to bottom).
 	 * This may be positive or negative values or zero.</p>
 	 * @return		the coordinate on the vertical (from top to bottom) axis
 	 */
 	public double getY();
 	
+	public default PPoint makeImmutableCopy() {
+		return new ImmutablePPoint(this);
+	}
+	
 	/**
-	 * <p>Returns the distance from this point to another. 
+	 * <p>Returns the distance from this point to another.
 	 * The returned distance is never a negative value.</p>
 	 * @param other		a non-null instance of PPoint
 	 * @return			the distance from this point to the given point
@@ -70,7 +74,7 @@ public interface PPoint {
 	}
 	
 	/**
-	 * <p>Returns the angle in radians of a line from this point to the other point. 
+	 * <p>Returns the angle in radians of a line from this point to the other point.
 	 * The returned value is always within the range of -PI to +PI.</p>
 	 * @param other		a non-null instance of PPoint
 	 * @return			the angle in radians from this point to the given point
@@ -81,7 +85,7 @@ public interface PPoint {
 	}
 	
 	/**
-	 * <p>Returns the angle in degrees of a line from this point to the other point. 
+	 * <p>Returns the angle in degrees of a line from this point to the other point.
 	 * The returned value is always within the range of 0 to 360.</p>
 	 * @param other		a non-null instance of PPoint
 	 * @return			the angle in degrees from this point to the given point
@@ -92,7 +96,7 @@ public interface PPoint {
 	}
 	
 	/**
-	 * <p>Returns the distance from this point to the given x and y coordinates. 
+	 * <p>Returns the distance from this point to the given x and y coordinates.
 	 * The returned distance is never a negative value.</p>
 	 * @param x			a coordinate on the x-axis (from left to right)
 	 * @param y			a coordinate on the y-axis (from top to bottom)
@@ -106,8 +110,8 @@ public interface PPoint {
 	}
 	
 	/**
-	 * <p>Returns the angle in radians of a line from this point to a point at 
-	 * the given coordinates. The returned value is always within the range of 
+	 * <p>Returns the angle in radians of a line from this point to a point at
+	 * the given coordinates. The returned value is always within the range of
 	 * -PI to +PI.</p>
 	 * @param x			a coordinate on the x-axis (from left to right)
 	 * @param y			a coordinate on the y-axis (from top to bottom)
@@ -116,14 +120,14 @@ public interface PPoint {
 	 */
 	public default double getAngleInRadTo(double x, double y) {
 		double diffX = x - getX();
-		double diffY = y - getY(); 
+		double diffY = y - getY();
 		double theta = Math.atan2(diffY, diffX);
 		return theta;
 	}
 	
 	/**
-	 * <p>Returns the angle in degrees of a line from this point to a point at 
-	 * the given coordinates. The returned value is always within the range of 
+	 * <p>Returns the angle in degrees of a line from this point to a point at
+	 * the given coordinates. The returned value is always within the range of
 	 * 0 to 360.</p>
 	 * @param x			a coordinate on the x-axis (from left to right)
 	 * @param y			a coordinate on the y-axis (from top to bottom)
@@ -140,11 +144,11 @@ public interface PPoint {
 	}
 	
 	/**
-	 * <p>Spans a rectangle around this point and the other so that both points are 
-	 * contained within it. This method will create a new instance of {@link PBounds} 
-	 * when called. No assumptions should be made about the {@link ImmutablePBounds 
-	 * mutability} of the returned bounds. The bounds will not be updated if either 
-	 * this point or the other change their coordinates after the bounds have been 
+	 * <p>Spans a rectangle around this point and the other so that both points are
+	 * contained within it. This method will create a new instance of {@link PBounds}
+	 * when called. No assumptions should be made about the {@link ImmutablePBounds
+	 * mutability} of the returned bounds. The bounds will not be updated if either
+	 * this point or the other change their coordinates after the bounds have been
 	 * created.</p>
 	 * @param other			a second point used to constrain the returned bounds. Must be non-null
 	 * @return				a new instance of PBounds which encompasses both this point and the other
@@ -178,8 +182,8 @@ public interface PPoint {
 	}
 	
 	/**
-	 * <p>Returns a new instance of PPoint at a position relative to the position of 
-	 * this point translated by the given offsets. The returned point is 
+	 * <p>Returns a new instance of PPoint at a position relative to the position of
+	 * this point translated by the given offsets. The returned point is
 	 * {@link ImmutablePPoint immutable}.</p>
 	 * @param offsetX		added to the x-coordinate of this point
 	 * @param offsetY		added to the y-coordinate of this point
@@ -191,8 +195,8 @@ public interface PPoint {
 	}
 	
 	/**
-	 * <p>Returns an instance of PPoint at a position relative to the position of 
-	 * this point translated by the given offsets. If out is null a new point is 
+	 * <p>Returns an instance of PPoint at a position relative to the position of
+	 * this point translated by the given offsets. If out is null a new point is
 	 * instantiated and returned. If out is not null out will be returned.</p>
 	 * @param offsetX		added to the x-coordinate of this point
 	 * @param offsetY		added to the y-coordinate of this point
@@ -209,8 +213,8 @@ public interface PPoint {
 	}
 	
 	/**
-	 * <p>Returns a new instance of PPoint at a position relative to the position of 
-	 * this point translated along a line with the given angle over the given distance. 
+	 * <p>Returns a new instance of PPoint at a position relative to the position of
+	 * this point translated along a line with the given angle over the given distance.
 	 * The returned point is {@link ImmutablePPoint immutable}.</p>
 	 * @param angleInDeg	the angle (in degrees) of the line along which the new point lies
 	 * @param distance		the distance between this point and the returned point

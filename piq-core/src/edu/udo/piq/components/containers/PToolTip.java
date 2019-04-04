@@ -136,7 +136,7 @@ public class PToolTip extends AbstractPFloatingPanel {
 				if (showX != newShowX || showY != newShowY) {
 					showX = newShowX;
 					showY = newShowY;
-					if (showTimer.isStarted()) {
+					if (showTimer.isRunning()) {
 						showTimer.restart();
 					}
 				}

@@ -57,6 +57,18 @@ public interface ComponentStream<COMPONENT_TYPE extends PComponent> {
 	
 	public COMPONENT_TYPE getNext();
 	
+	public default boolean contains(PComponent component) {
+		for (	COMPONENT_TYPE current = getNext();
+				current != null;
+				current = getNext())
+		{
+			if (current == component) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public default ComponentStream<COMPONENT_TYPE> forEach(Consumer<COMPONENT_TYPE> action) {
 		for (	COMPONENT_TYPE current = getNext();
 				current != null;

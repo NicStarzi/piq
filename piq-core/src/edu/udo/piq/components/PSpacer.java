@@ -24,7 +24,7 @@ public class PSpacer extends AbstractPComponent {
 	}
 	
 	@Override
-	protected PSize getConstantDefaultPreferredSize() {
+	protected PSize getNoLayoutDefaultPreferredSize() {
 		return prefSize;
 	}
 	

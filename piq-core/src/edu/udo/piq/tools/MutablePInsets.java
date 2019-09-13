@@ -35,6 +35,10 @@ public class MutablePInsets extends AbstractPInsets implements PInsets {
 		this(0, 0, 0, 0);
 	}
 	
+	public void addFromTop(int value) {
+		setFromTop(getFromTop() + value);
+	}
+	
 	public void setFromTop(int value) {
 		fromTop = value;
 	}
@@ -42,6 +46,10 @@ public class MutablePInsets extends AbstractPInsets implements PInsets {
 	@Override
 	public int getFromTop() {
 		return fromTop;
+	}
+	
+	public void addFromBottom(int value) {
+		setFromBottom(getFromBottom() + value);
 	}
 	
 	public void setFromBottom(int value) {
@@ -53,6 +61,10 @@ public class MutablePInsets extends AbstractPInsets implements PInsets {
 		return fromBtm;
 	}
 	
+	public void addFromLeft(int value) {
+		setFromLeft(getFromLeft() + value);
+	}
+	
 	public void setFromLeft(int value) {
 		fromLft = value;
 	}
@@ -60,6 +72,10 @@ public class MutablePInsets extends AbstractPInsets implements PInsets {
 	@Override
 	public int getFromLeft() {
 		return fromLft;
+	}
+	
+	public void addFromRight(int value) {
+		setFromRight(getFromRight() + value);
 	}
 	
 	public void setFromRight(int value) {
@@ -90,6 +106,27 @@ public class MutablePInsets extends AbstractPInsets implements PInsets {
 		setFromBottom(fromBottom);
 		setFromLeft(fromLeft);
 		setFromRight(fromRight);
+	}
+	
+	public void add(PInsets other) {
+		addFromTop(other.getFromTop());
+		addFromBottom(other.getFromBottom());
+		addFromLeft(other.getFromLeft());
+		addFromRight(other.getFromRight());
+	}
+	
+	public void add(int allEqual) {
+		addFromTop(allEqual);
+		addFromBottom(allEqual);
+		addFromLeft(allEqual);
+		addFromRight(allEqual);
+	}
+	
+	public void add(int fromTop, int fromBottom, int fromLeft, int fromRight) {
+		addFromTop(fromTop);
+		addFromBottom(fromBottom);
+		addFromLeft(fromLeft);
+		addFromRight(fromRight);
 	}
 	
 }

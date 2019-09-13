@@ -25,6 +25,7 @@ public class PTextArea extends AbstractPTextComponent {
 	protected PTextIndexTableMultiLine  idxTab = new PTextIndexTableMultiLine();
 	protected boolean idxTableIsDirty = true;
 	protected MutablePSize cachedResultSize = new MutablePSize();
+	protected int columns = -1;
 	
 	public PTextArea(Object initialModelValue) {
 		this();
@@ -38,6 +39,17 @@ public class PTextArea extends AbstractPTextComponent {
 	
 	public PTextArea() {
 		super();
+	}
+	
+	public void setColumnCount(int value) {
+		if (columns != value) {
+			columns = value;
+			firePreferredSizeChangedEvent();
+		}
+	}
+	
+	public int getColumnCount() {
+		return columns;
 	}
 	
 	@Override
@@ -326,6 +338,13 @@ public class PTextArea extends AbstractPTextComponent {
 		}
 		String text = getText();
 		if (text == null || text.isEmpty()) {
+			int colCount = getColumnCount();
+			if (colCount > 0) {
+				PSize letterSize = font.getSize("W", cachedResultSize);
+				prefSize.setWidth(letterSize.getWidth() * colCount + 2);
+				prefSize.setHeight(letterSize.getHeight());
+				return prefSize;
+			}
 			return PSize.ZERO_SIZE;
 		}
 		int prefW = 0;
@@ -362,6 +381,11 @@ public class PTextArea extends AbstractPTextComponent {
 				prefW = lineW;
 			}
 			prefH += lineH;
+		}
+		int colCount = getColumnCount();
+		if (colCount > 0) {
+			PSize letterSize = font.getSize("W", cachedResultSize);
+			prefW = letterSize.getWidth() * colCount;
 		}
 		prefSize.set(prefW + 2, prefH);
 		return prefSize;

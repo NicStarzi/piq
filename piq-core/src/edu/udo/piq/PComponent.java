@@ -120,9 +120,9 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 	public default PSize getPreferredSize() {
 		PStyleComponent style = getStyle();
 		if (style == null) {
-			return getDefaultPreferredSize();
+			return getDefaultPreferredSize().addToCopy(getBorderInsets());
 		}
-		return style.getPreferredSize(this);
+		return style.getPreferredSize(this).addToCopy(getBorderInsets());
 	}
 	
 	public PComponentLayoutData getLayoutData();
@@ -367,7 +367,7 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 	 * 
 	 * @param value the new id for this component
 	 * @see #getID()
-	 * @see #getFirstDescendantWithID(String)
+	 * @see #getFirstDescendantWithId(String)
 	 * @see #getFirstAncestorWithID(String)
 	 * @see PiqUtil#guiTreeToString(PComponent)
 	 */
@@ -381,7 +381,7 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 	 * 
 	 * @return the id use for debugging purposes
 	 * @see #setID(String)
-	 * @see #getFirstDescendantWithID(String)
+	 * @see #getFirstDescendantWithId(String)
 	 * @see #getFirstAncestorWithID(String)
 	 * @see PiqUtil#guiTreeToString(PComponent)
 	 */
@@ -573,8 +573,15 @@ public interface PComponent extends PStyleable<PStyleComponent> {
 	 * @see PComponent#setID(String)
 	 * @see PComponent#getID()
 	 */
-	public default PComponent getFirstDescendantWithID(String id) throws IllegalArgumentException {
+	public default PComponent getFirstDescendantWithId(String id) throws IllegalArgumentException {
 		return getFirstDescendantMatchingCondition(desc -> Objects.equals(desc.getID(), id));
+	}
+	
+	public default <T extends PComponent> T getFirstDescendantWithIdOfType(String id, Class<T> descendantType) 
+			throws IllegalArgumentException 
+	{
+		Throw.ifNull(descendantType, "descendantType == null");
+		return getDescendants().withId(id).getNextOfType(descendantType);
 	}
 	
 	public default <T extends PComponent> T getFirstDescendantOfType(Class<T> descendantType) {

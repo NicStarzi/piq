@@ -138,6 +138,14 @@ public class PCheckBoxTuple extends AbstractPLayoutOwner implements PInteractive
 		return false;
 	}
 	
+	public void setChecked(boolean value) {
+		PCheckBox chkBx = getCheckBox();
+		if (chkBx == null) {
+			return;
+		}
+		chkBx.setModelValue(value);
+	}
+	
 	public boolean isChecked() {
 		PCheckBox chkBx = getCheckBox();
 		if (chkBx == null) {

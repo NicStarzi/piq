@@ -28,66 +28,71 @@ public interface PColor {
 	/**
 	 * An immutable PColor implementation representing absolute white.
 	 */
-	public static final PColor WHITE	= new ImmutablePColor(1.00f, 1.00f, 1.00f);
+	public static final PColor WHITE		= new ImmutablePColor(1.00f, 1.00f, 1.00f);
 	/**
 	 * An immutable PColor implementation representing a grey tone of about 25%.
 	 */
-	public static final PColor GREY25	= new ImmutablePColor(0.25f, 0.25f, 0.25f);
+	public static final PColor GREY25		= new ImmutablePColor(0.25f, 0.25f, 0.25f);
 	/**
 	 * An immutable PColor implementation representing a grey tone of about 50%.
 	 */
-	public static final PColor GREY50	= new ImmutablePColor(0.50f, 0.50f, 0.50f);
+	public static final PColor GREY50		= new ImmutablePColor(0.50f, 0.50f, 0.50f);
 	/**
 	 * An immutable PColor implementation representing a grey tone of about 75%.
 	 */
-	public static final PColor GREY75	= new ImmutablePColor(0.75f, 0.75f, 0.75f);
+	public static final PColor GREY75		= new ImmutablePColor(0.75f, 0.75f, 0.75f);
 	/**
 	 * An immutable PColor implementation representing a grey tone of about 87.5%.
 	 */
-	public static final PColor GREY875	= new ImmutablePColor(0.875f, 0.875f, 0.875f);
+	public static final PColor GREY875		= new ImmutablePColor(0.875f, 0.875f, 0.875f);
 	/**
 	 * An immutable PColor implementation representing absolute black.
 	 */
-	public static final PColor BLACK	= new ImmutablePColor(0.00f, 0.00f, 0.00f);
+	public static final PColor BLACK		= new ImmutablePColor(0.00f, 0.00f, 0.00f);
 	/**
 	 * An immutable PColor implementation representing absolute red.
 	 */
-	public static final PColor RED		= new ImmutablePColor(1.00f, 0.00f, 0.00f);
+	public static final PColor RED			= new ImmutablePColor(1.00f, 0.00f, 0.00f);
 	public static final PColor DARK_RED		= RED.mult1(0.5f);
-	public static final PColor LIGHT_RED	= RED.add1(0.5f);
+	public static final PColor LIGHT_RED	= RED.add1(0.75f);
 	/**
 	 * An immutable PColor implementation representing absolute green.
 	 */
-	public static final PColor GREEN	= new ImmutablePColor(0.00f, 1.00f, 0.00f);
+	public static final PColor GREEN		= new ImmutablePColor(0.00f, 1.00f, 0.00f);
 	public static final PColor DARK_GREEN	= GREEN.mult1(0.5f);
-	public static final PColor LIGHT_GREEN	= GREEN.add1(0.5f);
+	public static final PColor LIGHT_GREEN	= GREEN.add1(0.75f);
 	/**
 	 * An immutable PColor implementation representing absolute blue.
 	 */
-	public static final PColor BLUE		= new ImmutablePColor(0.00f, 0.00f, 1.00f);
+	public static final PColor BLUE			= new ImmutablePColor(0.00f, 0.00f, 1.00f);
 	public static final PColor DARK_BLUE	= BLUE.mult1(0.5f);
-	public static final PColor LIGHT_BLUE	= BLUE.add1(0.5f);
+	public static final PColor LIGHT_BLUE	= BLUE.add1(0.75f);
 	/**
 	 * An immutable PColor implementation representing absolute magenta
 	 * (red = 100%, blue = 100%).
 	 */
-	public static final PColor MAGENTA	= new ImmutablePColor(1.00f, 0.00f, 1.00f);
-	public static final PColor DARK_MAGENTA		= MAGENTA.mult1(0.5f);
-	public static final PColor LIGHT_MAGENTA	= MAGENTA.add1(0.5f);
+	public static final PColor MAGENTA		= new ImmutablePColor(1.00f, 0.00f, 1.00f);
+	public static final PColor DARK_MAGENTA	= MAGENTA.mult1(0.5f);
+	public static final PColor LIGHT_MAGENTA= MAGENTA.add1(0.75f);
 	/**
 	 * An immutable PColor implementation representing absolute yellow
 	 * (red = 100%, green = 100%).
 	 */
-	public static final PColor YELLOW	= new ImmutablePColor(1.00f, 1.00f, 0.00f);
+	public static final PColor YELLOW		= new ImmutablePColor(1.00f, 1.00f, 0.00f);
 	public static final PColor DARK_YELLOW	= YELLOW.mult1(0.5f);
-	public static final PColor LIGHT_YELLOW	= YELLOW.add1(0.5f);
+	public static final PColor LIGHT_YELLOW	= YELLOW.add1(0.75f);
 	/**
 	 * An immutable PColor implementation representing absolute teal
 	 * (green = 100%, blue = 100%).
 	 */
-	public static final PColor TEAL		= new ImmutablePColor(0.00f, 1.00f, 1.00f);
+	public static final PColor TEAL			= new ImmutablePColor(0.00f, 1.00f, 1.00f);
 	public static final PColor DARK_TEAL	= TEAL.mult1(0.5f);
-	public static final PColor LIGHT_TEAL	= TEAL.add1(0.5f);
+	public static final PColor LIGHT_TEAL	= TEAL.add1(0.75f);
+	/**
+	 * An immutable PColor implementation representing orange
+	 * (red = 100%, green = 66%).
+	 */
+	public static final PColor ORANGE		= new ImmutablePColor(1.00f, 0.66f, 0.00f);
 	
 	public static final List<PColor> MAIN_COLORS =
 			Collections.unmodifiableList(

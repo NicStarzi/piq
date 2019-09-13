@@ -298,6 +298,16 @@ public interface PRoot extends PComponent {
 	@Override
 	public PBounds getBounds();
 	
+	public UserDataStore getUserDataStore();
+	
+	public default <T> T getUserData(UserDataKey<T> key) {
+		return getUserDataStore().get(key);
+	}
+	
+	public default <T> T setUserData(UserDataKey<T> key, T value) {
+		return getUserDataStore().set(key, value);
+	}
+	
 	/**
 	 * <p>Returns the current style sheet for the GUI of this root. A
 	 * {@link PStyleSheet} is used to quickly change the style of all
@@ -739,7 +749,6 @@ public interface PRoot extends PComponent {
 	
 	/**
 	 * Registers the given {@link PTimer} at this root.<br>
-	 * A registered Timer will be ticked once every millisecond.<br>
 	 * A timer can not be registered more then once.<br>
 	 * 
 	 * @param timer						the timer that is to be registered

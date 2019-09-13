@@ -11,11 +11,12 @@ import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PMouse;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PSize;
+import edu.udo.piq.borders.PLayeredLineBorder;
+import edu.udo.piq.borders.PLayeredLineBorder.Side;
 import edu.udo.piq.components.PSingleValueModel;
 import edu.udo.piq.components.collections.list.PListIndex;
 import edu.udo.piq.tools.AbstractPTextComponent;
 import edu.udo.piq.tools.ImmutablePBounds;
-import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.tools.MutablePBounds;
 import edu.udo.piq.tools.MutablePSize;
@@ -25,7 +26,8 @@ import edu.udo.piq.util.ThrowException;
 
 public class PTextField extends AbstractPTextComponent {
 	
-	public static final PInsets DEFAULT_INSETS = new ImmutablePInsets(4);
+	public static final PInsets DEFAULT_MARGIN = PInsets.ZERO_INSETS;
+	public static final PInsets DEFAULT_PADDING = PInsets.ZERO_INSETS;
 	protected static final PColor DEFAULT_BACKGROUND_COLOR = PColor.WHITE;
 	protected static final PColor DISABLED_BACKGROUND_COLOR = PColor.GREY75;
 	protected static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(200, 24);
@@ -34,7 +36,6 @@ public class PTextField extends AbstractPTextComponent {
 			PiqUtil.createDefaultObserverList();
 	protected final MutablePSize prefSize = new MutablePSize(200, 22);
 	protected PTextIndexTableSingleLine idxTab = new PTextIndexTableSingleLine();
-	protected PInsets insets;
 	protected MutablePSize cachedResultSize = new MutablePSize();
 	protected boolean contentsWereChanged = false;
 	protected int columns = -1;
@@ -52,7 +53,18 @@ public class PTextField extends AbstractPTextComponent {
 	
 	public PTextField() {
 		super();
-		setInsets(DEFAULT_INSETS);
+		
+		PColor[] borderColorsTopAndLft = {PColor.GREY50, PColor.BLACK};
+		PColor[] borderColorsBtmAndRgt = {PColor.GREY875, PColor.GREY50};
+		
+		PLayeredLineBorder border = new PLayeredLineBorder();
+		border.setPadding(DEFAULT_PADDING);
+		border.setMargin(DEFAULT_MARGIN);
+		border.setColors(Side.TOP, borderColorsTopAndLft);
+		border.setColors(Side.LEFT, borderColorsTopAndLft);
+		border.setColors(Side.BOTTOM, borderColorsBtmAndRgt);
+		border.setColors(Side.RIGHT, borderColorsBtmAndRgt);
+		setBorder(border);
 		
 		setTextInput(new PTextInput(this) {
 			@Override
@@ -101,6 +113,10 @@ public class PTextField extends AbstractPTextComponent {
 		return columns;
 	}
 	
+	public int getCaretWidth() {
+		return caretWidth;
+	}
+	
 	@Override
 	public PTextIndexTable getIndexTable() {
 		return idxTab;
@@ -121,16 +137,6 @@ public class PTextField extends AbstractPTextComponent {
 		super.onTextChanged(model, oldValue, newValue);
 	}
 	
-	public void setInsets(PInsets value) {
-		insets = value;
-		firePreferredSizeChangedEvent();
-		fireReRenderEvent();
-	}
-	
-	public PInsets getInsets() {
-		return insets;
-	}
-	
 	@Override
 	public PBounds getRenderPositionForIndex(MutablePBounds result, PListIndex index) {
 		ThrowException.ifNull(index, "index == null");
@@ -139,7 +145,7 @@ public class PTextField extends AbstractPTextComponent {
 		if (font == null) {
 			return null;
 		}
-		PBounds bounds = getBounds();
+		PBounds bounds = getBoundsWithoutBorder();
 		if (bounds == null) {
 			return null;
 		}
@@ -184,16 +190,15 @@ public class PTextField extends AbstractPTextComponent {
 		if (text.isEmpty()) {
 			return new PListIndex(0);
 		}
-		PBounds bounds = getBounds();
-		PInsets insets = getInsets();
-		x = (x - bounds.getX()) - insets.getFromBottom();
-		y = (y - bounds.getY()) - insets.getFromTop();
+		PBounds bounds = getBoundsWithoutBorder();
+		x = (x - bounds.getX());
+		y = (y - bounds.getY());
 		// Out of bounds => select first or last index
 		if (x < 0 || y < 0) {
 			return new PListIndex(0);
 		}
-		if (x > bounds.getFinalX() - insets.getFromRight()
-				|| y > bounds.getFinalY() - insets.getFromBottom())
+		if (x > bounds.getFinalX()
+				|| y > bounds.getFinalY())
 		{
 			return new PListIndex(text.length());
 		}
@@ -212,31 +217,17 @@ public class PTextField extends AbstractPTextComponent {
 	
 	@Override
 	public void defaultRender(PRenderer renderer) {
-		PBounds bnds = getBounds();
+		PBounds bnds = getBoundsWithoutBorder();
 		int x = bnds.getX();
 		int y = bnds.getY();
 		int fx = bnds.getFinalX();
 		int fy = bnds.getFinalY();
 		
-		// Render border
-		renderer.setRenderMode(renderer.getRenderModeFill());
-		renderer.setColor(PColor.BLACK);
-		renderer.strokeTop(x + 1, y + 1, fx - 1, fy - 1);
-		renderer.strokeLeft(x + 1, y + 1, fx - 1, fy - 1);
-		renderer.setColor(PColor.GREY50);
-		renderer.strokeTop(x, y, fx, fy);
-		renderer.strokeLeft(x, y, fx, fy);
-		
-		renderer.setColor(PColor.GREY50);
-		renderer.strokeBottom(x + 1, y + 1, fx - 1, fy - 1);
-		renderer.strokeRight(x + 1, y + 1, fx - 1, fy - 1);
-		renderer.setColor(PColor.GREY875);
-		renderer.strokeBottom(x, y, fx, fy);
-		renderer.strokeRight(x, y, fx, fy);
+		int caretWidth = getCaretWidth();
 		
 		// Render background
 		renderer.setColor(getDefaultBackgroundColor());
-		renderer.drawQuad(x + 2, y + 2, fx - 2, fy - 2);
+		renderer.drawQuad(x, y, fx, fy);
 		
 		PFontResource font = getDefaultFont();
 		
@@ -244,11 +235,10 @@ public class PTextField extends AbstractPTextComponent {
 		if (text == null) {
 			return;
 		}
-		PInsets insets = getInsets();
-		int txtX = x + insets.getFromLeft();
-		int txtY = y + insets.getFromTop();
-		int txtW = bnds.getWidth() - insets.getHorizontal();
-		int txtH = bnds.getHeight() - insets.getVertical();
+		int txtX = x + caretWidth;
+		int txtY = y;
+		int txtW = bnds.getWidth();
+		int txtH = bnds.getHeight();
 		renderer.intersectClipBounds(txtX, txtY, txtW, txtH);
 		
 		if (text.isEmpty()) {
@@ -276,25 +266,19 @@ public class PTextField extends AbstractPTextComponent {
 			if (selectedFrom == selectedTo) {
 				if (isEditable() && hasFocus() && getCaretRenderTimer().isFocusRender()) {
 					renderer.setColor(getDefaultSelectionBackgroundColor());
-					char c;
-					if (selectedFrom == text.length()) {
-						c = text.charAt(selectedFrom - 1);
-					} else {
-						c = text.charAt(selectedFrom);
-					}
-					PSize charSize = font.getSize(Character.toString(c), cachedResultSize);
-					int minH = charSize.getHeight();
-					int drawY = (txtY + txtH / 2) - minH / 2;
-					renderer.drawQuad(txtX - caretWidth / 2, drawY, txtX + caretWidth / 2, drawY + minH);
+					int caretLetterIdx = Math.min(selectedFrom, text.length() - 1);
+					String caretLetter = text.substring(caretLetterIdx, caretLetterIdx + 1);
+					PSize letterSize = font.getSize(caretLetter, cachedResultSize);
+					int caretH = Math.min(txtH, letterSize.getHeight());
+					int drawY = (txtY + txtH / 2) - caretH / 2;
+					renderer.drawQuad(txtX - caretWidth / 2, drawY, txtX + caretWidth / 2, drawY + caretH);
 				}
-				renderText(renderer, font, txtX, txtY, txtH, afterSelected, textColor, null);
 			} else {
 				String selected = text.substring(selectedFrom, selectedTo);
 				txtX = renderText(renderer, font, txtX, txtY, txtH, selected,
 						getDefaultTextSelectedColor(), getDefaultSelectionBackgroundColor());
-				
-				renderText(renderer, font, txtX, txtY, txtH, afterSelected, textColor, null);
 			}
+			renderText(renderer, font, txtX, txtY, txtH, afterSelected, textColor, null);
 		} else {
 			renderText(renderer, font, txtX, txtY, txtH, text, textColor, null);
 		}
@@ -324,12 +308,11 @@ public class PTextField extends AbstractPTextComponent {
 		if (font == null) {
 			return DEFAULT_PREFERRED_SIZE;
 		}
-		PInsets insets = getInsets();
 		int colCount = getColumnCount();
 		if (colCount > 0) {
 			PSize letterSize = font.getSize("W", cachedResultSize);
-			prefSize.setWidth(letterSize.getWidth() * colCount + insets.getHorizontal());
-			prefSize.setHeight(letterSize.getHeight() + insets.getVertical());
+			prefSize.setWidth(letterSize.getWidth() * colCount);
+			prefSize.setHeight(letterSize.getHeight());
 			return prefSize;
 		}
 		String text = getText();
@@ -337,8 +320,8 @@ public class PTextField extends AbstractPTextComponent {
 			return DEFAULT_PREFERRED_SIZE;
 		}
 		PSize textSize = font.getSize(text, cachedResultSize);
-		prefSize.setWidth(textSize.getWidth() + insets.getHorizontal() + caretWidth);
-		prefSize.setHeight(textSize.getHeight() + insets.getVertical());
+		prefSize.setWidth(textSize.getWidth() + getCaretWidth() * 2);
+		prefSize.setHeight(textSize.getHeight());
 		return prefSize;
 	}
 	

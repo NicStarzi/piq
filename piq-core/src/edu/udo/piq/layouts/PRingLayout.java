@@ -192,12 +192,11 @@ public class PRingLayout extends AbstractMapPLayout {
 			}
 		}
 		calculateCompSizesAndMaxDim();
-		if (isUsePreferredRadius()) {
-			if (prefRadInvalid) {
-				calculatePrefRadiusAndOrigins();
-			}
+		if (isUsePreferredRadius() && prefRadInvalid) {
+			calculatePrefRadiusAndOrigins();
+		} else {
+			calculateOrigins();
 		}
-		calculateOrigins();
 		calculatePrefSize();
 	}
 	
@@ -335,7 +334,7 @@ public class PRingLayout extends AbstractMapPLayout {
 	protected void layOutInternal() {
 		PBounds bounds = getOwner().getBounds();
 		int x = bounds.getX();
-		int y = bounds.getX();
+		int y = bounds.getY();
 		int w = bounds.getWidth();
 		int h = bounds.getHeight();
 		int centerX = x + w / 2;

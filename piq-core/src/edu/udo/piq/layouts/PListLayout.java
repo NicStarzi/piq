@@ -28,6 +28,7 @@ public class PListLayout extends AbstractMapPLayout {
 	protected AlignmentY alignY = DEFAULT_ALIGN_Y;
 	protected PInsets insets = DEFAULT_INSETS;
 	protected int gap = DEFAULT_GAP;
+	protected boolean expandRowSize = true;
 	
 	public PListLayout(PComponent owner) {
 		this(owner, DEFAULT_ALIGNMENT, DEFAULT_GAP);

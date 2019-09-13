@@ -76,6 +76,7 @@ public class SwingPMouse extends AbstractPMouse implements PMouse {
 				refreshCursor();
 			}
 		});
+		base.addMouseWheelListener(e -> onMouseWheel(-e.getPreciseWheelRotation()));
 	}
 	
 	public void mouseOverCursorChanged(PComponent component) {
@@ -130,6 +131,10 @@ public class SwingPMouse extends AbstractPMouse implements PMouse {
 		compAtMouseCacheValid = false;
 //		compAtMouseCache = null;
 //		refreshCursor();
+	}
+	
+	protected void onMouseWheel(double value) {
+		fireWheelEvent(value);
 	}
 	
 	protected void onPress(MouseButton btn, int clickCount) {

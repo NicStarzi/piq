@@ -36,4 +36,8 @@ public abstract class AbstractPMouse implements PMouse {
 		obsList.fireEvent((obs) -> obs.onButtonPressed(this, btn, clickCount));
 	}
 	
+	protected void fireWheelEvent(double value) {
+		obsList.fireEvent((obs) -> obs.onMouseWheelMoved(this, value));
+	}
+	
 }

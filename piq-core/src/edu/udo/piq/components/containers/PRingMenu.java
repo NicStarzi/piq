@@ -49,7 +49,7 @@ public class PRingMenu extends AbstractPLayoutOwner {
 		return (PRingLayout) super.getLayout();
 	}
 	
-	public void setAnimationDelay(int value) {
+	public void setAnimationTimerInterval(int value) {
 		animDelay = value;
 	}
 	

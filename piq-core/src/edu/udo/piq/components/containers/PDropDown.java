@@ -29,7 +29,6 @@ import edu.udo.piq.layouts.PTupleLayout.Orientation;
 import edu.udo.piq.tools.AbstractPLayoutOwner;
 import edu.udo.piq.tools.ImmutablePInsets;
 import edu.udo.piq.tools.ImmutablePSize;
-import edu.udo.piq.tools.MutablePSize;
 import edu.udo.piq.util.ObserverList;
 import edu.udo.piq.util.PModelFactory;
 import edu.udo.piq.util.PiqUtil;
@@ -338,7 +337,6 @@ public class PDropDown extends AbstractPInteractiveLayoutOwner {
 	public static class PDropDownButton extends PButton {
 		
 		public static final PSize DEFAULT_PREF_SIZE = new ImmutablePSize(14, 14);
-		private MutablePSize prefSize = null;
 		
 		@Override
 		public PCursor getMouseOverCursor(PMouse mouse) {
@@ -385,21 +383,10 @@ public class PDropDown extends AbstractPInteractiveLayoutOwner {
 		}
 		
 		@Override
-		public PSize getDefaultPreferredSize() {
-			PBounds bnds = getBounds();
-			if (bnds != null && (bnds.getWidth() > DEFAULT_PREF_SIZE.getWidth()
-					|| bnds.getHeight() > DEFAULT_PREF_SIZE.getHeight())) {
-				if (prefSize == null) {
-					prefSize = new MutablePSize(DEFAULT_PREF_SIZE);
-				}
-				int max = Math.max(bnds.getWidth(), bnds.getHeight());
-				prefSize.setWidth(max);
-				prefSize.setHeight(max);
-				return prefSize;
-			} else {
-				return DEFAULT_PREF_SIZE;
-			}
+		protected PSize getNoLayoutDefaultPreferredSize() {
+			return DEFAULT_PREF_SIZE;
 		}
+		
 	}
 	
 }

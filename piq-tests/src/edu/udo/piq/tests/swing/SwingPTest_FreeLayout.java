@@ -3,6 +3,7 @@ package edu.udo.piq.tests.swing;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PColor;
 import edu.udo.piq.PRenderer;
+import edu.udo.piq.PRoot;
 import edu.udo.piq.PSize;
 import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PCheckBoxTuple;
@@ -17,17 +18,23 @@ import edu.udo.piq.components.defaults.DefaultPTextModel;
 import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.layouts.PFreeLayout;
 import edu.udo.piq.layouts.PWrapLayout;
+import edu.udo.piq.lwjgl3.GlfwPRoot;
 import edu.udo.piq.tools.AbstractPComponent;
 import edu.udo.piq.util.PiqUtil;
 
-public class SwingPTest_FreeLayout extends AbstractSwingPTest {
+public class SwingPTest_FreeLayout /*extends AbstractSwingPTest */{
 	
 	public static void main(String[] args) {
-		new SwingPTest_FreeLayout();
+//		new SwingPTest_FreeLayout();
+		GlfwPRoot root = new GlfwPRoot("Test", 640, 480);
+		new SwingPTest_FreeLayout().buildGUI(root);
+//		Test_Clipping test2 = new Test_Clipping();
+//		test2.buildGui(root2);
+		root.startGlfwLoop();
 	}
 	
 	public SwingPTest_FreeLayout() {
-		super(640, 480);
+//		super(640, 480);
 	}
 	
 	static class Circle extends AbstractPComponent {
@@ -55,8 +62,8 @@ public class SwingPTest_FreeLayout extends AbstractSwingPTest {
 		}
 	}
 	
-	@Override
-	public void buildGUI() {
+//	@Override
+	public void buildGUI(PRoot root) {
 		PPanel bodyPnl = new PPanel();
 		bodyPnl.setLayout(new PFreeLayout(bodyPnl));
 		root.setBody(bodyPnl);

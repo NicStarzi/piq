@@ -170,8 +170,8 @@ public class SwingPKeyboard extends AbstractPKeyboard implements PKeyboard {
 	@Override
 	public boolean isEqualKey(ActualKey actualKey, Key unknownKey) {
 		return super.isEqualKey(actualKey, unknownKey)
-				|| (customKeyBindings != null
-					&& unknownKey.equals(customKeyBindings.get(actualKey)));
+				|| (customKeyBindingsReversed != null 
+					&& customKeyBindingsReversed.get(unknownKey) == actualKey);
 	}
 	
 	@Override

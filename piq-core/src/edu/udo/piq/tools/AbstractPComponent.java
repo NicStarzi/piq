@@ -520,18 +520,14 @@ public class AbstractPComponent extends AbstractPStylable<PStyleComponent> imple
 	public PSize getDefaultPreferredSize() {
 		PReadOnlyLayout layout = getLayout();
 		if (layout == null) {
-			prefSize.set(getConstantDefaultPreferredSize());
+			prefSize.set(getNoLayoutDefaultPreferredSize());
 		} else {
 			prefSize.set(layout.getPreferredSize());
-		}
-		PBorder border = getBorder();
-		if (border != null) {
-			prefSize.add(border.getInsets(this));
 		}
 		return prefSize;
 	}
 	
-	protected PSize getConstantDefaultPreferredSize() {
+	protected PSize getNoLayoutDefaultPreferredSize() {
 		return PSize.ZERO_SIZE;
 	}
 	

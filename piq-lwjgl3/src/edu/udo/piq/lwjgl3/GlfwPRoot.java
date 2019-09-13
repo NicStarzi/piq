@@ -1,6 +1,7 @@
 package edu.udo.piq.lwjgl3;
 
 import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
+import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
 import static org.lwjgl.glfw.GLFW.GLFW_VISIBLE;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -12,6 +13,8 @@ import java.nio.IntBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.EnumSet;
+import java.util.Objects;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
@@ -36,6 +39,7 @@ import edu.udo.piq.PImageMeta;
 import edu.udo.piq.PImageResource;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRootOverlay;
+import edu.udo.piq.TemplateMethod;
 import edu.udo.piq.components.textbased.PTextArea;
 import edu.udo.piq.components.util.StandardFontKey;
 import edu.udo.piq.dnd.PDnDManager;
@@ -97,19 +101,43 @@ public class GlfwPRoot extends AbstractPRoot {
 	};
 	protected final GLFWErrorCallback errorCB = GLFWErrorCallback.createPrint(System.out);
 	protected final LwjglPRendererBase renderer = new LwjglPRendererFbo();
-	protected final SoftReferenceCache<Object, StbTtFontResource> fontMap = new SoftReferenceCache<>();
-	protected final SoftReferenceCache<String, StbImageResource> imgMap = new SoftReferenceCache<>();
+	protected SoftReferenceCache<Object, StbTtFontResource> fontMap = new SoftReferenceCache<>();
+	protected SoftReferenceCache<String, StbImageResource> imgMap = new SoftReferenceCache<>();
 	protected StbTtFontResource defaultFontRes;
 	
-	protected int wndX, wndY, wndW, wndH;
-	protected long wndHandle;
-	protected double deltaTimeMs;
-	protected String wndTitle;
 	protected GLCapabilities caps;
 	protected Callback debugProc;
+	protected String wndTitle;
+	protected long wndHandle;
+	protected int wndX, wndY, wndW, wndH;
+	protected double deltaTimeMs;
 	protected boolean needReRender;
+	protected boolean disposed;
 	
-	public GlfwPRoot(String title, int initialWindowWidth, int initialWindowHeight) {
+	public static final EnumSet<InitOptions> DEFAULT_INIT_OPTIONS = EnumSet.noneOf(InitOptions.class);
+	public static enum InitOptions {
+		HIDE_WINDOW,
+		KEEP_DEPTH_TEST,
+		NO_ALPHA_TEST,
+		NO_SCISSOR_TEST,
+		NO_BLENDING,
+		NO_KEYBOARD,
+		NO_MOUSE,
+		NO_CLIPBOARD,
+		NO_DRAG_AND_DROP,
+		NO_RESIZABLE,
+		;
+	}
+	
+	public GlfwPRoot(String title, int initialWindowWidth, int initialWindowHeight, InitOptions ... options) {
+		this(title, initialWindowWidth, initialWindowHeight,
+				options.length > 0 ?
+						EnumSet.of(options[0], options)
+					:	DEFAULT_INIT_OPTIONS
+			);
+	}
+	
+	public GlfwPRoot(String title, int initialWindowWidth, int initialWindowHeight, EnumSet<InitOptions> options) {
 		super();
 		reRenderSet = null;
 		
@@ -117,13 +145,18 @@ public class GlfwPRoot extends AbstractPRoot {
 //		GLFW.glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 //		GLFW.glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 		GLFW.glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+		if (options.contains(InitOptions.NO_RESIZABLE)) {
+			GLFW.glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+		}
 		
 		wndTitle = title;
 		wndHandle = GLFW.glfwCreateWindow(initialWindowWidth, initialWindowHeight, wndTitle, NULL, NULL);
 		
 		GLFW.glfwMakeContextCurrent(wndHandle);
 		GLFW.glfwSwapInterval(1);
-		GLFW.glfwShowWindow(wndHandle);
+		if (!options.contains(InitOptions.HIDE_WINDOW)) {
+			showWindow();
+		}
 		
 		caps = GL.createCapabilities();
 		debugProc = GLUtil.setupDebugMessageCallback(System.out);
@@ -136,36 +169,85 @@ public class GlfwPRoot extends AbstractPRoot {
 		GLFW.nglfwGetFramebufferSize(wndHandle, MemoryUtil.memAddress(bufFrameBufSize), MemoryUtil.memAddress(bufFrameBufSize) + 4);
 		onFrameBufferSizeChanged(bufFrameBufSize.get(0), bufFrameBufSize.get(1));
 		
-		GL11.glDisable(GL11.GL_DEPTH_TEST);
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		
-		GL11.glEnable(GL11.GL_ALPHA_TEST);
-		GL11.glEnable(GL11.GL_SCISSOR_TEST);
-		
-		super.keyboard = new GlfwPKeyboard(this);
-		getKeyboard().install();
-		super.mouse = new GlfwPMouse(this);
-		getMouse().install();
-		super.clipboard = new GlfwPClipboard(wndHandle);
-		dndManager = new PDnDManager(this);
+		if (!options.contains(InitOptions.KEEP_DEPTH_TEST)) {
+			GL11.glDisable(GL11.GL_DEPTH_TEST);
+		}
+		if (!options.contains(InitOptions.NO_BLENDING)) {
+			GL11.glEnable(GL11.GL_BLEND);
+			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		}
+		if (!options.contains(InitOptions.NO_ALPHA_TEST)) {
+			GL11.glEnable(GL11.GL_ALPHA_TEST);
+			GL11.glAlphaFunc(GL11.GL_GREATER, 0.1f);
+		}
+		if (!options.contains(InitOptions.NO_SCISSOR_TEST)) {
+			GL11.glEnable(GL11.GL_SCISSOR_TEST);
+		}
+		if (!options.contains(InitOptions.NO_KEYBOARD)) {
+			super.keyboard = new GlfwPKeyboard();
+			getKeyboard().install(wndHandle);
+		}
+		if (!options.contains(InitOptions.NO_MOUSE)) {
+			GlfwPMouse mouse = new GlfwPMouse();
+			mouse.setWindowHandle(wndHandle);
+			mouse.setKeyboard(getKeyboard());
+			mouse.setRootComponent(this);
+			mouse.install();
+			super.mouse = mouse;
+		}
+		if (!options.contains(InitOptions.NO_CLIPBOARD)) {
+			super.clipboard = new GlfwPClipboard(wndHandle);
+		}
+		if (!options.contains(InitOptions.NO_DRAG_AND_DROP)) {
+			dndManager = new PDnDManager(this);
+		}
+	}
+	
+	public GLCapabilities getGLCapabilities() {
+		return caps;
 	}
 	
 	public void requestClose() {
 		GLFW.glfwSetWindowShouldClose(wndHandle, true);
 	}
 	
+	public void setWindowVisible(boolean isVisible) {
+		if (isVisible) {
+			showWindow();
+		} else {
+			hideWindow();
+		}
+	}
+	
+	public void hideWindow() {
+		GLFW.glfwHideWindow(wndHandle);
+	}
+	
+	public void showWindow() {
+		GLFW.glfwShowWindow(wndHandle);
+	}
+	
 	public void dispose() {
+		disposed = true;
 		try {
+			GL.setCapabilities(null);
 			if (debugProc != null) {
 				debugProc.free();
 			}
-			getKeyboard().uninstall();
-			getMouse().uninstall();
-//			Callbacks.glfwFreeCallbacks(wndHandle);
-			GLFW.glfwDestroyWindow(wndHandle);
+			if (getKeyboard() != null) {
+				getKeyboard().uninstall();
+			}
+			if (getMouse() != null) {
+				getMouse().uninstall();
+			}
+			if (wndHandle != NULL) {
+				//TODO: is this needed?
+//				Callbacks.glfwFreeCallbacks(wndHandle);
+				GLFW.glfwDestroyWindow(wndHandle);
+			}
 		} finally {
 			GLFW.glfwTerminate();
+			Objects.requireNonNull(GLFW.glfwSetErrorCallback(null)).free();
 		}
 	}
 	
@@ -179,20 +261,41 @@ public class GlfwPRoot extends AbstractPRoot {
 			long timeSince = timeStamp - lastTimeStamp;
 			lastTimeStamp = timeStamp;
 			deltaTimeMs = timeSince / 1_000_000.0;
-			super.update(deltaTimeMs);
+			update(deltaTimeMs);
+			if (getKeyboard() != null) {
+				getKeyboard().updateKeyStates(deltaTimeMs);
+			}
+			if (getMouse() != null) {
+				getMouse().update();
+			}
 			
 			GLFW.glfwPollEvents();
+			if (disposed) {
+				return;
+			}
 			if (wndW > 0 && wndH > 0) {
-				GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+				GL11.glClear(GL11.GL_COLOR_BUFFER_BIT 
+						| GL11.GL_DEPTH_BUFFER_BIT 
+						| GL11.GL_STENCIL_BUFFER_BIT);
 				if (needReRender) {
 					defaultRootRender(renderer, 0, 0, wndW, wndH);
 				}
+				beforeRender();
 				renderer.renderAll();
+				afterRender();
 				GLFW.glfwSwapBuffers(wndHandle);
 			}
 		}
-		dispose();
+		if (!disposed) {
+			dispose();
+		}
 	}
+	
+	@TemplateMethod
+	protected void beforeRender() {}
+	
+	@TemplateMethod
+	protected void afterRender() {}
 	
 	public static void checkGlError(String info) {
 		int errCode = GL11.glGetError();
@@ -210,7 +313,9 @@ public class GlfwPRoot extends AbstractPRoot {
 			}
 			System.err.print("Gl Error: '");
 			System.err.print(errMsg);
-			System.err.print("' at: ");
+			System.err.print("(");
+			System.err.print(Integer.toString(errCode));
+			System.err.print(")' at: ");
 			System.err.println(info);
 		}
 	}
@@ -236,7 +341,7 @@ public class GlfwPRoot extends AbstractPRoot {
 				renderStack.addFirst(new RenderStackInfo(overlayComp, rootClipX, rootClipY, rootClipFx, rootClipFy));
 			}
 		}
-		AbstractPRoot.defaultRootRender(this, renderer, renderStack);
+		AbstractPRoot.defaultRootRender(renderer, renderStack);
 		needReRender = false;
 		renderer.endReRender();
 	}
@@ -254,6 +359,14 @@ public class GlfwPRoot extends AbstractPRoot {
 	@Override
 	public PBounds getBounds() {
 		return wndBounds;
+	}
+	
+	public int getWindowWidth() {
+		return wndW;
+	}
+	
+	public int getWindowHeight() {
+		return wndH;
 	}
 	
 	@Override
@@ -278,7 +391,7 @@ public class GlfwPRoot extends AbstractPRoot {
 		return fontRes;
 	}
 	
-	private StbTtFontResource loadFontResource(Object fontID) {
+	protected StbTtFontResource loadFontResource(Object fontID) {
 		String fontName = null;
 		int pixelSize = 0;
 		if (fontID instanceof StandardFontKey) {

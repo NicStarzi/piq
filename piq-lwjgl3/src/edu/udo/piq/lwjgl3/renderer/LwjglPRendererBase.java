@@ -1,21 +1,13 @@
 package edu.udo.piq.lwjgl3.renderer;
 
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-
-import java.nio.FloatBuffer;
-
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.stb.STBTTAlignedQuad;
-import org.lwjgl.stb.STBTTBakedChar;
-import org.lwjgl.stb.STBTruetype;
-import org.lwjgl.system.MemoryStack;
 
 import edu.udo.piq.PFontResource;
 import edu.udo.piq.PImageResource;
 import edu.udo.piq.PRenderMode;
 import edu.udo.piq.PRenderer;
+import edu.udo.piq.lwjgl3.GlfwFontResource;
 import edu.udo.piq.lwjgl3.StbImageResource;
-import edu.udo.piq.lwjgl3.StbTtFontResource;
 import edu.udo.piq.util.ThrowException;
 
 public abstract class LwjglPRendererBase implements PRenderer {
@@ -33,6 +25,26 @@ public abstract class LwjglPRendererBase implements PRenderer {
 	public void beginReRender() {
 		accSciX = accSciY = accSciFx = accSciFy = 0;
 		curColorR = curColorG = curColorB = curColorA = 0;
+	}
+	
+	public float getColorRed() {
+		return curColorR;
+	}
+	
+	public float getColorGreen() {
+		return curColorG;
+	}
+	
+	public float getColorBlue() {
+		return curColorB;
+	}
+	
+	public float getColorAlpha() {
+		return curColorA;
+	}
+	
+	public void applyGlColor() {
+		GL11.glColor4f(curColorR, curColorG, curColorB, curColorA);
 	}
 	
 	public abstract void endReRender();
@@ -113,18 +125,49 @@ public abstract class LwjglPRendererBase implements PRenderer {
 		curColorA = a;
 	}
 	
+	public final void drawImageTinted(PImageResource imgRes, float x, float y, float fx, float fy) {
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		((StbImageResource) imgRes).bind();
+		
+		LwjglPRendererBase.renderTriangleQuad(
+				curColorR, curColorG, curColorB, curColorA,
+				0, 0, 1, 1,
+				x, y, fx, fy);
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+	}
+	
+	public final void drawImageTinted(PImageResource imgRes, int u, int v, int fu, int fv, float x, float y, float fx, float fy) {
+		StbImageResource stbImgRes = (StbImageResource) imgRes;
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		stbImgRes.bind();
+		float imgW = stbImgRes.getWidth();
+		float imgH = stbImgRes.getHeight();
+		float u_f = u / imgW;
+		float v_f = v / imgH;
+		float fu_f = fu / imgW;
+		float fv_f = fv / imgH;
+		
+		LwjglPRendererBase.renderTriangleQuad(
+				curColorR, curColorG, curColorB, curColorA,
+				u_f, v_f, fu_f, fv_f,
+				x, y, fx, fy);
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+	}
+	
 	@Override
 	public final void drawImage(PImageResource imgRes, int u, int v, int fu, int fv, float x, float y, float fx, float fy) {
 		StbImageResource stbImgRes = (StbImageResource) imgRes;
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		stbImgRes.bind();
-		u /= stbImgRes.getWidth();
-		v /= stbImgRes.getHeight();
-		fu /= stbImgRes.getWidth();
-		fv /= stbImgRes.getHeight();
+		float imgW = stbImgRes.getWidth();
+		float imgH = stbImgRes.getHeight();
+		float u_f = u / imgW;
+		float v_f = v / imgH;
+		float fu_f = fu / imgW;
+		float fv_f = fv / imgH;
 		
 		LwjglPRendererBase.renderTriangleQuad(1, 1, 1, 1,
-				u, v, fu, fv,
+				u_f, v_f, fu_f, fv_f,
 				x, y, fx, fy);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 	}
@@ -142,127 +185,19 @@ public abstract class LwjglPRendererBase implements PRenderer {
 	
 	@Override
 	public final boolean isFontSupported(PFontResource font) {
-		return font instanceof StbTtFontResource;
+		return font instanceof GlfwFontResource;
 	}
 	
 	@Override
 	public void drawChars(PFontResource font, char[] charArr, int from, int length, float x, float y) {
-		StbTtFontResource fontRes = (StbTtFontResource) font;
-		int fontSize = fontRes.getPixelSize();
-		y += fontRes.getAscent();
-		try (MemoryStack stack = MemoryStack.stackPush()) {
-			FloatBuffer bufX = stack.floats(x);
-			FloatBuffer bufY = stack.floats(y);
-			
-			STBTTAlignedQuad q = STBTTAlignedQuad.mallocStack(stack);
-			STBTTBakedChar.Buffer charData = fontRes.getBakedCharData();
-			
-			GL11.glEnable(GL_TEXTURE_2D);
-			GL11.glBindTexture(GL_TEXTURE_2D, fontRes.getGlName());
-			
-			GL11.glBegin(GL11.GL_TRIANGLES);
-			GL11.glColor4f(curColorR, curColorG, curColorB, curColorA);
-			
-			int firstCP = StbTtFontResource.BAKE_FONT_FIRST_CHAR;
-			int lastCP = StbTtFontResource.BAKE_FONT_FIRST_CHAR + StbTtFontResource.GLYPH_COUNT - 1;
-			for (int i = from; i < length; i++) {
-				int codePoint = charArr[i];
-				if (codePoint == '\n') {
-					bufX.put(0, x);
-					bufY.put(0, y + bufY.get(0) + fontSize);
-					continue;
-				} else if (codePoint < firstCP || codePoint > lastCP) {
-					continue;
-				}
-				STBTruetype.stbtt_GetBakedQuad(charData,
-						StbTtFontResource.FONT_TEX_W, StbTtFontResource.FONT_TEX_H,
-						codePoint - firstCP,
-						bufX, bufY, q, true);
-//				System.out.println("RENDER \t c="+((char) codePoint)+"; w="+(x1 - x0)+"; w2="+(x0 - oldX1));
-				
-				GL11.glTexCoord2f(q.s0(), q.t0());
-				GL11.glVertex2f(q.x0(), q.y0());
-				
-				GL11.glTexCoord2f(q.s0(), q.t1());
-				GL11.glVertex2f(q.x0(), q.y1());
-				
-				GL11.glTexCoord2f(q.s1(), q.t1());
-				GL11.glVertex2f(q.x1(), q.y1());
-				
-				GL11.glTexCoord2f(q.s1(), q.t1());
-				GL11.glVertex2f(q.x1(), q.y1());
-				
-				GL11.glTexCoord2f(q.s1(), q.t0());
-				GL11.glVertex2f(q.x1(), q.y0());
-				
-				GL11.glTexCoord2f(q.s0(), q.t0());
-				GL11.glVertex2f(q.x0(), q.y0());
-			}
-			GL11.glEnd();
-			
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
-			GL11.glDisable(GL11.GL_TEXTURE_2D);
-		}
+		GlfwFontResource glfwFont = (GlfwFontResource) font;
+		glfwFont.drawChars(this, charArr, from, length, x, y);
 	}
 	
 	@Override
 	public final void drawString(PFontResource font, String text, float x, float y) {
-		StbTtFontResource fontRes = (StbTtFontResource) font;
-		int fontSize = fontRes.getPixelSize();
-		y += fontRes.getAscent();
-		try (MemoryStack stack = MemoryStack.stackPush()) {
-			FloatBuffer bufX = stack.floats(x);
-			FloatBuffer bufY = stack.floats(y);
-			
-			STBTTAlignedQuad q = STBTTAlignedQuad.mallocStack(stack);
-			STBTTBakedChar.Buffer charData = fontRes.getBakedCharData();
-			
-			GL11.glEnable(GL_TEXTURE_2D);
-			GL11.glBindTexture(GL_TEXTURE_2D, fontRes.getGlName());
-			
-			GL11.glBegin(GL11.GL_TRIANGLES);
-			GL11.glColor4f(curColorR, curColorG, curColorB, curColorA);
-			
-			int firstCP = StbTtFontResource.BAKE_FONT_FIRST_CHAR;
-			int lastCP = StbTtFontResource.BAKE_FONT_FIRST_CHAR + StbTtFontResource.GLYPH_COUNT - 1;
-			for (int i = 0; i < text.length(); i++) {
-				int codePoint = text.codePointAt(i);
-				if (codePoint == '\n') {
-					bufX.put(0, x);
-					bufY.put(0, y + bufY.get(0) + fontSize);
-					continue;
-				} else if (codePoint < firstCP || codePoint > lastCP) {
-					continue;
-				}
-				STBTruetype.stbtt_GetBakedQuad(charData,
-						StbTtFontResource.FONT_TEX_W, StbTtFontResource.FONT_TEX_H,
-						codePoint - firstCP,
-						bufX, bufY, q, true);
-//				System.out.println("RENDER \t c="+((char) codePoint)+"; w="+(x1 - x0)+"; w2="+(x0 - oldX1));
-				
-				GL11.glTexCoord2f(q.s0(), q.t0());
-				GL11.glVertex2f(q.x0(), q.y0());
-				
-				GL11.glTexCoord2f(q.s0(), q.t1());
-				GL11.glVertex2f(q.x0(), q.y1());
-				
-				GL11.glTexCoord2f(q.s1(), q.t1());
-				GL11.glVertex2f(q.x1(), q.y1());
-				
-				GL11.glTexCoord2f(q.s1(), q.t1());
-				GL11.glVertex2f(q.x1(), q.y1());
-				
-				GL11.glTexCoord2f(q.s1(), q.t0());
-				GL11.glVertex2f(q.x1(), q.y0());
-				
-				GL11.glTexCoord2f(q.s0(), q.t0());
-				GL11.glVertex2f(q.x0(), q.y0());
-			}
-			GL11.glEnd();
-			
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
-			GL11.glDisable(GL11.GL_TEXTURE_2D);
-		}
+		GlfwFontResource glfwFont = (GlfwFontResource) font;
+		glfwFont.drawString(this, text, x, y);
 	}
 	
 	public static void renderTriangleQuad(

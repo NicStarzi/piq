@@ -15,6 +15,7 @@ import edu.udo.piq.PRenderMode;
 import edu.udo.piq.PRenderer;
 import edu.udo.piq.tools.ImmutablePBounds;
 import edu.udo.piq.tools.ImmutablePColor;
+import edu.udo.piq.util.Throw;
 
 public class SwingPRenderer implements PRenderer {
 	
@@ -194,13 +195,13 @@ public class SwingPRenderer implements PRenderer {
 				null);
 	}
 	
-	public void drawLetter(PFontResource font, char c, float x, float y) {
-		drawString(font, Character.toString(c), x, y);
-	}
-	
 	@Override
 	public boolean isFontSupported(PFontResource font) {
 		return font instanceof SwingRenderFont;
+	}
+	
+	public void drawLetter(PFontResource font, char c, float x, float y) {
+		drawChars(font, new char[] {c}, 0, 1, x, y);
 	}
 	
 	@Override
@@ -221,12 +222,8 @@ public class SwingPRenderer implements PRenderer {
 	
 	@Override
 	public void setRenderMode(PRenderMode mode) {
-		if (mode == null) {
-			throw new NullPointerException("mode");
-		}
-		if (!(mode instanceof SwingPRenderMode)) {
-			throw new IllegalArgumentException("mode="+mode);
-		}
+		Throw.ifNull(mode, "mode == null");
+		Throw.ifTypeCastFails(mode, SwingPRenderMode.class, () -> "mode == " + (mode).getClass().getSimpleName() + " != SwingPRenderMode");
 		renderMode = (SwingPRenderMode) mode;
 	}
 	

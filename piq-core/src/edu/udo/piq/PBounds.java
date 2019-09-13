@@ -258,7 +258,15 @@ public interface PBounds extends PSize {
 		return w > 0 && h > 0;
 	}
 	
+	@Override
+	public default PBounds scaleCopy(double scale) {
+		return new ImmutablePBounds(getX(), getY(), (int) (getWidth() * scale), (int) (getHeight() * scale));
+	}
+	
 	public default PBounds createCopyAndSubtract(PInsets insets) {
+		if (insets.isEmpty()) {
+			return this;
+		}
 		int x = getX() + insets.getFromLeft();
 		int fx = getFinalX() - insets.getFromRight();
 		if (fx < x) {

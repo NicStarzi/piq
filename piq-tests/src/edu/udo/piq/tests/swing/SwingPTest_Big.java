@@ -201,7 +201,7 @@ public class SwingPTest_Big extends AbstractSwingPTest {
 		ddl.setID("DropDownList");
 		String[] elems = new String[] {"one", "two", "three", "four"};
 		for (String s : elems) {
-			ddl.getList().getModel().add(ddl.getList().getModel().getSize(), s);
+			ddl.getList().getModel().add(s);
 		}
 		btnPnl.addChild(ddl, null);
 		

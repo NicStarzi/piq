@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import edu.udo.piq.CallSuper;
+import edu.udo.piq.DefaultUserDataStore;
 import edu.udo.piq.PBorder;
 import edu.udo.piq.PBounds;
 import edu.udo.piq.PClipboard;
@@ -27,8 +28,10 @@ import edu.udo.piq.PRenderer;
 import edu.udo.piq.PRoot;
 import edu.udo.piq.PRootObs;
 import edu.udo.piq.PRootOverlay;
+import edu.udo.piq.PSize;
 import edu.udo.piq.PTimer;
 import edu.udo.piq.TemplateMethod;
+import edu.udo.piq.UserDataStore;
 import edu.udo.piq.components.containers.DefaultPRootOverlay;
 import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.dnd.PDnDManager;
@@ -69,7 +72,7 @@ public abstract class AbstractPRoot implements PRoot {
 	protected final PLayoutObs layoutObs = new PLayoutObs() {
 		@Override
 		public void onLayoutInvalidated(PReadOnlyLayout layout) {
-			scheduleLayout(AbstractPRoot.this);
+			AbstractPRoot.this.onLayoutInvalidated();
 		}
 		@Override
 		public void onChildRemoved(PReadOnlyLayout layout, PComponentLayoutData data) {
@@ -85,8 +88,10 @@ public abstract class AbstractPRoot implements PRoot {
 	protected final ObserverList<PFocusObs> focusObsList = PiqUtil.createDefaultObserverList();
 	protected final Set<PTimer> timerSet = new HashSet<>();
 	protected final List<Runnable> timerSetWriteBuffer = new ArrayList<>();
+	protected final MutablePSize lastPrefSize = new MutablePSize();
 	protected Set<PComponent> reLayOutCompsFront = new TreeSet<>(AbstractPRoot.COMPONENT_DEPTH_COMPARATOR);
 	protected Set<PComponent> reLayOutCompsBack = new TreeSet<>(AbstractPRoot.COMPONENT_DEPTH_COMPARATOR);
+	protected UserDataStore dataStore = new DefaultUserDataStore();
 	protected ReRenderSet reRenderSet;
 	protected PFocusTraversal focusTrav = null;
 	protected PFocusTraversal activeFocusTrav = null;
@@ -132,6 +137,15 @@ public abstract class AbstractPRoot implements PRoot {
 		}
 	}
 	
+	protected void onLayoutInvalidated() {
+		scheduleLayout(AbstractPRoot.this);
+		PSize newPrefSize = getLayout().getPreferredSize();
+		if (!lastPrefSize.equals(newPrefSize)) {
+			lastPrefSize.set(newPrefSize);
+			firePreferredSizeChanged();
+		}
+	}
+	
 	@Override
 	public void scheduleLayout(PComponent component) {
 //		System.out.println("reLayOut "+component);
@@ -161,7 +175,7 @@ public abstract class AbstractPRoot implements PRoot {
 			reLayOutCompsBack = reLayOutCompsFront;
 			reLayOutCompsFront = temp;
 			for (PComponent comp : reLayOutCompsBack) {
-				//				System.out.println("LayOut="+comp);
+//				System.out.println("LayOut="+comp);
 				if (comp.getRoot() == this) {
 					comp.redoLayOut();
 				}
@@ -188,14 +202,6 @@ public abstract class AbstractPRoot implements PRoot {
 //		System.out.println("#######");
 //		System.out.println();
 	}
-	
-//	public static void defaultRootRender(PRenderer renderer, Deque<RenderStackInfo> renderStack) {
-//		AbstractPRoot.defaultRootRender(renderer, renderStack, AbstractPRoot::renderComponent);
-//	}
-	
-//	public static interface RenderAction {
-//		public void doRender(PRenderer renderer, PComponent component, int clipX, int clipY, int clipW, int clipH);
-//	}, RenderAction renderAction
 	
 	public static void defaultRootRender(PRenderer renderer, Deque<RenderStackInfo> renderStack) {
 //		System.out.println();
@@ -497,6 +503,11 @@ public abstract class AbstractPRoot implements PRoot {
 		return layout;
 	}
 	
+	@Override
+	public UserDataStore getUserDataStore() {
+		return dataStore;
+	}
+	
 	protected void setStyleSheet(PStyleSheet styleSheet) {
 		PStyleSheet oldStyleSheet = getStyleSheet();
 		if (Objects.equals(oldStyleSheet, styleSheet)) {
@@ -619,10 +630,15 @@ public abstract class AbstractPRoot implements PRoot {
 		}
 	}
 	
+	protected void firePreferredSizeChanged() {
+		compObsList.fireEvent((obs) -> obs.onPreferredSizeChanged(this));
+	}
+	
 	protected void fireSizeChanged() {
 		scheduleReRender(this);
 		scheduleLayout(this);
-		compObsList.fireEvent((obs) -> obs.onPreferredSizeChanged(this));
+//		compObsList.fireEvent((obs) -> obs.onPreferredSizeChanged(this));
+		compObsList.fireEvent((obs) -> obs.onBoundsChanged(this));
 	}
 	
 	protected void fireFocusGainedEvent(PComponent oldFocusOwner) {

@@ -62,4 +62,6 @@ public interface PMouseObs {
 	 */
 	public default void onButtonReleased(PMouse mouse, MouseButton btn, int clickCount) {}
 	
+	public default void onMouseWheelMoved(PMouse mouse, double value) {}
+	
 }

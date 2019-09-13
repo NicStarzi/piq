@@ -12,7 +12,6 @@ import edu.udo.piq.tools.AbstractPKeyboard;
 public class GlfwPKeyboard extends AbstractPKeyboard implements PKeyboard {
 	
 	protected final GLFWKeyCallback keyCB = new GLFWKeyCallback() {
-		
 		@Override
 		public void invoke(long window, int key, int scancode, int action, int mods) {
 			if (action != GLFW.GLFW_REPEAT) {
@@ -21,31 +20,31 @@ public class GlfwPKeyboard extends AbstractPKeyboard implements PKeyboard {
 		}
 	};
 	protected final GLFWCharCallback charCB = new GLFWCharCallback() {
-		
 		@Override
 		public void invoke(long window, int codePoint) {
 			onCharCallback(codePoint);
 		}
 	};
-	protected final GlfwPRoot root;
 	protected final boolean[] nowPressed = new boolean[ActualKey.COUNT];
 	protected final boolean[] prevPressed = new boolean[ActualKey.COUNT];
 	protected final boolean[] modState = new boolean[Modifier.COUNT];
 	protected final char[] codePointToCharArray = new char[2];
 	protected boolean capsLockDown;
 	
-	public GlfwPKeyboard(GlfwPRoot root) {
-		this.root = root;
+	public void install(long windowHandle) {
+		GLFW.glfwSetCharCallback(windowHandle, charCB);
+		GLFW.glfwSetKeyCallback(windowHandle, keyCB);
 	}
 	
-	protected void install() {
-		GLFW.glfwSetCharCallback(root.wndHandle, charCB);
-		GLFW.glfwSetKeyCallback(root.wndHandle, keyCB);
-	}
-	
-	protected void uninstall() {
+	public void uninstall() {
 		charCB.free();
 		keyCB.free();
+	}
+	
+	public void updateKeyStates(double deltaTimeMs) {
+		for (int i = 0; i < nowPressed.length; i++) {
+			prevPressed[i] = nowPressed[i];
+		}
 	}
 	
 	@Override
@@ -226,6 +225,7 @@ public class GlfwPKeyboard extends AbstractPKeyboard implements PKeyboard {
 		case GLFW.GLFW_KEY_LEFT_ALT:
 			return ActualKey.ALT;
 		case GLFW.GLFW_KEY_LEFT_SHIFT:
+		case GLFW.GLFW_KEY_RIGHT_SHIFT:
 			return ActualKey.SHIFT;
 		case GLFW.GLFW_KEY_SPACE:
 			return ActualKey.SPACE;

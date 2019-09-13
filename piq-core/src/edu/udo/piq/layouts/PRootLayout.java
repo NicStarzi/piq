@@ -6,16 +6,12 @@ import edu.udo.piq.PRoot;
 import edu.udo.piq.PRootOverlay;
 import edu.udo.piq.PSize;
 import edu.udo.piq.layouts.PRootLayout.Constraint;
-import edu.udo.piq.util.ThrowException;
 
 public class PRootLayout extends AbstractEnumPLayout<Constraint> {
 	
-	private final PRoot owner;
-	
 	public PRootLayout(PRoot owner) {
 		super(owner, Constraint.class);
-		this.owner = owner;
-		prefSize = null;
+//		prefSize = null;
 	}
 	
 	public PRootOverlay getOverlay() {
@@ -51,6 +47,12 @@ public class PRootLayout extends AbstractEnumPLayout<Constraint> {
 	}
 	
 	@Override
+	protected void onInvalidated() {
+		super.onInvalidated();
+		prefSize.set(getPreferredSizeOf(getBody()));
+	}
+	
+	@Override
 	protected void layOutInternal() {
 //		System.out.println("PRootLayout.layOutInternal()");
 		PBounds ob = getOwner().getBounds();
@@ -73,18 +75,18 @@ public class PRootLayout extends AbstractEnumPLayout<Constraint> {
 //		System.out.println("body: "+body.getDebugInfo());
 	}
 	
-	@Override
-	protected PSize getPreferredSizeInternal() {
-		return owner.getBounds();
-	}
+//	@Override
+//	protected PSize getPreferredSizeInternal() {
+//		return owner.getBounds();
+//	}
 	
-	@Override
-	protected void onChildPrefSizeChanged(PComponent child) {
-		ThrowException.ifFalse(containsChild(child), "containsChild(child) == false");
-		if (child == getMenuBar()) {
-			invalidate();
-		}
-	}
+//	@Override
+//	protected void onChildPrefSizeChanged(PComponent child) {
+//		ThrowException.ifFalse(containsChild(child), "containsChild(child) == false");
+//		if (child == getMenuBar()) {
+//			invalidate();
+//		}
+//	}
 	
 	public static enum Constraint {
 		BODY,

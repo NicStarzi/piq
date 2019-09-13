@@ -121,6 +121,10 @@ public class PLabel extends AbstractPComponent {
 		return DEFAULT_TEXT_COLOR;
 	}
 	
+	protected Object getDefaultFontKey() {
+		return FONT_ID;
+	}
+	
 	protected PFontResource getDefaultFont() {
 		PRoot root = getRoot();
 		if (root == null) {
@@ -129,7 +133,7 @@ public class PLabel extends AbstractPComponent {
 		if (cachedFont != null && root.isFontSupported(cachedFont)) {
 			return cachedFont;
 		}
-		cachedFont = root.fetchFontResource(FONT_ID);
+		cachedFont = root.fetchFontResource(getDefaultFontKey());
 		return cachedFont;
 	}
 	

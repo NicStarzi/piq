@@ -316,20 +316,19 @@ public class PGridListLayout extends AbstractMapPLayout {
 				PSize childSize = getPreferredSizeOf(child);
 				int childPrefW = childSize.getWidth();
 				int childPrefH = childSize.getHeight();
+				int childPrefSizeRow, childPrefSizeCol;
 				if (isHorizontal) {
-					if (cachedRowSize < childPrefW) {
-						cachedRowSize = childPrefW;
-					}
-					if (cachedColSizes[colIdx] < childPrefH) {
-						cachedColSizes[colIdx] = childPrefH;
-					}
+					childPrefSizeRow = childPrefW;
+					childPrefSizeCol = childPrefH;
 				} else {
-					if (cachedRowSize < childPrefH) {
-						cachedRowSize = childPrefH;
-					}
-					if (cachedColSizes[colIdx] < childPrefW) {
-						cachedColSizes[colIdx] = childPrefW;
-					}
+					childPrefSizeRow = childPrefH;
+					childPrefSizeCol = childPrefW;
+				}
+				if (cachedRowSize < childPrefSizeRow) {
+					cachedRowSize = childPrefSizeRow;
+				}
+				if (cachedColSizes[colIdx] < childPrefSizeCol) {
+					cachedColSizes[colIdx] = childPrefSizeCol;
 				}
 			}
 		}
@@ -464,19 +463,7 @@ public class PGridListLayout extends AbstractMapPLayout {
 					cellH = Math.max(0, fy - cellY);
 				}
 				PComponent child = row[colIdx];
-//				PSize childPrefSize = getPreferredSizeOf(child);
-//				int childPrefW = childPrefSize.getWidth();
-//				int childPrefH = childPrefSize.getHeight();
-//				int childX = alignX.getLeftX(cellX, cellW, childPrefW);
-//				int childY = alignY.getTopY(cellY, cellH, childPrefH);
-//				int childW = alignX.getWidth(cellX, cellW, childPrefW);
-//				int childH = alignY.getHeight(cellY, cellH, childPrefH);
-//				int childFx = Math.min(childX + childW, fx);
-//				int childFy = Math.min(childY + childH, fy);
-//				childW = Math.max(childFx - childX, 0);
-//				childH = Math.max(childFy - childY, 0);
 				
-//				setChildCellFilled(child, childX, childY, childW, childH);
 				setChildCell(child, cellX, cellY, cellW, cellH, alignX, alignY);
 				if (isHorizontal) {
 					cellY += cellH + gapCol;

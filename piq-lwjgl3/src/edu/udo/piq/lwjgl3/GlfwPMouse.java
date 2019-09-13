@@ -5,6 +5,7 @@ import java.util.Arrays;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWCursorPosCallback;
 import org.lwjgl.glfw.GLFWMouseButtonCallback;
+import org.lwjgl.glfw.GLFWScrollCallback;
 import org.lwjgl.system.MemoryUtil;
 
 import edu.udo.piq.PComponent;
@@ -35,12 +36,20 @@ public class GlfwPMouse extends AbstractPMouse implements PMouse {
 			setPosition(xpos, ypos);
 		}
 	};
-	protected final GlfwPRoot root;
+	protected final GLFWScrollCallback mouseWheelCB = new GLFWScrollCallback() {
+		@Override
+		public void invoke(long window, double xoffset, double yoffset) {
+			onMouseWheel(yoffset);
+		}
+	};
 	protected final int[] btnClickCount = new int[MouseButton.COUNT];
 	protected final double[] btnEvtTime = new double[btnClickCount.length];
 	protected final boolean[] btnPressed = new boolean[btnClickCount.length];
 	protected final boolean[] btnReleased = new boolean[btnClickCount.length];
 	protected final boolean[] btnTriggered = new boolean[btnClickCount.length];
+	protected long windowHandle;
+	protected PComponent rootComponent;
+	protected GlfwPKeyboard keyboard;
 	protected int x, y, dx, dy;
 	protected int ox;
 	protected int oy;
@@ -49,22 +58,35 @@ public class GlfwPMouse extends AbstractPMouse implements PMouse {
 	protected PComponent compAtMouseCache;
 	protected GlfwPCursor currentCursor;
 	
-	public GlfwPMouse(GlfwPRoot root) {
-		this.root = root;
+	{
 		currentCursor = getCursorDefault();
 	}
 	
-	protected void install() {
-		GLFW.glfwSetMouseButtonCallback(root.wndHandle, mouseBtnCB);
-		GLFW.glfwSetCursorPosCallback(root.wndHandle, mousePosCB);
+	public void setRootComponent(PComponent component) {
+		rootComponent = component;
 	}
 	
-	protected void uninstall() {
+	public void setKeyboard(GlfwPKeyboard keyboard) {
+		this.keyboard = keyboard;
+	}
+	
+	public void setWindowHandle(long value) {
+		windowHandle = value;
+	}
+	
+	public void install() {
+		GLFW.glfwSetMouseButtonCallback(windowHandle, mouseBtnCB);
+		GLFW.glfwSetCursorPosCallback(windowHandle, mousePosCB);
+		GLFW.glfwSetScrollCallback(windowHandle, mouseWheelCB);
+	}
+	
+	public void uninstall() {
 		mouseBtnCB.free();
 		mousePosCB.free();
+		mouseWheelCB.free();
 	}
 	
-	protected void update() {
+	public void update() {
 		Arrays.fill(btnReleased, false);
 		Arrays.fill(btnTriggered, false);
 		dx = 0;
@@ -73,8 +95,9 @@ public class GlfwPMouse extends AbstractPMouse implements PMouse {
 	}
 	
 	protected void updateMetaModifiers(int glfwModifiers) {
-		GlfwPKeyboard kb = root.getKeyboard();
-		kb.updateMetaModifiers(glfwModifiers);
+		if (keyboard != null) {
+			keyboard.updateMetaModifiers(glfwModifiers);
+		}
 	}
 	
 	public void mouseOverCursorChanged(PComponent component) {
@@ -85,6 +108,10 @@ public class GlfwPMouse extends AbstractPMouse implements PMouse {
 	
 	protected void invalidateCompAtMouseCache() {
 		compAtMouseCacheValid = false;
+	}
+	
+	protected void onMouseWheel(double value) {
+		fireWheelEvent(value);
 	}
 	
 	protected void onPress(MouseButton btn) {
@@ -181,7 +208,7 @@ public class GlfwPMouse extends AbstractPMouse implements PMouse {
 	@Override
 	public PComponent getComponentAtMouse() {
 		if (!compAtMouseCacheValid) {
-			compAtMouseCache = PiqUtil.getComponentAt(root, getX(), getY());
+			compAtMouseCache = PiqUtil.getComponentAt(rootComponent, getX(), getY());
 			compAtMouseCacheValid = true;
 			refreshCursor();
 		}
@@ -191,7 +218,7 @@ public class GlfwPMouse extends AbstractPMouse implements PMouse {
 	protected void refreshCursor() {
 		PComponent comp = getComponentAtMouse();
 		if (comp == null) {
-			GLFW.glfwSetCursor(root.wndHandle, MemoryUtil.NULL);
+			GLFW.glfwSetCursor(windowHandle, MemoryUtil.NULL);
 			return;
 		}
 		
@@ -200,7 +227,7 @@ public class GlfwPMouse extends AbstractPMouse implements PMouse {
 				GlfwPCursor.class, "!(cursor instanceof GlfwPCursor)");
 		if (cursor != currentCursor) {
 			currentCursor = cursor;
-			GLFW.glfwSetCursor(root.wndHandle, currentCursor.getGlfwHandle());
+			GLFW.glfwSetCursor(windowHandle, currentCursor.getGlfwHandle());
 		}
 	}
 	

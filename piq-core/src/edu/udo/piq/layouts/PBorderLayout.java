@@ -14,13 +14,9 @@ import edu.udo.piq.util.ThrowException;
 public class PBorderLayout extends AbstractEnumPLayout<BorderLayoutConstraint> {
 	
 	public static final PInsets DEFAULT_INSETS = PInsets.ZERO_INSETS;
-	public static final AlignmentX DEFAULT_ALIGN_X = AlignmentX.FILL;
-	public static final AlignmentY DEFAULT_ALIGN_Y = AlignmentY.FILL;
 	public static final int DEFAULT_GAP = 0;
 	
 	protected PInsets insets = PBorderLayout.DEFAULT_INSETS;
-//	protected AlignmentX alignX = DEFAULT_ALIGN_X;
-//	protected AlignmentY alignY = DEFAULT_ALIGN_Y;
 	protected int gap = PBorderLayout.DEFAULT_GAP;
 	
 	public PBorderLayout(PComponent owner) {
@@ -38,35 +34,6 @@ public class PBorderLayout extends AbstractEnumPLayout<BorderLayoutConstraint> {
 	public PInsets getInsets() {
 		return insets;
 	}
-	
-//	public void setAlignment(AlignmentX alignmentX, AlignmentY alignmentY) {
-//		setAlignmentX(alignmentX);
-//		setAlignmentY(alignmentY);
-//	}
-//
-//	public void setAlignmentX(AlignmentX value) {
-//		ThrowException.ifNull(value, "value == null");
-//		if (alignX != value) {
-//			alignX = value;
-//			invalidate();
-//		}
-//	}
-//
-//	public AlignmentX getAlignmentX() {
-//		return alignX;
-//	}
-//
-//	public void setAlignmentY(AlignmentY value) {
-//		ThrowException.ifNull(value, "value == null");
-//		if (alignY != value) {
-//			alignY = value;
-//			invalidate();
-//		}
-//	}
-//
-//	public AlignmentY getAlignmentY() {
-//		return alignY;
-//	}
 	
 	public void setGap(int value) {
 		ThrowException.ifLess(0, value, "value < 0");
@@ -128,9 +95,6 @@ public class PBorderLayout extends AbstractEnumPLayout<BorderLayoutConstraint> {
 		PComponent cmpBtm = getChildForConstraint(BorderLayoutConstraint.BOTTOM);
 		PComponent cmpCtr = getChildForConstraint(BorderLayoutConstraint.CENTER);
 		
-//		AlignmentX alignX = getAlignmentX();
-//		AlignmentY alignY = getAlignmentY();
-		
 		if (cmpTop != null) {
 			int cmpPrefH = getPreferredSizeOf(cmpTop).getHeight();
 			setChildCellPreferred(cmpTop, lft, top, (rgt - lft), cmpPrefH);//, alignX, alignY
@@ -153,14 +117,6 @@ public class PBorderLayout extends AbstractEnumPLayout<BorderLayoutConstraint> {
 		}
 		if (cmpCtr != null) {
 			setChildCellPreferred(cmpCtr, lft, top, (rgt - lft), (btm - top));//, alignX, alignY
-		}
-	}
-	
-	@Override
-	protected void onChildPrefSizeChanged(PComponent child) {
-		ThrowException.ifFalse(containsChild(child), "containsChild(child) == false");
-		if (child != getChildForConstraint(BorderLayoutConstraint.CENTER)) {
-			invalidate();
 		}
 	}
 	

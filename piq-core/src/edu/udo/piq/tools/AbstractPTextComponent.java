@@ -283,6 +283,10 @@ public abstract class AbstractPTextComponent
 		return DEFAULT_SELECTION_BACKGROUND_COLOR;
 	}
 	
+	protected Object getDefaultFontKey() {
+		return FONT_ID;
+	}
+	
 	protected PFontResource getDefaultFont() {
 		PRoot root = getRoot();
 		if (root == null) {
@@ -291,7 +295,7 @@ public abstract class AbstractPTextComponent
 		if (cachedFont != null && root.isFontSupported(cachedFont)) {
 			return cachedFont;
 		}
-		cachedFont = root.fetchFontResource(FONT_ID);
+		cachedFont = root.fetchFontResource(getDefaultFontKey());
 		return cachedFont;
 	}
 	

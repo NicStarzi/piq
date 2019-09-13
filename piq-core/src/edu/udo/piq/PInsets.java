@@ -15,6 +15,22 @@ public interface PInsets extends PSize {
 	
 	public static final PInsets ZERO_INSETS = new AbstractPInsets() {
 		@Override
+		public PSize getAsImmutable() {
+			return this;
+		}
+		@Override
+		public boolean isEmpty() {
+			return true;
+		}
+		@Override
+		public int getHorizontal() {
+			return 0;
+		}
+		@Override
+		public int getVertical() {
+			return 0;
+		}
+		@Override
 		public int getFromTop() {
 			return 0;
 		}
@@ -35,6 +51,11 @@ public interface PInsets extends PSize {
 			return "ZERO_SIZED_INSETS";
 		}
 	};
+	
+	@Override
+	public default boolean isEmpty() {
+		return getFromTop() == 0 && getFromBottom() == 0 && getFromLeft() == 0 && getFromRight() == 0;
+	}
 	
 	/**
 	 * Returns the distance from the top.<br>

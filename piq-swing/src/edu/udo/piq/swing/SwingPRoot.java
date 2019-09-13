@@ -70,12 +70,10 @@ public class SwingPRoot extends AbstractPRoot implements PRoot {
 		awtComp.addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentShown(ComponentEvent e) {
-				scheduleReRender(SwingPRoot.this);
 				fireSizeChanged();
 			}
 			@Override
 			public void componentResized(ComponentEvent e) {
-				scheduleReRender(SwingPRoot.this);
 				fireSizeChanged();
 			}
 		});
@@ -276,6 +274,11 @@ public class SwingPRoot extends AbstractPRoot implements PRoot {
 		}
 	}
 	
+	public void renderTo(Graphics2D g) {
+		reRenderSet.add(this);
+		render(g);
+	}
+	
 	protected void render(Graphics2D g) {
 //		System.out.println("### RENDER ALL ###");
 		if (renderingHints != null) {
@@ -301,7 +304,7 @@ public class SwingPRoot extends AbstractPRoot implements PRoot {
 		} finally {
 			renderLock.unlock();
 		}
-		AbstractPRoot.defaultRootRender(this, renderer, renderStack);
+		AbstractPRoot.defaultRootRender(renderer, renderStack);
 	}
 	
 	@Override
@@ -318,7 +321,7 @@ public class SwingPRoot extends AbstractPRoot implements PRoot {
 			renderLock.unlock();
 		}
 //		System.out.println("### defaultRootRender ###");
-		AbstractPRoot.defaultRootRender(this, renderer, renderStack);
+		AbstractPRoot.defaultRootRender(renderer, renderStack);
 //		System.out.println("#######");
 //		System.out.println();
 	}

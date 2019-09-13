@@ -46,6 +46,14 @@ public interface PSize {
 		public int getHeight() {
 			return 0;
 		}
+		@Override
+		public boolean isEmpty() {
+			return true;
+		}
+		@Override
+		public PSize getAsImmutable() {
+			return this;
+		}
 	};
 	
 	/**
@@ -60,6 +68,10 @@ public interface PSize {
 		@Override
 		public int getHeight() {
 			return Integer.MIN_VALUE;
+		}
+		@Override
+		public PSize getAsImmutable() {
+			return this;
 		}
 	};
 	
@@ -88,50 +100,30 @@ public interface PSize {
 		return getWidth() * getHeight() == 0;
 	}
 	
-	public default PSize createImmutableCopy() {
+	public default PSize getAsImmutable() {
 		return new ImmutablePSize(this);
 	}
 	
-	/**
-	 * <p>Creates and returns a new instance of {@link PSize} with the exact same
-	 * {@link #getWidth() width} and {@link #getHeight() height} as this size.</p>
-	 * <p>No assumptions should be made about whether or not the returned instance
-	 * is mutable. Changes to this size after the copy was created should not affect
-	 * the copy.</p>
-	 * @return an instance of {@link ImmutablePSize} with the same width and height as this
-	 * @see #createCopyAndAdd(int, int)
-	 * @see #createCopyAndAdd(PSize)
-	 */
-	public default PSize createCopy() {
-		return createImmutableCopy();
+	public default MutablePSize createMutableCopy() {
+		return new MutablePSize(this);
 	}
 	
-	/**
-	 * <p>Creates and returns a new instance of {@link PSize} with the exact same
-	 * {@link #getWidth() width} and {@link #getHeight() height} as this size.</p>
-	 * <p>No assumptions should be made about whether or not the returned instance
-	 * is mutable. Changes to this size after the copy was created should not affect
-	 * the copy.</p>
-	 * @return an instance of {@link ImmutablePSize} with the same width and height as this
-	 * @see #createCopy()
-	 * @see #createCopyAndAdd(PSize)
-	 */
-	public default PSize createCopyAndAdd(int width, int height) {
+	public default PSize addToCopy(int width, int height) {
+		if (width == 0 && height == 0) {
+			return this;
+		}
 		return new ImmutablePSize(getWidth() + width, getHeight() + height);
 	}
 	
-	/**
-	 * <p>Creates and returns a new instance of {@link PSize} with the exact same
-	 * {@link #getWidth() width} and {@link #getHeight() height} as this size.</p>
-	 * <p>No assumptions should be made about whether or not the returned instance
-	 * is mutable. Changes to this size after the copy was created should not affect
-	 * the copy.</p>
-	 * @return an instance of {@link ImmutablePSize} with the same width and height as this
-	 * @see #createCopy()
-	 * @see #createCopyAndAdd(int, int)
-	 */
-	public default PSize createCopyAndAdd(PSize other) {
-		return createCopyAndAdd(other.getWidth(), other.getHeight());
+	public default PSize addToCopy(PSize other) {
+		return addToCopy(other.getWidth(), other.getHeight());
+	}
+	
+	public default PSize scaleCopy(double scale) {
+		if (scale == 1.0) {
+			return this;
+		}
+		return new ImmutablePSize((int) (getWidth() * scale), (int) (getHeight() * scale));
 	}
 	
 }

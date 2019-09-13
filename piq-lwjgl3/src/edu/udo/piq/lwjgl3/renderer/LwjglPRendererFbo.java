@@ -3,6 +3,7 @@ package edu.udo.piq.lwjgl3.renderer;
 import org.lwjgl.opengl.GL11;
 
 import edu.udo.piq.lwjgl3.Fbo;
+import edu.udo.piq.lwjgl3.GlfwPRoot;
 
 public class LwjglPRendererFbo extends LwjglPRendererBase {
 	
@@ -17,7 +18,10 @@ public class LwjglPRendererFbo extends LwjglPRendererBase {
 		}
 		fbo.bind();
 		fbo.unbindTexture();
-//		GlfwPRoot.checkGlError("LwjglPRendererFbo.beginReRender");
+		GL11.glScissor(0, 0, fbo.getWidth(), fbo.getHeight());
+		GL11.glClearColor(0f, 0f, 0f, 0f);
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT);
+		GlfwPRoot.checkGlError("LwjglPRendererFbo.beginReRender");
 	}
 	
 	@Override

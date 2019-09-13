@@ -32,7 +32,9 @@ public abstract class AbstractPSize implements PSize {
 		}
 		PSize other = (PSize) obj;
 		return getWidth() == other.getWidth() 
-				&& getHeight() == other.getHeight() 
+				&& getHeight() == other.getHeight()
+				// as per definition of hashCode() 
+				// we need to make sure hashCode() is implemented correctly for equality to work
 				&& hashCode() == other.hashCode();
 	}
 	

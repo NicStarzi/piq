@@ -7,7 +7,6 @@ import edu.udo.piq.components.PButton;
 import edu.udo.piq.components.PClickObs;
 import edu.udo.piq.components.containers.PPanel;
 import edu.udo.piq.components.containers.PRingMenu;
-import edu.udo.piq.components.textbased.PLabel;
 import edu.udo.piq.layouts.PBorderLayout;
 
 public class SwingPTest_PRingLayout extends AbstractSwingPTest {
@@ -23,6 +22,7 @@ public class SwingPTest_PRingLayout extends AbstractSwingPTest {
 	@Override
 	public void buildGUI() {
 		PPanel bodyPnl = new PPanel();
+		bodyPnl.setID("body");
 		bodyPnl.setLayout(new PBorderLayout(bodyPnl));
 		root.setBody(bodyPnl);
 		
@@ -32,13 +32,15 @@ public class SwingPTest_PRingLayout extends AbstractSwingPTest {
 		PRingMenu menu = new PRingMenu();
 		for (int i = 0; i < btnTxts.length; i++) {
 			String text = btnTxts[i];
-			PButton btn = new PButton(new PLabel(text));
+			PButton btn = new PButton(text);
+			btn.setID("Button #"+i);
 			btn.addObs((PClickObs) (c) -> {
 				System.out.println("You clicked: "+text);
 			});
 			menu.addChild(btn);
 		}
 		bodyPnl.addChild(menu, PBorderLayout.BorderLayoutConstraint.CENTER);
+		
 		menu.addObs(new PMouseObs() {
 			@Override
 			public void onButtonTriggered(PMouse mouse, MouseButton btn, int clickCount) {

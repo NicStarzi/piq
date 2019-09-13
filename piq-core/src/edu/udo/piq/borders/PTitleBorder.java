@@ -172,7 +172,12 @@ public class PTitleBorder extends AbstractPBorder {
 			insetsTop = lineSize;
 			insetsBtm = Math.max(titleSize.getHeight(), lineSize);
 		}
-		insets.set(insetsTop + padding, insetsBtm + padding, lineSize + padding, lineSize + padding);
+		insets.set(
+				insetsTop + padding + 1, 
+				insetsBtm + padding + 1, 
+				lineSize + padding + 1, 
+				lineSize + padding + 1
+		);
 		return insets;
 	}
 	

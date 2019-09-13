@@ -16,6 +16,10 @@ import edu.udo.piq.util.PiqUtil;
 
 public class PRadioButton extends AbstractPInteractiveComponent implements PClickable {
 	
+	public static final Object STYLE_ID = PRadioButton.class;
+	{
+		setStyleID(STYLE_ID);
+	}
 	private static final PSize DEFAULT_PREFERRED_SIZE = new ImmutablePSize(12, 12);
 	
 	protected final ObserverList<PSingleValueModelObs<Boolean>> modelObsList

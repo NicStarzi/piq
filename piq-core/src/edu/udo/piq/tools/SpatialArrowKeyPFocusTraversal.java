@@ -11,7 +11,6 @@ import edu.udo.piq.PFocusTraversal;
 import edu.udo.piq.PKeyboard;
 import edu.udo.piq.PKeyboard.ActualKey;
 import edu.udo.piq.PKeyboard.Modifier;
-import edu.udo.piq.components.textbased.PTextComponent;
 import edu.udo.piq.layouts.Axis;
 
 public class SpatialArrowKeyPFocusTraversal extends AbstractPFocusTraversal implements PFocusTraversal {
@@ -32,12 +31,7 @@ public class SpatialArrowKeyPFocusTraversal extends AbstractPFocusTraversal impl
 		if (focusOwner == null) {
 			return;
 		}
-		// If the focused component is a text component the arrow keys have are used to move the caret.
-		// In this case we require the ALT modifier key to be pressed also.
-		if (focusOwner instanceof PTextComponent && !keyboard.isModifierToggled(Modifier.ALT)) {
-			return;
-		}
-		if (keyboard.isModifierToggled(Modifier.CTRL)) {
+		if (keyboard.isModifierToggled(Modifier.ALT)) {
 			switch (key) {
 			case UP:
 				tryToGiveFocus(getFocusCandidateUp());

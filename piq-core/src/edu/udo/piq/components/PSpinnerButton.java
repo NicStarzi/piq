@@ -171,7 +171,7 @@ public class PSpinnerButton extends PButton implements PSpinnerPart {
 	}
 	
 	@Override
-	protected PSize getConstantDefaultPreferredSize() {
+	protected PSize getNoLayoutDefaultPreferredSize() {
 		return PREF_SIZE;
 	}
 	

@@ -18,13 +18,13 @@ public abstract class AbstractPContainer<CONSTRAINT_CLASS> extends AbstractPLayo
 	}
 	
 	@Override
-	public void setBorder(PBorder border) {
-		super.setBorder(border);
+	public void setFocusTraversal(PFocusTraversal focusTraversal) {
+		super.setFocusTraversal(focusTraversal);
 	}
 	
 	@Override
-	public void setFocusTraversal(PFocusTraversal focusTraversal) {
-		super.setFocusTraversal(focusTraversal);
+	public void setBorder(PBorder border) {
+		super.setBorder(border);
 	}
 	
 	/**
@@ -87,7 +87,7 @@ public abstract class AbstractPContainer<CONSTRAINT_CLASS> extends AbstractPLayo
 	}
 	
 	@Override
-	protected PSize getConstantDefaultPreferredSize() {
+	protected PSize getNoLayoutDefaultPreferredSize() {
 		return AbstractPContainer.DEFAULT_PREFERRED_SIZE;
 	}
 	

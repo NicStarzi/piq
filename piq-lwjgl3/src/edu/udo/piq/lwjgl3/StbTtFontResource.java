@@ -9,21 +9,23 @@ import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
 
 import java.io.File;
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.stb.STBTTAlignedQuad;
 import org.lwjgl.stb.STBTTBakedChar;
 import org.lwjgl.stb.STBTTFontinfo;
 import org.lwjgl.stb.STBTruetype;
 import org.lwjgl.system.MemoryStack;
 
-import edu.udo.piq.PFontResource;
 import edu.udo.piq.PSize;
+import edu.udo.piq.lwjgl3.renderer.LwjglPRendererBase;
 import edu.udo.piq.tools.ImmutablePSize;
 import edu.udo.piq.tools.MutablePSize;
 
-public class StbTtFontResource implements PFontResource {
+public class StbTtFontResource implements GlfwFontResource {
 	
 	public static final int CHAR_DATA_MALLOC_SIZE = 96;
 	public static final int FONT_TEX_W = 512;
@@ -300,6 +302,123 @@ public class StbTtFontResource implements PFontResource {
 	@Override
 	public Style getStyle() {
 		return Style.PLAIN;
+	}
+	
+	@Override
+	public void drawChars(LwjglPRendererBase renderer, char[] charArr, int from, int length, float x, float y) {
+		int fontSize = getPixelSize();
+		y += getAscent();
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			FloatBuffer bufX = stack.floats(x);
+			FloatBuffer bufY = stack.floats(y);
+			
+			STBTTAlignedQuad q = STBTTAlignedQuad.mallocStack(stack);
+			STBTTBakedChar.Buffer charData = getBakedCharData();
+			
+			GL11.glEnable(GL_TEXTURE_2D);
+			GL11.glBindTexture(GL_TEXTURE_2D, getGlName());
+			
+			GL11.glBegin(GL11.GL_TRIANGLES);
+			renderer.applyGlColor();
+			
+			int firstCP = StbTtFontResource.BAKE_FONT_FIRST_CHAR;
+			int lastCP = StbTtFontResource.BAKE_FONT_FIRST_CHAR + StbTtFontResource.GLYPH_COUNT - 1;
+			for (int i = from; i < length; i++) {
+				int codePoint = charArr[i];
+				if (codePoint == '\n') {
+					bufX.put(0, x);
+					bufY.put(0, y + bufY.get(0) + fontSize);
+					continue;
+				} else if (codePoint < firstCP || codePoint > lastCP) {
+					continue;
+				}
+				STBTruetype.stbtt_GetBakedQuad(charData,
+						StbTtFontResource.FONT_TEX_W, StbTtFontResource.FONT_TEX_H,
+						codePoint - firstCP,
+						bufX, bufY, q, true);
+				
+				GL11.glTexCoord2f(q.s0(), q.t0());
+				GL11.glVertex2f(q.x0(), q.y0());
+				
+				GL11.glTexCoord2f(q.s0(), q.t1());
+				GL11.glVertex2f(q.x0(), q.y1());
+				
+				GL11.glTexCoord2f(q.s1(), q.t1());
+				GL11.glVertex2f(q.x1(), q.y1());
+				
+				GL11.glTexCoord2f(q.s1(), q.t1());
+				GL11.glVertex2f(q.x1(), q.y1());
+				
+				GL11.glTexCoord2f(q.s1(), q.t0());
+				GL11.glVertex2f(q.x1(), q.y0());
+				
+				GL11.glTexCoord2f(q.s0(), q.t0());
+				GL11.glVertex2f(q.x0(), q.y0());
+			}
+			GL11.glEnd();
+			
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+			GL11.glDisable(GL11.GL_TEXTURE_2D);
+		}
+	}
+	
+	@Override
+	public final void drawString(LwjglPRendererBase renderer, String text, float x, float y) {
+		int fontSize = getPixelSize();
+		y += getAscent();
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			FloatBuffer bufX = stack.floats(x);
+			FloatBuffer bufY = stack.floats(y);
+			
+			STBTTAlignedQuad q = STBTTAlignedQuad.mallocStack(stack);
+			STBTTBakedChar.Buffer charData = getBakedCharData();
+			
+			GL11.glEnable(GL_TEXTURE_2D);
+			GL11.glBindTexture(GL_TEXTURE_2D, getGlName());
+			
+			GL11.glBegin(GL11.GL_TRIANGLES);
+			renderer.applyGlColor();
+			
+			int firstCP = StbTtFontResource.BAKE_FONT_FIRST_CHAR;
+			int lastCP = StbTtFontResource.BAKE_FONT_FIRST_CHAR + StbTtFontResource.GLYPH_COUNT - 1;
+			for (int i = 0; i < text.length(); i++) {
+				int codePoint = text.codePointAt(i);
+				if (codePoint == '\n') {
+					bufX.put(0, x);
+					bufY.put(0, y + bufY.get(0) + fontSize);
+					continue;
+				} else if (codePoint < firstCP || codePoint > lastCP) {
+					continue;
+				}
+				STBTruetype.stbtt_GetBakedQuad(charData,
+						StbTtFontResource.FONT_TEX_W, StbTtFontResource.FONT_TEX_H,
+						codePoint - firstCP,
+						bufX, bufY, q, true);
+//				System.out.println("RENDER \t c="+((char) codePoint)+"; w="+(x1 - x0)+"; w2="+(x0 - oldX1));
+				
+				GL11.glTexCoord2f(q.s0(), q.t0());
+				GL11.glVertex2f(q.x0(), q.y0());
+				
+				GL11.glTexCoord2f(q.s0(), q.t1());
+				GL11.glVertex2f(q.x0(), q.y1());
+				
+				GL11.glTexCoord2f(q.s1(), q.t1());
+				GL11.glVertex2f(q.x1(), q.y1());
+				
+				GL11.glTexCoord2f(q.s1(), q.t1());
+				GL11.glVertex2f(q.x1(), q.y1());
+				
+				GL11.glTexCoord2f(q.s1(), q.t0());
+				GL11.glVertex2f(q.x1(), q.y0());
+				
+				GL11.glTexCoord2f(q.s0(), q.t0());
+				GL11.glVertex2f(q.x0(), q.y0());
+			}
+			GL11.glEnd();
+			
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+			GL11.glDisable(GL11.GL_TEXTURE_2D);
+		}
 	}
 	
 	public static class GlyphDim {

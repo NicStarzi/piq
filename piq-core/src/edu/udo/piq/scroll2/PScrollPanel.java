@@ -18,11 +18,6 @@ public class PScrollPanel extends AbstractPLayoutOwner implements PScrollCompone
 		setLayout(new PScrollPanelLayout(this));
 	}
 	
-	@Override
-	protected void checkForPreferredSizeChange() {
-		super.checkForPreferredSizeChange();
-	}
-	
 	public PScrollPanel(PComponent body) {
 		this();
 		setBody(body);
@@ -36,6 +31,11 @@ public class PScrollPanel extends AbstractPLayoutOwner implements PScrollCompone
 	@Override
 	public void setBorder(PBorder border) {
 		super.setBorder(border);
+	}
+	
+	@Override
+	protected void checkForPreferredSizeChange() {
+		super.checkForPreferredSizeChange();
 	}
 	
 	public void setBody(PComponent comp) {
@@ -80,8 +80,8 @@ public class PScrollPanel extends AbstractPLayoutOwner implements PScrollCompone
 	@Override
 	@TemplateMethod
 	public void onScrollRequest(PComponent descendant, int x, int y, int fx, int fy) {
-//		System.out.println("PScrollPanel.onChildRequestedScroll() child=" + child + "; x=" + offsetX + "; y="
-//				+ offsetY);
+		//TODO
+		System.out.println("PScrollPanel.onChildRequestedScroll() descendant=" + descendant + "; x=" + x + "; y=" + y);
 		PScrollBar barX = getLayoutInternal().barX;
 		PScrollBar barY = getLayoutInternal().barY;
 		PBounds bounds = getBoundsWithoutBorder();
@@ -91,8 +91,8 @@ public class PScrollPanel extends AbstractPLayoutOwner implements PScrollCompone
 		int bodyActualY = bounds.getY();
 		int bodyActualFx = bodyActualX + barX.getBodyActualSize();
 		int bodyActualFy = bodyActualY + barY.getBodyActualSize();
-//		System.out.println("scrollTo=" + scrollToX + ", " + scrollToY);
-//		System.out.println("vp=" + bodyActualX + ", " + bodyActualY + ", " + bodyActualFx + ", " + bodyActualFy);
+		System.out.println("scrollTo=" + scrollToX + ", " + scrollToY);
+		System.out.println("vp=" + bodyActualX + ", " + bodyActualY + ", " + bodyActualFx + ", " + bodyActualFy);
 		if (scrollToX < bodyActualX || scrollToX > bodyActualFx) {
 			barX.setScroll(scrollToX);
 		}

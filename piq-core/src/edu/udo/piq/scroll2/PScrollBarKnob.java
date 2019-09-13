@@ -38,7 +38,7 @@ public class PScrollBarKnob extends AbstractPComponent {
 	}
 	
 	@Override
-	protected PSize getConstantDefaultPreferredSize() {
+	protected PSize getNoLayoutDefaultPreferredSize() {
 		return DEFAULT_SIZE;
 	}
 	

@@ -10,6 +10,7 @@ import edu.udo.piq.layouts.PComponentLayoutData;
 public class PScrollPanelLayout extends AbstractEnumPLayout<PScrollPanelLayout.Constraint> {
 	
 	protected final PScrollPanel owner;
+	protected final PScrollPanelViewport viewport;
 	protected final PScrollBar barX;
 	protected final PScrollBar barY;
 	protected boolean needsToCheckScrollbars = true;
@@ -17,6 +18,7 @@ public class PScrollPanelLayout extends AbstractEnumPLayout<PScrollPanelLayout.C
 	public PScrollPanelLayout(PScrollPanel pScrollPanel) {
 		super(pScrollPanel, Constraint.class);
 		owner = pScrollPanel;
+		viewport = new PScrollPanelViewport();
 		barX = new PScrollBar(Axis.X);
 		barY = new PScrollBar(Axis.Y);
 	}
@@ -24,7 +26,7 @@ public class PScrollPanelLayout extends AbstractEnumPLayout<PScrollPanelLayout.C
 	@Override
 	protected void onChildPrefSizeChanged(PComponent child) {
 		super.onChildPrefSizeChanged(child);
-		if (child == getBody()) {
+		if (child == viewport) {
 			owner.onBodyPrefSizeChanged();
 		}
 		needsToCheckScrollbars = true;
@@ -33,7 +35,7 @@ public class PScrollPanelLayout extends AbstractEnumPLayout<PScrollPanelLayout.C
 	@Override
 	protected void onChildRemoved(PComponentLayoutData data) {
 		super.onChildRemoved(data);
-		if (data.getConstraint() == Constraint.BODY) {
+		if (data.getConstraint() == Constraint.VIEWPORT) {
 			needsToCheckScrollbars = true;
 		}
 	}
@@ -100,17 +102,27 @@ public class PScrollPanelLayout extends AbstractEnumPLayout<PScrollPanelLayout.C
 	}
 	
 	public void setBody(PComponent comp) {
-		if (containsChild(Constraint.BODY)) {
-			removeChild(Constraint.BODY);
+		if (containsChild(Constraint.VIEWPORT)) {
+			removeChild(Constraint.VIEWPORT);
+			viewport.getLayoutInternal().clearAllDataInternal();
 		}
 		if (comp != null) {
-			addChild(comp, Constraint.BODY);
+			viewport.getLayoutInternal().addChild(comp, null);
+			addChild(viewport, Constraint.VIEWPORT);
 			onChildPrefSizeChanged(comp);
 		}
 	}
 	
+	public PScrollPanelViewport getViewport() {
+		return (PScrollPanelViewport) getChildForConstraint(Constraint.VIEWPORT);
+	}
+	
 	public PComponent getBody() {
-		return getChildForConstraint(Constraint.BODY);
+		PScrollPanelViewport vp = getViewport();
+		if (vp == null) {
+			return null;
+		}
+		return vp.getBody();
 	}
 	
 	public PScrollBar getScrollBarX() {
@@ -131,8 +143,8 @@ public class PScrollPanelLayout extends AbstractEnumPLayout<PScrollPanelLayout.C
 	
 	@Override
 	protected void layOutInternal() {
-		PComponent body = getBody();
-		if (body == null) {
+		PScrollPanelViewport viewPort = getViewport();
+		if (viewPort == null) {
 			return;
 		}
 		PBounds ob = getOwner().getBoundsWithoutBorder();
@@ -160,17 +172,20 @@ public class PScrollPanelLayout extends AbstractEnumPLayout<PScrollPanelLayout.C
 		if (barY != null) {
 			offsetY = barY.getScroll();
 		}
+		setChildCellFilled(viewPort, x, y, w, h);
+		
+		PSize bodyPrefSize = viewPort.getBody().getPreferredSize();
 		int bodyX = x - offsetX;
 		int bodyY = y - offsetY;
-		PSize bodyPrefSize = body.getPreferredSize();
 		int bodyW = bodyPrefSize.getWidth();
 		int bodyH = bodyPrefSize.getHeight();
-		setChildCellFilled(body, bodyX, bodyY, bodyW, bodyH);
+		viewPort.getLayoutInternal().setBodyCellFilled(bodyX, bodyY, bodyW, bodyH);
+		
 		owner.onBodyLaidOut(w, h);
 	}
 	
 	public static enum Constraint {
-		BAR_X, BAR_Y, BODY,
+		BAR_X, BAR_Y, VIEWPORT,
 		;
 	}
 	
